@@ -9,5 +9,16 @@ services:
       - .env
     networks:
       - transcendence
+
+  test-db:
+    image: postgres:13
+    ports:
+      - 5435:5432
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - transcendence
+
 networks:
   transcendence:

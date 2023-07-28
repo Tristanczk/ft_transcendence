@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { AuthDto } from "./dto";
 import * as argon from "argon2";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
@@ -8,10 +8,10 @@ import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
-	constructor(private prisma: PrismaService, 
+	constructor(private prisma: PrismaService,
 		private jwt: JwtService,
-		private config: ConfigService) {}
-	
+		private config: ConfigService) { }
+
 	async signup(dto: AuthDto) {
 		// generate password hash from password user
 		// await stops the execution until the promise is resolved (accepted or rejected)
@@ -30,7 +30,7 @@ export class AuthService {
 			// before returning it so that it isn't visible in the http response
 			// however, it is still saved in the database when the user is created
 			return this.signToken(user.id, user.email);
-		} catch	(error) {
+		} catch (error) {
 			if (error instanceof PrismaClientKnownRequestError) {
 				if (error.code === 'P2002') {
 					throw new ForbiddenException('Credentials already exists')
@@ -53,7 +53,7 @@ export class AuthService {
 		}
 
 		const pwMatches = await argon.verify(user.hash, dto.password);
-		
+
 		// compare the password hash with the password hash in the database
 		// throw an exception if the password is incorrect
 		if (!pwMatches) {
