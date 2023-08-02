@@ -15,6 +15,7 @@ export class AuthService {
 	async signup(dto: AuthDto) {
 		// generate password hash from password user
 		// await stops the execution until the promise is resolved (accepted or rejected)
+		console.log(dto);
 		const hash = await argon.hash(dto.password)
 		// save the new user in the database
 		// using await makes it an asynchronous operation, 

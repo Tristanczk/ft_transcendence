@@ -16,7 +16,7 @@ services:
       - 5435:5432
     restart: always
     env_file:
-      - .env
+      - .env.test
     networks:
       - transcendence
 
