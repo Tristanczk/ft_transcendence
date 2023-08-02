@@ -15,7 +15,6 @@ export class AuthService {
 	async signup(dto: AuthDto) {
 		// generate password hash from password user
 		// await stops the execution until the promise is resolved (accepted or rejected)
-		console.log(dto);
 		const hash = await argon.hash(dto.password)
 		// save the new user in the database
 		// using await makes it an asynchronous operation, 
@@ -77,5 +76,10 @@ export class AuthService {
 		return {
 			access_token: token,
 		};
+	}
+
+	async AuthorizeUrl42() {
+		const uid = this.config.get('API42_UID');
+		return (`https://api.intra.42.fr/oauth/authorize?client_id=${uid}&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fsignin&response_type=code`);
 	}
 }
