@@ -25,12 +25,10 @@ export class AuthController {
         try {
             // TODO get cookie better
             const cookie = req.headers['cookie'].slice(4);
-            console.log('cookie', cookie);
             if (!cookie) {
                 throw new UnauthorizedException('No authorization token found');
             }
             const jwtPayload = jwt.verify(cookie, process.env.JWT_SECRET);
-            console.log(jwtPayload);
             assert(typeof jwtPayload !== 'string'); // TODO very fishy
             const user = await this.prisma.user.findUnique({
                 where: { login: jwtPayload.login },

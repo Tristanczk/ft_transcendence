@@ -49,7 +49,7 @@ const NavBar: React.FC = () => {
                         <span className="sr-only">Open user menu</span>
                         <img
                             className="w-8 h-8 rounded-full"
-                            src="/docs/images/people/profile-picture-3.jpg"
+                            src="https://cdn.intra.42.fr/users/39286e8f2e99c1d912bfed7cfd94bf66/tczarnia.jpg"
                             alt="user"
                         />
                     </button>
