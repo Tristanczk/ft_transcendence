@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
-const NavLink: React.FC<{ title: string; isActive: boolean; link: string }> = ({
+const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
     title,
-    isActive,
+    current,
     link,
 }) => {
+    const isActive = current === link;
     return (
         <li>
             <a
@@ -24,6 +26,8 @@ const NavLink: React.FC<{ title: string; isActive: boolean; link: string }> = ({
 
 const NavBar: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const location = useLocation();
+    console.log(location.pathname);
 
     return (
         <nav className="bg-white border-gray-200 dark:bg-gray-900">
@@ -132,14 +136,22 @@ const NavBar: React.FC = () => {
                     id="navbar-user"
                 >
                     <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                        <NavLink title="Home" isActive={false} link="/" />
                         <NavLink
+                            current={location.pathname}
+                            title="Home"
+                            link="/"
+                        />
+                        <NavLink
+                            current={location.pathname}
                             title="Dashboard"
-                            isActive={true}
                             link="/dashboard"
                         />
                         {/* TODO /dashboard/:login */}
-                        <NavLink title="Chat" isActive={false} link="/chat" />
+                        <NavLink
+                            current={location.pathname}
+                            title="Chat"
+                            link="/chat"
+                        />
                     </ul>
                 </div>
             </div>
