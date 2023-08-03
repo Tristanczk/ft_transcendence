@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
-import { Button } from '../components/Button';
+import Button from '../components/Button';
 
 const goBack = (navigate: NavigateFunction) => {
     if (window.history.state && window.history.state.idx > 0) {

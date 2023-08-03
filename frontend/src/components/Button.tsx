@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Button: React.FC<{ text: string; onClick: () => void }> = ({
+const Button: React.FC<{ text: string; onClick: () => void }> = ({
     text,
     onClick,
 }) => (
@@ -11,3 +11,5 @@ export const Button: React.FC<{ text: string; onClick: () => void }> = ({
         <span>{text}</span>
     </button>
 );
+
+export default Button;
