@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
     title,
@@ -9,8 +9,8 @@ const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
     const isActive = current === link;
     return (
         <li>
-            <a
-                href={link}
+            <Link
+                to={link}
                 className={`block py-2 pl-3 pr-4 rounded ${
                     isActive
                         ? 'text-white bg-blue-700 md:bg-transparent md:p-0 md:text-blue-500'
@@ -19,7 +19,7 @@ const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
                 aria-current="page"
             >
                 {title}
-            </a>
+            </Link>
         </li>
     );
 };
@@ -27,12 +27,12 @@ const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
 const DropLink: React.FC<{ text: string }> = ({ text }) => {
     return (
         <li>
-            <a
-                href="/"
+            <Link
+                to="/"
                 className="block px-4 py-2 text-sm hover:bg-gray-600 text-gray-200 hover:text-white"
             >
                 {text}
-            </a>
+            </Link>
         </li>
     );
 };
@@ -44,7 +44,7 @@ const NavBar: React.FC = () => {
     return (
         <nav className="border-gray-200 bg-gray-900">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-                <a href="/" className="flex items-center">
+                <Link to="/" className="flex items-center">
                     <img
                         src="https://notion-emojis.s3-us-west-2.amazonaws.com/prod/svg-twitter/1f3d3.svg"
                         className="w-8 h-8 mr-3"
@@ -53,7 +53,7 @@ const NavBar: React.FC = () => {
                     <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
                         lipong.org
                     </span>
-                </a>
+                </Link>
                 <div className="flex items-center md:order-2 relative">
                     <button
                         type="button"
