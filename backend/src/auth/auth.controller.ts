@@ -50,7 +50,7 @@ export class AuthController {
                     res.status(400).send('Sign in failed');
                 }
             })
-            .catch((error) => {
+            .catch(() => {
                 res.status(500).send('Something went wrong');
             });
     }
