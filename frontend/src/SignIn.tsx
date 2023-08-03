@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const SignIn: React.FC = () => {
     const location = useLocation();
-    const [accessToken, setAccessToken] = useState('');
+    const [message, setMessage] = useState('');
     const [error, setError] = useState(false);
 
     useEffect(() => {
@@ -16,13 +16,14 @@ const SignIn: React.FC = () => {
             return;
         }
         const fetchUser = async () => {
-            const user = await axios.get('http://localhost:3333/auth/signin', {
-                params: { code },
-            });
-            setAccessToken(user.data.accessToken);
-            if (user.data.login !== '') {
-                setAccessToken(user.data.accessToken);
-            } else {
+            try {
+                const response = await axios.get(
+                    'http://localhost:3333/auth/signin',
+                    { params: { code }, withCredentials: true },
+                );
+                setMessage(response.data);
+            } catch (error) {
+                console.error(error);
                 setError(true);
             }
         };
@@ -32,7 +33,7 @@ const SignIn: React.FC = () => {
     if (error) {
         return <div>Sign in failed</div>;
     } else {
-        return <div>Successfully signed in! Welcome, {accessToken}</div>;
+        return <div>{message}</div>;
     }
 };
 

@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { User } from '@prisma/client';
+import { Response } from 'express';
 
 type AccessToken = { accessToken: string };
 
@@ -25,21 +26,21 @@ export class AuthService {
             expiresIn: '1d',
             secret: secret,
         });
-        return {
-            accessToken,
-        };
+        return { accessToken };
     }
 
     async upsertUser(login: string): Promise<User> {
         const existingUser = await this.prisma.user.findFirst({
             where: {
-                OR: [{ login: login }],
+                login: login,
             },
         });
-
         if (existingUser) {
-            ++existingUser.loginNb;
-            return existingUser;
+            const updatedUser = await this.prisma.user.update({
+                where: { login },
+                data: { loginNb: existingUser.loginNb + 1 },
+            });
+            return updatedUser;
         } else {
             const newUser = await this.prisma.user.create({
                 data: {
@@ -53,9 +54,9 @@ export class AuthService {
         }
     }
 
-    async signin42(code: string): Promise<AccessToken> {
+    async signin42(code: string, res: Response): Promise<AccessToken> {
         try {
-            const res = await axios.post(
+            const first = await axios.post(
                 'https://api.intra.42.fr/oauth/token',
                 {
                     grant_type: 'authorization_code',
@@ -66,16 +67,25 @@ export class AuthService {
                 },
                 { headers: { 'Content-Type': 'application/json' } },
             );
-            const token: string = res.data['access_token'];
-            const me = await axios.get('https://api.intra.42.fr/v2/me', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!me.data['login']) {
+            if (!first.data['access_token']) {
                 return { accessToken: '' };
             }
-            const login: string = me.data['login'];
+            const bearerToken: string = first.data['access_token']!;
+            const second = await axios.get('https://api.intra.42.fr/v2/me', {
+                headers: { Authorization: `Bearer ${bearerToken}` },
+            });
+            if (!second.data['login']) {
+                return { accessToken: '' };
+            }
+            const login: string = second.data['login'];
             const user = await this.upsertUser(login);
-            return this.signToken(user.id, user.login);
+            const jwtToken = await this.signToken(user.id, user.login);
+            res.cookie('jwt', jwtToken.accessToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+            });
+            return jwtToken;
         } catch (error) {
             return { accessToken: '' };
         }
