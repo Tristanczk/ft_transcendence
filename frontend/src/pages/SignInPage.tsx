@@ -28,7 +28,7 @@ const SignIn: React.FC = () => {
             }
         };
         fetchUser();
-    }, []);
+    }, [location.search]);
 
     if (error) {
         return <div>Sign in failed</div>;

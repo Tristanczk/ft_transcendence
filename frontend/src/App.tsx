@@ -2,11 +2,11 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import RootPage from './pages/RootPage';
 import NotFound from './404';
-import Dashboard from './pages/Dashboard';
-import SignIn from './pages/SignIn';
-import Chat from './pages/Chat';
+import Dashboard from './pages/DashboardPage';
+import SignIn from './pages/SignInPage';
+import Chat from './pages/ChatPage';
 import NavBar from './NavBar';
-import Settings from './pages/Settings';
+import Settings from './pages/SettingsPage';
 
 const App: React.FC = () => {
     return (
