@@ -5,7 +5,7 @@ import NotFound from './pages/404';
 import Dashboard from './pages/DashboardPage';
 import SignIn from './pages/SignInPage';
 import Chat from './pages/ChatPage';
-import NavBar from './NavBar';
+import NavBar from './components/NavBar';
 import Settings from './pages/SettingsPage';
 
 const App: React.FC = () => (

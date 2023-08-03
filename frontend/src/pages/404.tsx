@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { Button } from '../components/Button';
 
 const goBack = (navigate: NavigateFunction) => {
     if (window.history.state && window.history.state.idx > 0) {
@@ -8,18 +9,6 @@ const goBack = (navigate: NavigateFunction) => {
         navigate('/');
     }
 };
-
-const Button404: React.FC<{ text: string; onClick: () => void }> = ({
-    text,
-    onClick,
-}) => (
-    <button
-        onClick={onClick}
-        className="flex items-center justify-center w-1/2 px-5 py-2 text-sm transition-colors duration-200  border rounded-lg gap-x-2 sm:w-auto hover:bg-blue-500 bg-gray-900 text-gray-200 border-gray-700"
-    >
-        <span>{text}</span>
-    </button>
-);
 
 const NotFound: React.FC = () => {
     const navigate = useNavigate();
@@ -37,11 +26,11 @@ const NotFound: React.FC = () => {
                         You seem to be lost. Here are some helpful links.
                     </p>
                     <div className="flex items-center mt-6 gap-x-3 justify-center">
-                        <Button404
+                        <Button
                             text="← Go back"
                             onClick={() => goBack(navigate)}
                         />
-                        <Button404
+                        <Button
                             text="Take me home"
                             onClick={() => navigate('/')}
                         />
