@@ -26,7 +26,6 @@ const Dashboard: React.FC = () => {
 
     return user ? (
         <div>
-            <NavBar />
             <div>
                 Welcome, {user.nickName}! Your current ELO is {user.elo}. This
                 is the {user.loginNb}th time you log in.

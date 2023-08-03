@@ -27,7 +27,6 @@ const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
 const NavBar: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const location = useLocation();
-    console.log(location.pathname);
 
     return (
         <nav className="bg-white border-gray-200 dark:bg-gray-900">
@@ -35,7 +34,7 @@ const NavBar: React.FC = () => {
                 <a href="/" className="flex items-center">
                     <img
                         src="https://notion-emojis.s3-us-west-2.amazonaws.com/prod/svg-twitter/1f3d3.svg"
-                        className="h-8 mr-3"
+                        className="w-8 h-8 mr-3"
                         alt="lipong.org logo"
                     />
                     <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">

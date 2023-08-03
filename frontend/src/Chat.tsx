@@ -25,12 +25,7 @@ const Chat: React.FC = () => {
     }, []);
 
     return user ? (
-        <div>
-            <NavBar />
-            <div>
-                This is the chat app my dude
-            </div>
-        </div>
+        <div>This is the chat app my dude</div>
     ) : (
         <div>Loading...</div>
     );

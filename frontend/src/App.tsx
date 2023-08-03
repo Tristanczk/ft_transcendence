@@ -1,20 +1,22 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AuthorizeUser from './AuthorizeUser';
-import NotFound from './NotFound';
+import NotFound from './404';
 import Dashboard from './Dashboard';
 import SignIn from './SignIn';
 import Chat from './Chat';
+import NavBar from './NavBar';
 
 const App: React.FC = () => {
     return (
         <BrowserRouter>
+            <NavBar />
             <Routes>
                 <Route path="/" Component={AuthorizeUser} />
                 <Route path="/dashboard" Component={Dashboard} />
-                <Route path="/signin" Component={SignIn} />
                 <Route path="/chat" Component={Chat} />
-                <Route Component={NotFound} />
+                <Route path="/signin" Component={SignIn} />
+                <Route path="*" Component={NotFound} />
             </Routes>
         </BrowserRouter>
     );
