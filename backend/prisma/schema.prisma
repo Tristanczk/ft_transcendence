@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,35 +7,13 @@ datasource db {
   url      = env("DB_URL")
 }
 
-//models allow to define the structure of the SQL tables you want to use
 model User {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  email String @unique
-  hash String
+  login    String @unique
+  nickName String @unique
 
-  // ? at the end allows to specify that the field is optionnal
-  firstName String?
-  lastName String?
-  
-  bookmarks Bookmark[]
-
-  @@map("users")
-}
-
-model Bookmark {
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  title String
-  description String?
-  link String
-
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-
-  @@map("bookmarks")
+  elo     Int
+  loginNb Int
 }

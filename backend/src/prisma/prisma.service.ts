@@ -4,21 +4,18 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
-	constructor(config: ConfigService) {
-		super({
-			datasources: {
-				db: {
-					url: config.get('DB_URL')
-				}
-			}
-		});
-		console.log(config.get('DB_URL'));
-	}
+    constructor(config: ConfigService) {
+        super({
+            datasources: {
+                db: {
+                    url: config.get('DB_URL'),
+                },
+            },
+        });
+        console.log(config.get('DB_URL'));
+    }
 
-	cleanDb() {
-		return this.$transaction([
-			this.bookmark.deleteMany(),
-			this.user.deleteMany()
-		])
-	}
+    cleanDb() {
+        return this.$transaction([this.user.deleteMany()]);
+    }
 }
