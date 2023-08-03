@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import AuthorizeUser from './AuthorizeUser';
+import RootPage from './RootPage';
 import NotFound from './404';
 import Dashboard from './Dashboard';
 import SignIn from './SignIn';
@@ -13,7 +13,7 @@ const App: React.FC = () => {
         <BrowserRouter>
             <NavBar />
             <Routes>
-                <Route path="/" Component={AuthorizeUser} />
+                <Route path="/" Component={RootPage} />
                 <Route path="/dashboard" Component={Dashboard} />
                 <Route path="/chat" Component={Chat} />
                 <Route path="/signin" Component={SignIn} />
