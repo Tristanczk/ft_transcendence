@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import NavBar from './NavBar';
 
 type User = { nickName: string; elo: number; loginNb: number };
 
@@ -25,8 +26,11 @@ const Dashboard: React.FC = () => {
 
     return user ? (
         <div>
-            Welcome, {user.nickName}! Your current ELO is {user.elo}. This is
-            the {user.loginNb}th time you log in.
+            <NavBar />
+            <div>
+                Welcome, {user.nickName}! Your current ELO is {user.elo}. This
+                is the {user.loginNb}th time you log in.
+            </div>
         </div>
     ) : (
         <div>Loading...</div>
