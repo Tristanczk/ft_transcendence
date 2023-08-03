@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { User } from '../types';
+import axios from 'axios';
+import Button from './Button';
 
 const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
     title,
@@ -7,6 +10,7 @@ const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
     link,
 }) => {
     const isActive = current === link;
+
     return (
         <li>
             <Link
@@ -37,9 +41,87 @@ const DropLink: React.FC<{ text: string }> = ({ text }) => {
     );
 };
 
-const NavBar: React.FC = () => {
+const Dropdown: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    return (
+        <div className="flex items-center md:order-2 relative">
+            <button
+                type="button"
+                className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-600"
+                id="user-menu-button"
+                aria-expanded="false"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+                <img
+                    className="w-8 h-8 rounded-full"
+                    src="https://cdn.intra.42.fr/users/39286e8f2e99c1d912bfed7cfd94bf66/tczarnia.jpg"
+                    alt="user"
+                />
+            </button>
+            <div
+                className={`z-50 absolute top-full right-0 mt-2 w-48 py-2 rounded-md shadow-xl bg-gray-800 ${
+                    dropdownOpen ? 'block' : 'hidden'
+                }`}
+                id="user-dropdown"
+            >
+                <div className="px-4 py-3">
+                    <span className="block text-sm text-white">nickname</span>
+                    <span className="block text-sm truncate text-gray-400">
+                        login if different
+                    </span>
+                </div>
+                <ul className="py-2" aria-labelledby="user-menu-button">
+                    <DropLink text="Settings" />
+                    <DropLink text="Sign out" />
+                </ul>
+            </div>
+            <button
+                data-collapse-toggle="navbar-user"
+                type="button"
+                className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden focus:outline-none focus:ring-2 text-gray-400 hover:bg-gray-700 focus:ring-gray-600"
+                aria-controls="navbar-user"
+                aria-expanded="false"
+            >
+                <svg
+                    className="w-5 h-5"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 17 14"
+                >
+                    <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M1 1h15M1 7h15M1 13h15"
+                    />
+                </svg>
+            </button>
+        </div>
+    );
+};
+
+const NavBar: React.FC = () => {
     const location = useLocation();
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:3333/auth/get-user-info',
+                    {
+                        withCredentials: true,
+                    },
+                );
+                setUser(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        fetchUser();
+    }, []);
 
     return (
         <nav className="border-gray-200 bg-gray-900">
@@ -54,63 +136,18 @@ const NavBar: React.FC = () => {
                         lipong.org
                     </span>
                 </Link>
-                <div className="flex items-center md:order-2 relative">
-                    <button
-                        type="button"
-                        className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-600"
-                        id="user-menu-button"
-                        aria-expanded="false"
-                        onClick={() => setDropdownOpen(!dropdownOpen)}
-                    >
-                        <img
-                            className="w-8 h-8 rounded-full"
-                            src="https://cdn.intra.42.fr/users/39286e8f2e99c1d912bfed7cfd94bf66/tczarnia.jpg"
-                            alt="user"
-                        />
-                    </button>
-                    <div
-                        className={`z-50 absolute top-full right-0 mt-2 w-48 py-2 rounded-md shadow-xl bg-gray-800 ${
-                            dropdownOpen ? 'block' : 'hidden'
-                        }`}
-                        id="user-dropdown"
-                    >
-                        <div className="px-4 py-3">
-                            <span className="block text-sm text-white">
-                                nickname
-                            </span>
-                            <span className="block text-sm truncate text-gray-400">
-                                login if different
-                            </span>
-                        </div>
-                        <ul className="py-2" aria-labelledby="user-menu-button">
-                            <DropLink text="Settings" />
-                            <DropLink text="Sign out" />
-                        </ul>
+                {user ? (
+                    <Dropdown />
+                ) : (
+                    <div className="flex items-center md:order-2 relative">
+                        <Button
+                            text="Sign in"
+                            onClick={() => {
+                                window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_API42_UID}&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fsignin&response_type=code`;
+                            }}
+                        ></Button>
                     </div>
-                    <button
-                        data-collapse-toggle="navbar-user"
-                        type="button"
-                        className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden focus:outline-none focus:ring-2 text-gray-400 hover:bg-gray-700 focus:ring-gray-600"
-                        aria-controls="navbar-user"
-                        aria-expanded="false"
-                    >
-                        <svg
-                            className="w-5 h-5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 17 14"
-                        >
-                            <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M1 1h15M1 7h15M1 13h15"
-                            />
-                        </svg>
-                    </button>
-                </div>
+                )}
                 <div
                     className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
                     id="navbar-user"

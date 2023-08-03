@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
-type User = { nickName: string; elo: number; loginNb: number };
+import { User } from '../types';
 
 const Dashboard: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
@@ -25,10 +24,8 @@ const Dashboard: React.FC = () => {
 
     return user ? (
         <div>
-            <div>
-                Welcome, {user.nickName}! Your current ELO is {user.elo}. This
-                is the {user.loginNb}th time you log in.
-            </div>
+            Welcome, {user.nickName}! Your current ELO is {user.elo}. This is
+            the {user.loginNb}th time you log in.
         </div>
     ) : (
         <div>Loading...</div>
