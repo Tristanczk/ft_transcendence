@@ -62,7 +62,6 @@ const NavBar: React.FC = () => {
                         aria-expanded="false"
                         onClick={() => setDropdownOpen(!dropdownOpen)}
                     >
-                        <span className="sr-only">Open user menu</span>
                         <img
                             className="w-8 h-8 rounded-full"
                             src="https://cdn.intra.42.fr/users/39286e8f2e99c1d912bfed7cfd94bf66/tczarnia.jpg"
@@ -95,7 +94,6 @@ const NavBar: React.FC = () => {
                         aria-controls="navbar-user"
                         aria-expanded="false"
                     >
-                        <span className="sr-only">Open main menu</span>
                         <svg
                             className="w-5 h-5"
                             aria-hidden="true"
