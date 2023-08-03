@@ -77,16 +77,14 @@ const NavBar: React.FC = () => {
                     >
                         <div className="px-4 py-3">
                             <span className="block text-sm text-white">
-                                Bonnie Green
+                                nickname
                             </span>
                             <span className="block text-sm truncate text-gray-400">
-                                name@flowbite.com
+                                login if different
                             </span>
                         </div>
                         <ul className="py-2" aria-labelledby="user-menu-button">
-                            <DropLink text="Dashboard" />
                             <DropLink text="Settings" />
-                            <DropLink text="Earnings" />
                             <DropLink text="Sign out" />
                         </ul>
                     </div>

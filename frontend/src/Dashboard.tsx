@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import NavBar from './NavBar';
 
 type User = { nickName: string; elo: number; loginNb: number };
 

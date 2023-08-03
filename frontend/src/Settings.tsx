@@ -3,7 +3,7 @@ import axios from 'axios';
 
 type User = { nickName: string; elo: number; loginNb: number };
 
-const Chat: React.FC = () => {
+const Settings: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
@@ -24,10 +24,10 @@ const Chat: React.FC = () => {
     }, []);
 
     return user ? (
-        <div>This is the chat page my dude</div>
+        <div>This is the settings page my dude</div>
     ) : (
         <div>Loading...</div>
     );
 };
 
-export default Chat;
+export default Settings;
