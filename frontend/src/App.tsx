@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import RootPage from './RootPage';
+import RootPage from './pages/RootPage';
 import NotFound from './404';
-import Dashboard from './Dashboard';
-import SignIn from './SignIn';
-import Chat from './Chat';
+import Dashboard from './pages/Dashboard';
+import SignIn from './pages/SignIn';
+import Chat from './pages/Chat';
 import NavBar from './NavBar';
-import Settings from './Settings';
+import Settings from './pages/Settings';
 
 const App: React.FC = () => {
     return (
