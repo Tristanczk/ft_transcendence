@@ -28,11 +28,11 @@ const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
     );
 };
 
-const DropLink: React.FC<{ text: string }> = ({ text }) => {
+const DropLink: React.FC<{ text: string; href: string }> = ({ text, href }) => {
     return (
         <li>
             <Link
-                to="/"
+                to={href}
                 className="block px-4 py-2 text-sm hover:bg-gray-600 text-gray-200 hover:text-white"
             >
                 {text}
@@ -71,8 +71,8 @@ const Dropdown: React.FC = () => {
                     </span>
                 </div>
                 <ul className="py-2" aria-labelledby="user-menu-button">
-                    <DropLink text="Settings" />
-                    <DropLink text="Sign out" />
+                    <DropLink text="Settings" href="/settings" />
+                    <DropLink text="Sign out" href="/signout" />
                 </ul>
             </div>
             <button

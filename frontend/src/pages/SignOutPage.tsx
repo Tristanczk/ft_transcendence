@@ -2,24 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-const SignInPage: React.FC = () => {
+const SignOutPage: React.FC = () => {
     const location = useLocation();
     const [message, setMessage] = useState('');
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        const code = new URLSearchParams(location.search).get('code');
-
-        if (!code) {
-            console.error('No authorization code found');
-            setError(true);
-            return;
-        }
-        const fetchUser = async () => {
+        const signOut = async () => {
             try {
                 const response = await axios.get(
-                    'http://localhost:3333/auth/signin',
-                    { params: { code }, withCredentials: true },
+                    'http://localhost:3333/auth/signout',
+                    { withCredentials: true },
                 );
                 setMessage(response.data);
             } catch (error) {
@@ -27,14 +20,14 @@ const SignInPage: React.FC = () => {
                 setError(true);
             }
         };
-        fetchUser();
+        signOut();
     }, [location.search]);
 
     if (error) {
-        return <div>Sign in failed</div>;
+        return <div>Sign out failed</div>;
     } else {
         return <div>{message}</div>;
     }
 };
 
-export default SignInPage;
+export default SignOutPage;

@@ -54,7 +54,7 @@ export class AuthService {
         }
     }
 
-    async signin42(code: string, res: Response): Promise<AccessToken> {
+    async signin(code: string, res: Response): Promise<AccessToken> {
         try {
             const first = await axios.post(
                 'https://api.intra.42.fr/oauth/token',
@@ -87,8 +87,22 @@ export class AuthService {
             });
             return jwtToken;
         } catch (error) {
-            console.log('error', error);
+            console.log('signin', error);
             return { accessToken: '' };
+        }
+    }
+
+    signout(res: Response): boolean {
+        try {
+            res.clearCookie('jwt', {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+            });
+            return true;
+        } catch (error) {
+            console.log('signout', error);
+            return false;
         }
     }
 }

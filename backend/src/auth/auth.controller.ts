@@ -40,9 +40,9 @@ export class AuthController {
     }
 
     @Get('signin')
-    signin42(@Query() params: any, @Res() res: Response) {
+    signin(@Query() params: any, @Res() res: Response) {
         this.authService
-            .signin42(params.code, res)
+            .signin(params.code, res)
             .then((jwt) => {
                 if (jwt.accessToken !== '') {
                     res.send('Successfully signed in!');
@@ -53,5 +53,11 @@ export class AuthController {
             .catch(() => {
                 res.status(500).send('Something went wrong');
             });
+    }
+
+    @Get('signout')
+    signout(@Res() res: Response) {
+        if (this.authService.signout(res)) res.send('Successfully signed out!');
+        else res.status(500).send('Something went wrong');
     }
 }
