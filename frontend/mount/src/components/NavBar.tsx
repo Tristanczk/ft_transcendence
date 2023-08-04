@@ -23,6 +23,10 @@ const NavLink: React.FC<{
                     isActive
                         ? 'bg-blue-700 bg-transparent p-0 text-blue-500'
                         : 'p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700'
+                } ${
+                    isActive && !showText
+                        ? 'inset shadow-inner bg-indigo-700'
+                        : ''
                 }`}
                 aria-current="page"
             >
@@ -31,7 +35,7 @@ const NavLink: React.FC<{
                 ) : (
                     <img
                         src={icon}
-                        className="w-6 h-6 mr-3"
+                        className="w-6 h-6 mx-1"
                         alt={`${title} icon`}
                     />
                 )}
