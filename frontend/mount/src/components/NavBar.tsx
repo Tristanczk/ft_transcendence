@@ -44,7 +44,7 @@ const DropLink: React.FC<{ text: string; href: string }> = ({ text, href }) => {
 const Dropdown: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     return (
-        <>
+        <div className="flex items-center relative">
             <button
                 type="button"
                 className="flex mr-3 text-sm bg-gray-800 rounded-full sm:mr-0 focus:ring-4 focus:ring-gray-600"
@@ -96,7 +96,7 @@ const Dropdown: React.FC = () => {
                     />
                 </svg>
             </button>
-        </>
+        </div>
     );
 };
 
@@ -132,7 +132,7 @@ const NavBar: React.FC = () => {
                         lipong.org
                     </span>
                 </Link>
-                <div className="flex items-center sm:order-2 relative">
+                <div className="sm:order-2">
                     {user ? (
                         <Dropdown />
                     ) : (
