@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { User } from '../types';
 
-const Dashboard: React.FC = () => {
+const DashboardPage: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
@@ -28,8 +28,8 @@ const Dashboard: React.FC = () => {
             the {user.loginNb}th time you log in.
         </div>
     ) : (
-        <div>Loading...</div>
+        <div>You are not logged in.</div>
     );
 };
 
-export default Dashboard;
+export default DashboardPage;

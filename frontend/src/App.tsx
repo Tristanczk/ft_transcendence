@@ -1,25 +1,25 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import NavBar from './components/NavBar';
 import RootPage from './pages/RootPage';
-import NotFound from './pages/404';
-import Dashboard from './pages/DashboardPage';
+import Page404 from './pages/Page404';
+import DashboardPage from './pages/DashboardPage';
 import SignInPage from './pages/SignInPage';
 import SignOutPage from './pages/SignOutPage';
-import Chat from './pages/ChatPage';
-import NavBar from './components/NavBar';
-import Settings from './pages/SettingsPage';
+import ChatPage from './pages/ChatPage';
+import SettingsPage from './pages/SettingsPage';
 
 const App: React.FC = () => (
     <BrowserRouter>
         <NavBar />
         <Routes>
             <Route path="/" Component={RootPage} />
-            <Route path="/dashboard" Component={Dashboard} />
-            <Route path="/chat" Component={Chat} />
+            <Route path="/dashboard" Component={DashboardPage} />
+            <Route path="/chat" Component={ChatPage} />
             <Route path="/signin" Component={SignInPage} />
             <Route path="/signout" Component={SignOutPage} />
-            <Route path="/settings" Component={Settings} />
-            <Route path="*" Component={NotFound} />
+            <Route path="/settings" Component={SettingsPage} />
+            <Route path="*" Component={Page404} />
         </Routes>
     </BrowserRouter>
 );

@@ -10,7 +10,7 @@ const goBack = (navigate: NavigateFunction) => {
     }
 };
 
-const NotFound: React.FC = () => {
+const Page404: React.FC = () => {
     const navigate = useNavigate();
     return (
         <section className="bg-gray-900">
@@ -48,4 +48,4 @@ const NotFound: React.FC = () => {
     );
 };
 
-export default NotFound;
+export default Page404;
