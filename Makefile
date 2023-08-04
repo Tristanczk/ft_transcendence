@@ -1,6 +1,6 @@
-COMPOSE := docker compose
-VOLUMES	:= $(shell docker volume ls -q)
-OUTPUT	:= backend/dist backend/node_modules frontend/build frontend/node_modules
+COMPOSE 	:= docker compose
+VOLUMES		:= $(shell docker volume ls -q)
+COMPILED	:= backend/mount/dist backend/mount/node_modules frontend/mount/build frontend/mount/node_modules
 
 build:
 	$(COMPOSE) up --build
@@ -18,7 +18,7 @@ down:
 	$(COMPOSE) down -v
 
 clean: down
-	rm -rf $(OUTPUT)
+	rm -rf $(COMPILED)
 	docker system prune -f -a --volumes
 
 re: clean
@@ -27,6 +27,5 @@ re: clean
 rmvolumes: down
 	if [ -n "$(VOLUMES)" ]; then docker volume rm -f $(VOLUMES); fi
 
-revolume:
-	$(MAKE) rmvolumes
+revolume: rmvolumes
 	$(MAKE) build
