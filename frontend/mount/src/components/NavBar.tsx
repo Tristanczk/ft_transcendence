@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { User } from '../types';
 import axios from 'axios';
 import Button from './Button';
+import { useWidth } from '../hooks';
 
-const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
-    title,
-    current,
-    link,
-}) => {
+const NavLink: React.FC<{
+    title: ReactNode;
+    current: string;
+    link: string;
+    icon: string;
+}> = ({ title, current, link, icon }) => {
     const isActive = current === link;
+    const width = useWidth();
+    const showText = width && width >= 640;
 
     return (
         <li>
@@ -17,14 +21,49 @@ const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
                 to={link}
                 className={`block py-2 pl-3 pr-4 rounded ${
                     isActive
-                        ? 'text-white bg-blue-700 sm:bg-transparent sm:p-0 sm:text-blue-500'
-                        : 'sm:p-0 text-white sm:hover:text-blue-500 hover:bg-gray-700 hover:text-white sm:hover:bg-transparent border-gray-700'
+                        ? 'bg-blue-700 bg-transparent p-0 text-blue-500'
+                        : 'p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700'
                 }`}
                 aria-current="page"
             >
-                {title}
+                {showText ? (
+                    title
+                ) : (
+                    <img
+                        src={icon}
+                        className="w-6 h-6 mr-3"
+                        alt={`${title} icon`}
+                    />
+                )}
             </Link>
         </li>
+    );
+};
+
+const NavLinks: React.FC<{ current: string }> = ({ current }) => {
+    return (
+        <div className="items-center justify-between flex w-auto">
+            <ul className="text-xl sm:text-base flex font-medium p-0 rounded-lg flex-row space-x-2 sm:space-x-8 mt-0 border-0 bg-gray-900 border-gray-700">
+                <NavLink
+                    current={current}
+                    title="Home"
+                    link="/"
+                    icon="/favicon.ico"
+                />
+                <NavLink
+                    current={current}
+                    title="Dashboard"
+                    link="/dashboard" // TODO /dashboard/:login
+                    icon="/pie-chart.svg"
+                />
+                <NavLink
+                    current={current}
+                    title="Chat"
+                    link="/chat"
+                    icon="/postcard.svg"
+                />
+            </ul>
+        </div>
     );
 };
 
@@ -97,11 +136,11 @@ const NavBar: React.FC = () => {
     }, []);
 
     return (
-        <nav className="border-gray-200 bg-gray-900">
+        <nav className="border-gray-200 bg-gray-900" style={{ height: 72 }}>
             <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
-                <Link to="/" className="flex items-center">
+                <Link to="/" className="hidden sm:flex items-center">
                     <img
-                        src="/logo512.png"
+                        src="/logo192.png"
                         className="w-8 h-8 mr-3"
                         alt="lipong.org logo"
                     />
@@ -109,7 +148,8 @@ const NavBar: React.FC = () => {
                         lipong.org
                     </span>
                 </Link>
-                <div className="flex items-center relative space-x-2 sm:order-2">
+                <NavLinks current={location.pathname} />
+                <div className="flex items-center relative">
                     {user ? (
                         <UserMenu />
                     ) : (
@@ -120,49 +160,6 @@ const NavBar: React.FC = () => {
                             }}
                         />
                     )}
-                    <button
-                        data-collapse-toggle="navbar-user"
-                        type="button"
-                        className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg sm:hidden active:outline-none active:ring-2 text-gray-400 hover:bg-gray-700 active:ring-gray-600"
-                        aria-controls="navbar-user"
-                        aria-expanded="false"
-                    >
-                        <svg
-                            className="w-5 h-5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 17 14"
-                        >
-                            <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M1 1h15M1 7h15M1 13h15"
-                            />
-                        </svg>
-                    </button>
-                </div>
-                <div className="items-center justify-between hidden w-full sm:flex sm:w-auto sm:order-1">
-                    <ul className="flex flex-col font-medium p-4 sm:p-0 mt-4 border rounded-lg sm:flex-row sm:space-x-8 sm:mt-0 sm:border-0 bg-gray-800 sm:bg-gray-900 border-gray-700">
-                        <NavLink
-                            current={location.pathname}
-                            title="Home"
-                            link="/"
-                        />
-                        <NavLink
-                            current={location.pathname}
-                            title="Dashboard"
-                            link="/dashboard"
-                        />
-                        {/* TODO /dashboard/:login */}
-                        <NavLink
-                            current={location.pathname}
-                            title="Chat"
-                            link="/chat"
-                        />
-                    </ul>
                 </div>
             </div>
         </nav>
