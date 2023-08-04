@@ -28,7 +28,7 @@ const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
     );
 };
 
-const DropLink: React.FC<{ text: string; href: string }> = ({ text, href }) => {
+const MenuLink: React.FC<{ text: string; href: string }> = ({ text, href }) => {
     return (
         <li>
             <Link
@@ -41,15 +41,15 @@ const DropLink: React.FC<{ text: string; href: string }> = ({ text, href }) => {
     );
 };
 
-const Dropdown: React.FC = () => {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
+const UserMenu: React.FC = () => {
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
     return (
         <div className="flex items-center relative">
             <button
                 type="button"
-                className="flex mr-3 text-sm bg-gray-800 rounded-full sm:mr-0 focus:ring-4 focus:ring-gray-600"
+                className="flex mr-3 text-sm bg-gray-800 rounded-full sm:mr-0 active:ring-4 active:ring-gray-600"
                 aria-expanded="false"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
             >
                 <img
                     className="w-8 h-8 rounded-full"
@@ -59,7 +59,7 @@ const Dropdown: React.FC = () => {
             </button>
             <div
                 className={`z-50 absolute top-full right-0 mt-2 w-48 py-2 rounded-md shadow-xl bg-gray-800 ${
-                    dropdownOpen ? 'block' : 'hidden'
+                    userMenuOpen ? 'block' : 'hidden'
                 }`}
             >
                 <div className="px-4 py-3">
@@ -69,8 +69,8 @@ const Dropdown: React.FC = () => {
                     </span>
                 </div>
                 <ul className="py-2" aria-labelledby="user-menu-button">
-                    <DropLink text="Settings" href="/settings" />
-                    <DropLink text="Sign out" href="/signout" />
+                    <MenuLink text="Settings" href="/settings" />
+                    <MenuLink text="Sign out" href="/signout" />
                 </ul>
             </div>
         </div>
@@ -111,7 +111,7 @@ const NavBar: React.FC = () => {
                 </Link>
                 <div className="flex items-center relative space-x-2 sm:order-2">
                     {user ? (
-                        <Dropdown />
+                        <UserMenu />
                     ) : (
                         <Button
                             text="Sign in"
@@ -123,7 +123,7 @@ const NavBar: React.FC = () => {
                     <button
                         data-collapse-toggle="navbar-user"
                         type="button"
-                        className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg sm:hidden focus:outline-none focus:ring-2 text-gray-400 hover:bg-gray-700 focus:ring-gray-600"
+                        className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg sm:hidden active:outline-none active:ring-2 text-gray-400 hover:bg-gray-700 active:ring-gray-600"
                         aria-controls="navbar-user"
                         aria-expanded="false"
                     >
