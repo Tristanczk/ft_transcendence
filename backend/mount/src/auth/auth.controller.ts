@@ -7,12 +7,11 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
-import { Request } from 'express';
-import * as jwt from 'jsonwebtoken';
+import { Request, Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
-import * as assert from 'assert';
 import { ConfigService } from '@nestjs/config';
+import * as jwt from 'jsonwebtoken';
+import * as assert from 'assert';
 
 @Controller('auth')
 export class AuthController {
