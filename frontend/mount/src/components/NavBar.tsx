@@ -54,7 +54,7 @@ const Dropdown: React.FC = () => {
             >
                 <img
                     className="w-8 h-8 rounded-full"
-                    src="https://cdn.intra.42.fr/users/39286e8f2e99c1d912bfed7cfd94bf66/tczarnia.jpg"
+                    src="/norminet.jpeg"
                     alt="user"
                 />
             </button>
@@ -126,7 +126,7 @@ const NavBar: React.FC = () => {
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link to="/" className="flex items-center">
                     <img
-                        src="https://notion-emojis.s3-us-west-2.amazonaws.com/prod/svg-twitter/1f3d3.svg"
+                        src="/logo512.png"
                         className="w-8 h-8 mr-3"
                         alt="lipong.org logo"
                     />

@@ -39,7 +39,7 @@ const Page404: React.FC = () => {
                 <div className="relative w-full mt-12 lg:w-1/2 lg:mt-0 text-center flex justify-center items-center">
                     <img
                         className="w-full max-w-lg lg:mx-auto"
-                        src="https://merakiui.com/images/components/illustration.svg"
+                        src="/404.svg"
                         alt=""
                     />
                 </div>

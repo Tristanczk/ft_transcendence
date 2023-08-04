@@ -70,7 +70,7 @@ export class AuthService {
             if (!first.data['access_token']) {
                 return { accessToken: '' };
             }
-            const bearerToken: string = first.data['access_token']!;
+            const bearerToken: string = first.data['access_token'];
             const second = await axios.get('https://api.intra.42.fr/v2/me', {
                 headers: { Authorization: `Bearer ${bearerToken}` },
             });
