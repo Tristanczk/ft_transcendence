@@ -43,12 +43,7 @@ export class AuthService {
             return updatedUser;
         } else {
             const newUser = await this.prisma.user.create({
-                data: {
-                    login: login,
-                    nickName: login,
-                    elo: 1000,
-                    loginNb: 1,
-                },
+                data: { login: login, nickname: login, elo: 1000, loginNb: 1 },
             });
             return newUser;
         }

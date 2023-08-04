@@ -22,7 +22,7 @@ const DashboardPage: React.FC = () => {
 
     return user ? (
         <div>
-            Welcome, {user.nickName}! Your current ELO is {user.elo}. This is
+            Welcome, {user.nickname}! Your current ELO is {user.elo}. This is
             the {user.loginNb}th time you log in.
         </div>
     ) : (

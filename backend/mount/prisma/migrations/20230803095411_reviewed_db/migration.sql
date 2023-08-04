@@ -19,7 +19,7 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "login" TEXT NOT NULL,
-    "nickName" TEXT NOT NULL,
+    "nickname" TEXT NOT NULL,
     "elo" INTEGER NOT NULL,
     "loginNb" INTEGER NOT NULL,
 
@@ -30,4 +30,4 @@ CREATE TABLE "User" (
 CREATE UNIQUE INDEX "User_login_key" ON "User"("login");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_nickName_key" ON "User"("nickName");
+CREATE UNIQUE INDEX "User_nickName_key" ON "User"("nickname");
