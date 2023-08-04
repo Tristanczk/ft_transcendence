@@ -48,7 +48,6 @@ const Dropdown: React.FC = () => {
             <button
                 type="button"
                 className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-600"
-                id="user-menu-button"
                 aria-expanded="false"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
             >
@@ -62,7 +61,6 @@ const Dropdown: React.FC = () => {
                 className={`z-50 absolute top-full right-0 mt-2 w-48 py-2 rounded-md shadow-xl bg-gray-800 ${
                     dropdownOpen ? 'block' : 'hidden'
                 }`}
-                id="user-dropdown"
             >
                 <div className="px-4 py-3">
                     <span className="block text-sm text-white">nickname</span>
@@ -146,10 +144,7 @@ const NavBar: React.FC = () => {
                         ></Button>
                     </div>
                 )}
-                <div
-                    className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
-                    id="navbar-user"
-                >
+                <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
                     <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0 bg-gray-800 md:bg-gray-900 border-gray-700">
                         <NavLink
                             current={location.pathname}
