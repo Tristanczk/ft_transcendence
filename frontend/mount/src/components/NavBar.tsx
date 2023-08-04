@@ -28,7 +28,6 @@ const NavLink: React.FC<{
                         ? 'inset shadow-inner bg-indigo-700'
                         : ''
                 }`}
-                aria-current="page"
             >
                 {showText ? (
                     title
@@ -91,7 +90,6 @@ const UserMenu: React.FC = () => {
             <button
                 type="button"
                 className="flex mr-3 text-sm bg-gray-800 rounded-full sm:mr-0 active:ring-4 active:ring-gray-600"
-                aria-expanded="false"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
             >
                 <img
@@ -111,7 +109,7 @@ const UserMenu: React.FC = () => {
                         login if different
                     </span>
                 </div>
-                <ul className="py-2" aria-labelledby="user-menu-button">
+                <ul className="py-2">
                     <MenuLink text="Settings" href="/settings" />
                     <MenuLink text="Sign out" href="/signout" />
                 </ul>
