@@ -11,6 +11,7 @@ const NavLink: React.FC<{
     link: string;
     icon: string;
 }> = ({ title, current, link, icon }) => {
+    const innerDivStyle = 'block py-2 pl-3 pr-4 rounded';
     const isActive = current === link;
     const width = useWidth();
     const showText = width && width >= 640;
@@ -20,7 +21,7 @@ const NavLink: React.FC<{
             <Link to={link}>
                 {showText ? (
                     <div
-                        className={`block py-2 pl-3 pr-4 rounded ${
+                        className={`${innerDivStyle} ${
                             isActive
                                 ? 'bg-blue-700 bg-transparent p-0 text-blue-500'
                                 : 'p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700'
@@ -30,7 +31,7 @@ const NavLink: React.FC<{
                     </div>
                 ) : (
                     <div
-                        className={`block py-2 pl-3 pr-4 rounded ${
+                        className={`${innerDivStyle} ${
                             isActive ? 'inset shadow-inner bg-indigo-700' : ''
                         }`}
                     >
