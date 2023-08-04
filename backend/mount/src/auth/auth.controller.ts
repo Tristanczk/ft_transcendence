@@ -24,10 +24,7 @@ export class AuthController {
     @Get('get-user-info')
     async getUserInfo(@Req() req: Request) {
         try {
-            // TODO get cookie better
-            const cookie = req.headers['cookie'].slice(
-                this.config.get('JWT_COOKIE').length + 1,
-            );
+            const cookie = req.cookies[this.config.get('JWT_COOKIE')] as string;
             if (!cookie) {
                 throw new UnauthorizedException('No authorization token found');
             }
