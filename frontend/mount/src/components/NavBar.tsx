@@ -73,29 +73,6 @@ const Dropdown: React.FC = () => {
                     <DropLink text="Sign out" href="/signout" />
                 </ul>
             </div>
-            <button
-                data-collapse-toggle="navbar-user"
-                type="button"
-                className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg sm:hidden focus:outline-none focus:ring-2 text-gray-400 hover:bg-gray-700 focus:ring-gray-600"
-                aria-controls="navbar-user"
-                aria-expanded="false"
-            >
-                <svg
-                    className="w-5 h-5"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 17 14"
-                >
-                    <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M1 1h15M1 7h15M1 13h15"
-                    />
-                </svg>
-            </button>
         </div>
     );
 };
@@ -132,7 +109,7 @@ const NavBar: React.FC = () => {
                         lipong.org
                     </span>
                 </Link>
-                <div className="sm:order-2">
+                <div className="flex items-center relative space-x-2 sm:order-2">
                     {user ? (
                         <Dropdown />
                     ) : (
@@ -143,6 +120,29 @@ const NavBar: React.FC = () => {
                             }}
                         />
                     )}
+                    <button
+                        data-collapse-toggle="navbar-user"
+                        type="button"
+                        className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg sm:hidden focus:outline-none focus:ring-2 text-gray-400 hover:bg-gray-700 focus:ring-gray-600"
+                        aria-controls="navbar-user"
+                        aria-expanded="false"
+                    >
+                        <svg
+                            className="w-5 h-5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 17 14"
+                        >
+                            <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M1 1h15M1 7h15M1 13h15"
+                            />
+                        </svg>
+                    </button>
                 </div>
                 <div className="items-center justify-between hidden w-full sm:flex sm:w-auto sm:order-1">
                     <ul className="flex flex-col font-medium p-4 sm:p-0 mt-4 border rounded-lg sm:flex-row sm:space-x-8 sm:mt-0 sm:border-0 bg-gray-800 sm:bg-gray-900 border-gray-700">
