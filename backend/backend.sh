@@ -1,5 +1,8 @@
 #!/bin/sh
 
+npm install
+npx prisma generate
+
 echo "BEFORE PRISMA MIGRATE"
 
 while true; do

@@ -28,6 +28,8 @@ services:
       - ./frontend/.env
     networks:
       - ft_transcendence
+    volumes:
+      - ./frontend:/frontend
     init: true
 
   backend:
@@ -45,6 +47,8 @@ services:
       - ft_transcendence
     depends_on:
       - dev-db
+    volumes:
+      - ./backend:/backend
     init: true
 
 volumes:

@@ -1,5 +1,6 @@
 COMPOSE := docker compose
 VOLUMES	:= $(shell docker volume ls -q)
+OUTPUT	:= backend/dist backend/node_modules frontend/build frontend/node_modules
 
 build:
 	$(COMPOSE) up --build
@@ -17,6 +18,7 @@ down:
 	$(COMPOSE) down -v
 
 clean: down
+	rm -rf $(OUTPUT)
 	docker system prune -f -a --volumes
 
 re: clean
