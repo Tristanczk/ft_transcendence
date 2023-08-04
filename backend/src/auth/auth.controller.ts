@@ -12,24 +12,28 @@ import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as assert from 'assert';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
     constructor(
         private authService: AuthService,
         private prisma: PrismaService,
+        private config: ConfigService,
     ) {}
 
     @Get('get-user-info')
     async getUserInfo(@Req() req: Request) {
         try {
             // TODO get cookie better
-            const cookie = req.headers['cookie'].slice(4);
+            const cookie = req.headers['cookie'].slice(
+                this.config.get('JWT_COOKIE').length + 1,
+            );
             if (!cookie) {
                 throw new UnauthorizedException('No authorization token found');
             }
             const jwtPayload = jwt.verify(cookie, process.env.JWT_SECRET);
-            assert(typeof jwtPayload !== 'string'); // TODO very fishy
+            assert(typeof jwtPayload !== 'string');
             const user = await this.prisma.user.findUnique({
                 where: { login: jwtPayload.login },
             });

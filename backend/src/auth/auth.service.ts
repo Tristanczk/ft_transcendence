@@ -80,7 +80,7 @@ export class AuthService {
             const login: string = second.data['login'];
             const user = await this.upsertUser(login);
             const jwtToken = await this.signToken(user.id, user.login);
-            res.cookie('jwt', jwtToken.accessToken, {
+            res.cookie(this.config.get('JWT_COOKIE'), jwtToken.accessToken, {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
@@ -94,7 +94,7 @@ export class AuthService {
 
     signout(res: Response): boolean {
         try {
-            res.clearCookie('jwt', {
+            res.clearCookie(this.config.get('JWT_COOKIE'), {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
