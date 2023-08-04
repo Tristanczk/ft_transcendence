@@ -27,4 +27,5 @@ RUN npx prisma generate
 EXPOSE 3333
 
 # TODO need to change the start:dev to start:prod at the end
-CMD ["npm", "run", "start:dev"]
+RUN chmod 755 /backend/backend.sh
+ENTRYPOINT ["/backend/backend.sh"]

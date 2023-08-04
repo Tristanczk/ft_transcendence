@@ -18,4 +18,5 @@ COPY . .
 EXPOSE 3000
 
 # TODO need to change the command to build the production version at the end
-CMD ["npm", "start"]
+RUN chmod 755 /frontend/frontend.sh
+ENTRYPOINT ["/frontend/frontend.sh"]
