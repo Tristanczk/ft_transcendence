@@ -3,57 +3,56 @@ version: "3.8"
 services:
   dev-db:
     image: postgres:13
+    container_name: dev-db
     ports:
-      - 5434:5432
+      - 5432:5432
     restart: always
     env_file:
       - ./backend/.env
     networks:
-      - transcendence
+      - ft_transcendence
     # will cause a problem with bind-mount volumes ?
     volumes:
       - db-data:/var/lib/postgresql/data
-
-  test-db:
-    image: postgres:13
-    ports:
-      - 5435:5432
-    restart: always
-    env_file:
-      - ./backend/.env.test
-    networks:
-      - transcendence
+    init: true
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: frontend
+    container_name: frontend
     ports:
       - 3000:3000
     restart: always
     env_file:
       - ./frontend/.env
     networks:
-      - transcendence
+      - ft_transcendence
+    init: true
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: backend
+    container_name: backend
     ports:
       - 3333:3333
     restart: always
     env_file:
       - ./backend/.env
     networks:
-      - transcendence
+      - ft_transcendence
     depends_on:
       - dev-db
-      - test-db
+      # - test-db
+    init: true
 
 volumes:
   db-data:
-    name: "db-data"
+    name: db-data
 
 networks:
-  transcendence:
+  ft_transcendence:
+    name: ft_transcendence

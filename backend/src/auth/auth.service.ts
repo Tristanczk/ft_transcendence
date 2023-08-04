@@ -87,6 +87,7 @@ export class AuthService {
             });
             return jwtToken;
         } catch (error) {
+            console.log('error', error);
             return { accessToken: '' };
         }
     }
