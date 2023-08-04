@@ -17,8 +17,8 @@ const NavLink: React.FC<{ title: string; current: string; link: string }> = ({
                 to={link}
                 className={`block py-2 pl-3 pr-4 rounded ${
                     isActive
-                        ? 'text-white bg-blue-700 md:bg-transparent md:p-0 md:text-blue-500'
-                        : 'md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent border-gray-700'
+                        ? 'text-white bg-blue-700 sm:bg-transparent sm:p-0 sm:text-blue-500'
+                        : 'sm:p-0 text-white sm:hover:text-blue-500 hover:bg-gray-700 hover:text-white sm:hover:bg-transparent border-gray-700'
                 }`}
                 aria-current="page"
             >
@@ -44,10 +44,10 @@ const DropLink: React.FC<{ text: string; href: string }> = ({ text, href }) => {
 const Dropdown: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     return (
-        <div className="flex items-center md:order-2 relative">
+        <div className="flex items-center sm:order-2 relative">
             <button
                 type="button"
-                className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-600"
+                className="flex mr-3 text-sm bg-gray-800 rounded-full sm:mr-0 focus:ring-4 focus:ring-gray-600"
                 aria-expanded="false"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
             >
@@ -76,7 +76,7 @@ const Dropdown: React.FC = () => {
             <button
                 data-collapse-toggle="navbar-user"
                 type="button"
-                className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden focus:outline-none focus:ring-2 text-gray-400 hover:bg-gray-700 focus:ring-gray-600"
+                className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg sm:hidden focus:outline-none focus:ring-2 text-gray-400 hover:bg-gray-700 focus:ring-gray-600"
                 aria-controls="navbar-user"
                 aria-expanded="false"
             >
@@ -135,7 +135,7 @@ const NavBar: React.FC = () => {
                 {user ? (
                     <Dropdown />
                 ) : (
-                    <div className="flex items-center md:order-2 relative">
+                    <div className="flex items-center sm:order-2">
                         <Button
                             text="Sign in"
                             onClick={() => {
@@ -144,8 +144,8 @@ const NavBar: React.FC = () => {
                         ></Button>
                     </div>
                 )}
-                <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
-                    <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0 bg-gray-800 md:bg-gray-900 border-gray-700">
+                <div className="items-center justify-between hidden w-full sm:flex sm:w-auto sm:order-1">
+                    <ul className="flex flex-col font-medium p-4 sm:p-0 mt-4 border rounded-lg sm:flex-row sm:space-x-8 sm:mt-0 sm:border-0 bg-gray-800 sm:bg-gray-900 border-gray-700">
                         <NavLink
                             current={location.pathname}
                             title="Home"
