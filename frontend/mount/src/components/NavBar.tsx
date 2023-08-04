@@ -17,27 +17,28 @@ const NavLink: React.FC<{
 
     return (
         <li>
-            <Link
-                to={link}
-                className={`block py-2 pl-3 pr-4 rounded ${
-                    isActive
-                        ? 'bg-blue-700 bg-transparent p-0 text-blue-500'
-                        : 'p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700'
-                } ${
-                    isActive && !showText
-                        ? 'inset shadow-inner bg-indigo-700'
-                        : ''
-                }`}
-            >
-                {showText ? (
-                    title
-                ) : (
-                    <img
-                        src={icon}
-                        className="w-6 h-6 mx-1"
-                        alt={`${title} icon`}
-                    />
-                )}
+            <Link to={link}>
+                <div
+                    className={`block py-2 pl-3 pr-4 rounded ${
+                        isActive
+                            ? 'bg-blue-700 bg-transparent p-0 text-blue-500'
+                            : 'p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700'
+                    } ${
+                        isActive && !showText
+                            ? 'inset shadow-inner bg-indigo-700'
+                            : ''
+                    }`}
+                >
+                    {showText ? (
+                        title
+                    ) : (
+                        <img
+                            src={icon}
+                            className="w-6 h-6 mx-1"
+                            alt={`${title} icon`}
+                        />
+                    )}
+                </div>
             </Link>
         </li>
     );
