@@ -121,7 +121,7 @@ const NavBar: React.FC = () => {
 
     return (
         <nav className="border-gray-200 bg-gray-900">
-            <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+            <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link to="/" className="flex items-center">
                     <img
                         src="/logo512.png"
