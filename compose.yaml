@@ -8,7 +8,7 @@ services:
       - 5432:5432
     restart: on-failure
     env_file:
-      - ./backend/.env
+      - .env
     networks:
       - ft_transcendence
     volumes:
@@ -25,7 +25,7 @@ services:
       - 3000:3000
     restart: on-failure
     env_file:
-      - ./frontend/.env
+      - .env
     networks:
       - ft_transcendence
     volumes:
@@ -42,7 +42,7 @@ services:
       - 3333:3333
     restart: on-failure
     env_file:
-      - ./backend/.env
+      - .env
     networks:
       - ft_transcendence
     depends_on:

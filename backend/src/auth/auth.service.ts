@@ -60,7 +60,7 @@ export class AuthService {
                 'https://api.intra.42.fr/oauth/token',
                 {
                     grant_type: 'authorization_code',
-                    client_id: this.config.get('API42_UID'),
+                    client_id: this.config.get('REACT_APP_API42_UID'),
                     client_secret: this.config.get('API42_SECRET'),
                     code: code,
                     redirect_uri: 'http://localhost:3000/signin',
