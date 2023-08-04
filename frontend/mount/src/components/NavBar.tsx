@@ -44,7 +44,7 @@ const DropLink: React.FC<{ text: string; href: string }> = ({ text, href }) => {
 const Dropdown: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     return (
-        <div className="flex items-center sm:order-2 relative">
+        <>
             <button
                 type="button"
                 className="flex mr-3 text-sm bg-gray-800 rounded-full sm:mr-0 focus:ring-4 focus:ring-gray-600"
@@ -96,7 +96,7 @@ const Dropdown: React.FC = () => {
                     />
                 </svg>
             </button>
-        </div>
+        </>
     );
 };
 
@@ -132,18 +132,18 @@ const NavBar: React.FC = () => {
                         lipong.org
                     </span>
                 </Link>
-                {user ? (
-                    <Dropdown />
-                ) : (
-                    <div className="flex items-center sm:order-2">
+                <div className="flex items-center sm:order-2 relative">
+                    {user ? (
+                        <Dropdown />
+                    ) : (
                         <Button
                             text="Sign in"
                             onClick={() => {
                                 window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_API42_UID}&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fsignin&response_type=code`;
                             }}
                         ></Button>
-                    </div>
-                )}
+                    )}
+                </div>
                 <div className="items-center justify-between hidden w-full sm:flex sm:w-auto sm:order-1">
                     <ul className="flex flex-col font-medium p-4 sm:p-0 mt-4 border rounded-lg sm:flex-row sm:space-x-8 sm:mt-0 sm:border-0 bg-gray-800 sm:bg-gray-900 border-gray-700">
                         <NavLink
