@@ -9,6 +9,6 @@ WORKDIR /backend
 EXPOSE 3333
 
 # TODO need to change the start:dev to start:prod at the end
-COPY ./backend.sh ./
-RUN chmod 755 ./backend.sh
-ENTRYPOINT ["./backend.sh"]
+COPY ./backend.sh /backend.sh
+RUN chmod 755 /backend.sh
+ENTRYPOINT ["/backend.sh"]

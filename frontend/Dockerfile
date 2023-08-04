@@ -9,6 +9,6 @@ WORKDIR /frontend
 EXPOSE 3000
 
 # TODO need to change the command to build the production version at the end
-COPY ./frontend.sh ./
-RUN chmod 755 ./frontend.sh
-ENTRYPOINT ["./frontend.sh"]
+COPY ./frontend.sh /frontend.sh
+RUN chmod 755 /frontend.sh
+ENTRYPOINT ["/frontend.sh"]
