@@ -17,5 +17,5 @@ model User {
   elo     Int
   loginNb Int
 
-  doubleAuthentication Boolean @default(false)
+  twoFactorAuthentication Boolean @default(false)
 }
