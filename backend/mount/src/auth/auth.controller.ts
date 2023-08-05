@@ -21,25 +21,6 @@ export class AuthController {
         private config: ConfigService,
     ) {}
 
-    //TODO : no business logic in controller, should be in service + jwt guard and strategy should be responsible to check if user is authenticated no need to do it in business logic, use decorators
-    @Get('get-user-info')
-    async getUserInfo(@Req() req: Request) {
-        try {
-            const cookie = req.cookies[this.config.get('JWT_COOKIE')] as string;
-            if (!cookie) {
-                throw new UnauthorizedException('No authorization token found');
-            }
-            const jwtPayload = jwt.verify(cookie, process.env.JWT_SECRET);
-            assert(typeof jwtPayload !== 'string');
-            const user = await this.prisma.user.findUnique({
-                where: { login: jwtPayload.login },
-            });
-            return user;
-        } catch (error) {
-            throw new UnauthorizedException('Invalid authorization token');
-        }
-    }
-
     @Get('signin')
     signin(@Query() params: any, @Res() res: Response) {
         this.authService

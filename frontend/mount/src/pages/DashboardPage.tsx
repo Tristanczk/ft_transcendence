@@ -9,10 +9,9 @@ const DashboardPage: React.FC = () => {
         const fetchUser = async () => {
             try {
                 const response = await axios.get(
-                    'http://localhost:3333/auth/get-user-info',
+                    'http://localhost:3333/users/me',
                     { withCredentials: true },
                 );
-                console.log(response.data);
                 setUser(response.data);
             } catch (error) {
                 console.error(error);

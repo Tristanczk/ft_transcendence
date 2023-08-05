@@ -130,7 +130,7 @@ const NavBar: React.FC = () => {
         const fetchUser = async () => {
             try {
                 const response = await axios.get(
-                    'http://localhost:3333/auth/get-user-info',
+                    'http://localhost:3333/users/me',
                     { withCredentials: true },
                 );
                 setUser(response.data);
