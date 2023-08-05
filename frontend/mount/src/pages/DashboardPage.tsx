@@ -12,6 +12,7 @@ const DashboardPage: React.FC = () => {
                     'http://localhost:3333/auth/get-user-info',
                     { withCredentials: true },
                 );
+                console.log(response.data);
                 setUser(response.data);
             } catch (error) {
                 console.error(error);
@@ -24,7 +25,7 @@ const DashboardPage: React.FC = () => {
         <div>
             Welcome, {user.nickname}! Your current ELO is {user.elo}. This is
             the {user.loginNb}th time you log in. Double authentication for your
-            account is set to {user.doubleAuthentication}.
+            account is set to {user.doubleAuthentication ? 'true' : 'false'}.
         </div>
     ) : (
         <div>You are not logged in.</div>

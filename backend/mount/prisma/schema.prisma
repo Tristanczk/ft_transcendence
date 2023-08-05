@@ -18,5 +18,4 @@ model User {
   loginNb Int
 
   doubleAuthentication Boolean @default(false)
-  password             String?
 }
