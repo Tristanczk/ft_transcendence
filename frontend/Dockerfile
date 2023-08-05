@@ -1,5 +1,6 @@
 FROM node:18-alpine
 
+# TODO change to production before deployment
 ENV NODE_ENV=development
 
 RUN mkdir -p /frontend

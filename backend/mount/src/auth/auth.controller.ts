@@ -21,6 +21,7 @@ export class AuthController {
         private config: ConfigService,
     ) {}
 
+    //TODO : no business logic in controller, should be in service + jwt guard and strategy should be responsible to check if user is authenticated no need to do it in business logic, use decorators
     @Get('get-user-info')
     async getUserInfo(@Req() req: Request) {
         try {

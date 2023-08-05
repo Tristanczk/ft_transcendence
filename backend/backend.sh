@@ -5,13 +5,18 @@ export DB_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dev-db:${POSTG
 npm install
 npx prisma generate
 
+echo "-----Migrating database-----"
+
 while true; do
-	npx prisma migrate deploy
+	echo "-----Migrating database try-----"
+	npx prisma migrate dev --name init
 	EXIT_CODE=$?
 	echo "PRISMA EXIT CODE: $EXIT_CODE"
 	if [ $EXIT_CODE -eq 0 ]; then
 		break
 	fi
 done
+
+echo "-----Starting backend-----"
 
 npm run start:dev 

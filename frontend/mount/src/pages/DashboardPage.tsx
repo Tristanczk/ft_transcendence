@@ -23,7 +23,8 @@ const DashboardPage: React.FC = () => {
     return user ? (
         <div>
             Welcome, {user.nickname}! Your current ELO is {user.elo}. This is
-            the {user.loginNb}th time you log in.
+            the {user.loginNb}th time you log in. Double authentication for your
+            account is set to {user.doubleAuthentication}.
         </div>
     ) : (
         <div>You are not logged in.</div>
