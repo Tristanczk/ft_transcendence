@@ -18,7 +18,7 @@ const SignInPage: React.FC = () => {
         const fetchUser = async () => {
             try {
                 const response = await axios.get(
-                    'http://localhost:3333/auth/signin',
+                    'http://localhost:3333/auth/signin/42',
                     { params: { code }, withCredentials: true },
                 );
                 setMessage(response.data);

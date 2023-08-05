@@ -49,7 +49,7 @@ export class AuthService {
         }
     }
 
-    async signin(code: string, res: Response): Promise<AccessToken> {
+    async signin42(code: string, res: Response): Promise<AccessToken> {
         try {
             const first = await axios.post(
                 'https://api.intra.42.fr/oauth/token',

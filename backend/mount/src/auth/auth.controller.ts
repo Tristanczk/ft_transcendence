@@ -21,10 +21,10 @@ export class AuthController {
         private config: ConfigService,
     ) {}
 
-    @Get('signin')
+    @Get('signin/42')
     signin(@Query() params: any, @Res() res: Response) {
         this.authService
-            .signin(params.code, res)
+            .signin42(params.code, res)
             .then((jwt) => {
                 if (jwt.accessToken !== '') {
                     res.send('Successfully signed in!');
