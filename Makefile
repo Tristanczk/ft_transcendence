@@ -12,8 +12,8 @@ down:
 	$(COMPOSE) down -v
 
 clean: down
-	rm -rf $(COMPILED)
 	docker system prune -f -a --volumes
+	rm -rf $(COMPILED)
 
 re: clean
 	$(MAKE) build
@@ -21,3 +21,5 @@ re: clean
 revolume: down
 	if [ -n "$(VOLUMES)" ]; then docker volume rm -f $(VOLUMES); fi
 	$(MAKE) build
+
+.PHONY: build down clean re revolume
