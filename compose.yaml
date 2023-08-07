@@ -37,6 +37,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     image: backend
+    # tty: true
+    # stdin_open: true
     container_name: backend
     ports:
       - 3333:3333

@@ -1,9 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ToggleButton from '../components/ToggleButton';
+import Button from '../components/Button';
+import InputField from '../components/InputField';
+import axios from 'axios';
+
 const SettingsPage: React.FC = () => {
     const [newUserName, setNewUserName] = useState('');
-    const [newAvatarUrl, setNewAvatarUrl] = useState('');
+    const [newEmail, setNewEmail] = useState('');
+    // const [newAvatarUrl, setNewAvatarUrl] = useState('');
     const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(false);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:3333/users/me',
+                    { withCredentials: true },
+                );
+                setNewUserName(response.data.nickname);
+                setNewEmail(response.data.email);
+                setIsTwoFactorEnabled(response.data.twoFactorAuthentication);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        fetchUser();
+    }, []);
 
     const handleUserNameChange = (
         event: React.ChangeEvent<HTMLInputElement>,
@@ -11,61 +33,81 @@ const SettingsPage: React.FC = () => {
         setNewUserName(event.target.value);
     };
 
-    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewAvatarUrl(event.target.value);
+    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewEmail(event.target.value);
     };
 
     const handleTwoFactorToggle = () => {
         setIsTwoFactorEnabled((prev) => !prev);
     };
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-
-        // In a real application, you would save the new username, avatar URL, and two-factor authentication setting to the server.
-        console.log('New Username:', newUserName);
-        console.log('New Avatar URL:', newAvatarUrl);
-        console.log('Two-Factor Authentication:', isTwoFactorEnabled);
+        try {
+            const response = await axios.patch(
+                'http://localhost:3333/users',
+                {
+                    nickname: newUserName,
+                    email: newEmail,
+                    twoFactorAuthentication: isTwoFactorEnabled,
+                },
+                { withCredentials: true },
+            );
+            console.log(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+        // console.log('New Username:', newUserName);
+        // console.log('New Email:', newEmail);
+        // console.log('Two-Factor Authentication:', isTwoFactorEnabled);
     };
 
     return (
-        <div>
-            <h1>Settings</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="username">Username:</label>
-                    <input
-                        type="text"
-                        id="username"
-                        value={newUserName}
-                        onChange={handleUserNameChange}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="avatar">Avatar URL:</label>
-                    <input
-                        type="text"
-                        id="avatar"
-                        value={newAvatarUrl}
-                        onChange={handleAvatarChange}
-                    />
-                </div>
-                <div>
-                    <ToggleButton
-                        checked={isTwoFactorEnabled}
-                        onClick={handleTwoFactorToggle}
-                    ></ToggleButton>
-                </div>
-                <div>
-                    <img
-                        src={newAvatarUrl}
-                        alt="User Avatar"
-                        style={{ width: '100px', height: '100px' }}
-                    />
-                </div>
-                <button type="submit">Save</button>
-            </form>
-        </div>
+        <form>
+            <div className="mb-6">
+                <label
+                    htmlFor="username"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                    Username
+                </label>
+                <InputField
+                    id="username"
+                    placeholder={newUserName}
+                    required={false}
+                    type="username"
+                    onChange={handleUserNameChange}
+                ></InputField>
+            </div>
+            <div className="mb-6">
+                <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                    Email
+                </label>
+                <InputField
+                    id="email"
+                    placeholder={newEmail}
+                    required={false}
+                    type="username"
+                    onChange={handleEmailChange}
+                ></InputField>
+            </div>
+            <div className="mb-6">
+                <label
+                    htmlFor="two_factor_authentication"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                    Two-Factor Authentication
+                </label>
+                <ToggleButton
+                    checked={isTwoFactorEnabled}
+                    onChange={handleTwoFactorToggle}
+                ></ToggleButton>
+            </div>
+            <Button text="Save changes" onClick={handleSubmit}></Button>
+        </form>
     );
 };
 
