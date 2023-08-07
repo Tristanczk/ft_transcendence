@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import ToggleButton from '../components/ToggleButton';
 const SettingsPage: React.FC = () => {
     const [newUserName, setNewUserName] = useState('');
     const [newAvatarUrl, setNewAvatarUrl] = useState('');
@@ -51,12 +51,10 @@ const SettingsPage: React.FC = () => {
                     />
                 </div>
                 <div>
-                    <label>Two-Factor Authentication:</label>
-                    <input
-                        type="checkbox"
+                    <ToggleButton
                         checked={isTwoFactorEnabled}
-                        onChange={handleTwoFactorToggle}
-                    />
+                        onClick={handleTwoFactorToggle}
+                    ></ToggleButton>
                 </div>
                 <div>
                     <img
