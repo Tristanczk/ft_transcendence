@@ -29,7 +29,7 @@ export class AuthService {
         return { accessToken };
     }
 
-    async upsertUser(login: string): Promise<User> {
+    async upsertUser(login: string, email: string): Promise<User> {
         const existingUser = await this.prisma.user.findFirst({
             where: {
                 login: login,
@@ -43,7 +43,13 @@ export class AuthService {
             return updatedUser;
         } else {
             const newUser = await this.prisma.user.create({
-                data: { login: login, nickname: login, elo: 1000, loginNb: 1 },
+                data: {
+                    login: login,
+                    nickname: login,
+                    email: email,
+                    elo: 1000,
+                    loginNb: 1,
+                },
             });
             return newUser;
         }
@@ -73,7 +79,8 @@ export class AuthService {
                 return { accessToken: '' };
             }
             const login: string = second.data['login'];
-            const user = await this.upsertUser(login);
+            const email: string = second.data['email'];
+            const user = await this.upsertUser(login, email);
             const jwtToken = await this.signToken(user.id, user.login);
             res.cookie(this.config.get('JWT_COOKIE'), jwtToken.accessToken, {
                 httpOnly: true,
