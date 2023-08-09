@@ -10,7 +10,7 @@ echo "-----Migrating database-----"
 while true; do
 	echo "-----Migrating database try-----"
 	# uncomment to reset database if error when using migrate dev (especially if columns have been deleted with values still in the db)
-	npx prisma migrate reset --force 
+	# npx prisma migrate reset --force 
 	npx prisma migrate dev --name init
 	EXIT_CODE=$?
 	echo "PRISMA EXIT CODE: $EXIT_CODE"

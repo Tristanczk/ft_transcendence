@@ -13,7 +13,7 @@ model User {
   createdAt DateTime @default(now())
 
   login    String @unique
-  username String @unique
+  nickname String @unique
   email    String @unique
   hash     String?
 
