@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import axios from 'axios';
 import Button from './Button';
@@ -124,6 +124,7 @@ const UserMenu: React.FC = () => {
 
 const NavBar: React.FC = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
@@ -162,7 +163,7 @@ const NavBar: React.FC = () => {
                         <Button
                             text="Sign in"
                             onClick={() => {
-                                window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_API42_UID}&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fsignin&response_type=code`;
+                                navigate('/signin');
                             }}
                         />
                     )}

@@ -1,33 +1,33 @@
 import axios from 'axios';
-import React, { useState } from 'react';
-import Button from '../components/Button';
+import React, { useEffect, useState } from 'react';
 import InputField from '../components/InputField';
+import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 
-const SignInPage: React.FC = () => {
+const SignUpPage: React.FC = () => {
     const [userName, setUserName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+        if (password !== confirmPassword) {
+            navigate('/signup/result?result=failure_signup_different_password');
+        }
         try {
             const response = await axios.post(
-                'http://localhost:3333/auth/signin',
-                { nickname: userName, password },
+                'http://localhost:3333/auth/signup',
+                { nickname: userName, email, password },
                 { withCredentials: true },
             );
             console.log(response.data);
-            navigate('/signin/result?result=success_signin');
+            navigate('/signin/result?result=success_signup');
         } catch (error) {
             console.error(error);
-            navigate('/signin/result?result=failure_signin');
+            navigate('/signin/result?result=failure_signup');
         }
-    };
-
-    const handleRedir42 = (event: React.FormEvent) => {
-        event.preventDefault();
-        window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_API42_UID}&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fsignin42&response_type=code`;
     };
 
     const handleUserNameChange = (
@@ -36,10 +36,20 @@ const SignInPage: React.FC = () => {
         setUserName(event.target.value);
     };
 
+    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(event.target.value);
+    };
+
     const handlePasswordChange = (
         event: React.ChangeEvent<HTMLInputElement>,
     ) => {
         setPassword(event.target.value);
+    };
+
+    const handleConfirmPasswordChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        setConfirmPassword(event.target.value);
     };
 
     return (
@@ -48,7 +58,7 @@ const SignInPage: React.FC = () => {
                 <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                            Sign in to your account
+                            Create an account
                         </h1>
                         <form className="space-y-4 md:space-y-6" action="#">
                             <div>
@@ -68,6 +78,21 @@ const SignInPage: React.FC = () => {
                             </div>
                             <div>
                                 <label
+                                    htmlFor="Email"
+                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                    Email
+                                </label>
+                                <InputField
+                                    id="email"
+                                    placeholder={email}
+                                    required={true}
+                                    type="email"
+                                    onChange={handleEmailChange}
+                                ></InputField>
+                            </div>
+                            <div>
+                                <label
                                     htmlFor="password"
                                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                 >
@@ -78,6 +103,21 @@ const SignInPage: React.FC = () => {
                                     placeholder={password}
                                     required={true}
                                     type="password"
+                                    onChange={handlePasswordChange}
+                                ></InputField>
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="password"
+                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                    Confirm password
+                                </label>
+                                <InputField
+                                    id="confirm-password"
+                                    placeholder={confirmPassword}
+                                    required={true}
+                                    type="confirm-password"
                                     onChange={handlePasswordChange}
                                 ></InputField>
                             </div>
@@ -109,22 +149,18 @@ const SignInPage: React.FC = () => {
                                 </a>
                             </div>
                             <Button
-                                text="Signin with username"
+                                text="Create your account"
                                 onClick={handleSubmit}
                             ></Button>
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                                Don’t have an account yet?{' '}
+                                Already have an account?{' '}
                                 <a
-                                    href="/signup"
+                                    href="/signin"
                                     className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                                 >
-                                    Sign up
+                                    Sign in here
                                 </a>
                             </p>
-                            <Button
-                                text="Signin with 42"
-                                onClick={handleRedir42}
-                            ></Button>
                         </form>
                     </div>
                 </div>
@@ -133,4 +169,4 @@ const SignInPage: React.FC = () => {
     );
 };
 
-export default SignInPage;
+export default SignUpPage;
