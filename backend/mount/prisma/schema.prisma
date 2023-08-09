@@ -13,8 +13,9 @@ model User {
   createdAt DateTime @default(now())
 
   login    String @unique
-  nickname String @unique
+  username String @unique
   email    String @unique
+  hash     String?
 
   elo     Int
   loginNb Int
