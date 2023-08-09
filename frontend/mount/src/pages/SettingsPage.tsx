@@ -90,7 +90,7 @@ const SettingsPage: React.FC = () => {
                     id="email"
                     placeholder={newEmail}
                     required={false}
-                    type="username"
+                    type="email"
                     onChange={handleEmailChange}
                 ></InputField>
             </div>
