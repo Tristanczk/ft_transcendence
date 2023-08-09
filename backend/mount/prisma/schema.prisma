@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // url      = "postgresql://postgres:n2J5dJGelC0W4UEtiHkMZRrdrSHsLKr7@localhost:5432/nest?schema=public"
-  url      = env("DB_URL")
+  url      = "postgresql://postgres:123@localhost:5434/nest?schema=public"
+  //url      = env("DB_URL")
 }
 
 model User {
@@ -20,4 +20,13 @@ model User {
   loginNb Int
 
   twoFactorAuthentication Boolean @default(false)
+}
+
+model Channel {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  name  String @unique
+  topic String
+  admin String
 }
