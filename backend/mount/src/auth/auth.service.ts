@@ -139,7 +139,10 @@ export class AuthService {
         if (!user) {
             throw new ForbiddenException('No account linked with this email');
         }
-
+        const updatedUser = await this.prisma.user.update({
+            where: { nickname: dto.nickname },
+            data: { loginNb: user.loginNb + 1 },
+        });
         const pwMatches = await argon.verify(user.hash, dto.password);
 
         // compare the password hash with the password hash in the database

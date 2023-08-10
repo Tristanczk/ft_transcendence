@@ -117,8 +117,8 @@ const SignUpPage: React.FC = () => {
                                     id="confirm-password"
                                     placeholder={confirmPassword}
                                     required={true}
-                                    type="confirm-password"
-                                    onChange={handlePasswordChange}
+                                    type="password"
+                                    onChange={handleConfirmPasswordChange}
                                 ></InputField>
                             </div>
                             <div className="flex items-center justify-between">
