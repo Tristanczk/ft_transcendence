@@ -21,4 +21,5 @@ model User {
   loginNb Int
 
   twoFactorAuthentication Boolean @default(false)
+  twoFactorSecret          String?
 }

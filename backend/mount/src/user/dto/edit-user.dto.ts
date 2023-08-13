@@ -11,4 +11,8 @@ export class EditUserDto {
     @IsBoolean()
     @IsOptional()
     twoFactorAuthentication?: boolean;
+
+    @IsString()
+    @IsOptional()
+    twoFactorSecret?: string;
 }

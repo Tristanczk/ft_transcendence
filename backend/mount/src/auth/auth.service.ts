@@ -129,7 +129,7 @@ export class AuthService {
     }
 
     async signin(dto: SigninDto, res: Response): Promise<AccessToken> {
-        // find the user by email
+        // find the user by nickname
         // throw an exception if the user is not found
         const user = await this.prisma.user.findUnique({
             where: {

@@ -8,6 +8,7 @@ const SettingsPage: React.FC = () => {
     const [newUserName, setNewUserName] = useState('');
     const [newEmail, setNewEmail] = useState('');
     // const [newAvatarUrl, setNewAvatarUrl] = useState('');
+    const [isTwoFactorEnabledPrev, setIsTwoFactorEnabledPrev] = useState(false);
     const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(false);
 
     useEffect(() => {
@@ -19,6 +20,9 @@ const SettingsPage: React.FC = () => {
                 );
                 setNewUserName(response.data.nickname);
                 setNewEmail(response.data.email);
+                setIsTwoFactorEnabledPrev(
+                    response.data.twoFactorAuthentication,
+                );
                 setIsTwoFactorEnabled(response.data.twoFactorAuthentication);
             } catch (error) {
                 console.error(error);
@@ -53,13 +57,21 @@ const SettingsPage: React.FC = () => {
                 },
                 { withCredentials: true },
             );
+            if (
+                isTwoFactorEnabled === true &&
+                isTwoFactorEnabledPrev === false
+            ) {
+                const response = await axios.post(
+                    'http://localhost:3333/users/enable-2fa',
+                    {},
+                    { withCredentials: true },
+                );
+                console.log(response.data);
+            }
             console.log(response.data);
         } catch (error) {
             console.error(error);
         }
-        // console.log('New Username:', newUserName);
-        // console.log('New Email:', newEmail);
-        // console.log('Two-Factor Authentication:', isTwoFactorEnabled);
     };
 
     return (
