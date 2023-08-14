@@ -3,6 +3,7 @@ import ToggleButton from '../components/ToggleButton';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
 import axios from 'axios';
+import QRCodeModal from '../components/QRCodeModal';
 
 const SettingsPage: React.FC = () => {
     const [newUserName, setNewUserName] = useState('');
@@ -10,6 +11,9 @@ const SettingsPage: React.FC = () => {
     // const [newAvatarUrl, setNewAvatarUrl] = useState('');
     const [isTwoFactorEnabledPrev, setIsTwoFactorEnabledPrev] = useState(false);
     const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(false);
+    const [displayModal, setDisplayModal] = useState(false);
+    const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
+    const [validationCode, setvalidationCode] = useState('');
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -45,6 +49,16 @@ const SettingsPage: React.FC = () => {
         setIsTwoFactorEnabled((prev) => !prev);
     };
 
+    const handleValidationCodeChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        setvalidationCode(event.target.value);
+    };
+
+    const handleCodeCheck = () => {
+        console.log(validationCode);
+    };
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
@@ -67,6 +81,8 @@ const SettingsPage: React.FC = () => {
                     { withCredentials: true },
                 );
                 console.log(response.data);
+                setQrCodeDataUrl(response.data.qrCode);
+                setDisplayModal(true);
             }
             console.log(response.data);
         } catch (error) {
@@ -75,51 +91,63 @@ const SettingsPage: React.FC = () => {
     };
 
     return (
-        <form>
-            <div className="mb-6">
-                <label
-                    htmlFor="username"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                    Username
-                </label>
-                <InputField
-                    id="username"
-                    placeholder={newUserName}
-                    required={false}
-                    type="username"
-                    onChange={handleUserNameChange}
-                ></InputField>
-            </div>
-            <div className="mb-6">
-                <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                    Email
-                </label>
-                <InputField
-                    id="email"
-                    placeholder={newEmail}
-                    required={false}
-                    type="email"
-                    onChange={handleEmailChange}
-                ></InputField>
-            </div>
-            <div className="mb-6">
-                <label
-                    htmlFor="two_factor_authentication"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                    Two-Factor Authentication
-                </label>
-                <ToggleButton
-                    checked={isTwoFactorEnabled}
-                    onChange={handleTwoFactorToggle}
-                ></ToggleButton>
-            </div>
-            <Button text="Save changes" onClick={handleSubmit}></Button>
-        </form>
+        <>
+            <form id="settings">
+                <div className="mb-6">
+                    <label
+                        htmlFor="username"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                        Username
+                    </label>
+                    <InputField
+                        id="username"
+                        placeholder={newUserName}
+                        required={false}
+                        type="username"
+                        autocomplete="username"
+                        onChange={handleUserNameChange}
+                    ></InputField>
+                </div>
+                <div className="mb-6">
+                    <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                        Email
+                    </label>
+                    <InputField
+                        id="email"
+                        placeholder={newEmail}
+                        required={false}
+                        type="email"
+                        autocomplete="email"
+                        onChange={handleEmailChange}
+                    ></InputField>
+                </div>
+                <div className="mb-6">
+                    <label
+                        htmlFor="two_factor_authentication"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                        Two-Factor Authentication
+                    </label>
+                    <ToggleButton
+                        checked={isTwoFactorEnabled}
+                        onChange={handleTwoFactorToggle}
+                        id="two_factor_authentication"
+                    ></ToggleButton>
+                </div>
+                <Button text="Save changes" onClick={handleSubmit}></Button>
+            </form>
+            <QRCodeModal
+                isOpen={displayModal}
+                qrCodeDataUrl={qrCodeDataUrl}
+                modalId={'QRCode-modal'}
+                onChange={handleValidationCodeChange}
+                onModalClose={handleCodeCheck}
+            />
+        </>
     );
 };
 

@@ -33,7 +33,7 @@ export class UserService {
         );
         this.editUser(user.id, { twoFactorSecret: secret });
         const qrCode = await toDataURL(otpauthUrl);
-        console.log(qrCode);
+        // console.log(qrCode);
         return { qrCode };
     }
 }
