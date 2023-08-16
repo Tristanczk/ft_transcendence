@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { User } from '../types';
+import PresentationUser from '../components/dashboard/PresentationUser'
+import StatsUser from '../components/dashboard/StatsUser';
+import Friends from '../components/dashboard/Friends';
 
 const DashboardPage: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
@@ -21,11 +24,11 @@ const DashboardPage: React.FC = () => {
     }, []);
 
     return user ? (
-        <div>
-            Welcome, {user.nickname}! Your current ELO is {user.elo}. This is
-            the {user.loginNb}th time you log in. Double authentication for your
-            account is set to {user.twoFactorAuthentication ? 'true' : 'false'}.
-        </div>
+        <>
+			<PresentationUser user={user} />
+			<Friends user={user} />
+			<StatsUser user={user} />
+		</>
     ) : (
         <div>You are not logged in.</div>
     );

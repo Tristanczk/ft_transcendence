@@ -9,6 +9,13 @@ import { UserService } from './user.service';
 @Controller('users')
 export class UserController {
     constructor(private userService: UserService) {}
+
+	// return the list of all users
+	@Get() 
+	getAllUsers() {
+		return this.getAllUsers()
+	}
+
     @Get('me')
     getMe(@GetUser() user: User) {
         return user;
