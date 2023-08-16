@@ -137,7 +137,9 @@ export class AuthService {
             },
         });
         if (!user) {
-            throw new ForbiddenException('No account linked with this email');
+            throw new ForbiddenException(
+                'No account linked with this username',
+            );
         }
         const updatedUser = await this.prisma.user.update({
             where: { nickname: dto.nickname },

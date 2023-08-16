@@ -62,15 +62,6 @@ const SettingsPage: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await axios.patch(
-                'http://localhost:3333/users',
-                {
-                    nickname: newUserName,
-                    email: newEmail,
-                    twoFactorAuthentication: isTwoFactorEnabled,
-                },
-                { withCredentials: true },
-            );
             if (
                 isTwoFactorEnabled === true &&
                 isTwoFactorEnabledPrev === false
@@ -80,10 +71,19 @@ const SettingsPage: React.FC = () => {
                     {},
                     { withCredentials: true },
                 );
-                console.log(response.data);
                 setQrCodeDataUrl(response.data.qrCode);
                 setDisplayModal(true);
             }
+            const response = await axios.patch(
+                'http://localhost:3333/users',
+                {
+                    nickname: newUserName,
+                    email: newEmail,
+                    twoFactorAuthentication: isTwoFactorEnabled,
+                },
+                { withCredentials: true },
+            );
+
             console.log(response.data);
         } catch (error) {
             console.error(error);
@@ -140,13 +140,15 @@ const SettingsPage: React.FC = () => {
                 </div>
                 <Button text="Save changes" onClick={handleSubmit}></Button>
             </form>
-            <QRCodeModal
-                isOpen={displayModal}
-                qrCodeDataUrl={qrCodeDataUrl}
-                modalId={'QRCode-modal'}
-                onChange={handleValidationCodeChange}
-                onModalClose={handleCodeCheck}
-            />
+            {displayModal ? (
+                <QRCodeModal
+                    qrCodeDataUrl={qrCodeDataUrl}
+                    modalId={'QRCode-modal'}
+                    closeModal={() => setDisplayModal(false)}
+                    onChange={handleValidationCodeChange}
+                    validationFunction={handleCodeCheck}
+                />
+            ) : null}
         </>
     );
 };

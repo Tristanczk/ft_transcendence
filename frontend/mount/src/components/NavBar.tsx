@@ -140,7 +140,7 @@ const NavBar: React.FC = () => {
             }
         };
         fetchUser();
-    }, []);
+    }, [location]);
 
     return (
         <nav className="border-gray-200 bg-gray-900" style={{ height: 72 }}>

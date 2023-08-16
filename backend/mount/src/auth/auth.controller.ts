@@ -7,6 +7,7 @@ import {
     UnauthorizedException,
     Post,
     Body,
+    ForbiddenException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
@@ -67,14 +68,10 @@ export class AuthController {
         this.authService
             .signin(dto, res)
             .then((jwt) => {
-                if (jwt.accessToken !== '') {
-                    res.send('Successfully signed in!');
-                } else {
-                    res.status(400).send('Sign in failed');
-                }
+                res.send('Successfully signed in!');
             })
-            .catch(() => {
-                res.status(500).send('Something went wrong');
+            .catch((error: ForbiddenException) => {
+                res.status(401).send(error.message);
             });
     }
 }
