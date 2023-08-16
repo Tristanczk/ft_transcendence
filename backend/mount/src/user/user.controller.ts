@@ -13,7 +13,7 @@ export class UserController {
 	// return the list of all users
 	@Get() 
 	getAllUsers() {
-		return this.getAllUsers()
+		return this.userService.getAllUsers()
 	}
 
     @Get('me')

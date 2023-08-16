@@ -1,9 +1,6 @@
 import { User } from '../../types';
 import React from 'react';
 
-
-// function PresentatationUser(user: User) {
-
 interface PresentationUserProps {
 	user: User;
 }

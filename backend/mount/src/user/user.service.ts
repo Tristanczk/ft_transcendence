@@ -19,7 +19,9 @@ export class UserService {
     }
 
 	async getAllUsers() {
+		console.log('bonjour')
 		const users = await this.prisma.user.findMany();
+		console.log(users)
 		return users
 	}
 }
