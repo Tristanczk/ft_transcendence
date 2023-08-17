@@ -1,5 +1,4 @@
 import React from 'react';
-import Modal from 'react-modal';
 import InputField from './InputField';
 import Button from './Button';
 

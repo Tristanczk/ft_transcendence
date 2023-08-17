@@ -2,8 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
-import { on } from 'events';
+import { useForm, Controller } from 'react-hook-form';
 
 interface Inputs {
     username: string;
@@ -19,10 +18,6 @@ const SignInPage: React.FC = () => {
         control,
         formState: { errors },
     } = useForm<Inputs>();
-
-    // const onSubmit = (data: Inputs) => {
-    //     console.log(data);
-    // };
 
     const onSubmit = async (data: Inputs) => {
         setError(undefined);
@@ -65,12 +60,6 @@ const SignInPage: React.FC = () => {
                                     onSubmit={handleSubmit(onSubmit)}
                                 >
                                     <div>
-                                        <label
-                                            htmlFor="Username"
-                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        >
-                                            Username
-                                        </label>
                                         <Controller
                                             name="username"
                                             control={control}
@@ -90,30 +79,29 @@ const SignInPage: React.FC = () => {
                                             }}
                                             render={({ field }) => (
                                                 <div>
+                                                    <label
+                                                        htmlFor="Username"
+                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                    >
+                                                        Username
+                                                    </label>
                                                     <InputField
                                                         {...field}
                                                         id="username"
                                                         placeholder="Username"
-                                                        required={true}
                                                         type="text"
                                                     />
-                                                    <div className="error">
+                                                    <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
                                                         {
                                                             errors.username
                                                                 ?.message
                                                         }
-                                                    </div>
+                                                    </p>
                                                 </div>
                                             )}
                                         />
                                     </div>
                                     <div>
-                                        <label
-                                            htmlFor="password"
-                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        >
-                                            Password
-                                        </label>
                                         <Controller
                                             name="password"
                                             control={control}
@@ -123,19 +111,24 @@ const SignInPage: React.FC = () => {
                                             }}
                                             render={({ field }) => (
                                                 <div>
+                                                    <label
+                                                        htmlFor="password"
+                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                    >
+                                                        Password
+                                                    </label>
                                                     <InputField
                                                         {...field}
                                                         id="password"
                                                         placeholder="Password"
-                                                        required={true}
                                                         type="password"
                                                     />
-                                                    <div className="error">
+                                                    <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
                                                         {
                                                             errors.password
                                                                 ?.message
                                                         }
-                                                    </div>
+                                                    </p>
                                                 </div>
                                             )}
                                         />
