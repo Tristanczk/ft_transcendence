@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EditUserDto } from './dto';
+import { GetAllUsersResponseDto } from './dto/get-all-users.dto';
 
 @Injectable()
 export class UserService {
@@ -18,10 +19,9 @@ export class UserService {
         return user;
     }
 
-	async getAllUsers() {
-		console.log('bonjour')
+	async getAllUsers(): Promise<GetAllUsersResponseDto[]> {
 		const users = await this.prisma.user.findMany();
 		console.log(users)
-		return users
+		return new GetAllUsersResponseDto(users)
 	}
 }

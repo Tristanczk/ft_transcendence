@@ -4,6 +4,7 @@ import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { EditUserDto } from './dto';
 import { UserService } from './user.service';
+import { GetAllUsersResponseDto } from './dto/get-all-users.dto';
 
 @UseGuards(JwtGuard)
 @Controller('users')
@@ -12,7 +13,7 @@ export class UserController {
 
 	// return the list of all users
 	@Get() 
-	getAllUsers() {
+	getAllUsers(): GetAllUsersResponseDto[] {
 		return this.userService.getAllUsers()
 	}
 
