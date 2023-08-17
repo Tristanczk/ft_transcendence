@@ -2,15 +2,31 @@ import { User } from '../../types';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-interface PresentationUserProps {
+interface FriendsProps {
 	user: User;
+	userList: User[] | null;
 }
 
-function Friends({user}: PresentationUserProps) {
-
-	const [userList, setUserList] = useState<User[] | null>(null);
+function Friends({user, userList}: FriendsProps) {
+	const [friendsList, setFriendsList] = useState<User | null>(null);
 	const [idSelectedToAddFriend, setIdSelectedToAddFriend] = useState(-1);
 	let filteredUserList: User[] | null = [];
+
+	useEffect(() => {
+        const fetchFriends = async () => {
+            // import user friends list
+            try {
+                const response = await axios.get(
+                    'http://localhost:3333/friends/me',
+                    { withCredentials: true },
+                );
+                setFriendsList(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        fetchFriends();
+    }, []);
 
 	const	handleClickAddFriend = (event: any) => {
 		event.preventDefault();
@@ -30,38 +46,14 @@ function Friends({user}: PresentationUserProps) {
 		// console.log('choix=' + choice)
 		setIdSelectedToAddFriend(choice)
 	} 
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await axios.get(
-                    'http://localhost:3333/users/',
-                    { withCredentials: true },
-                );
-                setUserList(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchUser();
-    }, []);
-
-	useEffect(() => {
-		console.log('userList updated:', userList);
-		
-		if (!userList)
-			return;
+	
+	if (userList)
 		filteredUserList = userList.filter((userL) => userL.id !== user.id );
 
-		console.log('filteredUserList updated:', filteredUserList);
-
-	}, [userList]);
-	
-
-	return userList ? (
+	return filteredUserList ? (
         <>
 			<div className="bg-blue-300 rounded-md">
-				<div className='mb-6'>You have {userList.length} friends</div>
+				<div className='mb-6'>You have {filteredUserList.length} friends</div>
 				
 				<div className='mb-6'>
 					<legend>Add a friend:</legend>
@@ -69,7 +61,7 @@ function Friends({user}: PresentationUserProps) {
 						<label htmlFor="users">Select a user to become friend with: </label>
 						<select name="users" id="users" onChange={handleChangeListChooseFriend}>
 							<option value='-1' key='-1'>Choose</option>
-							{userList.map((user) => (<option value={user.id} key={user.id}>{user.nickname}</option>))}
+							{filteredUserList.map((user) => (<option value={user.id} key={user.id}>{user.nickname}</option>))}
 						</select>
 						<button 
 							className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded' 

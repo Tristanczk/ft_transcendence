@@ -7,15 +7,27 @@ import Friends from '../components/dashboard/Friends';
 
 const DashboardPage: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
+    const [userList, setUserList] = useState<User[] | null>(null);
 
     useEffect(() => {
         const fetchUser = async () => {
+            // import current user
             try {
                 const response = await axios.get(
                     'http://localhost:3333/users/me',
                     { withCredentials: true },
                 );
                 setUser(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+            // import user list
+            try {
+                const response = await axios.get(
+                    'http://localhost:3333/users/',
+                    { withCredentials: true },
+                );
+                setUserList(response.data);
             } catch (error) {
                 console.error(error);
             }
@@ -26,7 +38,7 @@ const DashboardPage: React.FC = () => {
     return user ? (
         <>
 			<PresentationUser user={user} />
-			<Friends user={user} />
+			<Friends user={user} userList={userList} />
 			<StatsUser user={user} />
 		</>
     ) : (
