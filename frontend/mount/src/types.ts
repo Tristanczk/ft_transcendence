@@ -7,6 +7,13 @@ export type User = {
     twoFactorAuthentication: boolean;
 };
 
+export type UserSimplified = {
+    id: number;
+	created_at: Date;
+    nickname: string;
+    elo: number;
+};
+
 export type Friends = {
     id: number;
 	createdAt: Date;

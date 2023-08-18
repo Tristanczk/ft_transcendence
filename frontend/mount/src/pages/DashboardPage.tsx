@@ -21,10 +21,10 @@ const DashboardPage: React.FC = () => {
             } catch (error) {
                 console.error(error);
             }
-            // import user list
+            // import possible friends
             try {
                 const response = await axios.get(
-                    'http://localhost:3333/users/',
+                    'http://localhost:3333/friends/possiblefriends',
                     { withCredentials: true },
                 );
                 setUserList(response.data);

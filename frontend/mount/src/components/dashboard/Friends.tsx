@@ -1,6 +1,7 @@
-import { User } from '../../types';
+import { User, UserSimplified } from '../../types';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ShowFriendList from './ShowFriendList'
 
 interface FriendsProps {
 	user: User;
@@ -8,9 +9,8 @@ interface FriendsProps {
 }
 
 function Friends({user, userList}: FriendsProps) {
-	const [friendsList, setFriendsList] = useState<User | null>(null);
+	const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(null);
 	const [idSelectedToAddFriend, setIdSelectedToAddFriend] = useState(-1);
-	let filteredUserList: User[] | null = [];
 
 	useEffect(() => {
         const fetchFriends = async () => {
@@ -35,7 +35,7 @@ function Friends({user, userList}: FriendsProps) {
 			return;
 		if (idSelectedToAddFriend !== user.id)
 		{
-			;
+			console.log('done');
 		}
 		else
 			alert('You can\'t add yourself as a friend!')
@@ -43,17 +43,14 @@ function Friends({user, userList}: FriendsProps) {
 
 	const	handleChangeListChooseFriend = (event: any) => {
 		const choice: number = parseInt(event.target.value)
-		// console.log('choix=' + choice)
 		setIdSelectedToAddFriend(choice)
 	} 
 	
-	if (userList)
-		filteredUserList = userList.filter((userL) => userL.id !== user.id );
-
-	return filteredUserList ? (
+	return userList ? (
         <>
 			<div className="bg-blue-300 rounded-md">
-				<div className='mb-6'>You have {filteredUserList.length} friends</div>
+				
+				<ShowFriendList friendsList={friendsList} />
 				
 				<div className='mb-6'>
 					<legend>Add a friend:</legend>
@@ -61,7 +58,7 @@ function Friends({user, userList}: FriendsProps) {
 						<label htmlFor="users">Select a user to become friend with: </label>
 						<select name="users" id="users" onChange={handleChangeListChooseFriend}>
 							<option value='-1' key='-1'>Choose</option>
-							{filteredUserList.map((user) => (<option value={user.id} key={user.id}>{user.nickname}</option>))}
+							{userList.map((user) => (<option value={user.id} key={user.id}>{user.nickname}</option>))}
 						</select>
 						<button 
 							className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded' 

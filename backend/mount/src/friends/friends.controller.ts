@@ -15,7 +15,7 @@ export class FriendsController {
     }
 
 	@Get('me')
-    getMe(@GetUser('id') userId: number) {
+    getMe(@GetUser('id') userId: number): Promise<GetAllUsersResponseDto[]> {
         return this.friendService.getAllMyFriends(userId);
     }
 

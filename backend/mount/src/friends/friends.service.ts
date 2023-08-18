@@ -6,30 +6,34 @@ import { PrismaService } from '../prisma/prisma.service';
 export class FriendsService {
 	constructor(private prisma: PrismaService) {}
 
-	async getAllMyFriends(userId: number) {
+	async getAllMyFriends(userId: number): Promise<GetAllUsersResponseDto[]> {
+		const users = await this.prisma.user.findMany();
 		const friends = await this.prisma.friends.findMany({
 			where: {
-				idUserA: userId,
+				OR: [{idUserA: userId}, {idUserB: userId}],
 			}
 		});
-		return friends
+		const friendsAdapted = friends.flatMap(friend => [friend.idUserA !== userId ? friend.idUserA : null, friend.idUserB !== userId ? friend.idUserB : null])
+		return users
+			.filter((user) => user.id !== userId)
+			.filter((user) => friendsAdapted.includes(user.id))
+			.map((user) => new GetAllUsersResponseDto(user))
+		// return friends
 	}
 
 	async getAllPossibleFriends(userId: number): Promise<GetAllUsersResponseDto[]> {
 		const users = await this.prisma.user.findMany();
 		const friends = await this.prisma.friends.findMany({
 			where: {
-				idUserA: userId,
+				OR: [{idUserA: userId}, {idUserB: userId}],
 			}
 		});
-		console.log(users)
+		const friendsAdapted = friends.flatMap(friend => [friend.idUserA !== userId ? friend.idUserA : null, friend.idUserB !== userId ? friend.idUserB : null])
 		return users
 			.filter((user) => user.id !== userId)
-			.filter((user) => user.id !== userId)
+			.filter((user) => !friendsAdapted.includes(user.id))
 			.map((user) => new GetAllUsersResponseDto(user))
 	}
-
-	// test
 
 	async addNewFriend(userId: number, userNewFriend: number) {
 		//verif friends pas deja dans mes amis
