@@ -29,6 +29,8 @@ export class FriendsService {
 			.map((user) => new GetAllUsersResponseDto(user))
 	}
 
+	// test
+
 	async addNewFriend(userId: number, userNewFriend: number) {
 		//verif friends pas deja dans mes amis
 		const isFriend = await this.prisma.friends.findFirst({
