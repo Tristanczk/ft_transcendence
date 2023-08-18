@@ -1,6 +1,7 @@
 import { User } from '../../types';
 import React from 'react';
 
+
 interface PresentationUserProps {
 	user: User;
 }

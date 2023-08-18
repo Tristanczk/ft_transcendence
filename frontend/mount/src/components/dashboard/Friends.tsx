@@ -97,7 +97,7 @@ function Friends({user, userList}: FriendsProps) {
 	
 	return userList ? (
         <>
-			<div className="bg-blue-300 rounded-md">
+			<div className="bg-white rounded-md">
 				
 				<ShowFriendList friendsList={friendsList} handleDeleteFriendClick={handleDeleteFriendClick} />
 

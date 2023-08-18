@@ -16,6 +16,12 @@ export class UserController {
         return user;
     }
 
+	// @Post('avatar')
+	// @UseInterceptors(FileInterceptor('file'))
+	// downloadAvatar(@GetUser('id') userId: number, @UploadedFile() file: Express.Multer.File) {
+	// 	return 'ok photo.'
+	// }
+
     @Patch()
     editUser(@GetUser('id') userId: number, @Body() dto: EditUserDto) {
         return this.userService.editUser(userId, dto);

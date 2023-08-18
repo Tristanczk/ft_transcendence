@@ -18,7 +18,6 @@ export class FriendsService {
 			.filter((user) => user.id !== userId)
 			.filter((user) => friendsAdapted.includes(user.id))
 			.map((user) => new GetAllUsersResponseDto(user))
-		// return friends
 	}
 
 	async getAllPossibleFriends(userId: number): Promise<GetAllUsersResponseDto[]> {
@@ -43,8 +42,7 @@ export class FriendsService {
 				},
 			});
 		
-			console.log('bonjour')
-		if (isFriend) return 'already a friend A'
+		if (isFriend) return 'already a friend'
 		//si ok, ajout
 		const newFriend = await this.prisma.friends.create({
 			data: {

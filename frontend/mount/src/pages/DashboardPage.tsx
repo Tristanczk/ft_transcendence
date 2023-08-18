@@ -4,6 +4,7 @@ import { User } from '../types';
 import PresentationUser from '../components/dashboard/PresentationUser'
 import StatsUser from '../components/dashboard/StatsUser';
 import Friends from '../components/dashboard/Friends';
+import AvatarUploader from '../components/user/AvatarUpload';
 
 const DashboardPage: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
@@ -38,6 +39,7 @@ const DashboardPage: React.FC = () => {
     return user ? (
         <>
 			<PresentationUser user={user} />
+			<AvatarUploader />
 			<Friends user={user} userList={userList} />
 			<StatsUser user={user} />
 		</>
