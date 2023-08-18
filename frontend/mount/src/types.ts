@@ -12,6 +12,7 @@ export type UserSimplified = {
 	created_at: Date;
     nickname: string;
     elo: number;
+	avatarPath: any;
 };
 
 export type Friends = {

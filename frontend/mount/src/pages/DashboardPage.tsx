@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { User } from '../types';
-import PresentationUser from '../components/dashboard/PresentationUser'
+import PresentationUser from '../components/dashboard/PresentationUser';
 import StatsUser from '../components/dashboard/StatsUser';
-import Friends from '../components/dashboard/Friends';
+import Friends from '../components/dashboard/friends/Friends';
 import AvatarUploader from '../components/user/AvatarUpload';
 
 const DashboardPage: React.FC = () => {
@@ -38,11 +38,11 @@ const DashboardPage: React.FC = () => {
 
     return user ? (
         <>
-			<PresentationUser user={user} />
-			<AvatarUploader />
-			<Friends user={user} userList={userList} />
-			<StatsUser user={user} />
-		</>
+            <PresentationUser user={user} />
+            <AvatarUploader />
+            <Friends user={user} userList={userList} />
+            <StatsUser user={user} />
+        </>
     ) : (
         <div>You are not logged in.</div>
     );

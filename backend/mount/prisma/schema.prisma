@@ -9,16 +9,17 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  id			Int      @id @default(autoincrement())
+  createdAt		DateTime @default(now())
 
-  login    String @unique
-  nickname String @unique
-  email    String @unique
-  hash     String?
+  login			String @unique
+  nickname		String @unique
+  email			String @unique
+  hash			String?
+  avatarPath	String
 
-  elo     Int
-  loginNb Int
+  elo			Int
+  loginNb		Int
 
   twoFactorAuthentication Boolean @default(false)
 }

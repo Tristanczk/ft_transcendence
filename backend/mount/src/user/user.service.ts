@@ -18,5 +18,35 @@ export class UserService {
         return user;
     }
 
+	async downloadAvatar(userId: number, file: Express.Multer.File) {
+		console.log(file);
+		const response = {
+			originalname: file.originalname,
+			filename: file.filename,
+		};
+		if (file.filename) {
+			const user = await this.prisma.user.update({
+				where: {
+					id: userId,
+				},
+				data: {
+					avatarPath: file.filename ?? '',
+				},
+			});
+		}
+		return response;
+	}
 	
+	async uploadAvatar(userId: number, res: any) {
+		const userImg = await this.prisma.user.findUnique({
+			where: {
+				id: userId,
+			}
+		})
+		if (!userImg)
+			return 'error'
+		console.log('user('+userId+'):')
+			console.log(userImg)
+		return res.sendFile(userImg.avatarPath, { root: './files' });
+	}
 }

@@ -11,6 +11,7 @@ export class GetAllUsersResponseDto {
     login: string;
 	@Exclude()
     hash: string;
+	avatarPath: string;
     elo: number;
 	@Exclude()
     loginNb: number;
