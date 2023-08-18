@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Post, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, UseGuards, Get, Post, Param, ParseIntPipe, Delete } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard';
 import { FriendsService } from './friends.service';
 import { GetUser } from 'src/auth/decorator';
@@ -22,6 +22,11 @@ export class FriendsController {
 	@Post(':id')
 	postFriend(@GetUser('id') userId: number, @Param('id', ParseIntPipe) userToAdd: number) {
 		return this.friendService.addNewFriend(userId, userToAdd);
+	}
+
+	@Delete(':id')
+	deleteFriend(@GetUser('id') userId: number, @Param('id', ParseIntPipe) userToDelete: number) {
+		return this.friendService.deleteFriend(userId, userToDelete);
 	}
 }
 

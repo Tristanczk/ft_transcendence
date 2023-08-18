@@ -39,12 +39,12 @@ export class FriendsService {
 		//verif friends pas deja dans mes amis
 		const isFriend = await this.prisma.friends.findFirst({
 			where: {
-				idUserA: userId,
-				idUserB: userNewFriend
+				OR: [{idUserA: userId, idUserB: userNewFriend}, {idUserA: userNewFriend, idUserB: userId}],
 				},
 			});
 		
-		if (isFriend) return 'already a friend'
+			console.log('bonjour')
+		if (isFriend) return 'already a friend A'
 		//si ok, ajout
 		const newFriend = await this.prisma.friends.create({
 			data: {
@@ -52,6 +52,20 @@ export class FriendsService {
 				idUserB: userNewFriend,
 			},
 		});
-		return 'friends added'
+		return 'friend added'
+	}
+
+	async deleteFriend(userId: number, friendToDelete: number) {
+		//verif friends est bien dans mes amis
+		const isFriend = await this.prisma.friends.findFirst({
+			where: {
+				OR: [{idUserA: userId, idUserB: friendToDelete}, {idUserA: friendToDelete, idUserB: userId}],
+				},
+			});
+		if (!isFriend) return 'not a friend'
+		const newFriend = await this.prisma.friends.delete({
+			where: {id: isFriend.id},
+			});
+		return 'friend deleted'
 	}
 }
