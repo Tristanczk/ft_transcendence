@@ -46,7 +46,7 @@ export class UserService {
 		if (!userImg)
 			return 'error'
 		console.log('user('+userId+'):')
-			console.log(userImg)
+		console.log(userImg)
 		return res.sendFile(userImg.avatarPath, { root: './files' });
 	}
 }

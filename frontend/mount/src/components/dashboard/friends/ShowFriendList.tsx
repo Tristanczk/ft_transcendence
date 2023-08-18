@@ -1,5 +1,6 @@
 import { UserSimplified } from '../../../types';
-// import ImageFriend from './imgFriend';
+import ImageFriend from './imgFriend';
+import axios from 'axios';
 
 interface Props {
     friendsList: UserSimplified[] | null;
@@ -9,18 +10,32 @@ interface Props {
 function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
     let i: number = 0;
     if (!friendsList)
-        return <div className="mb-6">You don't have friends yet</div>;
+        return (<div className="mb-6">You don't have friends yet</div>);
 
     const max: number = friendsList.length;
 
-    
+    async function getImg(userId: number) {
+        try {
+            const response = await axios.get(
+                `http://localhost:3333/users/img/${userId}`,
+                { params: {  }, withCredentials: true },
+            );
+
+            console.log(response);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
+        return './avatars/bart.png';
+    }
+
     console.log('before');
     console.log(friendsList);
 
-    // friendsList.forEach((friend) => friend.avatarPath = loadFriendImage(friend.id));
+    // // friendsList.forEach((friend) => friend.avatarPath = loadFriendImage(friend.id));
 
-    console.log('after');
-    console.log(friendsList);
+    // console.log('after');
+    // console.log(friendsList);
 
     return friendsList.length > 0 ? (
         <>
@@ -47,7 +62,7 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
                         >
                             <div className="flex items-center space-x-4">
                                 <div className="flex-shrink-0">
-                                    {/* <ImageFriend friend={friend} /> */}
+                                    <ImageFriend friend={friend} path={getImg(friend.id)} />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-900 truncate dark:text-white">

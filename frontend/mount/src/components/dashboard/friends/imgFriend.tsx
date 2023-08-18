@@ -3,6 +3,7 @@ import axios from 'axios';
 
 interface Props {
     friend: UserSimplified;
+	path: any;
 }
 
 // async function getImage({ friend  }: Props) {
@@ -35,17 +36,21 @@ interface Props {
 // 	return friendImg;
 // }
 
-function ImageFriend({ friend,  }: Props) {
+function ImageFriend({ friend, path }: Props) {
 
-	// const friendImg = getImage(friend)
+	console.log('friend elem:')
+	console.log(friend)
+	console.log('path:')
+	console.log(path)
 
-	
+	const imageSrc = `data:image/png;base64,${path}`;
+
 
 	return (<img
 		className="w-8 h-8 rounded-full"
-		src={friend.avatarPath}
+		src={imageSrc}
 		alt={friend.nickname}
-	/>)
+	/>);
 
 }
 
