@@ -7,6 +7,8 @@ interface Props {
     handleDeleteFriendClick: (event: any, idToDelete: number) => Promise<void>;
 }
 
+
+
 function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
     let i: number = 0;
     if (!friendsList)
@@ -15,13 +17,15 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
     const max: number = friendsList.length;
 
     async function getImg(userId: number) {
+        return ;
         try {
             const response = await axios.get(
                 `http://localhost:3333/users/img/${userId}`,
                 { params: {  }, withCredentials: true },
             );
 
-            console.log(response);
+            // console.log(response.data);
+            console.log('wrong one');
             return response.data;
         } catch (error) {
             console.error(error);
@@ -29,13 +33,18 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
         return './avatars/bart.png';
     }
 
-    console.log('before');
-    console.log(friendsList);
+    // console.log('before');
+    // console.log(friendsList);
 
     // // friendsList.forEach((friend) => friend.avatarPath = loadFriendImage(friend.id));
 
     // console.log('after');
     // console.log(friendsList);
+
+    // const img = getImg(1);
+    // console.log('after');
+    // console.log(img)
+    // console.log('after');
 
     return friendsList.length > 0 ? (
         <>
@@ -62,7 +71,8 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
                         >
                             <div className="flex items-center space-x-4">
                                 <div className="flex-shrink-0">
-                                    <ImageFriend friend={friend} path={getImg(friend.id)} />
+                                    {/* <ImageFriend friend={friend} path={getImg(friend.id)} /> */}
+                                    <img className="w-8 h-8 rounded-full" src='./avatars/bart.png' alt={friend.nickname} />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
