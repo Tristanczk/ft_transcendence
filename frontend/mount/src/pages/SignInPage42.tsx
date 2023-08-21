@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const SignInPage42: React.FC = () => {
     const location = useLocation();
     const [message, setMessage] = useState('');
-    const [error, setError] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const code = new URLSearchParams(location.search).get('code');
 
         if (!code) {
             console.error('No authorization code found');
-            setError(true);
+            setMessage('No authorization code found');
             return;
         }
         const fetchUser = async () => {
@@ -22,19 +22,15 @@ const SignInPage42: React.FC = () => {
                     { params: { code }, withCredentials: true },
                 );
                 setMessage(response.data);
+                navigate('/');
             } catch (error) {
                 console.error(error);
-                setError(true);
             }
         };
         fetchUser();
-    }, [location.search]);
+    }, [location.search, navigate]);
 
-    if (error) {
-        return <div>Sign in failed</div>;
-    } else {
-        return <div>{message}</div>;
-    }
+    return <div>{message}</div>;
 };
 
 export default SignInPage42;

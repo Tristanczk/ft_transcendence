@@ -74,12 +74,17 @@ const NavLinks: React.FC<{ current: string }> = ({ current }) => {
     );
 };
 
-const MenuLink: React.FC<{ text: string; href: string }> = ({ text, href }) => {
+const MenuLink: React.FC<{
+    text: string;
+    href: string;
+    onClick: () => void;
+}> = ({ text, href, onClick }) => {
     return (
         <li>
             <Link
                 to={href}
                 className="block px-4 py-2 text-sm hover:bg-gray-600 text-gray-200 hover:text-white"
+                onClick={onClick}
             >
                 {text}
             </Link>
@@ -114,8 +119,16 @@ const UserMenu: React.FC = () => {
                     </span>
                 </div>
                 <ul className="py-2">
-                    <MenuLink text="Settings" href="/settings" />
-                    <MenuLink text="Sign out" href="/signout" />
+                    <MenuLink
+                        text="Settings"
+                        href="/settings"
+                        onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    />
+                    <MenuLink
+                        text="Sign out"
+                        href="/signout"
+                        onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    />
                 </ul>
             </div>
         </div>
@@ -136,11 +149,12 @@ const NavBar: React.FC = () => {
                 );
                 setUser(response.data);
             } catch (error) {
+                setUser(null);
                 console.error(error);
             }
         };
         fetchUser();
-    }, [location]);
+    }, [location.pathname]);
 
     return (
         <nav className="border-gray-200 bg-gray-900" style={{ height: 72 }}>

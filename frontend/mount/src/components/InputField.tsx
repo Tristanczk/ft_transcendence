@@ -8,6 +8,7 @@ interface Props {
     required?: boolean;
     type: string;
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onBlur?: React.FocusEventHandler<HTMLInputElement>;
 }
 
 const InputField: React.FC<Props> = React.forwardRef<HTMLInputElement, Props>(
@@ -20,6 +21,7 @@ const InputField: React.FC<Props> = React.forwardRef<HTMLInputElement, Props>(
             required = false,
             type,
             onChange,
+            onBlur,
         },
         ref,
     ) => (
@@ -33,6 +35,7 @@ const InputField: React.FC<Props> = React.forwardRef<HTMLInputElement, Props>(
             type={type}
             required={required}
             onChange={onChange}
+            onBlur={onBlur}
         ></input>
     ),
 );

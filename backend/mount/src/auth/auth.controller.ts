@@ -33,18 +33,20 @@ export class AuthController {
                 if (jwt.accessToken !== '') {
                     res.send('Successfully signed in!');
                 } else {
-                    res.status(400).send('Sign in failed');
+                    res.status(400).send(
+                        'Could not sign in with 42 authtentication',
+                    );
                 }
             })
             .catch(() => {
-                res.status(500).send('Something went wrong');
+                res.status(500).send('Internal server error');
             });
     }
 
     @Get('signout')
     signout(@Res() res: Response) {
         if (this.authService.signout(res)) res.send('Successfully signed out!');
-        else res.status(500).send('Something went wrong');
+        else res.status(500).send('Internal server error');
     }
 
     @Post('signup')
@@ -67,7 +69,7 @@ export class AuthController {
     signin(@Body() dto: SigninDto, @Res() res: Response) {
         this.authService
             .signin(dto, res)
-            .then((jwt) => {
+            .then(() => {
                 res.send('Successfully signed in!');
             })
             .catch((error: ForbiddenException) => {

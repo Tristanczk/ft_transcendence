@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
 import { useForm, Controller } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { NAVBAR_HEIGHT } from '../constants';
 
 interface Inputs {
     username: string;
@@ -12,17 +14,18 @@ interface Inputs {
 const SignInPage: React.FC = () => {
     const [isLogged, setIsLogged] = useState(false);
     const [error, setError] = useState<string>();
+    const navigate = useNavigate();
 
     const {
         handleSubmit,
         control,
         formState: { errors },
-    } = useForm<Inputs>();
+    } = useForm<Inputs>({ mode: 'onTouched' });
 
     const onSubmit = async (data: Inputs) => {
         setError(undefined);
         try {
-            const response = await axios.post(
+            await axios.post(
                 'http://localhost:3333/auth/signin',
                 {
                     nickname: data.username,
@@ -30,12 +33,11 @@ const SignInPage: React.FC = () => {
                 },
                 { withCredentials: true },
             );
-            console.log(response);
             setIsLogged(true);
+            navigate('/');
         } catch (error: any) {
             setError(error.response.data);
         }
-        console.log(data);
     };
 
     const handleRedir42 = (event: React.FormEvent) => {
@@ -46,9 +48,11 @@ const SignInPage: React.FC = () => {
     return (
         <>
             <section className="bg-gray-50 dark:bg-gray-900">
-                <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+                <div
+                    className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
+                    style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
+                >
                     {isLogged && <div>Successfully signed in</div>}
-                    {error && <div>Failed to sign in: {error}</div>}
                     {!isLogged && (
                         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -69,7 +73,7 @@ const SignInPage: React.FC = () => {
                                                 minLength: {
                                                     value: 3,
                                                     message:
-                                                        'Username must be at least 3 characters',
+                                                        'Username must be at least 3 characters long',
                                                 },
                                                 pattern: {
                                                     value: /^[a-zA-Z0-9_]+$/,
@@ -90,6 +94,7 @@ const SignInPage: React.FC = () => {
                                                         id="username"
                                                         placeholder="Username"
                                                         type="text"
+                                                        onBlur={field.onBlur}
                                                     />
                                                     <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
                                                         {
@@ -122,6 +127,7 @@ const SignInPage: React.FC = () => {
                                                         id="password"
                                                         placeholder="Password"
                                                         type="password"
+                                                        onBlur={field.onBlur}
                                                     />
                                                     <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
                                                         {
@@ -138,6 +144,11 @@ const SignInPage: React.FC = () => {
                                         type="submit"
                                     ></Button>
                                 </form>
+                                {error && (
+                                    <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
+                                        Failed to sign in: {error}
+                                    </p>
+                                )}
                                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                                     Don’t have an account yet?{' '}
                                     <a

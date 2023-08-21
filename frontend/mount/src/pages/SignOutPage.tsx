@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const SignOutPage: React.FC = () => {
-    const location = useLocation();
     const [message, setMessage] = useState('');
     const [error, setError] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const signOut = async () => {
@@ -15,16 +15,18 @@ const SignOutPage: React.FC = () => {
                     { withCredentials: true },
                 );
                 setMessage(response.data);
-            } catch (error) {
+                navigate('/signin');
+            } catch (error: any) {
                 console.error(error);
                 setError(true);
+                setMessage(error.response.data);
             }
         };
         signOut();
-    }, [location.search]);
+    }, [navigate]);
 
     if (error) {
-        return <div>Sign out failed</div>;
+        return <div>Sign out failed: {message}</div>;
     } else {
         return <div>{message}</div>;
     }

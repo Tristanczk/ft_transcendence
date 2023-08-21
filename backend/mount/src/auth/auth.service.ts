@@ -141,7 +141,7 @@ export class AuthService {
                 'No account linked with this username',
             );
         }
-        const updatedUser = await this.prisma.user.update({
+        await this.prisma.user.update({
             where: { nickname: dto.nickname },
             data: { loginNb: user.loginNb + 1 },
         });
