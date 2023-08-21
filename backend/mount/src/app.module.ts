@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { FriendsModule } from './friends/friends.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
     imports: [
@@ -13,6 +14,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
         UserModule,
         PrismaModule,
         FriendsModule,
+        GatewayModule,
     ],
     providers: [{
         provide: APP_INTERCEPTOR,
