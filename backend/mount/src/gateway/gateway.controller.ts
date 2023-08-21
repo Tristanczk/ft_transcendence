@@ -3,16 +3,10 @@ import { MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websock
 import { GatewayService } from './gateway.service';
 
 @Controller('gate')
-@WebSocketGateway(3001)
+@WebSocketGateway()
 export class GatewayController {
 	
 	constructor(private gatewayService: GatewayService) {}
-
-	 @SubscribeMessage('newMessage')
-	 onNewMessage(@MessageBody() body: any) {
-		console.log(body)
-		return { event: 'newMessage', data: body };
-	 }
 
 	 @Get()
 	 getHello(): string {
