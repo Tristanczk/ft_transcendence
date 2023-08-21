@@ -121,7 +121,11 @@ export class AuthService {
             console.log('signup', error);
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') {
-                    throw new ForbiddenException('Credentials already exists');
+                    if (error.meta.target[0] === 'login')
+                        throw new ForbiddenException('Nickname already exists');
+                    else if (error.meta.target[0] === 'email')
+                        throw new ForbiddenException('Email already exists');
+                    else throw new ForbiddenException('Invalid credentials');
                 }
             }
             throw error;

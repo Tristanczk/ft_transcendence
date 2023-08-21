@@ -53,15 +53,11 @@ export class AuthController {
     signup(@Body() dto: SignupDto, @Res() res: Response) {
         this.authService
             .signup(dto, res)
-            .then((jwt) => {
-                if (jwt.accessToken !== '') {
-                    res.send('Successfully signed up!');
-                } else {
-                    res.status(400).send('Sign up failed');
-                }
+            .then(() => {
+                res.send('Successfully signed up!');
             })
-            .catch(() => {
-                res.status(500).send('Something went wrong');
+            .catch((error) => {
+                res.status(401).send(error.message);
             });
     }
 
