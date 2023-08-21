@@ -5,6 +5,7 @@ import InputField from '../components/InputField';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { NAVBAR_HEIGHT } from '../constants';
+import { ErrorMessage } from '@hookform/error-message';
 
 interface Inputs {
     username: string;
@@ -20,7 +21,7 @@ const SignInPage: React.FC = () => {
         handleSubmit,
         control,
         formState: { errors },
-    } = useForm<Inputs>({ mode: 'onTouched' });
+    } = useForm<Inputs>({ mode: 'onTouched', criteriaMode: 'all' });
 
     const onSubmit = async (data: Inputs) => {
         setError(undefined);
@@ -94,14 +95,45 @@ const SignInPage: React.FC = () => {
                                                         id="username"
                                                         placeholder="Username"
                                                         type="text"
+                                                        hasError={
+                                                            errors.username
+                                                                ? true
+                                                                : false
+                                                        }
                                                         onBlur={field.onBlur}
                                                     />
-                                                    <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
-                                                        {
-                                                            errors.username
-                                                                ?.message
+                                                    <ErrorMessage
+                                                        errors={errors}
+                                                        name="username"
+                                                        render={({
+                                                            messages,
+                                                        }) =>
+                                                            messages &&
+                                                            Object.entries(
+                                                                messages,
+                                                            ).map(
+                                                                ([
+                                                                    type,
+                                                                    message,
+                                                                ]) => (
+                                                                    <p
+                                                                        className="error mt-1 text-sm text-red-600 dark:text-red-500"
+                                                                        style={{
+                                                                            fontSize:
+                                                                                '12px',
+                                                                        }}
+                                                                        key={
+                                                                            type
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            message
+                                                                        }
+                                                                    </p>
+                                                                ),
+                                                            )
                                                         }
-                                                    </p>
+                                                    />
                                                 </div>
                                             )}
                                         />
@@ -127,9 +159,19 @@ const SignInPage: React.FC = () => {
                                                         id="password"
                                                         placeholder="Password"
                                                         type="password"
+                                                        hasError={
+                                                            errors.password
+                                                                ? true
+                                                                : false
+                                                        }
                                                         onBlur={field.onBlur}
                                                     />
-                                                    <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
+                                                    <p
+                                                        className="error mt-1 text-sm text-red-600 dark:text-red-500"
+                                                        style={{
+                                                            fontSize: '12px',
+                                                        }}
+                                                    >
                                                         {
                                                             errors.password
                                                                 ?.message

@@ -5,6 +5,7 @@ import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import { NAVBAR_HEIGHT } from '../constants';
 import { Controller, useForm } from 'react-hook-form';
+import { ErrorMessage } from '@hookform/error-message';
 
 interface Inputs {
     username: string;
@@ -22,7 +23,7 @@ const SignUpPage: React.FC = () => {
         control,
         formState: { errors },
         watch,
-    } = useForm<Inputs>({ mode: 'onTouched' });
+    } = useForm<Inputs>({ mode: 'onTouched', criteriaMode: 'all' });
 
     const passwordInput = watch('password');
 
@@ -49,7 +50,7 @@ const SignUpPage: React.FC = () => {
         <>
             <section className="bg-gray-50 dark:bg-gray-900">
                 <div
-                    className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
+                    className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0"
                     style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
                 >
                     {isLogged && <div>Successfully signed in</div>}
@@ -94,14 +95,45 @@ const SignUpPage: React.FC = () => {
                                                         id="username"
                                                         placeholder="Username"
                                                         type="text"
+                                                        hasError={
+                                                            errors.username
+                                                                ? true
+                                                                : false
+                                                        }
                                                         onBlur={field.onBlur}
                                                     />
-                                                    <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
-                                                        {
-                                                            errors.username
-                                                                ?.message
+                                                    <ErrorMessage
+                                                        errors={errors}
+                                                        name="username"
+                                                        render={({
+                                                            messages,
+                                                        }) =>
+                                                            messages &&
+                                                            Object.entries(
+                                                                messages,
+                                                            ).map(
+                                                                ([
+                                                                    type,
+                                                                    message,
+                                                                ]) => (
+                                                                    <p
+                                                                        className="error mt-1 text-sm text-red-600 dark:text-red-500"
+                                                                        style={{
+                                                                            fontSize:
+                                                                                '12px',
+                                                                        }}
+                                                                        key={
+                                                                            type
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            message
+                                                                        }
+                                                                    </p>
+                                                                ),
+                                                            )
                                                         }
-                                                    </p>
+                                                    />
                                                 </div>
                                             )}
                                         />
@@ -131,9 +163,19 @@ const SignUpPage: React.FC = () => {
                                                         id="email"
                                                         placeholder="Email"
                                                         type="text"
+                                                        hasError={
+                                                            errors.email
+                                                                ? true
+                                                                : false
+                                                        }
                                                         onBlur={field.onBlur}
                                                     />
-                                                    <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
+                                                    <p
+                                                        className="error mt-1 text-sm text-red-600 dark:text-red-500"
+                                                        style={{
+                                                            fontSize: '12px',
+                                                        }}
+                                                    >
                                                         {errors.email?.message}
                                                     </p>
                                                 </div>
@@ -177,14 +219,45 @@ const SignUpPage: React.FC = () => {
                                                         id="password"
                                                         placeholder="Password"
                                                         type="password"
+                                                        hasError={
+                                                            errors.password
+                                                                ? true
+                                                                : false
+                                                        }
                                                         onBlur={field.onBlur}
                                                     />
-                                                    <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
-                                                        {
-                                                            errors.password
-                                                                ?.message
+                                                    <ErrorMessage
+                                                        errors={errors}
+                                                        name="password"
+                                                        render={({
+                                                            messages,
+                                                        }) =>
+                                                            messages &&
+                                                            Object.entries(
+                                                                messages,
+                                                            ).map(
+                                                                ([
+                                                                    type,
+                                                                    message,
+                                                                ]) => (
+                                                                    <p
+                                                                        className="error mt-1 text-sm text-red-600 dark:text-red-500"
+                                                                        style={{
+                                                                            fontSize:
+                                                                                '12px',
+                                                                        }}
+                                                                        key={
+                                                                            type
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            message
+                                                                        }
+                                                                    </p>
+                                                                ),
+                                                            )
                                                         }
-                                                    </p>
+                                                    />
                                                 </div>
                                             )}
                                         />
@@ -218,9 +291,19 @@ const SignUpPage: React.FC = () => {
                                                         id="confirmPassword"
                                                         placeholder="Password"
                                                         type="password"
+                                                        hasError={
+                                                            errors.confirmPassword
+                                                                ? true
+                                                                : false
+                                                        }
                                                         onBlur={field.onBlur}
                                                     />
-                                                    <p className="error mt-2 text-sm text-red-600 dark:text-red-500">
+                                                    <p
+                                                        className="error mt-1 text-sm text-red-600 dark:text-red-500"
+                                                        style={{
+                                                            fontSize: '12px',
+                                                        }}
+                                                    >
                                                         {
                                                             errors
                                                                 .confirmPassword
@@ -256,92 +339,6 @@ const SignUpPage: React.FC = () => {
                 </div>
             </section>
         </>
-        // <section className="bg-gray-50 dark:bg-gray-900">
-        //     <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        //         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-        //             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-        //                 <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-        //                     Create an account
-        //                 </h1>
-        //                 <form className="space-y-4 md:space-y-6" action="#">
-        //                     <div>
-        //                         <label
-        //                             htmlFor="Username"
-        //                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        //                         >
-        //                             Username
-        //                         </label>
-        //                         <InputField
-        //                             id="username"
-        //                             placeholder={userName}
-        //                             required={true}
-        //                             type="username"
-        //                             onChange={handleUserNameChange}
-        //                         ></InputField>
-        //                     </div>
-        //                     <div>
-        //                         <label
-        //                             htmlFor="Email"
-        //                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        //                         >
-        //                             Email
-        //                         </label>
-        //                         <InputField
-        //                             id="email"
-        //                             placeholder={email}
-        //                             required={true}
-        //                             type="email"
-        //                             onChange={handleEmailChange}
-        //                         ></InputField>
-        //                     </div>
-        //                     <div>
-        //                         <label
-        //                             htmlFor="password"
-        //                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        //                         >
-        //                             Password
-        //                         </label>
-        //                         <InputField
-        //                             id="password"
-        //                             placeholder={password}
-        //                             required={true}
-        //                             type="password"
-        //                             onChange={handlePasswordChange}
-        //                         ></InputField>
-        //                     </div>
-        //                     <div>
-        //                         <label
-        //                             htmlFor="password"
-        //                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        //                         >
-        //                             Confirm password
-        //                         </label>
-        //                         <InputField
-        //                             id="confirm-password"
-        //                             placeholder={confirmPassword}
-        //                             required={true}
-        //                             type="password"
-        //                             onChange={handleConfirmPasswordChange}
-        //                         ></InputField>
-        //                     </div>
-        //                     <Button
-        //                         text="Create your account"
-        //                         onClick={handleSubmit}
-        //                     ></Button>
-        //                     <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-        //                         Already have an account?{' '}
-        //                         <a
-        //                             href="/signin"
-        //                             className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-        //                         >
-        //                             Sign in here
-        //                         </a>
-        //                     </p>
-        //                 </form>
-        //             </div>
-        //         </div>
-        //     </div>
-        // </section>
     );
 };
 
