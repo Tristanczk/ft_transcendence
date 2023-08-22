@@ -9,7 +9,7 @@ import * as cookieParser from 'cookie-parser';
     app.use(cookieParser());
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     const corsOptions: CorsOptions = {
-        origin: 'http://localhost:3000',
+        origin: ['http://localhost:3000', 'http://localhost:3003'],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
