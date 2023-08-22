@@ -32,7 +32,7 @@ model Friends {
 	idUserB		Int
 }
 
-model ActiveConnection {
+model Connections {
   id              Int   @id @default(autoincrement())
   createdAt	      DateTime 	@default(now())
   idUser		      Int

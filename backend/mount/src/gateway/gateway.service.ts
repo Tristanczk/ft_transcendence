@@ -1,50 +1,73 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import {
+    MessageBody,
+    SubscribeMessage,
+    WebSocketGateway,
+    WebSocketServer,
+} from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { GetUser } from 'src/auth/decorator';
-import { GatewayConnectionService } from './gateway.handleCo.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { OnArriveDto } from './dto/onArrive.dto';
 
 @Injectable()
 @WebSocketGateway({
-	cors: {
-		origin: ['http://localhost:3000']
-	}
+    cors: {
+        origin: ['http://localhost:3000'],
+    },
 })
 export class GatewayService implements OnModuleInit {
+    constructor(private prisma: PrismaService) {}
 
-	// constructor(private gatewayConnectionService: GatewayConnectionService) {}
+    @WebSocketServer()
+    server: Server;
 
-	@WebSocketServer()
-	server: Server
+    onModuleInit() {
+        this.server.on('connection', (socket) => {
+            console.log('new comer:' + socket.id);
+        });
+    }
 
-	onModuleInit() {
-		this.server.on('connection', (socket) => {
-			console.log('new comer:'+socket.id)
-		})
-		// console.log('connected')
-	}
+    @SubscribeMessage('newMessage')
+    onNewMessage(@MessageBody() body: any) {
+        console.log(body);
+        this.server.emit('onMessage', {
+            msg: 'New message for you',
+            content: body,
+        });
+        return 'ok';
+    }
 
+    @SubscribeMessage('onLeave')
+    async onLeave(@MessageBody() body: OnArriveDto) {
+        const retour = await this.prisma.connections.deleteMany({
+            where: { idConnection: body.idConnection },
+        });
+        console.log('left=' + body.id + ', =' + body.idConnection);
 
-	@SubscribeMessage('newMessage')
-	onNewMessage(@MessageBody() body: any) {
-		console.log(body)
-		this.server.emit('onMessage', {
-			msg: 'New message for you',
-			content: body,
-		})
-		return 'ok'
-	}
+        return 'ok';
+    }
 
-	@SubscribeMessage('onLeave')
-	onLeave(@MessageBody() body: any) {
-		console.log('left='+body)
-		return 'ok'
-	}
+    @SubscribeMessage('onArrive')
+    async onArrive(@MessageBody() body: OnArriveDto) {
+        console.log('got there=' + body.id + ', =' + body.idConnection);
 
-	@SubscribeMessage('onArrive')
-	onArrive(@MessageBody() body: any) {
-		console.log('got there='+body)
-		return 'ok'
-	}
-
+        const retour = await this.prisma.connections.create({
+            data: {
+                idUser: body.id,
+                idConnection: body.idConnection,
+            },
+        });
+        return 'ok';
+    }
 }
+
+// const newFriend = await this.prisma.friends.delete({
+// where: { id: isFriend.id },
+// });
+
+// const newFriend = await this.prisma.friends.create({
+// data: {
+// idUserA: userId,
+// idUserB: userNewFriend,
+// },
+// });

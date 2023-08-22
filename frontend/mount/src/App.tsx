@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import RootPage from './pages/RootPage';
@@ -12,28 +12,35 @@ import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import SignInResult from './pages/SignInResult';
 import { WebsocketProvider, socket } from './context/WebsocketContext';
-import Test from './components/dashboard/friends/test';
 import TrackingOnline from './components/TrackingOnline';
+import { User } from './types';
+import GetUser from './components/user/getUser';
 
-const App: React.FC = () => (
-    <WebsocketProvider value={socket}>
-        <TrackingOnline />
-        <BrowserRouter>
-            <NavBar />
-            <Routes>
-                <Route path="/" Component={RootPage} />
-                <Route path="/dashboard" Component={DashboardPage} />
-                <Route path="/chat" Component={ChatPage} />
-                <Route path="/signin" Component={SignInPage} />
-                <Route path="/signup" Component={SignUpPage} />
-                <Route path="/signin42" Component={SignInPage42} />
-                <Route path="/signout" Component={SignOutPage} />
-                <Route path="/settings" Component={SettingsPage} />
-                <Route path="/signin/result" Component={SignInResult} />
-                <Route path="*" Component={Page404} />
-            </Routes>
-        </BrowserRouter>
-    </WebsocketProvider>
-);
+const App: React.FC = () => {
+    const [user, setUser] = useState<User | null>(null);
+    
+
+    return (
+        <WebsocketProvider value={socket}>
+            <GetUser user={user} setUser={setUser} />
+            {user !== null && <TrackingOnline user={user} />}
+            <BrowserRouter>
+                <NavBar />
+                <Routes>
+                    <Route path="/" Component={RootPage} />
+                    <Route path="/dashboard" Component={DashboardPage} />
+                    <Route path="/chat" Component={ChatPage} />
+                    <Route path="/signin" Component={SignInPage} />
+                    <Route path="/signup" Component={SignUpPage} />
+                    <Route path="/signin42" Component={SignInPage42} />
+                    <Route path="/signout" Component={SignOutPage} />
+                    <Route path="/settings" Component={SettingsPage} />
+                    <Route path="/signin/result" Component={SignInResult} />
+                    <Route path="*" Component={Page404} />
+                </Routes>
+            </BrowserRouter>
+        </WebsocketProvider>
+    );
+};
 
 export default App;
