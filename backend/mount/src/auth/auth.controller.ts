@@ -13,9 +13,9 @@ import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-import * as jwt from 'jsonwebtoken';
-import * as assert from 'assert';
-import { SignupDto, SigninDto } from './dto';
+import { SignupDto, SigninDto, TwoFactorCodeDto } from './dto';
+import { GetUser } from './decorator';
+import { User } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -34,7 +34,7 @@ export class AuthController {
                     res.send('Successfully signed in!');
                 } else {
                     res.status(400).send(
-                        'Could not sign in with 42 authtentication',
+                        'Could not sign in with 42 authentication',
                     );
                 }
             })
@@ -69,6 +69,22 @@ export class AuthController {
                 res.send('Successfully signed in!');
             })
             .catch((error: ForbiddenException) => {
+                res.status(401).send(error.message);
+            });
+    }
+
+    @Post('authenticate-2fa')
+    async enable2faPost(
+        @GetUser() user: User,
+        @Body() dto: TwoFactorCodeDto,
+        @Res() res: Response,
+    ) {
+        this.authService
+            .authenticateTwoFactor(user, dto.code)
+            .then(() => {
+                res.send('Two-Factor authentification successful');
+            })
+            .catch((error) => {
                 res.status(401).send(error.message);
             });
     }

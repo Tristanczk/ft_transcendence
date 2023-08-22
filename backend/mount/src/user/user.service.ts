@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EditUserDto } from './dto';
 import { authenticator } from 'otplib';
@@ -21,9 +21,7 @@ export class UserService {
         return user;
     }
 
-    async enableTwoFactorAuthentication(
-        user: User,
-    ): Promise<{ qrCode: string }> {
+    async initTwoFactorAuthentication(user: User): Promise<{ qrCode: string }> {
         const secret = authenticator.generateSecret();
 
         const otpauthUrl = authenticator.keyuri(
@@ -35,5 +33,16 @@ export class UserService {
         const qrCode = await toDataURL(otpauthUrl);
         // console.log(qrCode);
         return { qrCode };
+    }
+
+    async enableTwoFactorAuthentication(user: User, code: string) {
+        const isCodeValid = authenticator.verify({
+            token: code,
+            secret: user.twoFactorSecret,
+        });
+        if (!isCodeValid) {
+            throw new UnauthorizedException('Wrong authentication code');
+        }
+        this.editUser(user.id, { twoFactorAuthentication: true });
     }
 }
