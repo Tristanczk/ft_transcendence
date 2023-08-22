@@ -39,24 +39,40 @@ export class GatewayService implements OnModuleInit {
 
     @SubscribeMessage('onLeave')
     async onLeave(@MessageBody() body: OnArriveDto) {
-        const retour = await this.prisma.connections.deleteMany({
+        await this.prisma.connections.deleteMany({
             where: { idConnection: body.idConnection },
         });
-        console.log('left=' + body.id + ', =' + body.idConnection);
+        this.server.emit('updateStatus', { idUser: body.id, type: 'leave' });
 
-        return 'ok';
+        console.log('left=' + body.id + ', =' + body.idConnection);
+        const nbActiveConnexionsUser = await this.prisma.connections.findMany({
+            where: { idUser: body.id },
+        });
+        if (nbActiveConnexionsUser.length === 0) {
+            await this.prisma.user.update({
+                where: { id: body.id },
+                data: { isConnected: false },
+            });
+        }
+        return 'ok ';
     }
 
     @SubscribeMessage('onArrive')
     async onArrive(@MessageBody() body: OnArriveDto) {
         console.log('got there=' + body.id + ', =' + body.idConnection);
 
-        const retour = await this.prisma.connections.create({
+        await this.prisma.connections.create({
             data: {
                 idUser: body.id,
                 idConnection: body.idConnection,
             },
         });
+
+        await this.prisma.user.update({
+            where: { id: body.id },
+            data: { isConnected: true },
+        });
+        this.server.emit('updateStatus', { idUser: body.id, type: 'come' });
         return 'ok';
     }
 }

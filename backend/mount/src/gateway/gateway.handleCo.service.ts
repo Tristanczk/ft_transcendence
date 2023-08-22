@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { GetUser } from 'src/auth/decorator';
-
 export class GatewayConnectionService {
-    async addNewConnection(socket: any) {
+    async sendStatus() {
+        // obtenir 
         console.log('nouveau');
         return '';
     }
 }
+
+// obtenir tous les amis de ID
+// envoyer infos a tous les amis du depart

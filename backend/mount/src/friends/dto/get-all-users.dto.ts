@@ -1,24 +1,25 @@
-import { Exclude } from "class-transformer";
+import { Exclude } from 'class-transformer';
 
 export class GetAllUsersResponseDto {
-	id: number;
-	@Exclude()
-	created_at: Date;
+    id: number;
+    @Exclude()
+    created_at: Date;
     nickname: string;
-	@Exclude()
+    @Exclude()
     email: string;
-	@Exclude()
+    @Exclude()
     login: string;
-	@Exclude()
+    @Exclude()
     hash: string;
-	avatarPath: string;
+    avatarPath: string;
     elo: number;
-	@Exclude()
+    @Exclude()
     loginNb: number;
-	@Exclude()
+    @Exclude()
     twoFactorAuthentication: boolean;
+    isConnected: boolean;
 
-	constructor(partial: Partial<GetAllUsersResponseDto>) {
-		Object.assign(this, partial)
-	}
+    constructor(partial: Partial<GetAllUsersResponseDto>) {
+        Object.assign(this, partial);
+    }
 }

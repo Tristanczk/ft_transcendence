@@ -13,6 +13,7 @@ export type UserSimplified = {
     nickname: string;
     elo: number;
 	avatarPath: any;
+    isConnected: boolean;
 };
 
 export type Friends = {

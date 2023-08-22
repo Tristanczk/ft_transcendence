@@ -1,32 +1,62 @@
-import { useContext, useEffect, useState } from "react";
-import { User } from "../../../types";
-import { WebsocketContext } from "../../../context/WebsocketContext";
+import { useContext, useEffect, useState } from 'react';
+import { User } from '../../../types';
+import { WebsocketContext } from '../../../context/WebsocketContext';
 
 interface FriendsProps {
     userId: number;
+    initStatus: boolean;
 }
 
-function ShowIsOnline({ userId }: FriendsProps) {
-	const socket = useContext(WebsocketContext);
-	const [isConnected, setIsConnected] = useState<boolean>(false)
+interface MessageUpdateStatus {
+    idUser: number;
+    type: string;
+}
 
-	useEffect(() => {
-		const userObj = {
-			id: userId,
-			idConnection: socket.id,
-		}
-		socket.on('onLeave', (data) => {});
+function ShowIsOnline({ userId, initStatus }: FriendsProps) {
+    const socket = useContext(WebsocketContext);
+    const [isConnected, setIsConnected] = useState<boolean>(false);
 
-		return () => {
-			socket.off('onLeave');
-		};
-	}, []);
+    useEffect(() => {
+        const userObj = {
+            id: userId,
+            idConnection: socket.id,
+        };
 
-	return isConnected ? (
-		<>Online</>
+        if (initStatus) {
+            setIsConnected(true);
+        }
+
+        socket.on('updateStatus', (data: MessageUpdateStatus) => {
+            console.log(data);
+            if (data.idUser === userId) {
+                data.type === 'leave'
+                    ? setIsConnected(false)
+                    : setIsConnected(true);
+            }
+        });
+
+        return () => {
+            socket.off('updateStatus');
+        };
+    }, []);
+
+    return isConnected ? (
+		<span className="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">
+			<span className="w-2 h-2 mr-1 bg-green-500 rounded-full"></span>
+			Available
+		</span>
 	) : (
-		<>Offline</>
+		<span className="inline-flex items-center bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">
+			<span className="w-2 h-2 mr-1 bg-red-500 rounded-full"></span>
+			Unavailable
+		</span>
 	);
 }
 
-export default ShowIsOnline
+export default ShowIsOnline;
+
+{
+    /* <img src="./green_dot.png" /> */
+}
+
+
