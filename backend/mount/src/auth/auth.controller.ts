@@ -7,6 +7,7 @@ import {
     UnauthorizedException,
     Post,
     Body,
+    UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
@@ -15,6 +16,9 @@ import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import * as assert from 'assert';
 import { SignupDto, SigninDto } from './dto';
+import { GetUser } from './decorator';
+import { GatewayService } from 'src/gateway/gateway.service';
+import { JwtGuard } from './guard';
 
 @Controller('auth')
 export class AuthController {
@@ -22,6 +26,7 @@ export class AuthController {
         private authService: AuthService,
         private prisma: PrismaService,
         private config: ConfigService,
+        private gatewayService: GatewayService,
     ) {}
 
     @Get('signin/42')
@@ -40,9 +45,10 @@ export class AuthController {
             });
     }
 
+    @UseGuards(JwtGuard)
     @Get('signout')
-    signout(@Res() res: Response) {
-        if (this.authService.signout(res)) res.send('Successfully signed out!');
+    signout(@Res() res: Response, @GetUser('id') userId: number) {
+        if (this.authService.signout(res, userId)) res.send('Successfully signed out!');
         else res.status(500).send('Something went wrong');
     }
 

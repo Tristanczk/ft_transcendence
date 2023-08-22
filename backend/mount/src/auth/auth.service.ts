@@ -8,6 +8,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { User } from '@prisma/client';
 import { Response } from 'express';
 import { SigninDto, SignupDto } from './dto';
+import { GatewayService } from 'src/gateway/gateway.service';
 
 type AccessToken = { accessToken: string };
 
@@ -17,6 +18,7 @@ export class AuthService {
         private prisma: PrismaService,
         private jwt: JwtService,
         private config: ConfigService,
+        private gatewayService: GatewayService,
     ) {}
 
     async signToken(userId: number, login: string): Promise<AccessToken> {
@@ -50,7 +52,7 @@ export class AuthService {
                     login: login,
                     nickname: login,
                     email: email,
-					avatarPath: 'default.png',
+                    avatarPath: 'default.png',
                     elo: 1000,
                     loginNb: 1,
                 },
@@ -106,7 +108,7 @@ export class AuthService {
                     login: dto.nickname,
                     nickname: dto.nickname,
                     email: dto.email,
-					avatarPath: 'default.png',
+                    avatarPath: 'default.png',
                     elo: 1000,
                     loginNb: 1,
                     hash,
@@ -161,7 +163,8 @@ export class AuthService {
         return jwtToken;
     }
 
-    signout(res: Response): boolean {
+    signout(res: Response, userId: number): boolean {
+        this.gatewayService.userLeave(userId);
         try {
             res.clearCookie(this.config.get('JWT_COOKIE'), {
                 httpOnly: true,

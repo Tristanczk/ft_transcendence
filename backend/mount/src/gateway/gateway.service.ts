@@ -8,6 +8,7 @@ import {
 import { Server } from 'socket.io';
 import { PrismaService } from '../prisma/prisma.service';
 import { OnArriveDto } from './dto/onArrive.dto';
+import { GetUser } from 'src/auth/decorator';
 
 @Injectable()
 @WebSocketGateway({
@@ -39,12 +40,13 @@ export class GatewayService implements OnModuleInit {
 
     @SubscribeMessage('onLeave')
     async onLeave(@MessageBody() body: OnArriveDto) {
+        // console.log('test=' + userId);
         await this.prisma.connections.deleteMany({
             where: { idConnection: body.idConnection },
         });
         this.server.emit('updateStatus', { idUser: body.id, type: 'leave' });
 
-        console.log('left=' + body.id + ', =' + body.idConnection);
+        // console.log('left=' + body.id + ', =' + body.idConnection);
         const nbActiveConnexionsUser = await this.prisma.connections.findMany({
             where: { idUser: body.id },
         });
@@ -55,6 +57,18 @@ export class GatewayService implements OnModuleInit {
             });
         }
         return 'ok ';
+    }
+
+    async userLeave(userId: number) {
+        console.log('ft_left=' + userId);
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { isConnected: false },
+        });
+        await this.prisma.connections.deleteMany({
+            where: { idUser: userId },
+        });
+        this.server.emit('updateStatus', { idUser: userId, type: 'leave' });
     }
 
     @SubscribeMessage('onArrive')

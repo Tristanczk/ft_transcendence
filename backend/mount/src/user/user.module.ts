@@ -4,9 +4,11 @@ import { UserService } from './user.service';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-	imports: [MulterModule.register({
-		dest: './files'
-	})],
+    imports: [
+        MulterModule.register({
+            dest: './files',
+        }),
+    ],
     controllers: [UserController],
     providers: [UserService],
 })
