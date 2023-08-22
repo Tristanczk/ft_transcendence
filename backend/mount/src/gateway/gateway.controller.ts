@@ -3,9 +3,7 @@ import { MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websock
 import { GatewayService } from './gateway.service';
 
 @Controller('gate')
-@WebSocketGateway()
 export class GatewayController {
-	
 	constructor(private gatewayService: GatewayService) {}
 
 	 @Get()
@@ -14,5 +12,3 @@ export class GatewayController {
 	 }
 
 }
-
-// constructor(private gatewayService: GatewayService) {}

@@ -70,38 +70,57 @@ function ImageFriend({ friend, path }: Props) {
 
 	useEffect(() => {
         const fetchImg = async () => {
-           const imageDataUrl = await getImg(friend.id);
-		   if (imageDataUrl) {
-			// const blob = await fetch(imageDataUrl).then((res) => res.blob());
-			// console.log(blob)
+        //    const imageDataUrl = await getImg(friend.id);
+		//    if (imageDataUrl) {
+		// 	// const blob = await fetch(imageDataUrl).then((res) => res.blob());
+		// 	// console.log(blob)
 
-			imageDataUrl.toBlob(function(blob: any) {
+		// 	imageDataUrl.toBlob(function(blob: any) {
 			
-			let link = URL.createObjectURL(blob);
+		// 	let link = URL.createObjectURL(blob);
 			
-			// supprimer la référence blob interne, pour laisser le navigateur en effacer la mémoire
-			// URL.revokeObjectURL(link);
-			}, 'image/png');
-		   }
+		// 	// supprimer la référence blob interne, pour laisser le navigateur en effacer la mémoire
+		// 	// URL.revokeObjectURL(link);
+		// 	}, 'image/png');
+		//    }
+
+			try {
+				const response = await axios.get(
+					`http://localhost:3333/users/img/2`,
+					{ params: {  }, withCredentials: true },
+				);
+				const img = new Blob([response.data], {type: 'image/png'});          
+				const imageDataUrl = URL.createObjectURL(img);
+				setImgY(imageDataUrl);
+				console.log(response.data)
+				return response.data;
+			} catch (error) {
+				console.error(error);
+			}
+		  
+
         };
         fetchImg();
     }, []);
 
-	async function getImg(userId: number) {
-		try {
-			const response = await axios.get(
-				`http://localhost:3333/users/img/2`,
-				{ params: {  }, withCredentials: true },
-			);			
-			// const imageDataUrl = `data:image/png;base64,${response.data}`;
-			const imageDataUrl = response.data;
-    		setImgY(imageDataUrl);
-			return response.data;
-		} catch (error) {
-			console.error(error);
-		}
-		return 'to handle';
-	}
+	// to sauv
+	// async function getImg(userId: number) {
+	// 	try {
+	// 		const response = await axios.get(
+	// 			`http://localhost:3333/users/img/2`,
+	// 			{ params: {  }, withCredentials: true },
+	// 		);			
+	// 		// const imageDataUrl = `data:image/png;base64,${response.data}`;
+	// 		const imageDataUrl = response.data;
+    // 		setImgY(imageDataUrl);
+	// 		return response.data;
+	// 	} catch (error) {
+	// 		console.error(error);
+	// 	}
+	// 	return 'to handle';
+	// }
+
+	
 
 	// let blob = new Blob(imgY.data, {type: 'image/png'});
 
@@ -115,7 +134,7 @@ function ImageFriend({ friend, path }: Props) {
 
 	return imgY ? (
 	<>
-	{/* {console.log(imgY.data)} */}
+	{console.log(imgY)}
 		<img
 			className="w-8 h-8 rounded-full"
 			src={`data:image/png;base64,${imgY}`}
@@ -127,5 +146,5 @@ function ImageFriend({ friend, path }: Props) {
 	);
 
 }
-
+// {`data:image/png;base64,${imgY}`}
 export default ImageFriend

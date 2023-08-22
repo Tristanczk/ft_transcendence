@@ -9,24 +9,32 @@ datasource db {
 }
 
 model User {
-  id			Int      @id @default(autoincrement())
+  id			    Int      @id @default(autoincrement())
   createdAt		DateTime @default(now())
 
-  login			String @unique
+  login			  String @unique
   nickname		String @unique
-  email			String @unique
-  hash			String?
+  email			  String @unique
+  hash			  String?
   avatarPath	String
 
-  elo			Int
-  loginNb		Int
+  elo			    Int
+  loginNb	  	Int
 
   twoFactorAuthentication Boolean @default(false)
+  isConnected             Boolean @default(false)
 }
 
 model Friends {
-	id			Int			@id @default(autoincrement())
+	id			  Int			@id @default(autoincrement())
 	createdAt	DateTime 	@default(now())
 	idUserA		Int
 	idUserB		Int
+}
+
+model ActiveConnection {
+  id              Int   @id @default(autoincrement())
+  createdAt	      DateTime 	@default(now())
+  idUser		      Int
+  idConnection    String
 }
