@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -8,6 +8,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { User } from '@prisma/client';
 import { Response } from 'express';
 import { SigninDto, SignupDto } from './dto';
+import { authenticator } from 'otplib';
 
 type AccessToken = { accessToken: string };
 
@@ -176,6 +177,16 @@ export class AuthService {
         } catch (error) {
             console.log('signout', error);
             return false;
+        }
+    }
+
+    async authenticateTwoFactor(user: User, code: string) {
+        const isCodeValid = authenticator.verify({
+            token: code,
+            secret: user.twoFactorSecret,
+        });
+        if (!isCodeValid) {
+            throw new UnauthorizedException('Wrong authentication code');
         }
     }
 }
