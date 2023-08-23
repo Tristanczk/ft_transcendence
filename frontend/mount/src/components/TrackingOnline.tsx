@@ -1,13 +1,12 @@
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { WebsocketContext } from "../context/WebsocketContext";
-import axios from 'axios';
 import { User } from "../types";
 
 interface Props {
 	user: User;
 }
 function TrackingOnline({user}: Props) {
-	const [value, setValue] = useState('');
+	// const [value, setValue] = useState('');
 	const [connected, setConnected] = useState<boolean>(false);
 	const socket = useContext(WebsocketContext);
 
@@ -54,6 +53,7 @@ function TrackingOnline({user}: Props) {
 			socket.off('onLeave');
 			window.removeEventListener('beforeunload', handleBeforeUnload);
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

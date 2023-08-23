@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react';
-import { User } from '../../../types';
 import { WebsocketContext } from '../../../context/WebsocketContext';
 
 interface FriendsProps {
@@ -17,10 +16,10 @@ function ShowIsOnline({ userId, initStatus }: FriendsProps) {
     const [isConnected, setIsConnected] = useState<boolean>(false);
 
     useEffect(() => {
-        const userObj = {
-            id: userId,
-            idConnection: socket.id,
-        };
+        // const userObj = {
+        //     id: userId,
+        //     idConnection: socket.id,
+        // };
 
         if (initStatus) {
             setIsConnected(true);
@@ -38,6 +37,7 @@ function ShowIsOnline({ userId, initStatus }: FriendsProps) {
         return () => {
             socket.off('updateStatus');
         };
+		// eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return isConnected ? (
@@ -54,9 +54,4 @@ function ShowIsOnline({ userId, initStatus }: FriendsProps) {
 }
 
 export default ShowIsOnline;
-
-{
-    /* <img src="./green_dot.png" /> */
-}
-
 

@@ -5,7 +5,6 @@ import PresentationUser from '../components/dashboard/PresentationUser';
 import StatsUser from '../components/dashboard/StatsUser';
 import Friends from '../components/dashboard/friends/Friends';
 import AvatarUploader from '../components/user/AvatarUpload';
-import Test from '../components/dashboard/friends/test';
 
 const DashboardPage: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);

@@ -20,6 +20,7 @@ function Test() {
 			socket.off('onMessage');
 			console.log('unregister event');
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const onSubmit = () => {

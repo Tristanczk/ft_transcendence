@@ -20,6 +20,7 @@ function GetUser({ user, setUser }: Props) {
             }
         };
         fetchUser();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (<></>);
