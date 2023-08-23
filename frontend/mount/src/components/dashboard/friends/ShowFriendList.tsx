@@ -1,7 +1,6 @@
 import { UserSimplified } from '../../../types';
 import ShowIsOnline from './ShowIsOnline';
 import ImageFriend from './imgFriend';
-// import axios from 'axios';
 
 interface Props {
     friendsList: UserSimplified[] | null;
@@ -15,41 +14,24 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
 
     const max: number = friendsList.length;
 
-    // async function getImg(userId: number) {
-    //     return;
-    //     try {
-    //         const response = await axios.get(
-    //             `http://localhost:3333/users/img/${userId}`,
-    //             { params: {}, withCredentials: true },
-    //         );
-
-    //         // console.log(response.data);
-    //         console.log('wrong one');
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    //     return './avatars/bart.png';
-    // }
-
-    // console.log('before');
-    // console.log(friendsList);
-
-    // // friendsList.forEach((friend) => friend.avatarPath = loadFriendImage(friend.id));
-
-    // console.log('after');
-    // console.log(friendsList);
-
-    // const img = getImg(1);
-    // console.log('after');
-    // console.log(img)
-    // console.log('after');
-
     return friendsList.length > 0 ? (
         <>
-            <div className="mb-6">
-                You have {friendsList.length} friend
-                {friendsList.length !== 1 && 's'}
+            <div className="mb-1">
+                {/* <h1 className="text-5xl font-extrabold dark:text-white">
+                    Friends
+                    <small className="ml-5 text-sm font-semibold text-gray-500 dark:text-gray-400">
+                        You have {friendsList.length} friend
+                        {friendsList.length !== 1 && 's'}
+                    </small>
+                </h1> */}
+
+                {/* <h1 className="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl dark:text-white">
+                    Friends
+                </h1>
+                <p className="text-base font-light text-gray-500 dark:text-gray-400">
+                    You have {friendsList.length} friend
+                    {friendsList.length !== 1 && 's'}
+                </p> */}
             </div>
             <div className="bg-white">
                 <h1 className="text-xl font-bold dark:text-white">
@@ -70,13 +52,7 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
                         >
                             <div className="flex items-center space-x-4">
                                 <div className="flex-shrink-0">
-                                    <ImageFriend friend={friend} /> 
-                                    {/* path={getImg(friend.id) */}
-                                    {/* <img
-                                        className="w-8 h-8 rounded-full"
-                                        src="./avatars/bart.png"
-                                        alt={friend.nickname}
-                                    /> */}
+                                    <ImageFriend friend={friend} />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
@@ -110,7 +86,7 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
             </div>
         </>
     ) : (
-        <div className="mb-6">You don't have friends yet</div>
+        <div className="mb-1"></div>
     );
 }
 

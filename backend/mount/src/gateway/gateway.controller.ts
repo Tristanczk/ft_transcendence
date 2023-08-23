@@ -1,9 +1,4 @@
 import { Controller, Get } from '@nestjs/common';
-import {
-    MessageBody,
-    SubscribeMessage,
-    WebSocketGateway,
-} from '@nestjs/websockets';
 import { GatewayService } from './gateway.service';
 
 @Controller('gate')

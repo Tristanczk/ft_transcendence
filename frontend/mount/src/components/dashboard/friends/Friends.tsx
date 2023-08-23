@@ -2,6 +2,7 @@ import { User, UserSimplified } from '../../../types';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ShowFriendList from './ShowFriendList';
+import ShowTitleFriends from './ShowTitleFriends';
 
 interface FriendsProps {
     user: User;
@@ -97,22 +98,24 @@ function Friends({ user, userList }: FriendsProps) {
 
     return userList ? (
         <>
-            <div className="bg-white rounded-md">
+            <div>
+                <ShowTitleFriends friendsList={friendsList} />
                 <ShowFriendList
                     friendsList={friendsList}
                     handleDeleteFriendClick={handleDeleteFriendClick}
                 />
 
                 <div className="mb-6">
-                    <legend>Add a friend:</legend>
+                    {/* <legend>Add a friend:</legend> */}
                     <form>
-                        <label htmlFor="users">
-                            Select a user to become friend with:{' '}
+                        <label htmlFor="users" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Select a user to become friend with:
                         </label>
                         <select
                             name="users"
                             id="users"
                             onChange={handleChangeListChooseFriend}
+                            className="bg-gray-50 w-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         >
                             <option value="-1" key="-1">
                                 Choose

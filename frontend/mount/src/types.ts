@@ -1,6 +1,7 @@
 export type User = {
     id: number;
     nickname: string;
+    createdAt: Date;
     email: string;
     elo: number;
     loginNb: number;
@@ -9,7 +10,7 @@ export type User = {
 
 export type UserSimplified = {
     id: number;
-	created_at: Date;
+	createdAt: Date;
     nickname: string;
     elo: number;
 	avatarPath: any;

@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit, UseGuards } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import {
     MessageBody,
     SubscribeMessage,
@@ -8,11 +8,8 @@ import {
 import { Server } from 'socket.io';
 import { PrismaService } from '../prisma/prisma.service';
 import { OnArriveDto } from './dto/onArrive.dto';
-import { GetUser } from 'src/auth/decorator';
-import { JwtGuard } from 'src/auth/guard';
 
 @Injectable()
-// @UseGuards(JwtGuard)
 @WebSocketGateway({
     cors: {
         origin: ['http://localhost:3000'],
@@ -48,7 +45,7 @@ export class GatewayService implements OnModuleInit {
         });
         this.server.emit('updateStatus', { idUser: body.id, type: 'leave' });
 
-        console.log('left=' + body.id + ', =' + body.idConnection);
+        // console.log('left=' + body.id + ', =' + body.idConnection);
         const nbActiveConnexionsUser = await this.prisma.connections.findMany({
             where: { idUser: body.id },
         });
@@ -61,9 +58,8 @@ export class GatewayService implements OnModuleInit {
         return 'ok ';
     }
 
-    // @GetUser('id') userId: number
     async userArrive(userId: number) {
-        console.log('ft_arrive=' + userId);
+        // console.log('ft_arrive=' + userId);
         await this.prisma.user.update({
             where: { id: userId },
             data: { isConnected: true },
@@ -72,7 +68,7 @@ export class GatewayService implements OnModuleInit {
     }
 
     async userLeave(userId: number) {
-        console.log('ft_left=' + userId);
+        // console.log('ft_left=' + userId);
         await this.prisma.user.update({
             where: { id: userId },
             data: { isConnected: false },
@@ -85,7 +81,7 @@ export class GatewayService implements OnModuleInit {
 
     @SubscribeMessage('onArrive')
     async onArrive(@MessageBody() body: OnArriveDto) {
-        console.log('got there=' + body.id + ', =' + body.idConnection);
+        // console.log('got there=' + body.id + ', =' + body.idConnection);
 
         await this.prisma.connections.create({
             data: {

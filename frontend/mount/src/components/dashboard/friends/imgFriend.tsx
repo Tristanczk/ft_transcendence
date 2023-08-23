@@ -29,6 +29,7 @@ function ImageFriend({ friend }: Props) {
             }
         };
         fetchImg();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return imgY ? (

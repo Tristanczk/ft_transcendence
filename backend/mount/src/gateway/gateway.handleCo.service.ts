@@ -1,5 +1,4 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Server } from 'socket.io';
 
 export class GatewayConnectionService {
     constructor(private prisma: PrismaService) {}

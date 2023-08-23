@@ -19,7 +19,6 @@ import GetUser from './components/user/getUser';
 const App: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
     
-
     return (
         <WebsocketProvider value={socket}>
             <GetUser user={user} setUser={setUser} />
