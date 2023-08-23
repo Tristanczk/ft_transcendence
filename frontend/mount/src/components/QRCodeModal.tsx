@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import ErrorsFormField from './ErrorsFormField';
 
 interface Props {
+    error?: string | undefined;
     modalId: string;
     qrCodeDataUrl: string;
     closeModal: () => void;
@@ -15,6 +16,7 @@ export type ModalInputs = {
 };
 
 const QRCodeModal: React.FC<Props> = ({
+    error = undefined,
     modalId,
     qrCodeDataUrl,
     closeModal,
@@ -99,6 +101,12 @@ const QRCodeModal: React.FC<Props> = ({
                                     },
                                 }}
                             />
+                            {error && (
+                                <p className="error mt-2 text-sm font-bold text-red-600 dark:text-red-500">
+                                    Impossible to enable two factor
+                                    authentication: {error}
+                                </p>
+                            )}
                             <Button
                                 disabled={Object.keys(errors).length > 0}
                                 text="Validate two-factor authentication"

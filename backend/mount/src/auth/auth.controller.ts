@@ -8,6 +8,7 @@ import {
     Post,
     Body,
     ForbiddenException,
+    UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
@@ -16,6 +17,8 @@ import { ConfigService } from '@nestjs/config';
 import { SignupDto, SigninDto, TwoFactorCodeDto } from './dto';
 import { GetUser } from './decorator';
 import { User } from '@prisma/client';
+import { use } from 'passport';
+import { JwtGuard } from './guard';
 
 @Controller('auth')
 export class AuthController {
@@ -29,20 +32,25 @@ export class AuthController {
     signin42(@Query() params: any, @Res() res: Response) {
         this.authService
             .signin42(params.code, res)
-            .then((jwt) => {
-                if (jwt.accessToken !== '') {
-                    res.send('Successfully signed in!');
+            .then((user) => {
+                if (user.twoFactorAuthentication) {
+                    res.json({
+                        message: 'Two-Factor authentication required',
+                        user,
+                    });
                 } else {
-                    res.status(400).send(
-                        'Could not sign in with 42 authentication',
-                    );
+                    res.json({
+                        message: 'Successfully signed in!',
+                        user,
+                    });
                 }
             })
-            .catch(() => {
-                res.status(500).send('Internal server error');
+            .catch((error) => {
+                res.status(401).send(error.message);
             });
     }
 
+    @UseGuards(JwtGuard)
     @Get('signout')
     signout(@Res() res: Response) {
         if (this.authService.signout(res)) res.send('Successfully signed out!');
@@ -65,8 +73,18 @@ export class AuthController {
     signin(@Body() dto: SigninDto, @Res() res: Response) {
         this.authService
             .signin(dto, res)
-            .then(() => {
-                res.send('Successfully signed in!');
+            .then((user) => {
+                if (user.twoFactorAuthentication) {
+                    res.json({
+                        message: 'Two-Factor authentication required',
+                        user,
+                    });
+                } else {
+                    res.json({
+                        message: 'Successfully signed in!',
+                        user,
+                    });
+                }
             })
             .catch((error: ForbiddenException) => {
                 res.status(401).send(error.message);
@@ -74,13 +92,9 @@ export class AuthController {
     }
 
     @Post('authenticate-2fa')
-    async enable2faPost(
-        @GetUser() user: User,
-        @Body() dto: TwoFactorCodeDto,
-        @Res() res: Response,
-    ) {
+    async enable2faPost(@Body() dto: TwoFactorCodeDto, @Res() res: Response) {
         this.authService
-            .authenticateTwoFactor(user, dto.code)
+            .authenticateTwoFactor(dto.nickname, dto.code, res)
             .then(() => {
                 res.send('Two-Factor authentification successful');
             })

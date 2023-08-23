@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const SignOutPage: React.FC = () => {
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState('Not logged in');
     const [error, setError] = useState(false);
     const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ const SignOutPage: React.FC = () => {
             } catch (error: any) {
                 console.error(error);
                 setError(true);
-                setMessage(error.response.data);
+                setMessage(error.response.data.message);
             }
         };
         signOut();

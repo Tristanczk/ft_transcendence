@@ -4,7 +4,7 @@ import Button from '../components/Button';
 import axios from 'axios';
 import QRCodeModal from '../components/QRCodeModal';
 import { NAVBAR_HEIGHT } from '../constants';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
 import { ModalInputs } from '../components/QRCodeModal';
 
@@ -21,6 +21,8 @@ const SettingsPage: React.FC = () => {
     const [displayModal, setDisplayModal] = useState(false);
     const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
     const [update, setUpdate] = useState(false);
+    const [error, setError] = useState<string | undefined>();
+    const [enableTwoFactor, setEnableTwoFactor] = useState(false);
 
     const {
         handleSubmit,
@@ -46,7 +48,7 @@ const SettingsPage: React.FC = () => {
             }
         };
         fetchUser();
-    }, []);
+    }, [update, enableTwoFactor]);
 
     useEffect(() => {
         if (update) {
@@ -60,12 +62,37 @@ const SettingsPage: React.FC = () => {
         }
     }, [update]);
 
+    useEffect(() => {
+        if (enableTwoFactor) {
+            const timeoutId = setTimeout(() => {
+                setEnableTwoFactor(false);
+            }, 3000);
+
+            return () => {
+                clearTimeout(timeoutId);
+            };
+        }
+    }, [enableTwoFactor]);
+
     const handleTwoFactorToggle = () => {
         setIsTwoFactorEnabled((prev) => !prev);
     };
 
-    const handleCodeCheck = (data: ModalInputs) => {
-        console.log(data.validationCode);
+    const handleCodeCheck = async (data: ModalInputs) => {
+        try {
+            await axios.post(
+                'http://localhost:3333/users/enable-2fa',
+                {
+                    code: data.validationCode,
+                },
+                { withCredentials: true },
+            );
+            setDisplayModal(false);
+            setEnableTwoFactor(true);
+        } catch (error: any) {
+            console.log('error', error.response);
+            setError(error.response.data);
+        }
     };
 
     const onSubmit = async (data: Inputs) => {
@@ -111,6 +138,12 @@ const SettingsPage: React.FC = () => {
                         {update && (
                             <p className="error mt-2 text-sm font-bold text-green-700 dark:text-green-500">
                                 Your settings have been successfully updated
+                            </p>
+                        )}
+                        {enableTwoFactor && (
+                            <p className="error mt-2 text-sm font-bold text-green-700 dark:text-green-500">
+                                Two-factor authentication has been successfully
+                                enabled
                             </p>
                         )}
                         <form
@@ -176,6 +209,7 @@ const SettingsPage: React.FC = () => {
                                 modalId={'QRCode-modal'}
                                 closeModal={() => setDisplayModal(false)}
                                 onSubmit={handleCodeCheck}
+                                error={error}
                             />
                         ) : null}
                     </div>

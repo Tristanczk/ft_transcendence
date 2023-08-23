@@ -5,6 +5,7 @@ import {
     Patch,
     Post,
     Res,
+    UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
@@ -45,7 +46,7 @@ export class UserController {
             .then(() => {
                 res.send('Two-Factor authentification successfully enabled!');
             })
-            .catch((error) => {
+            .catch((error: UnauthorizedException) => {
                 res.status(401).send(error.message);
             });
     }
