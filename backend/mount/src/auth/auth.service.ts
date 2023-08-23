@@ -93,6 +93,7 @@ export class AuthService {
                 secure: true,
                 sameSite: 'strict',
             });
+            this.gatewayService.userArrive(user.id); // nico
             return jwtToken;
         } catch (error) {
             console.log('signin42', error);
@@ -120,6 +121,7 @@ export class AuthService {
                 secure: true,
                 sameSite: 'strict',
             });
+            this.gatewayService.userArrive(user.id); // nico
             return jwtToken;
         } catch (error) {
             console.log('signup', error);
@@ -160,6 +162,7 @@ export class AuthService {
             secure: true,
             sameSite: 'strict',
         });
+        this.gatewayService.userArrive(user.id); // nico
         return jwtToken;
     }
 

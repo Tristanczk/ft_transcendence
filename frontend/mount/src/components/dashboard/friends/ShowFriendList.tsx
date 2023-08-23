@@ -79,7 +79,11 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                        {friend.nickname}<ShowIsOnline userId={friend.id} initStatus={friend.isConnected} />
+                                        {friend.nickname}
+                                        <ShowIsOnline
+                                            userId={friend.id}
+                                            initStatus={friend.isConnected}
+                                        />
                                     </p>
                                     <p className="text-sm text-gray-500 truncate dark:text-gray-400">
                                         elo: {friend.elo}

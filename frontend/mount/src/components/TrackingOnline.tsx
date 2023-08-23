@@ -27,7 +27,7 @@ function TrackingOnline({user}: Props) {
 			socket.emit('onLeave', userObj);
 		};
 
-		
+
 		socket.on('onLeave', (data) => {});
 	  
 		if (!connected){
@@ -41,10 +41,16 @@ function TrackingOnline({user}: Props) {
 			setConnected(true);
 		});
 
+		socket.on('close', () => {
+            socket.emit('onLeave', userObj);
+			setConnected(true);
+		});
+
 		window.addEventListener('beforeunload', handleBeforeUnload);
 
 		return () => {
 			socket.off('connect');
+			socket.off('close');
 			socket.off('onLeave');
 			window.removeEventListener('beforeunload', handleBeforeUnload);
 		};
