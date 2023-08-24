@@ -21,7 +21,9 @@ export class UserService {
         return user;
     }
 
-    async initTwoFactorAuthentication(user: User): Promise<{ qrCode: string }> {
+    async initTwoFactorAuthentication(
+        user: User,
+    ): Promise<{ qrCode: string; secret: string }> {
         const secret = authenticator.generateSecret();
 
         const otpauthUrl = authenticator.keyuri(
@@ -32,7 +34,7 @@ export class UserService {
         this.editUser(user.id, { twoFactorSecret: secret });
         const qrCode = await toDataURL(otpauthUrl);
         // console.log(qrCode);
-        return { qrCode };
+        return { qrCode, secret };
     }
 
     async enableTwoFactorAuthentication(user: User, code: string) {

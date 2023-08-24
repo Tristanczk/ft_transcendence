@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import ToggleButton from '../components/ToggleButton';
 import Button from '../components/Button';
 import axios from 'axios';
-import QRCodeModal from '../components/TwoFactorModal';
 import { NAVBAR_HEIGHT } from '../constants';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
 import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
 
@@ -21,6 +20,9 @@ const SettingsPage: React.FC = () => {
     const [displayModal, setDisplayModal] = useState(false);
     const [displayDisableModal, setDisplayDisableModal] = useState(false);
     const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | undefined>();
+    const [twoFactorSecret, setTwoFactorSecret] = useState<
+        string | undefined
+    >();
     const [update, setUpdate] = useState(false);
     const [error, setError] = useState<string | undefined>();
     const [twoFactor, setTwoFactor] = useState<string | undefined>();
@@ -126,6 +128,7 @@ const SettingsPage: React.FC = () => {
                     { withCredentials: true },
                 );
                 setQrCodeDataUrl(response.data.qrCode);
+                setTwoFactorSecret(response.data.secret);
                 setDisplayModal(true);
             } else if (
                 isTwoFactorEnabled === false &&
@@ -230,6 +233,7 @@ const SettingsPage: React.FC = () => {
                             <TwoFactorModal
                                 title="Enable two-factor authentication"
                                 qrCodeDataUrl={qrCodeDataUrl}
+                                secret={twoFactorSecret}
                                 modalId={'Enable-2fa-modal'}
                                 closeModal={() => setDisplayModal(false)}
                                 onSubmit={enableTwoFactor}
@@ -239,7 +243,6 @@ const SettingsPage: React.FC = () => {
                         {displayDisableModal ? (
                             <TwoFactorModal
                                 title="Disable two-factor authentication"
-                                qrCodeDataUrl={undefined}
                                 modalId={'Disable-2fa-modal'}
                                 closeModal={() => setDisplayDisableModal(false)}
                                 onSubmit={disableTwoFactor}

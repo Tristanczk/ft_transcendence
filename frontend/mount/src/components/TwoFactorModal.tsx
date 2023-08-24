@@ -6,7 +6,8 @@ import ErrorsFormField from './ErrorsFormField';
 interface Props {
     error?: string | undefined;
     modalId: string;
-    qrCodeDataUrl: string | undefined;
+    qrCodeDataUrl?: string | undefined;
+    secret?: string | undefined;
     title: string;
     closeModal: () => void;
     onSubmit: (data: ModalInputs) => void;
@@ -19,7 +20,8 @@ export type ModalInputs = {
 const TwoFactorModal: React.FC<Props> = ({
     error = undefined,
     modalId,
-    qrCodeDataUrl,
+    qrCodeDataUrl = undefined,
+    secret = undefined,
     title,
     closeModal,
     onSubmit,
@@ -73,6 +75,10 @@ const TwoFactorModal: React.FC<Props> = ({
                                     account
                                 </p>
                                 <img src={qrCodeDataUrl} alt="QR Code" />
+                                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                                    If you can't scan the QR code, type the
+                                    following secret key in the app: {secret}
+                                </p>
                             </div>
                         )}
                         <form
