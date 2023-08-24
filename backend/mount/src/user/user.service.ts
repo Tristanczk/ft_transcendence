@@ -45,4 +45,18 @@ export class UserService {
         }
         this.editUser(user.id, { twoFactorAuthentication: true });
     }
+
+    async disableTwoFactorAuthentication(user: User, code: string) {
+        const isCodeValid = authenticator.verify({
+            token: code,
+            secret: user.twoFactorSecret,
+        });
+        if (!isCodeValid) {
+            throw new UnauthorizedException('Wrong authentication code');
+        }
+        this.editUser(user.id, {
+            twoFactorAuthentication: false,
+            twoFactorSecret: null,
+        });
+    }
 }

@@ -50,4 +50,20 @@ export class UserController {
                 res.status(401).send(error.message);
             });
     }
+
+    @Post('disable-2fa')
+    async disable2fa(
+        @GetUser() user: User,
+        @Body() dto: TwoFactorCodeDto,
+        @Res() res: Response,
+    ) {
+        this.userService
+            .disableTwoFactorAuthentication(user, dto.code)
+            .then(() => {
+                res.send('Two-Factor authentification successfully disabled!');
+            })
+            .catch((error: UnauthorizedException) => {
+                res.status(401).send(error.message);
+            });
+    }
 }

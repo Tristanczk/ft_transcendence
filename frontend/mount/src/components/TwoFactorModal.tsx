@@ -6,7 +6,8 @@ import ErrorsFormField from './ErrorsFormField';
 interface Props {
     error?: string | undefined;
     modalId: string;
-    qrCodeDataUrl: string;
+    qrCodeDataUrl: string | undefined;
+    title: string;
     closeModal: () => void;
     onSubmit: (data: ModalInputs) => void;
 }
@@ -15,10 +16,11 @@ export type ModalInputs = {
     validationCode: number;
 };
 
-const QRCodeModal: React.FC<Props> = ({
+const TwoFactorModal: React.FC<Props> = ({
     error = undefined,
     modalId,
     qrCodeDataUrl,
+    title,
     closeModal,
     onSubmit,
 }) => {
@@ -38,7 +40,7 @@ const QRCodeModal: React.FC<Props> = ({
                     <div className="relative bg-white rounded-lg shadow dark:bg-gray-700 p-5 space-y-2">
                         <div className="flex items-center justify-between border-b rounded-t dark:border-gray-600">
                             <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-                                Two-factor authentication
+                                {title}
                             </h3>
                             <button
                                 type="button"
@@ -63,13 +65,16 @@ const QRCodeModal: React.FC<Props> = ({
                                 <span className="sr-only">Close modal</span>
                             </button>
                         </div>
-                        <div className="space-y-4">
-                            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                                Please scan the QR code below with Google
-                                Authenticator to register the app on you account
-                            </p>
-                            <img src={qrCodeDataUrl} alt="QR Code" />
-                        </div>
+                        {qrCodeDataUrl && (
+                            <div className="space-y-4">
+                                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                                    Please scan the QR code below with Google
+                                    Authenticator to register the app on you
+                                    account
+                                </p>
+                                <img src={qrCodeDataUrl} alt="QR Code" />
+                            </div>
+                        )}
                         <form
                             className="space-y-4"
                             onSubmit={handleSubmit(onSubmit)}
@@ -79,7 +84,7 @@ const QRCodeModal: React.FC<Props> = ({
                                 errors={errors}
                                 hasError={!!errors.validationCode}
                                 controllerName="validationCode"
-                                label="Please enter the validation code displayed
+                                label="Please enter the code displayed
                                 on GoogleAuthenticator"
                                 placeholder="000 000"
                                 rules={{
@@ -103,13 +108,19 @@ const QRCodeModal: React.FC<Props> = ({
                             />
                             {error && (
                                 <p className="error mt-2 text-sm font-bold text-red-600 dark:text-red-500">
-                                    Impossible to enable two factor
-                                    authentication: {error}
+                                    {qrCodeDataUrl
+                                        ? 'Impossible to enable two factor authentication: '
+                                        : 'Impossible to disable two factor authentication: '}
+                                    {error}
                                 </p>
                             )}
                             <Button
                                 disabled={Object.keys(errors).length > 0}
-                                text="Validate two-factor authentication"
+                                text={
+                                    qrCodeDataUrl
+                                        ? 'Enable two-factor authentication'
+                                        : 'Disable two-factor authentication'
+                                }
                                 type="submit"
                             ></Button>
                         </form>
@@ -121,4 +132,4 @@ const QRCodeModal: React.FC<Props> = ({
     );
 };
 
-export default QRCodeModal;
+export default TwoFactorModal;

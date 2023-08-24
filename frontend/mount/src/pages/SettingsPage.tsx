@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import ToggleButton from '../components/ToggleButton';
 import Button from '../components/Button';
 import axios from 'axios';
-import QRCodeModal from '../components/QRCodeModal';
+import QRCodeModal from '../components/TwoFactorModal';
 import { NAVBAR_HEIGHT } from '../constants';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
-import { ModalInputs } from '../components/QRCodeModal';
+import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
 
 interface Inputs {
     username: string;
@@ -19,10 +19,11 @@ const SettingsPage: React.FC = () => {
     const [isTwoFactorEnabledPrev, setIsTwoFactorEnabledPrev] = useState(false);
     const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(false);
     const [displayModal, setDisplayModal] = useState(false);
-    const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
+    const [displayDisableModal, setDisplayDisableModal] = useState(false);
+    const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | undefined>();
     const [update, setUpdate] = useState(false);
     const [error, setError] = useState<string | undefined>();
-    const [enableTwoFactor, setEnableTwoFactor] = useState(false);
+    const [twoFactor, setTwoFactor] = useState<string | undefined>();
 
     const {
         handleSubmit,
@@ -48,7 +49,7 @@ const SettingsPage: React.FC = () => {
             }
         };
         fetchUser();
-    }, [update, enableTwoFactor]);
+    }, [update, twoFactor]);
 
     useEffect(() => {
         if (update) {
@@ -63,22 +64,22 @@ const SettingsPage: React.FC = () => {
     }, [update]);
 
     useEffect(() => {
-        if (enableTwoFactor) {
+        if (twoFactor) {
             const timeoutId = setTimeout(() => {
-                setEnableTwoFactor(false);
+                setTwoFactor(undefined);
             }, 3000);
 
             return () => {
                 clearTimeout(timeoutId);
             };
         }
-    }, [enableTwoFactor]);
+    }, [twoFactor]);
 
     const handleTwoFactorToggle = () => {
         setIsTwoFactorEnabled((prev) => !prev);
     };
 
-    const handleCodeCheck = async (data: ModalInputs) => {
+    const enableTwoFactor = async (data: ModalInputs) => {
         try {
             await axios.post(
                 'http://localhost:3333/users/enable-2fa',
@@ -88,7 +89,26 @@ const SettingsPage: React.FC = () => {
                 { withCredentials: true },
             );
             setDisplayModal(false);
-            setEnableTwoFactor(true);
+            setTwoFactor('enabled');
+            setError(undefined);
+        } catch (error: any) {
+            console.log('error', error.response);
+            setError(error.response.data);
+        }
+    };
+
+    const disableTwoFactor = async (data: ModalInputs) => {
+        try {
+            await axios.post(
+                'http://localhost:3333/users/disable-2fa',
+                {
+                    code: data.validationCode,
+                },
+                { withCredentials: true },
+            );
+            setDisplayDisableModal(false);
+            setTwoFactor('disabled');
+            setError(undefined);
         } catch (error: any) {
             console.log('error', error.response);
             setError(error.response.data);
@@ -107,18 +127,21 @@ const SettingsPage: React.FC = () => {
                 );
                 setQrCodeDataUrl(response.data.qrCode);
                 setDisplayModal(true);
-            } else {
-                await axios.patch(
-                    'http://localhost:3333/users',
-                    {
-                        nickname: data.username,
-                        email: data.email,
-                        twoFactorAuthentication: isTwoFactorEnabled,
-                    },
-                    { withCredentials: true },
-                );
-                setUpdate(true);
+            } else if (
+                isTwoFactorEnabled === false &&
+                isTwoFactorEnabledPrev === true
+            ) {
+                setDisplayDisableModal(true);
             }
+            await axios.patch(
+                'http://localhost:3333/users',
+                {
+                    nickname: data.username,
+                    email: data.email,
+                },
+                { withCredentials: true },
+            );
+            setUpdate(true);
         } catch (error) {
             console.error(error);
         }
@@ -140,10 +163,10 @@ const SettingsPage: React.FC = () => {
                                 Your settings have been successfully updated
                             </p>
                         )}
-                        {enableTwoFactor && (
+                        {twoFactor && (
                             <p className="error mt-2 text-sm font-bold text-green-700 dark:text-green-500">
-                                Two-factor authentication has been successfully
-                                enabled
+                                Two-factor authentication has been successfully{' '}
+                                {twoFactor}
                             </p>
                         )}
                         <form
@@ -204,11 +227,22 @@ const SettingsPage: React.FC = () => {
                             />
                         </form>
                         {displayModal ? (
-                            <QRCodeModal
+                            <TwoFactorModal
+                                title="Enable two-factor authentication"
                                 qrCodeDataUrl={qrCodeDataUrl}
-                                modalId={'QRCode-modal'}
+                                modalId={'Enable-2fa-modal'}
                                 closeModal={() => setDisplayModal(false)}
-                                onSubmit={handleCodeCheck}
+                                onSubmit={enableTwoFactor}
+                                error={error}
+                            />
+                        ) : null}
+                        {displayDisableModal ? (
+                            <TwoFactorModal
+                                title="Disable two-factor authentication"
+                                qrCodeDataUrl={undefined}
+                                modalId={'Disable-2fa-modal'}
+                                closeModal={() => setDisplayDisableModal(false)}
+                                onSubmit={disableTwoFactor}
                                 error={error}
                             />
                         ) : null}
