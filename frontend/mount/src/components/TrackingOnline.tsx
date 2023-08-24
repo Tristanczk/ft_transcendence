@@ -26,6 +26,11 @@ function TrackingOnline({user}: Props) {
 			socket.emit('onLeave', userObj);
 		};
 
+		const interval = setInterval(() => {
+			// socket.emit('ping', user.id + ', date=' + Date());
+			socket.emit('ping', user.id);
+		  }, 2000); 
+
 
 		socket.on('onLeave', (data) => {});
 	  
@@ -45,13 +50,14 @@ function TrackingOnline({user}: Props) {
 			setConnected(true);
 		});
 
-		window.addEventListener('beforeunload', handleBeforeUnload);
+		// window.addEventListener('beforeunload', handleBeforeUnload);
 
 		return () => {
 			socket.off('connect');
 			socket.off('close');
 			socket.off('onLeave');
-			window.removeEventListener('beforeunload', handleBeforeUnload);
+			clearInterval(interval);
+			// window.removeEventListener('beforeunload', handleBeforeUnload);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);

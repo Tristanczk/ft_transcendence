@@ -16,10 +16,6 @@ function ShowIsOnline({ userId, initStatus }: FriendsProps) {
     const [isConnected, setIsConnected] = useState<boolean>(false);
 
     useEffect(() => {
-        // const userObj = {
-        //     id: userId,
-        //     idConnection: socket.id,
-        // };
 
         if (initStatus) {
             setIsConnected(true);
@@ -33,6 +29,8 @@ function ShowIsOnline({ userId, initStatus }: FriendsProps) {
                     : setIsConnected(true);
             }
         });
+
+        
 
         return () => {
             socket.off('updateStatus');

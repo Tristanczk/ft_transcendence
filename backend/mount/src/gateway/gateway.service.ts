@@ -8,6 +8,13 @@ import {
 import { Server } from 'socket.io';
 import { PrismaService } from '../prisma/prisma.service';
 import { OnArriveDto } from './dto/onArrive.dto';
+import { Interval } from '@nestjs/schedule';
+
+interface Props {
+    id: number;
+    nb: number;
+    date: number;
+}
 
 @Injectable()
 @WebSocketGateway({
@@ -17,6 +24,8 @@ import { OnArriveDto } from './dto/onArrive.dto';
 })
 export class GatewayService implements OnModuleInit {
     constructor(private prisma: PrismaService) {}
+
+    array: Props[] = [];
 
     @WebSocketServer()
     server: Server;
@@ -96,5 +105,30 @@ export class GatewayService implements OnModuleInit {
         });
         this.server.emit('updateStatus', { idUser: body.id, type: 'come' });
         return 'ok';
+    }
+
+    @SubscribeMessage('ping')
+    async handlePing(@MessageBody() id: number) {
+        const l = this.array.findIndex((a) => a.id === id);
+
+        if (l !== -1) {
+            this.array[l].nb++;
+            this.array[l].date = Date.now();
+        } else {
+            this.array.push({ id: id, nb: 0, date: Date.now() });
+        }
+    }
+
+    @Interval(5000)
+    async handleInterval() {
+        const timeNow: number = Date.now();
+        this.array.forEach((arr) => {
+            if (arr.id !== -1) {
+                if (timeNow - arr.date > 5000) {
+                    this.userLeave(arr.id);
+                    arr.id = -1;
+                }
+            }
+        });
     }
 }
