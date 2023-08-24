@@ -9,9 +9,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     constructor(config: ConfigService, private prisma: PrismaService) {
         super({
             jwtFromRequest: (req) => {
-                return req.cookies[config.get('JWT_COOKIE')];
+                return req.cookies[config.get('JWT_ACCESS_TOKEN_COOKIE')];
             },
-            secretOrKey: config.get('JWT_SECRET'),
+            secretOrKey: config.get('JWT_ACCESS_TOKEN_SECRET'),
         });
     }
 
