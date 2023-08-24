@@ -21,6 +21,13 @@ export class UserService {
         return user;
     }
 
+    async getAllUsers() {
+        console.log('bonjour');
+        const users = await this.prisma.user.findMany();
+        console.log(users);
+        return users;
+    }
+
     async initTwoFactorAuthentication(
         user: User,
     ): Promise<{ qrCode: string; secret: string }> {

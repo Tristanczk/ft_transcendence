@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // url      = "postgresql://postgres:n2J5dJGelC0W4UEtiHkMZRrdrSHsLKr7@localhost:5432/nest?schema=public"
+//   url      = "postgresql://postgres:n2J5dJGelC0W4UEtiHkMZRrdrSHsLKr7@localhost:5432/nest?schema=public"
   url      = env("DB_URL")
 }
 
@@ -22,4 +22,11 @@ model User {
 
   twoFactorAuthentication Boolean @default(false)
   twoFactorSecret          String?
+}
+
+model Friends {
+	id			Int			@id @default(autoincrement())
+	createdAt	DateTime 	@default(now())
+	idUserA		Int
+	idUserB		Int
 }

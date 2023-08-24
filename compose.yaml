@@ -54,6 +54,24 @@ services:
       - ./backend/mount:/backend
     init: true
 
+  # prisma-studio:
+  #   build:
+  #     context: ./prismastudio
+  #     dockerfile: Dockerfile
+  #   image: prismastudio
+  #   container_name: prismastudio
+  #   ports:
+  #     - 5555:5555
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - ft_transcendence
+  #   depends_on:
+  #     - backend
+  #     - frontend
+  #   volumes:
+  #     - ./backend/mount:/backend
+    
 volumes:
   db-data:
     name: db-data

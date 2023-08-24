@@ -6,3 +6,10 @@ export type User = {
     loginNb: number;
     twoFactorAuthentication: boolean;
 };
+
+export type Friends = {
+    id: number;
+	createdAt: Date;
+	idUserA: number;
+	idUserB: number;
+}

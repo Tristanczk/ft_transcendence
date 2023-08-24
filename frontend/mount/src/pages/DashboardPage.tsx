@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { User } from '../types';
+import PresentationUser from '../components/dashboard/PresentationUser'
+import StatsUser from '../components/dashboard/StatsUser';
+import Friends from '../components/dashboard/Friends';
 
 const DashboardPage: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
+    const [userList, setUserList] = useState<User[] | null>(null);
 
     useEffect(() => {
         const fetchUser = async () => {
+            // import current user
             try {
                 const response = await axios.get(
                     'http://localhost:3333/users/me',
@@ -16,16 +21,26 @@ const DashboardPage: React.FC = () => {
             } catch (error) {
                 console.error(error);
             }
+            // import user list
+            try {
+                const response = await axios.get(
+                    'http://localhost:3333/users/',
+                    { withCredentials: true },
+                );
+                setUserList(response.data);
+            } catch (error) {
+                console.error(error);
+            }
         };
         fetchUser();
     }, []);
 
     return user ? (
-        <div>
-            Welcome, {user.nickname}! Your current ELO is {user.elo}. This is
-            the {user.loginNb}th time you log in. Double authentication for your
-            account is set to {user.twoFactorAuthentication ? 'true' : 'false'}.
-        </div>
+        <>
+			<PresentationUser user={user} />
+			<Friends user={user} userList={userList} />
+			<StatsUser user={user} />
+		</>
     ) : (
         <div>You are not logged in.</div>
     );

@@ -20,6 +20,13 @@ import { TwoFactorCodeDto } from 'src/auth/dto';
 @Controller('users')
 export class UserController {
     constructor(private userService: UserService) {}
+
+	// return the list of all users
+	@Get() 
+	getAllUsers() {
+		return this.userService.getAllUsers()
+	}
+
     @Get('me')
     getMe(@GetUser() user: User) {
         return user;
