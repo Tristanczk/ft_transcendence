@@ -6,11 +6,13 @@ import {
     Param,
     ParseIntPipe,
     Delete,
+	Body,
 } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard';
 import { FriendsService } from './friends.service';
 import { GetUser } from 'src/auth/decorator';
 import { GetAllUsersResponseDto } from '../friends/dto/get-all-users.dto';
+import { GetFriendListDto } from './dto/get-friends-list.dto';
 
 @UseGuards(JwtGuard)
 @Controller('friends')
@@ -28,6 +30,11 @@ export class FriendsController {
     getMe(@GetUser('id') userId: number): Promise<GetAllUsersResponseDto[]> {
         return this.friendService.getAllMyFriends(userId);
     }
+
+	@Get('select/:nick')
+	getListFriendChoice(@GetUser('id') userId: number, @Param('nick') nick: string) {
+		return this.friendService.getListFriendChoice(userId, nick);
+	}
 
     @Post(':id')
     postFriend(

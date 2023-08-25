@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ShowFriendList from './ShowFriendList';
 import ShowTitleFriends from './ShowTitleFriends';
+import AddFriendElem from './AddFriendElem';
 
 interface FriendsProps {
     user: User;
@@ -135,6 +136,7 @@ function Friends({ user, userList }: FriendsProps) {
                             Add friend!
                         </button>
                     </form>
+					<AddFriendElem />
                 </div>
             </div>
         </>

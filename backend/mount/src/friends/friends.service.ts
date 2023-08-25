@@ -80,4 +80,21 @@ export class FriendsService {
         });
         return 'friend deleted';
     }
+
+	async getListFriendChoice(userId: number, nick: string) {
+		console.log('trying')
+		const friendsList = await this.prisma.user.findMany({
+			where: {
+				nickname: {
+					startsWith: nick
+				},
+			}
+		});
+		if (friendsList)
+			console.log(friendsList)
+		return friendsList
+            .filter((user) => user.id !== userId)
+            // .filter((user) => !friendsAdapted.includes(user.id))
+            .map((user) => new GetAllUsersResponseDto(user));
+	}
 }
