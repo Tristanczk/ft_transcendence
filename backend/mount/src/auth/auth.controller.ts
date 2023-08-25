@@ -3,21 +3,20 @@ import {
     Get,
     Query,
     Res,
-    Req,
-    UnauthorizedException,
     Post,
     Body,
     ForbiddenException,
     UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
+import { SignupDto, SigninDto } from './dto';
+import { GetUser } from './decorator';
+import { GatewayService } from 'src/gateway/gateway.service';
 import { SignupDto, SigninDto, TwoFactorCodeDto } from './dto';
 import { GetUser } from './decorator';
-import { User } from '@prisma/client';
-import { use } from 'passport';
 import { JwtGuard } from './guard';
 
 @Controller('auth')
@@ -26,6 +25,7 @@ export class AuthController {
         private authService: AuthService,
         private prisma: PrismaService,
         private config: ConfigService,
+        private gatewayService: GatewayService,
     ) {}
 
     @Get('signin/42')
@@ -52,8 +52,8 @@ export class AuthController {
 
     @UseGuards(JwtGuard)
     @Get('signout')
-    signout(@Res() res: Response) {
-        if (this.authService.signout(res)) res.send('Successfully signed out!');
+    signout(@Res() res: Response, @GetUser('id') userId: number) {
+        if (this.authService.signout(res, userId)) res.send('Successfully signed out!');
         else res.status(500).send('Internal server error');
     }
 

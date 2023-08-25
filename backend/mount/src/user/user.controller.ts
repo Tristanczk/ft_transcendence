@@ -2,6 +2,14 @@ import {
     Body,
     Controller,
     Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Res,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors,
     Patch,
     Post,
     Res,
@@ -13,6 +21,9 @@ import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { EditUserDto } from './dto';
 import { UserService } from './user.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from './middlewares/middlewaresImg';
 import { Response } from 'express';
 import { TwoFactorCodeDto } from 'src/auth/dto';
 
@@ -21,15 +32,39 @@ import { TwoFactorCodeDto } from 'src/auth/dto';
 export class UserController {
     constructor(private userService: UserService) {}
 
-	// return the list of all users
-	@Get() 
-	getAllUsers() {
-		return this.userService.getAllUsers()
-	}
-
     @Get('me')
     getMe(@GetUser() user: User) {
         return user;
+    }
+
+    // @Get('id/:id')
+    // getUserById(@Param('id', ParseIntPipe) userId: number) {
+    //     return user;
+    // }
+
+    @Post('avatar')
+    @UseInterceptors(
+        FileInterceptor('image', {
+            storage: diskStorage({
+                destination: './files',
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
+        }),
+    )
+    async downloadAvatar(
+        @GetUser('id') userId: number,
+        @UploadedFile() file: Express.Multer.File,
+    ) {
+        return this.userService.downloadAvatar(userId, file);
+    }
+
+    @Get('img/:id')
+    async seeUploadedFile(
+        @Param('id', ParseIntPipe) userId: number,
+        @Res() res,
+    ) {
+        return this.userService.uploadAvatar(userId, res);
     }
 
     @Patch()
