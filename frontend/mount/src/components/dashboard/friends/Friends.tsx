@@ -59,12 +59,12 @@ function Friends({ user, userList }: FriendsProps) {
         if (idSelectedToAddFriend !== user.id) {
             // console.log('done');
             try {
-                const response = await axios.post(
+                await axios.post(
                     `http://localhost:3333/friends/${idSelectedToAddFriend}`,
                     { id: idSelectedToAddFriend },
                     { withCredentials: true },
                 );
-                console.log(response.data);
+                // console.log(response.data);
             } catch (error) {
                 console.error(error);
             }
@@ -79,11 +79,10 @@ function Friends({ user, userList }: FriendsProps) {
         if (!idToDelete) return;
         // console.log('try to delete')
         try {
-            const response = await axios.delete(
-                `http://localhost:3333/friends/${idToDelete}`,
-                { withCredentials: true },
-            );
-            console.log(response.data);
+            await axios.delete(`http://localhost:3333/friends/${idToDelete}`, {
+                withCredentials: true,
+            });
+            // console.log(response.data);
         } catch (error) {
             console.error(error);
         }
@@ -108,7 +107,10 @@ function Friends({ user, userList }: FriendsProps) {
                 <div className="mb-6">
                     {/* <legend>Add a friend:</legend> */}
                     <form>
-                        <label htmlFor="users" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label
+                            htmlFor="users"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        >
                             Select a user to become friend with:
                         </label>
                         <select

@@ -22,7 +22,7 @@ function ShowIsOnline({ userId, initStatus }: FriendsProps) {
         }
 
         socket.on('updateStatus', (data: MessageUpdateStatus) => {
-            console.log(data);
+            // console.log(data);
             if (data.idUser === userId) {
                 data.type === 'leave'
                     ? setIsConnected(false)

@@ -12,8 +12,6 @@ import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-import { SignupDto, SigninDto } from './dto';
-import { GetUser } from './decorator';
 import { GatewayService } from 'src/gateway/gateway.service';
 import { SignupDto, SigninDto, TwoFactorCodeDto } from './dto';
 import { GetUser } from './decorator';

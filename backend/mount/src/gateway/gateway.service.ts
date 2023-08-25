@@ -32,7 +32,7 @@ export class GatewayService implements OnModuleInit {
 
     onModuleInit() {
         this.server.on('connection', (socket) => {
-            console.log('new comer:' + socket.id);
+            // console.log('new comer:' + socket.id);
         });
     }
 

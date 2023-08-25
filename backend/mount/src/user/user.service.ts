@@ -59,10 +59,13 @@ export class UserService {
             },
         });
         return user;
+	}
+
+
     async getAllUsers() {
-        console.log('bonjour');
+        // console.log('bonjour');
         const users = await this.prisma.user.findMany();
-        console.log(users);
+        // console.log(users);
         return users;
     }
 
