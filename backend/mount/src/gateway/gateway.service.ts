@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ForbiddenException, Injectable, OnModuleInit } from '@nestjs/common';
 import {
     MessageBody,
     SubscribeMessage,
@@ -91,7 +91,7 @@ export class GatewayService implements OnModuleInit {
 
     @SubscribeMessage('onArrive')
     async onArrive(@MessageBody() body: OnArriveDto) {
-        // console.log('got there=' + body.id + ', =' + body.idConnection);
+        //console.log('got there=' + body.id + ', =' + body.idConnection);
 
         await this.prisma.connections.create({
             data: {
@@ -152,12 +152,28 @@ export class GatewayService implements OnModuleInit {
     }
 
     @SubscribeMessage('message')
-    handleMessage(
+    async handleMessage(
         @MessageBody()
-        { senderId, message }: { senderId: string; message: string },
-    ): void {
+        { senderId, message }: { senderId: number; message: string },
+    ) {
         // Broadcast the message to all connected clients
-        console.log('handleMessage ' + senderId + ': ' + message);
+        const user = await this.prisma.connections.findFirst({
+            where: {
+                idUser: Number(senderId),
+            },
+        });
+        if (!user) {
+            throw new ForbiddenException('User id not found');
+        }
+
+        console.log(
+            'handleMessage from User ' +
+                user.idUser +
+                ' : ' +
+                user.idConnection +
+                '\n' +
+                message,
+        );
         this.server.emit('message', { senderId, message });
     }
 }

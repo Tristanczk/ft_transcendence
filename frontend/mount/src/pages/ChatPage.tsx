@@ -45,7 +45,7 @@ function ChatPage() {
     <div className="ChatPage">
       <section className="chatbox">
         <ChatWindow messages={messages} />
-        <MessageInput user="Me" send={send} />
+        <MessageInput user="1" send={send} />
       </section>
     </div>
   );
