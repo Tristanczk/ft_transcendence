@@ -1,167 +1,168 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import InputField from '../components/InputField';
+import React, { useState } from 'react';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
+import { NAVBAR_HEIGHT } from '../constants';
+import { useForm } from 'react-hook-form';
+import ErrorsFormField from '../components/ErrorsFormField';
+
+interface Inputs {
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+}
 
 const SignUpPage: React.FC = () => {
-    const [userName, setUserName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState<string>();
     const navigate = useNavigate();
 
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
-        if (password !== confirmPassword) {
-            navigate('/signup/result?result=failure_signup_different_password');
-        }
+    const {
+        handleSubmit,
+        control,
+        formState: { errors },
+        watch,
+    } = useForm<Inputs>({ mode: 'onTouched', criteriaMode: 'all' });
+
+    const passwordInput = watch('password');
+
+    const onSubmit = async (data: Inputs) => {
         try {
-            const response = await axios.post(
+            await axios.post(
                 'http://localhost:3333/auth/signup',
-                { nickname: userName, email, password },
+                {
+                    nickname: data.username,
+                    email: data.email,
+                    password: data.password,
+                },
                 { withCredentials: true },
             );
-            console.log(response.data);
-            navigate('/signin/result?result=success_signup');
-        } catch (error) {
-            console.error(error);
-            navigate('/signin/result?result=failure_signup');
+            navigate('/');
+        } catch (error: any) {
+            setError(error.response.data);
         }
-    };
-
-    const handleUserNameChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        setUserName(event.target.value);
-    };
-
-    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(event.target.value);
-    };
-
-    const handlePasswordChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        setPassword(event.target.value);
-    };
-
-    const handleConfirmPasswordChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        setConfirmPassword(event.target.value);
     };
 
     return (
         <section className="bg-gray-50 dark:bg-gray-900">
-            <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+            <div
+                className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0"
+                style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
+            >
+                <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 max-w-lg xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                            Create an account
+                            Sign in to your account
                         </h1>
-                        <form className="space-y-4 md:space-y-6" action="#">
-                            <div>
-                                <label
-                                    htmlFor="Username"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Username
-                                </label>
-                                <InputField
-                                    id="username"
-                                    placeholder={userName}
-                                    required={true}
-                                    type="username"
-                                    onChange={handleUserNameChange}
-                                ></InputField>
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="Email"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Email
-                                </label>
-                                <InputField
-                                    id="email"
-                                    placeholder={email}
-                                    required={true}
-                                    type="email"
-                                    onChange={handleEmailChange}
-                                ></InputField>
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="password"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Password
-                                </label>
-                                <InputField
-                                    id="password"
-                                    placeholder={password}
-                                    required={true}
-                                    type="password"
-                                    onChange={handlePasswordChange}
-                                ></InputField>
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="password"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Confirm password
-                                </label>
-                                <InputField
-                                    id="confirm-password"
-                                    placeholder={confirmPassword}
-                                    required={true}
-                                    type="password"
-                                    onChange={handleConfirmPasswordChange}
-                                ></InputField>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-start">
-                                    <div className="flex items-center h-5">
-                                        <input
-                                            id="remember"
-                                            aria-describedby="remember"
-                                            type="checkbox"
-                                            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-                                            required={false}
-                                        ></input>
-                                    </div>
-                                    <div className="ml-3 text-sm">
-                                        <label
-                                            htmlFor="remember"
-                                            className="text-gray-500 dark:text-gray-300"
-                                        >
-                                            Remember me
-                                        </label>
-                                    </div>
-                                </div>
-                                <a
-                                    href="#"
-                                    className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
-                                >
-                                    Forgot password?
-                                </a>
-                            </div>
-                            <Button
-                                text="Create your account"
-                                onClick={handleSubmit}
-                            ></Button>
-                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                                Already have an account?{' '}
-                                <a
-                                    href="/signin"
-                                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                                >
-                                    Sign in here
-                                </a>
+                        {error && (
+                            <p className="error mt-2 text-sm font-bold text-red-600 dark:text-red-500">
+                                Failed to sign up: {error}
                             </p>
+                        )}
+                        <form
+                            className="space-y-4 md:space-y-6"
+                            onSubmit={handleSubmit(onSubmit)}
+                        >
+                            <ErrorsFormField
+                                control={control}
+                                errors={errors}
+                                hasError={!!errors.username}
+                                controllerName="username"
+                                label="Username"
+                                placeholder="Username"
+                                rules={{
+                                    required: 'Username is required',
+                                    minLength: {
+                                        value: 3,
+                                        message:
+                                            'Username must be at least 3 characters long',
+                                    },
+                                    pattern: {
+                                        value: /^[a-zA-Z0-9_]+$/,
+                                        message:
+                                            'Username can only contain letters, numbers, and underscores',
+                                    },
+                                }}
+                            />
+                            <ErrorsFormField
+                                control={control}
+                                errors={errors}
+                                hasError={!!errors.email}
+                                controllerName="email"
+                                label="Email"
+                                placeholder="Email"
+                                rules={{
+                                    required: 'Email is required',
+                                    pattern: {
+                                        value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                        message: 'Invalid email format',
+                                    },
+                                }}
+                            />
+                            <ErrorsFormField
+                                control={control}
+                                errors={errors}
+                                hasError={!!errors.password}
+                                controllerName="password"
+                                label="Password"
+                                placeholder="Password"
+                                type="password"
+                                rules={{
+                                    required: 'Password is required',
+                                    minLength: {
+                                        value: 8,
+                                        message:
+                                            'Password must be at least 8 characters long',
+                                    },
+                                    validate: {
+                                        uppercase: (value: string) =>
+                                            /[A-Z]/.test(value) ||
+                                            'Password must contain at least one uppercase character',
+                                        lowercase: (value: string) =>
+                                            /[a-z]/.test(value) ||
+                                            'Password must contain at least one lowercase character',
+                                        digit: (value: string) =>
+                                            /\d/.test(value) ||
+                                            'Password must contain at least one digit',
+                                    },
+                                }}
+                            />
+                            <ErrorsFormField
+                                control={control}
+                                errors={errors}
+                                hasError={!!errors.confirmPassword}
+                                controllerName="confirmPassword"
+                                label="Confirm password"
+                                placeholder="Password"
+                                type="password"
+                                rules={{
+                                    required:
+                                        'Password confirmation is required',
+                                    validate: {
+                                        matchesPreviousPassword: (
+                                            value: string,
+                                        ) =>
+                                            value === passwordInput ||
+                                            'Passwords must match',
+                                    },
+                                }}
+                            />
+                            <Button
+                                disabled={Object.keys(errors).length > 0}
+                                text="Create your account"
+                                type="submit"
+                            />
                         </form>
+
+                        <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                            Already have an account?{' '}
+                            <a
+                                href="/signin"
+                                className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                            >
+                                Sign in here
+                            </a>
+                        </p>
                     </div>
                 </div>
             </div>

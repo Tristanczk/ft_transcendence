@@ -2,15 +2,17 @@ import React from 'react';
 
 interface Props {
     checked: boolean;
+    id: string;
     onChange: () => void;
 }
 
-const ToggleButton: React.FC<Props> = ({ checked, onChange }) => (
+const ToggleButton: React.FC<Props> = ({ checked, id, onChange }) => (
     <label className="relative inline-flex items-center cursor-pointer">
         <input
             type="checkbox"
             value=""
             className="sr-only peer"
+            id={id}
             checked={checked}
             onChange={onChange}
         ></input>
