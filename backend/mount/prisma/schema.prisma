@@ -38,3 +38,15 @@ model Connections {
   idUser		      Int
   idConnection    String
 }
+
+model Games {
+	id				Int @id @default(autoincrement())
+	createdAt	    DateTime 	@default(now())
+	finishedAt		DateTime
+	playerA			Int
+	playerB			Int
+	finished		Boolean
+	won				Boolean
+	scoreA			Int
+	scoreB			Int
+}

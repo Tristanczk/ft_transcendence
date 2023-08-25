@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 function GlobalStats() {
-	const [choice, setChoice] = useState(1);
-	const textShow = "p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800"
-	const textHidden = "hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800"
+    const [choice, setChoice] = useState(1);
+    const textShow = 'p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800';
+    const textHidden = 'hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800';
 
     return (
         <>
@@ -23,8 +23,8 @@ function GlobalStats() {
                             aria-controls="stats"
                             aria-selected="true"
                             className="inline-block w-full p-4 rounded-tl-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600"
-							onClick={() => setChoice(1)}
-						>
+                            onClick={() => setChoice(1)}
+                        >
                             Your statistics
                         </button>
                     </li>
@@ -37,9 +37,9 @@ function GlobalStats() {
                             aria-controls="about"
                             aria-selected="false"
                             className="inline-block w-full p-4 bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600"
-							onClick={() => setChoice(2)}
+                            onClick={() => setChoice(2)}
                         >
-                            Service statistics
+                            Our service
                         </button>
                     </li>
                 </ul>
@@ -56,50 +56,50 @@ function GlobalStats() {
                         <dl className="grid max-w-screen-xl grid-cols-2 gap-8 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-6 dark:text-white sm:p-8">
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    73M+
+                                    0
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
-                                    Developers
+                                    Games
                                 </dd>
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    100M+
+                                    0
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
-                                    Public repositories
+                                    Wins
                                 </dd>
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    1000s
+                                    0%
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
-                                    Open source projects
+                                    Success rate
                                 </dd>
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    1B+
+                                    1000
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
-                                    Contributors
+                                    Your Elo
                                 </dd>
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    90+
+                                    50s
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
-                                    Top Forbes companies
+									Average game lenght
                                 </dd>
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    4M+
+                                    0
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
-                                    Organizations
+                                    days since registration
                                 </dd>
                             </div>
                         </dl>
@@ -112,7 +112,7 @@ function GlobalStats() {
                     aria-labelledby="about-tab"
                 >
                     <h2 className="mb-5 text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                        We invest in the world’s potential
+                        On our site
                     </h2>
                     <ul
                         role="list"
@@ -129,7 +129,7 @@ function GlobalStats() {
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                             </svg>
                             <span className="leading-tight">
-                                Dynamic reports and dashboards
+                                0+ brilliants games
                             </span>
                         </li>
                         <li className="flex space-x-2 items-center">
@@ -143,7 +143,7 @@ function GlobalStats() {
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                             </svg>
                             <span className="leading-tight">
-                                Templates for everyone
+                                Fun for 0+ users
                             </span>
                         </li>
                         <li className="flex space-x-2 items-center">
@@ -157,7 +157,7 @@ function GlobalStats() {
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                             </svg>
                             <span className="leading-tight">
-                                Development workflow
+                                Average Elo of 1000
                             </span>
                         </li>
                         <li className="flex space-x-2 items-center">
@@ -171,7 +171,7 @@ function GlobalStats() {
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                             </svg>
                             <span className="leading-tight">
-                                Limitless business automation
+                                A passionnate team 
                             </span>
                         </li>
                     </ul>
