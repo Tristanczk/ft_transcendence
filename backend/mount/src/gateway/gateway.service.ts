@@ -73,6 +73,7 @@ export class GatewayService implements OnModuleInit {
             where: { id: userId },
             data: { isConnected: true },
         });
+        this.array.push({ id: userId, nb: 0, date: Date.now() });
         this.server.emit('updateStatus', { idUser: userId, type: 'come' });
     }
 
@@ -115,7 +116,7 @@ export class GatewayService implements OnModuleInit {
             this.array[l].nb++;
             this.array[l].date = Date.now();
         } else {
-            this.array.push({ id: id, nb: 0, date: Date.now() });
+            this.userArrive(id);
         }
     }
 
