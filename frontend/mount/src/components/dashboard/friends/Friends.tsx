@@ -7,22 +7,22 @@ import AddFriendElem from './AddFriendElem';
 
 interface FriendsProps {
     user: User;
-    userList: User[] | null;
 }
 
-function Friends({ user, userList }: FriendsProps) {
+function Friends({ user }: FriendsProps) {
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
     );
     const [possibleFriendsList, setPossibleFriendsList] = useState<
         UserSimplified[]
     >([]);
-    const [idSelectedToAddFriend, setIdSelectedToAddFriend] = useState(-1);
+    // const [idSelectedToAddFriend, setIdSelectedToAddFriend] = useState<number>(-1);
+	const [change, setChange] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchFriends = async () => {
             getMyFriends();
-            getPossibleFriends();
+            // getPossibleFriends();
         };
         fetchFriends();
     }, []);
@@ -40,29 +40,29 @@ function Friends({ user, userList }: FriendsProps) {
         }
     };
 
-    const getPossibleFriends = async () => {
-        // import user possible friends list
-        try {
-            const response = await axios.get(
-                'http://localhost:3333/friends/possiblefriends',
-                { withCredentials: true },
-            );
-            setPossibleFriendsList(response.data);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    // const getPossibleFriends = async () => {
+    //     // import user possible friends list
+    //     try {
+    //         const response = await axios.get(
+    //             'http://localhost:3333/friends/possiblefriends',
+    //             { withCredentials: true },
+    //         );
+    //         setPossibleFriendsList(response.data);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
 
-    const handleClickAddFriend = async (event: any) => {
+    const handleClickAddFriend = async (event: any, idSelected: number) => {
         event.preventDefault();
-        console.log('button clicked to add=' + idSelectedToAddFriend);
-        if (idSelectedToAddFriend === -1) return;
-        if (idSelectedToAddFriend !== user.id) {
+        console.log('button clicked to add=' + idSelected);
+        if (idSelected === -1) return;
+        if (idSelected !== user.id) {
             // console.log('done');
             try {
                 await axios.post(
-                    `http://localhost:3333/friends/${idSelectedToAddFriend}`,
-                    { id: idSelectedToAddFriend },
+                    `http://localhost:3333/friends/${idSelected}`,
+                    { id: idSelected },
                     { withCredentials: true },
                 );
                 // console.log(response.data);
@@ -70,8 +70,9 @@ function Friends({ user, userList }: FriendsProps) {
                 console.error(error);
             }
             getMyFriends();
-            getPossibleFriends();
-            setIdSelectedToAddFriend(-1);
+			setChange(true);
+            // getPossibleFriends();
+            // setIdSelectedToAddFriend(-1);
         } else alert("You can't add yourself as a friend!");
     };
 
@@ -88,15 +89,16 @@ function Friends({ user, userList }: FriendsProps) {
             console.error(error);
         }
         getMyFriends();
-        getPossibleFriends();
+		setChange(true);
+        // getPossibleFriends();
     };
 
-    const handleChangeListChooseFriend = (event: any) => {
-        const choice: number = parseInt(event.target.value);
-        setIdSelectedToAddFriend(choice);
-    };
+    // const handleChangeListChooseFriend = (event: any) => {
+    //     const choice: number = parseInt(event.target.value);
+    //     setIdSelectedToAddFriend(choice);
+    // };
 
-    return userList ? (
+    return (
         <>
             <div>
                 <ShowTitleFriends friendsList={friendsList} />
@@ -107,7 +109,7 @@ function Friends({ user, userList }: FriendsProps) {
 
                 <div className="mb-6">
                     {/* <legend>Add a friend:</legend> */}
-                    <form>
+                    {/* <form>
                         <label
                             htmlFor="users"
                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -135,13 +137,11 @@ function Friends({ user, userList }: FriendsProps) {
                         >
                             Add friend!
                         </button>
-                    </form>
-					<AddFriendElem />
+                    </form> */}
+					<AddFriendElem ButtonAddFriend={handleClickAddFriend} ButtonDeleteFriend={handleDeleteFriendClick} change={change} setChange={setChange} />
                 </div>
             </div>
         </>
-    ) : (
-        <div>No friends</div>
     );
 }
 

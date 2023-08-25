@@ -6,25 +6,16 @@ import {
     Param,
     ParseIntPipe,
     Delete,
-	Body,
 } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard';
 import { FriendsService } from './friends.service';
 import { GetUser } from 'src/auth/decorator';
 import { GetAllUsersResponseDto } from '../friends/dto/get-all-users.dto';
-import { GetFriendListDto } from './dto/get-friends-list.dto';
 
 @UseGuards(JwtGuard)
 @Controller('friends')
 export class FriendsController {
     constructor(private friendService: FriendsService) {}
-
-    @Get('possiblefriends')
-    getPossibleFriends(
-        @GetUser('id') userId: number,
-    ): Promise<GetAllUsersResponseDto[]> {
-        return this.friendService.getAllPossibleFriends(userId);
-    }
 
     @Get('me')
     getMe(@GetUser('id') userId: number): Promise<GetAllUsersResponseDto[]> {

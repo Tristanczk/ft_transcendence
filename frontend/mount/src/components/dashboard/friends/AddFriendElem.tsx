@@ -1,20 +1,31 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReturnAddFriend from "./ReturnAddFriend";
 import { UserSimplified } from "../../../types";
 
-function AddFriendElem() {
+interface Props {
+	ButtonAddFriend: any;
+	ButtonDeleteFriend: any;
+	change: boolean;
+	setChange: any;
+}
+
+function AddFriendElem({ButtonAddFriend, ButtonDeleteFriend, change, setChange}: Props) {
 	const [nick, setNick] = useState<string>('');
 	const [possibleFriends, setPossibleFriends] = useState<UserSimplified[] | null>(null);
 
 	async function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setNick(e.target.value);
 		console.log('here ' + e.target.value)
-		if (e.target.value.length >= 1) {
-			console.log('try ' + e.target.value)
+		getPossibleFriendsList(e.target.value)
+	}
+
+	async function getPossibleFriendsList(nickname: string) {
+		if (nickname.length >= 1) {
+			console.log('try ' + nickname)
 			try {
 				const response = await axios.get(
-					`http://localhost:3333/friends/select/${e.target.value}`,
+					`http://localhost:3333/friends/select/${nickname}`,
 					{ withCredentials: true },
 				);
 				setPossibleFriends(response.data);
@@ -26,6 +37,12 @@ function AddFriendElem() {
 			setPossibleFriends(null);
 		}
 	}
+
+	useEffect(() => {
+		getPossibleFriendsList(nick);
+		setChange(false);
+	}, [change])
+
 	return (
 		<>
 			<label htmlFor="website-admin" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nickname</label>
@@ -37,7 +54,7 @@ function AddFriendElem() {
 			</span>
 			<input onChange={(e) => handleOnChange(e)} type="text" id="website-admin" className="rounded-none rounded-r-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search by nickname" />
 			</div>
-			<ReturnAddFriend list={possibleFriends}/>
+			<ReturnAddFriend list={possibleFriends} ButtonAddFriend={ButtonAddFriend} ButtonDeleteFriend={ButtonDeleteFriend} />
 		</>
 	);
 }
