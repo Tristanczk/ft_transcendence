@@ -191,10 +191,10 @@ const getRandomPlayer = (
     }
 };
 
-const gameOver = (p5: p5Types) => {
+const gameOver = (p5: p5Types, arenaSize: number) => {
     p5.textFont('monospace');
     p5.textAlign(p5.CENTER, p5.CENTER);
-    p5.textSize(8 + p5.width / 30);
+    p5.textSize(8 + arenaSize / 30);
     p5.fill('black');
     p5.text('Game Over!', 0, 0);
     p5.noLoop();
@@ -316,7 +316,7 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
             player.draw(p5, arenaSize);
         }
         if (players.length === 1) {
-            gameOver(p5);
+            gameOver(p5, arenaSize);
         } else {
             ball.draw(p5, arenaSize);
         }
