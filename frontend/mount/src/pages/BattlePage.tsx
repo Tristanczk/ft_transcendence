@@ -63,7 +63,6 @@ class Player {
 
     private drawPaddle(
         p5: p5Types,
-        center: number,
         innerDiameter: number,
         outerDiameter: number,
     ): void {
@@ -76,52 +75,46 @@ class Player {
         );
         for (const angle of angles) {
             p5.vertex(
-                center + (p5.cos(angle) * innerDiameter) / 2,
-                center + (p5.sin(angle) * innerDiameter) / 2,
+                (p5.cos(angle) * innerDiameter) / 2,
+                (p5.sin(angle) * innerDiameter) / 2,
             );
         }
         for (const angle of angles.reverse()) {
             p5.vertex(
-                center + (p5.cos(angle) * outerDiameter) / 2,
-                center + (p5.sin(angle) * outerDiameter) / 2,
+                (p5.cos(angle) * outerDiameter) / 2,
+                (p5.sin(angle) * outerDiameter) / 2,
             );
         }
         p5.endShape(p5.CLOSE);
     }
 
-    private drawLife(
-        p5: p5Types,
-        center: number,
-        middleRadius: number,
-        angle: number,
-    ) {
+    private drawLife(p5: p5Types, middleRadius: number, angle: number) {
         p5.circle(
-            center + p5.cos(angle) * middleRadius,
-            center + p5.sin(angle) * middleRadius,
+            p5.cos(angle) * middleRadius,
+            p5.sin(angle) * middleRadius,
             PADDLE_WIDTH * p5.width * 0.32,
         );
     }
 
-    private drawLives(p5: p5Types, center: number, middleRadius: number): void {
+    private drawLives(p5: p5Types, middleRadius: number): void {
         p5.fill(this.color);
         if (this.lives === 1) {
-            this.drawLife(p5, center, middleRadius, this.angle);
+            this.drawLife(p5, middleRadius, this.angle);
             return;
         }
         const startDot = this.angle - DOT_SHIFT * this.paddleSize;
         const angleInc = (2 * DOT_SHIFT * this.paddleSize) / (this.lives - 1);
         for (let i = 0; i < this.lives; ++i) {
-            this.drawLife(p5, center, middleRadius, startDot + i * angleInc);
+            this.drawLife(p5, middleRadius, startDot + i * angleInc);
         }
     }
 
     draw(p5: p5Types): void {
-        const center = (p5.width - 1) / 2;
         const innerDiameter = p5.width * (1 - PADDLE_MARGIN - PADDLE_WIDTH);
         const outerDiameter = p5.width * (1 - PADDLE_MARGIN);
         const middleRadius = (innerDiameter + outerDiameter) / 4;
-        this.drawPaddle(p5, center, innerDiameter, outerDiameter);
-        this.drawLives(p5, center, middleRadius);
+        this.drawPaddle(p5, innerDiameter, outerDiameter);
+        this.drawLives(p5, middleRadius);
     }
 }
 
@@ -154,8 +147,8 @@ class Ball {
     draw(p5: p5Types): void {
         p5.fill('black');
         p5.circle(
-            (p5.width - 1) / 2 + (this.pos.x * p5.width) / 2,
-            (p5.height - 1) / 2 + (this.pos.y * p5.height) / 2,
+            this.pos.x * p5.width * 0.5,
+            this.pos.y * p5.height * 0.5,
             BALL_SIZE * p5.width,
         );
     }
@@ -194,8 +187,7 @@ const gameOver = (p5: p5Types) => {
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.textSize(8 + p5.width / 30);
     p5.fill('black');
-    const center = (p5.width - 1) / 2;
-    p5.text('Game Over!', center, center);
+    p5.text('Game Over!', 0, 0);
     p5.noLoop();
 };
 
@@ -307,8 +299,9 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
             }
         }
         p5.background(BACKGROUND_COLOR);
+        p5.translate(p5.width / 2, p5.height / 2);
         p5.fill(players[currentPlayer].color);
-        p5.circle(p5.width / 2, p5.height / 2, p5.width);
+        p5.circle(0, 0, p5.width);
         for (const player of players) {
             player.draw(p5);
         }
