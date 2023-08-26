@@ -347,17 +347,15 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
     );
 };
 
-const ClassicPage: React.FC = () => {
-    return (
-        <div
-            className="w-full flex items-center justify-center"
-            style={{
-                height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
-            }}
-        >
-            <Pong numPlayers={6} />
-        </div>
-    );
-};
+const ClassicPage: React.FC = () => (
+    <div
+        className="w-full flex items-center justify-center"
+        style={{
+            height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+        }}
+    >
+        <Pong numPlayers={6} />
+    </div>
+);
 
 export default ClassicPage;
