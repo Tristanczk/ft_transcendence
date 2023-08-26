@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import GetUser from '../components/user/getUser';
 
 const SignInResult: React.FC = () => {
     const location = useLocation();

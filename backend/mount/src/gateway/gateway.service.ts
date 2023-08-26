@@ -51,15 +51,12 @@ export class GatewayService implements OnModuleInit {
             where: { id: userId },
             data: { isConnected: false },
         });
-        await this.prisma.connections.deleteMany({
-            where: { idUser: userId },
-        });
         this.server.emit('updateStatus', { idUser: userId, type: 'leave' });
     }
 
     @SubscribeMessage('ping')
     async handlePing(@MessageBody() id: number) {
-        console.log('get ping id=' + id)
+		// console.log('get ping=' + id)
 		if (id === -1) return ;
 		const l = this.array.findIndex((a) => a.id === id);
         if (l !== -1) {
@@ -81,5 +78,6 @@ export class GatewayService implements OnModuleInit {
                 }
             }
         });
+		this.array = this.array.filter((arr) => arr.id !== -1)
     }
 }

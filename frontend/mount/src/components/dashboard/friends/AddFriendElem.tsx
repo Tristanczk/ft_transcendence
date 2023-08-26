@@ -47,6 +47,7 @@ function AddFriendElem({
     useEffect(() => {
         getPossibleFriendsList(nick);
         setChange(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [change]);
 
     return (

@@ -1,11 +1,9 @@
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { User } from '../types';
 import axios from 'axios';
 import Button from './Button';
 import { useWidth } from '../hooks';
 import { UserContext, useUserContext } from '../context/UserContext';
-import GetUser from './user/getUser';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -162,6 +160,7 @@ const NavBar: React.FC = () => {
             }
         };
         fetchUser();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname]);
 
     return (

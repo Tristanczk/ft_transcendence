@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import RootPage from './pages/RootPage';
@@ -13,19 +13,13 @@ import SignUpPage from './pages/SignUpPage';
 import SignInResult from './pages/SignInResult';
 import { WebsocketProvider, socket } from './context/WebsocketContext';
 import TrackingOnline from './components/TrackingOnline';
-import { User } from './types';
-import GetUser from './components/user/getUser';
 import { UserProvider } from './context/UserContext';
 
 const App: React.FC = () => {
-    const [user, setUser] = useState<User | null>(null);
-
     return (
         <WebsocketProvider value={socket}>
             <UserProvider>
-                {/* <GetUser/> */}
-                {/* {user !== null && <TrackingOnline user={user} />} */}
-				<TrackingOnline />
+                <TrackingOnline />
                 <BrowserRouter>
                     <NavBar />
                     <Routes>

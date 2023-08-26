@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { UserSimplified } from '../../../types';
 import ImageFriend from './imgFriend';
 
@@ -9,8 +8,8 @@ interface Props {
 }
 
 function ReturnAddFriend({ list, ButtonAddFriend, ButtonDeleteFriend }: Props) {
-    console.log('list=');
-    console.log(list);
+    // console.log('list=');
+    // console.log(list);
 
     return (
         list && (
@@ -20,16 +19,13 @@ function ReturnAddFriend({ list, ButtonAddFriend, ButtonDeleteFriend }: Props) {
                         <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
                             Users
                         </h5>
-                        <a
+                        {/* <a
                             href="#"
                             className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
-                        ></a>
+                        >vie</a> */}
                     </div>
                     <div className="flow-root">
-                        <ul
-                            role="list"
-                            className="divide-y divide-gray-200 dark:divide-gray-700"
-                        >
+                        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                             {list.length > 0 ? (
                                 list.map((user) => (
                                     <li className="py-3 sm:py-4" key={user.id}>
