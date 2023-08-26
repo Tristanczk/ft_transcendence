@@ -19,7 +19,7 @@ const HIT_PADDLE = 1 - PADDLE_MARGIN - PADDLE_WIDTH - BALL_SIZE;
 const HIT_ANGLE_FACTOR = Math.PI * 0.3;
 const PADDLE_SPEED = 0.005;
 const BALL_SPEED_INCREMENT = 0.00007;
-const BACKGROUND_COLOR = '#FFDDEE';
+const BACKGROUND_COLOR = '#FFFFFF';
 
 class Player {
     private keys: { clockwise: number; antiClockwise: number };
