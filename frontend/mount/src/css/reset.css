@@ -5,6 +5,7 @@
 }
 
 body,
+canvas,
 h1,
 h2,
 h3,
@@ -15,6 +16,7 @@ blockquote,
 dl,
 dd {
     margin: 0;
+    padding: 0;
 }
 
 ul[role='list'],

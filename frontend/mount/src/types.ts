@@ -10,17 +10,17 @@ export type User = {
 
 export type UserSimplified = {
     id: number;
-	createdAt: Date;
+    createdAt: Date;
     nickname: string;
     elo: number;
-	avatarPath: any;
+    avatarPath: any;
     isConnected: boolean;
 	isYourFriend?: boolean;
 };
 
 export type Friends = {
     id: number;
-	createdAt: Date;
-	idUserA: number;
-	idUserB: number;
-}
+    createdAt: Date;
+    idUserA: number;
+    idUserB: number;
+};

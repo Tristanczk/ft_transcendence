@@ -4,6 +4,7 @@ import axios from 'axios';
 import Button from './Button';
 import { useWidth } from '../hooks';
 import { UserContext, useUserContext } from '../context/UserContext';
+import { NAVBAR_HEIGHT } from '../constants';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -164,7 +165,10 @@ const NavBar: React.FC = () => {
     }, [location.pathname]);
 
     return (
-        <nav className="border-gray-200 bg-gray-900" style={{ height: 72 }}>
+        <nav
+            className="border-gray-200 bg-gray-900"
+            style={{ height: NAVBAR_HEIGHT }}
+        >
             <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link to="/" className="hidden sm:flex items-center">
                     <img
