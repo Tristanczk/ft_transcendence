@@ -4,7 +4,6 @@ import Sketch from 'react-p5';
 import { NAVBAR_HEIGHT } from '../constants';
 
 const ASPECT_RATIO = 16 / 9;
-const DEFAULT_HEIGHT = 360;
 const CANVAS_MARGIN = 20;
 const BALL_SIZE = 0.02;
 
