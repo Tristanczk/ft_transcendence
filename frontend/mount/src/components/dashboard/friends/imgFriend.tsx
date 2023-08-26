@@ -14,7 +14,11 @@ function ImageFriend({ friend }: Props) {
             try {
                 const response = await axios.get(
                     `http://localhost:3333/users/img/${friend.id}`,
-                    { params: { id: friend.id }, responseType: 'arraybuffer', withCredentials: true },
+                    {
+                        params: { id: friend.id },
+                        responseType: 'arraybuffer',
+                        withCredentials: true,
+                    },
                 );
                 const base64Image = btoa(
                     new Uint8Array(response.data).reduce(
@@ -29,7 +33,7 @@ function ImageFriend({ friend }: Props) {
             }
         };
         fetchImg();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return imgY ? (
