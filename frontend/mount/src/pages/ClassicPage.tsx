@@ -40,8 +40,6 @@ const ClassicGame = () => {
         resize(p5);
         p5.rectMode(p5.CENTER);
         p5.noStroke();
-        p5.textFont('monospace');
-        p5.textAlign(p5.CENTER, p5.CENTER);
         console.log(p5.width);
         reset(p5);
     };
@@ -87,7 +85,11 @@ const ClassicGame = () => {
         );
 
         p5.fill(255);
-        p5.text(`${scoreLeft} - ${scoreRight}`, p5.width / 2, 50);
+        const textSize = 8 + p5.width / 30;
+        p5.textSize(textSize);
+        p5.textFont('monospace');
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.text(`${scoreLeft} - ${scoreRight}`, p5.width / 2, textSize * 1.25);
     };
 
     const windowResized = (p5: P5) => {
@@ -151,11 +153,9 @@ const ClassicGame = () => {
     const resize = (p5: P5) => {
         const height = Math.min(
             (p5.windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
-            p5.windowHeight - CANVAS_MARGIN,
+            p5.windowHeight - CANVAS_MARGIN - NAVBAR_HEIGHT,
         );
         p5.resizeCanvas(ASPECT_RATIO * height, height);
-        p5.textSize(8 + p5.width / 30);
-        console.log(p5.width, p5.windowWidth, p5.height, p5.windowHeight);
     };
 
     const reset = (p5: P5) => {
