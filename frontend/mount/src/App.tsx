@@ -13,9 +13,9 @@ import SignUpPage from './pages/SignUpPage';
 import SignInResult from './pages/SignInResult';
 import { WebsocketProvider, socket } from './context/WebsocketContext';
 import TrackingOnline from './components/TrackingOnline';
-import GetUser from './components/user/getUser';
 import BattlePage from './pages/BattlePage';
 import ClassicPage from './pages/ClassicPage';
+import { UserProvider } from './context/UserContext';
 
 const App: React.FC = () => {
     return (
