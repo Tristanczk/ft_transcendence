@@ -115,7 +115,6 @@ function GlobalStats() {
                         On our site
                     </h2>
                     <ul
-                        role="list"
                         className="space-y-4 text-gray-500 dark:text-gray-400"
                     >
                         <li className="flex space-x-2 items-center">

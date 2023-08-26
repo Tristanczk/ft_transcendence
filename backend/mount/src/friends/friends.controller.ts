@@ -17,17 +17,15 @@ import { GetAllUsersResponseDto } from '../friends/dto/get-all-users.dto';
 export class FriendsController {
     constructor(private friendService: FriendsService) {}
 
-    @Get('possiblefriends')
-    getPossibleFriends(
-        @GetUser('id') userId: number,
-    ): Promise<GetAllUsersResponseDto[]> {
-        return this.friendService.getAllPossibleFriends(userId);
-    }
-
     @Get('me')
     getMe(@GetUser('id') userId: number): Promise<GetAllUsersResponseDto[]> {
         return this.friendService.getAllMyFriends(userId);
     }
+
+	@Get('select/:nick')
+	getListFriendChoice(@GetUser('id') userId: number, @Param('nick') nick: string) {
+		return this.friendService.getListFriendChoice(userId, nick);
+	}
 
     @Post(':id')
     postFriend(

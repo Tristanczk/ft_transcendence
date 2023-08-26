@@ -18,6 +18,11 @@ export class GetAllUsersResponseDto {
     @Exclude()
     twoFactorAuthentication: boolean;
     isConnected: boolean;
+	@Exclude()
+	twoFactorSecret: string;
+	@Exclude()
+	friends: string;
+	isYourFriend?: boolean;
 
     constructor(partial: Partial<GetAllUsersResponseDto>) {
         Object.assign(this, partial);

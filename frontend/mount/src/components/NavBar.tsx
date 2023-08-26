@@ -1,9 +1,9 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { User } from '../types';
 import axios from 'axios';
 import Button from './Button';
 import { useWidth } from '../hooks';
+import { UserContext, useUserContext } from '../context/UserContext';
 import { NAVBAR_HEIGHT } from '../constants';
 
 const NavLink: React.FC<{
@@ -139,7 +139,11 @@ const UserMenu: React.FC = () => {
 const NavBar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [user, setUser] = useState<User | null>(null);
+    // const [user, setUser] = useState<User | null>(null);
+	const userGlobal = useContext(UserContext);
+	const user = userGlobal.user;
+	const { loginUser, logoutUser } = useUserContext();
+
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -148,13 +152,16 @@ const NavBar: React.FC = () => {
                     'http://localhost:3333/users/me',
                     { withCredentials: true },
                 );
-                setUser(response.data);
+                // setUser(response.data);
+				loginUser(response.data)
             } catch (error) {
-                setUser(null);
-                console.error(error);
+				logoutUser();
+                // setUser(null);
+                // console.error(error);
             }
         };
         fetchUser();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname]);
 
     return (

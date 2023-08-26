@@ -1,22 +1,23 @@
 import axios from 'axios';
 import { useEffect } from 'react';
-import { User } from '../../types';
+import { useUserContext } from '../../context/UserContext';
 
-interface Props {
-    user: User | null;
-    setUser: any;
-}
-function GetUser({ user, setUser }: Props) {
+function GetUser() {
+    const { loginUser, logoutUser } = useUserContext();
+
     useEffect(() => {
         const fetchUser = async () => {
             try {
+                console.log('try');
                 const response = await axios.get(
                     'http://localhost:3333/users/me',
-                    { withCredentials: true },
+                    {
+                        withCredentials: true,
+                    },
                 );
-                setUser(response.data);
+                loginUser(response.data);
             } catch (error) {
-                console.error(error);
+                logoutUser();
             }
         };
         fetchUser();
