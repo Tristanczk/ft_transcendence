@@ -339,13 +339,9 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
 
     return (
         <Sketch
-            // @ts-ignore
             preload={preload}
-            // @ts-ignore
             setup={setup}
-            // @ts-ignore
             draw={draw}
-            // @ts-ignore
             windowResized={resize}
         />
     );
