@@ -6,11 +6,11 @@ function TrackingOnline() {
     const socket = useContext(WebsocketContext);
     const { user } = useUserContext();
 
-	let userId: number = -1;
-	if (user) userId = user.id;
+    let userId: number = -1;
+    if (user) userId = user.id;
 
     const userObj = {
-        id:userId,
+        id: userId,
         idConnection: socket.id,
     };
 

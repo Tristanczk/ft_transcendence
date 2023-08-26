@@ -72,23 +72,21 @@ function Friends({ user }: FriendsProps) {
     };
 
     return (
-        <>
-            <div>
-                <ShowTitleFriends friendsList={friendsList} />
-                <ShowFriendList
-                    friendsList={friendsList}
-                    handleDeleteFriendClick={handleDeleteFriendClick}
+        <div>
+            <ShowTitleFriends friendsList={friendsList} />
+            <ShowFriendList
+                friendsList={friendsList}
+                handleDeleteFriendClick={handleDeleteFriendClick}
+            />
+            <div className="mb-6">
+                <AddFriendElem
+                    ButtonAddFriend={handleClickAddFriend}
+                    ButtonDeleteFriend={handleDeleteFriendClick}
+                    change={change}
+                    setChange={setChange}
                 />
-                <div className="mb-6">
-                    <AddFriendElem
-                        ButtonAddFriend={handleClickAddFriend}
-                        ButtonDeleteFriend={handleDeleteFriendClick}
-                        change={change}
-                        setChange={setChange}
-                    />
-                </div>
             </div>
-        </>
+        </div>
     );
 }
 

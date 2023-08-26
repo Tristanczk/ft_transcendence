@@ -354,7 +354,7 @@ const BattlePage: React.FC = () => (
             height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
         }}
     >
-        <BattleGame numPlayers={6} />
+        <BattleGame numPlayers={3} />
     </div>
 );
 

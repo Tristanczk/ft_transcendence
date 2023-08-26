@@ -37,13 +37,11 @@ function ImageFriend({ friend }: Props) {
     }, []);
 
     return imgY ? (
-        <>
-            <img
-                className="w-8 h-8 rounded-full"
-                src={`data:image/png;base64,${imgY}`}
-                alt={friend.nickname}
-            />
-        </>
+        <img
+            className="w-8 h-8 rounded-full"
+            src={`data:image/png;base64,${imgY}`}
+            alt={friend.nickname}
+        />
     ) : (
         <>vide</>
     );
