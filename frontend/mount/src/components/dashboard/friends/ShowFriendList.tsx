@@ -1,6 +1,6 @@
 import { UserSimplified } from '../../../types';
 import ShowIsOnline from './ShowIsOnline';
-import ImageFriend from './imgFriend';
+import ImageFriend from './ImageFriend';
 
 interface Props {
     friendsList: UserSimplified[] | null;

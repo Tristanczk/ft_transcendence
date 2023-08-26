@@ -1,5 +1,5 @@
 import { UserSimplified } from '../../../types';
-import ImageFriend from './imgFriend';
+import ImageFriend from './ImageFriend';
 
 interface Props {
     list: UserSimplified[] | null;

@@ -101,7 +101,7 @@ export class AuthService {
                 secure: true,
                 sameSite: 'strict',
             });
-			// this.gatewayService.userArrive(user.id); // nico
+            // this.gatewayService.userArrive(user.id); // nico
             return user;
         } catch (error) {
             console.log('signin42', error);
@@ -179,7 +179,7 @@ export class AuthService {
             secure: true,
             sameSite: 'strict',
         });
-		// this.gatewayService.userArrive(user.id); // nico
+        // this.gatewayService.userArrive(user.id); // nico
         return user;
     }
 
