@@ -1,86 +1,32 @@
-import { useContext, useEffect, useState } from "react"
-import { WebsocketContext } from "../context/WebsocketContext";
-import { User } from "../types";
+import { useContext, useEffect } from 'react';
+import { WebsocketContext } from '../context/WebsocketContext';
+import { useUserContext } from '../context/UserContext';
 
-interface Props {
-	user: User;
-}
-function TrackingOnline({user}: Props) {
-	// const [value, setValue] = useState('');
-	const [connected, setConnected] = useState<boolean>(false);
-	const socket = useContext(WebsocketContext);
+function TrackingOnline() {
+    const socket = useContext(WebsocketContext);
+    const { user } = useUserContext();
 
-	useEffect(() => {
-		const userObj = {
-			id: user.id,
-			idConnection: socket.id,
-		}
+	let userId: number = -1;
+	if (user) userId = user.id;
 
-		const handleBeforeUnload = (e: any) => {
-			e.preventDefault();
-			e.returnValue = '';
-			const userObj = {
-				id: user.id,
-				idConnection: socket.id,
-			}
-			socket.emit('onLeave', userObj);
-		};
+    const userObj = {
+        id:userId,
+        idConnection: socket.id,
+    };
 
-		const interval = setInterval(() => {
-			// socket.emit('ping', user.id + ', date=' + Date());
-			socket.emit('ping', user.id);
-		  }, 2000); 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            socket.emit('ping', userObj.id);
+        }, 2000);
 
+        return () => {
+            socket.off('ping');
+            clearInterval(interval);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userId]);
 
-		socket.on('onLeave', (data) => {});
-	  
-		if (!connected){
-			setConnected(true);
-			console.log('got there');
-            socket.emit('onArrive', userObj);
-		}
-
-		socket.on('connect', () => {
-            socket.emit('onArrive', userObj);
-			setConnected(true);
-		});
-
-		socket.on('close', () => {
-            socket.emit('onLeave', userObj);
-			setConnected(true);
-		});
-
-		// window.addEventListener('beforeunload', handleBeforeUnload);
-
-		return () => {
-			socket.off('connect');
-			socket.off('close');
-			socket.off('onLeave');
-			clearInterval(interval);
-			// window.removeEventListener('beforeunload', handleBeforeUnload);
-		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	return (
-		<div>
-		</div>
-	);
+    return <div></div>;
 }
 
-export default TrackingOnline
-
-
-	// async function sendConnected() {
-	// 	const idUser = 2;
-	// 	try {
-	// 		const response = await axios.post(
-	// 			`http://localhost:3333/gateway/${idUser}`,
-	// 			{ id: idUser },
-	// 			{ withCredentials: true },
-	// 		);
-	// 		console.log(response.data);
-	// 	} catch (error) {
-	// 		console.error(error);
-	// 	}
-	// }
+export default TrackingOnline;

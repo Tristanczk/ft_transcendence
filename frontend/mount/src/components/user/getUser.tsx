@@ -1,29 +1,29 @@
 import axios from 'axios';
 import { useEffect } from 'react';
 import { User } from '../../types';
+import { useUserContext } from '../../context/UserContext';
 
-interface Props {
-    user: User | null;
-    setUser: any;
-}
-function GetUser({ user, setUser }: Props) {
+function GetUser() {
+	const { loginUser, logoutUser } = useUserContext();
+
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get(
-                    'http://localhost:3333/users/me',
-                    { withCredentials: true },
-                );
-                setUser(response.data);
+				console.log('try')
+                const response = await axios.get('http://localhost:3333/users/me', {
+                    withCredentials: true,
+                });
+				loginUser(response.data);
+
             } catch (error) {
-                console.error(error);
+				logoutUser()
             }
         };
         fetchUser();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return (<></>);
+    return <></>;
 }
 
 export default GetUser;

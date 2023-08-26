@@ -1,40 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { User } from '../types';
 import PresentationUser from '../components/dashboard/PresentationUser';
 import StatsUser from '../components/dashboard/StatsUser';
 import Friends from '../components/dashboard/friends/Friends';
 import AvatarUploader from '../components/user/AvatarUpload';
+import { UserContext } from '../context/UserContext';
 
 const DashboardPage: React.FC = () => {
-    const [user, setUser] = useState<User | null>(null);
+    const [userr, setUser] = useState<User | null>(null);
     // const [userList, setUserList] = useState<User[] | null>(null);
 
     useEffect(() => {
         const fetchUser = async () => {
             // import current user
-            try {
-                const response = await axios.get(
-                    'http://localhost:3333/users/me',
-                    { withCredentials: true },
-                );
-                setUser(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-            // import possible friends
             // try {
             //     const response = await axios.get(
-            //         'http://localhost:3333/friends/possiblefriends',
+            //         'http://localhost:3333/users/me',
             //         { withCredentials: true },
             //     );
-            //     setUserList(response.data);
+            //     setUser(response.data);
             // } catch (error) {
             //     console.error(error);
             // }
+
         };
         fetchUser();
     }, []);
+
+	const userGlobal = useContext(UserContext);
+	const user = userGlobal.user
+
+	
+
 
     return user ? (
         <>

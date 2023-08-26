@@ -34,12 +34,12 @@ model User {
 //     idUserB   Int
 // }
 
-model Connections {
-    id           Int      @id @default(autoincrement())
-    createdAt    DateTime @default(now())
-    idUser       Int
-    idConnection String
-}
+// model Connections {
+//     id           Int      @id @default(autoincrement())
+//     createdAt    DateTime @default(now())
+//     idUser       Int
+//     idConnection String
+// }
 
 model Games {
     id         Int      @id @default(autoincrement())

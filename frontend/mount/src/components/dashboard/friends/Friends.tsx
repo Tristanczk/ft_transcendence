@@ -1,9 +1,10 @@
 import { User, UserSimplified } from '../../../types';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import ShowFriendList from './ShowFriendList';
 import ShowTitleFriends from './ShowTitleFriends';
 import AddFriendElem from './AddFriendElem';
+import { UserContext } from '../../../context/UserContext';
 
 interface FriendsProps {
     user: User;
@@ -97,6 +98,11 @@ function Friends({ user }: FriendsProps) {
     //     const choice: number = parseInt(event.target.value);
     //     setIdSelectedToAddFriend(choice);
     // };
+
+	const userme = useContext(UserContext)
+	console.log('context=')
+	console.log(userme)
+	console.log('end')
 
     return (
         <>
