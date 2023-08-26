@@ -10,7 +10,7 @@ const GameButton = ({
     onClick: () => void;
 }) => (
     <button
-        className="flex justify-center items-center py-4 px-8 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-1/2 max-w-xs"
+        className="flex justify-center items-center py-4 px-8 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm"
         onClick={onClick}
     >
         {mode}
