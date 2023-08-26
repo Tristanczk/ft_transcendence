@@ -88,33 +88,42 @@ class Player {
         p5.endShape(p5.CLOSE);
     }
 
-    private drawLife(p5: p5Types, middleRadius: number, angle: number) {
+    private drawLife(
+        p5: p5Types,
+        middleRadius: number,
+        angle: number,
+        arenaSize: number,
+    ) {
         p5.circle(
             p5.cos(angle) * middleRadius,
             p5.sin(angle) * middleRadius,
-            PADDLE_WIDTH * p5.width * 0.32,
+            PADDLE_WIDTH * arenaSize * 0.32,
         );
     }
 
-    private drawLives(p5: p5Types, middleRadius: number): void {
+    private drawLives(
+        p5: p5Types,
+        middleRadius: number,
+        arenaSize: number,
+    ): void {
         p5.fill(this.color);
         if (this.lives === 1) {
-            this.drawLife(p5, middleRadius, this.angle);
+            this.drawLife(p5, middleRadius, this.angle, arenaSize);
             return;
         }
         const startDot = this.angle - DOT_SHIFT * this.paddleSize;
         const angleInc = (2 * DOT_SHIFT * this.paddleSize) / (this.lives - 1);
         for (let i = 0; i < this.lives; ++i) {
-            this.drawLife(p5, middleRadius, startDot + i * angleInc);
+            this.drawLife(p5, middleRadius, startDot + i * angleInc, arenaSize);
         }
     }
 
-    draw(p5: p5Types): void {
-        const innerDiameter = p5.width * (1 - PADDLE_MARGIN - PADDLE_WIDTH);
-        const outerDiameter = p5.width * (1 - PADDLE_MARGIN);
+    draw(p5: p5Types, arenaSize: number): void {
+        const innerDiameter = arenaSize * (1 - PADDLE_MARGIN - PADDLE_WIDTH);
+        const outerDiameter = arenaSize * (1 - PADDLE_MARGIN);
         const middleRadius = (innerDiameter + outerDiameter) / 4;
         this.drawPaddle(p5, innerDiameter, outerDiameter);
-        this.drawLives(p5, middleRadius);
+        this.drawLives(p5, middleRadius, arenaSize);
     }
 }
 
@@ -144,12 +153,12 @@ class Ball {
         this.pos.add(this.vel.copy().mult(p5.deltaTime));
     }
 
-    draw(p5: p5Types): void {
+    draw(p5: p5Types, arenaSize: number): void {
         p5.fill('black');
         p5.circle(
-            this.pos.x * p5.width * 0.5,
-            this.pos.y * p5.height * 0.5,
-            BALL_SIZE * p5.width,
+            this.pos.x * arenaSize * 0.5,
+            this.pos.y * arenaSize * 0.5,
+            BALL_SIZE * arenaSize,
         );
     }
 }
@@ -247,15 +256,16 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
         new Player('#DDEEFF', 70, 72, 5 * angleIncrement, startLives),
     ].slice(0, numPlayers);
     let currentPlayer = getRandomPlayer(numPlayers);
+    let arenaSize = 0;
     let ball: Ball;
 
     const resize = (p5: p5Types) => {
-        const size = Math.min(
-            p5.windowWidth - CANVAS_MARGIN,
-            p5.windowHeight - NAVBAR_HEIGHT - CANVAS_MARGIN,
+        p5.resizeCanvas(p5.windowWidth, p5.windowHeight - NAVBAR_HEIGHT);
+        arenaSize = Math.min(
+            p5.width - CANVAS_MARGIN,
+            p5.height - CANVAS_MARGIN,
             MAX_HEIGHT,
         );
-        p5.resizeCanvas(size, size);
     };
 
     const setup = (p5: p5Types, canvasParentRef: Element) => {
@@ -301,14 +311,14 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
         p5.background(BACKGROUND_COLOR);
         p5.translate(p5.width / 2, p5.height / 2);
         p5.fill(players[currentPlayer].color);
-        p5.circle(0, 0, p5.width);
+        p5.circle(0, 0, arenaSize);
         for (const player of players) {
-            player.draw(p5);
+            player.draw(p5, arenaSize);
         }
         if (players.length === 1) {
             gameOver(p5);
         } else {
-            ball.draw(p5);
+            ball.draw(p5, arenaSize);
         }
     };
 
@@ -322,7 +332,6 @@ const BattlePage: React.FC = () => {
             className="w-full flex items-center justify-center"
             style={{
                 height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
-                background: BACKGROUND_COLOR,
             }}
         >
             <Pong numPlayers={6} />
