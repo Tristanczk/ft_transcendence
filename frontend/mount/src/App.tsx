@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
-import RootPage from './pages/RootPage';
+import HomePage from './pages/HomePage';
 import Page404 from './pages/Page404';
 import DashboardPage from './pages/DashboardPage';
 import SignOutPage from './pages/SignOutPage';
@@ -18,7 +18,7 @@ import GetUser from './components/user/getUser';
 
 const App: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
-    
+
     return (
         <WebsocketProvider value={socket}>
             <GetUser user={user} setUser={setUser} />
@@ -26,7 +26,7 @@ const App: React.FC = () => {
             <BrowserRouter>
                 <NavBar />
                 <Routes>
-                    <Route path="/" Component={RootPage} />
+                    <Route path="/" Component={HomePage} />
                     <Route path="/dashboard" Component={DashboardPage} />
                     <Route path="/chat" Component={ChatPage} />
                     <Route path="/signin" Component={SignInPage} />
