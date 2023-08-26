@@ -16,6 +16,7 @@ import TrackingOnline from './components/TrackingOnline';
 import { User } from './types';
 import GetUser from './components/user/getUser';
 import BattlePage from './pages/BattlePage';
+import ClassicPage from './pages/ClassicPage';
 
 const App: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
@@ -28,7 +29,8 @@ const App: React.FC = () => {
                 <NavBar />
                 <Routes>
                     <Route path="/" Component={HomePage} />
-                    <Route path="battle" Component={BattlePage} />
+                    <Route path="/battle" Component={BattlePage} />
+                    <Route path="/classic" Component={ClassicPage} />
                     <Route path="/dashboard" Component={DashboardPage} />
                     <Route path="/chat" Component={ChatPage} />
                     <Route path="/signin" Component={SignInPage} />
