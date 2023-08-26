@@ -238,6 +238,15 @@ const avoidCollisions = (players: Player[]) => {
     }
 };
 
+const drawRepeatingBackground = (p5: p5Types, bgImage: p5Types.Image) => {
+    p5.imageMode(p5.CORNER);
+    for (let y = 0; y < p5.height; y += bgImage.height) {
+        for (let x = 0; x < p5.width; x += bgImage.width) {
+            p5.image(bgImage, x, y);
+        }
+    }
+};
+
 const Pong = ({ numPlayers }: { numPlayers: number }) => {
     if (numPlayers < MIN_PLAYERS || numPlayers > MAX_PLAYERS) {
         throw new Error(
@@ -258,6 +267,7 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
     let currentPlayer = getRandomPlayer(numPlayers);
     let arenaSize = 0;
     let ball: Ball;
+    let bgImage: p5Types.Image;
 
     const resize = (p5: p5Types) => {
         p5.resizeCanvas(p5.windowWidth, p5.windowHeight - NAVBAR_HEIGHT);
@@ -266,6 +276,13 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
             p5.height - CANVAS_MARGIN,
             MAX_HEIGHT,
         );
+    };
+
+    const preload = (p5: p5Types) => {
+        bgImage = p5.loadImage(
+            process.env.PUBLIC_URL + '/game-background.webp',
+        );
+        console.log(bgImage);
     };
 
     const setup = (p5: p5Types, canvasParentRef: Element) => {
@@ -308,7 +325,7 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
                 }
             }
         }
-        p5.background(BACKGROUND_COLOR);
+        drawRepeatingBackground(p5, bgImage);
         p5.translate(p5.width / 2, p5.height / 2);
         p5.fill(players[currentPlayer].color);
         p5.circle(0, 0, arenaSize);
@@ -322,8 +339,18 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
         }
     };
 
-    // @ts-ignore
-    return <Sketch setup={setup} draw={draw} windowResized={resize} />;
+    return (
+        <Sketch
+            // @ts-ignore
+            preload={preload}
+            // @ts-ignore
+            setup={setup}
+            // @ts-ignore
+            draw={draw}
+            // @ts-ignore
+            windowResized={resize}
+        />
+    );
 };
 
 const BattlePage: React.FC = () => {
