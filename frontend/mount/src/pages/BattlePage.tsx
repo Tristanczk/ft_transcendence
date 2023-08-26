@@ -246,7 +246,7 @@ const drawRepeatingBackground = (p5: p5Types, bgImage: p5Types.Image) => {
     }
 };
 
-const Pong = ({ numPlayers }: { numPlayers: number }) => {
+const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     if (numPlayers < MIN_PLAYERS || numPlayers > MAX_PLAYERS) {
         throw new Error(
             `numPlayers must be between ${MIN_PLAYERS} and ${MAX_PLAYERS}`,
@@ -354,7 +354,7 @@ const BattlePage: React.FC = () => (
             height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
         }}
     >
-        <Pong numPlayers={6} />
+        <BattleGame numPlayers={6} />
     </div>
 );
 
