@@ -142,8 +142,7 @@ class Ball {
         this.pos.mult(HIT_PADDLE / this.pos.mag());
         this.vel = this.pos
             .copy()
-            .mult(-1)
-            .rotate(-hit * HIT_ANGLE_FACTOR)
+            .rotate(Math.PI - hit * HIT_ANGLE_FACTOR)
             .normalize()
             .mult(this.vel.mag() + BALL_SPEED_INCREMENT);
     }
@@ -245,7 +244,7 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
         );
     }
     const startLives = Math.max(2, Math.ceil(10 / numPlayers));
-    const angleIncrement = (Math.PI * 2) / numPlayers;
+    const angleIncrement = TAU / numPlayers;
     const ballSpeedStart = 0.0005 + 0.0001 * numPlayers;
     let players = [
         new Player('#E51654', 37, 39, 0 * angleIncrement, startLives),
