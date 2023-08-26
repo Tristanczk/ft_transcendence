@@ -279,7 +279,7 @@ const Pong = ({ numPlayers }: { numPlayers: number }) => {
 
     const preload = (p5: p5Types) => {
         bgImage = p5.loadImage(
-            process.env.PUBLIC_URL + '/game-background.webp',
+            process.env.PUBLIC_URL + '/classic-background.webp',
         );
     };
 
