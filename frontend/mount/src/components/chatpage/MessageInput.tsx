@@ -1,45 +1,59 @@
-import { ChangeEvent, useState } from "react";
-import React from "react";
-import { MessageProps } from "./Message";
+import { ChangeEvent, useState } from 'react';
+import React from 'react';
+import { MessageProps } from './Message';
 
 export function MessageInput({
-  user,
-  send,
+    user,
+    send,
 }: {
-  user: string;
-  send: (message: MessageProps) => void;
+    user: string;
+    send: (message: MessageProps) => void;
 }) {
-  const [input, setInput] = useState("");
+    const [input, setInput] = useState('');
 
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value);
-  };
+    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setInput(event.target.value);
+    };
 
-  return (
-    <div>
-      <form className="chat-input">
-        <input onChange={onChange} value={input} placeholder="Type a message" />
-        <button
-          onClick={(event) => {
-            event.preventDefault();
-            console.log("send function called");
-            send({
-              senderId: user,
-              username: "username",
-              message: input,
-              posttime: "now",
-            });
-            setInput("");
-          }}
-        >
-          <svg viewBox="0 0 24 24">
-            <path
-              fill="rgba(0,0,0,.38)"
-              d="M17,12L12,17V14H8V10H12V7L17,12M21,16.5C21,16.88 20.79,17.21 20.47,17.38L12.57,21.82C12.41,21.94 12.21,22 12,22C11.79,22 11.59,21.94 11.43,21.82L3.53,17.38C3.21,17.21 3,16.88 3,16.5V7.5C3,7.12 3.21,6.79 3.53,6.62L11.43,2.18C11.59,2.06 11.79,2 12,2C12.21,2 12.41,2.06 12.57,2.18L20.47,6.62C20.79,6.79 21,7.12 21,7.5V16.5M12,4.15L5,8.09V15.91L12,19.85L19,15.91V8.09L12,4.15Z"
-            />
-          </svg>
-        </button>
-      </form>
-    </div>
-  );
+    return (
+        <div className="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
+            <div className="relative-flex">
+                <input
+                    onChange={onChange}
+                    value={input}
+                    type="text"
+                    placeholder="Write your message!"
+                    className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-12 bg-gray-200 rounded-md py-3"
+                />
+                <div className="absolute right-0 items-center inset-y-0 hidden sm:flex">
+                    <button
+                        type="button"
+                        className="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none"
+                        onClick={(event) => {
+                            if (input === '') return;
+                            event.preventDefault();
+                            console.log('send function called');
+                            send({
+                                senderId: user,
+                                username: 'username',
+                                message: input,
+                                posttime: 'now',
+                            });
+                            setInput('');
+                        }}
+                    >
+                        <span className="font-bold">Send</span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="h-6 w-6 ml-2 transform rotate-90"
+                        >
+                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
 }

@@ -33,7 +33,7 @@ export class AuthController {
             .then((user) => {
                 if (user.twoFactorAuthentication) {
                     res.json({
-                        message: 'Two-Factor authentication required',
+                        message: 'Two-Factor authentication required',  
                         user,
                     });
                 } else {

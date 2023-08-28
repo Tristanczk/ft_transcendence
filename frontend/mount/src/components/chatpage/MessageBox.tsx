@@ -1,5 +1,6 @@
 import React from "react";
 import Message, { MessageProps} from "./Message";
+import { Messages } from "./Messages";
 
 export function MessageBox({
   senderId,
@@ -9,7 +10,7 @@ export function MessageBox({
 }: MessageProps) {
   // user
   return (
-    <div>
+    <div className="chat-message">
       <article
         className={
           senderId === username
@@ -18,12 +19,6 @@ export function MessageBox({
         }
         id="msg-0"
       >
-        <div className="msg-box">
-          {/* <img
-            className="user-img"
-            id={username}
-            src="https://ih1.redbubble.net/image.1329995133.5500/st,small,507x507-pad,600x600,f8f8f8.jpg"
-          /> */}
           <div className="flr">
             <Message
              senderId={senderId}
@@ -31,7 +26,6 @@ export function MessageBox({
               message={message}
               posttime={posttime}
             />
-          </div>
         </div>
       </article>
     </div>

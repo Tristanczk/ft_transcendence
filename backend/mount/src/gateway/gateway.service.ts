@@ -140,7 +140,7 @@ export class GatewayService implements OnModuleInit {
         const userId = Object.keys(this.userToSocketMap).find(
             (key) => this.userToSocketMap[key] === client,
         );
-        if (userId) {
+        if (userId) {   
             delete this.userToSocketMap[userId];
         }
     }
@@ -162,18 +162,18 @@ export class GatewayService implements OnModuleInit {
                 idUser: Number(senderId),
             },
         });
-        if (!user) {
-            throw new ForbiddenException('User id not found');
-        }
+        // if (!user) {
+        //     throw new ForbiddenException('User id not found');
+        // }
 
-        console.log(
-            'handleMessage from User ' +
-                user.idUser +
-                ' : ' +
-                user.idConnection +
-                '\n' +
-                message,
-        );
+        // console.log(
+        //     'handleMessage from User ' +
+        //         user.idUser +
+        //         ' : ' +
+        //         user.idConnection +
+        //         '\n' +
+        //         message,
+        // );
         this.server.emit('message', { senderId, message });
     }
 }
