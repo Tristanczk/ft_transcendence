@@ -1,0 +1,2 @@
+-- AddForeignKey
+ALTER TABLE "Games" ADD CONSTRAINT "Games_playerB_fkey" FOREIGN KEY ("playerB") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

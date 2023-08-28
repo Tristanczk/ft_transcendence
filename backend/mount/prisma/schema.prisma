@@ -25,30 +25,22 @@ model User {
     twoFactorAuthentication Boolean @default(false)
     isConnected             Boolean @default(false)
     twoFactorSecret         String?
+
+	gamesasPlayerA	Games[] @relation("PlayerAGames")
+	gamesasPlayerB	Games[] @relation("PlayerBGames")
 }
-
-// model Friends {
-//     id        Int      @id @default(autoincrement())
-//     createdAt DateTime @default(now())
-//     idUserA   Int
-//     idUserB   Int
-// }
-
-// model Connections {
-//     id           Int      @id @default(autoincrement())
-//     createdAt    DateTime @default(now())
-//     idUser       Int
-//     idConnection String
-// }
 
 model Games {
     id         Int      @id @default(autoincrement())
     createdAt  DateTime @default(now())
     finishedAt DateTime
-    playerA    Int
-    playerB    Int
     finished   Boolean
     won        Boolean
     scoreA     Int
     scoreB     Int
+
+	playerA    	Int
+	UserA		User @relation("PlayerAGames", fields: [playerA], references: [id])
+	playerB    	Int
+	UserB		User @relation("PlayerBGames", fields: [playerB], references: [id])
 }

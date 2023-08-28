@@ -6,6 +6,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { FriendsModule } from './friends/friends.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GatewayModule } from './gateway/gateway.module';
+import { StatsModule } from './stats/stats.module';
+import { GamesModule } from './games/games.module';
 
 @Module({
     imports: [
@@ -15,6 +17,8 @@ import { GatewayModule } from './gateway/gateway.module';
         PrismaModule,
         FriendsModule,
         GatewayModule,
+        StatsModule,
+        GamesModule,
     ],
     providers: [{
         provide: APP_INTERCEPTOR,

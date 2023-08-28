@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import TestInsert from './TestInsert';
+import TestGet from './TestGet';
 
 function GlobalStats() {
     const [choice, setChoice] = useState(1);
@@ -7,6 +9,8 @@ function GlobalStats() {
 
     return (
         <>
+		{/* <TestInsert /> */}
+		<TestGet />
             <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                 <ul
                     className="text-sm font-medium text-center text-gray-500 divide-x divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400"
