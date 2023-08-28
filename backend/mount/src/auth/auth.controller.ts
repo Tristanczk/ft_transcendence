@@ -3,15 +3,13 @@ import {
     Get,
     Query,
     Res,
-    Req,
-    UnauthorizedException,
     Post,
     Body,
     ForbiddenException,
     UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { SignupDto, SigninDto, TwoFactorCodeDto } from './dto';

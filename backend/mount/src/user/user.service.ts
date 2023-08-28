@@ -21,10 +21,51 @@ export class UserService {
         return user;
     }
 
+    async downloadAvatar(userId: number, file: Express.Multer.File) {
+        // console.log(file);
+        const response = {
+            originalname: file.originalname,
+            filename: file.filename,
+        };
+        if (file.filename) {
+            await this.prisma.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    avatarPath: file.filename ?? '',
+                },
+            });
+        }
+        return response;
+    }
+
+    async uploadAvatar(userId: number, res: any) {
+        const userImg = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+
+        if (!userImg) return 'error';
+
+        return res.sendFile(userImg.avatarPath, { root: './files' });
+    }
+
+    async getUserById(userId: number) {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+        return user;
+	}
+
+
     async getAllUsers() {
-        console.log('bonjour');
+        // console.log('bonjour');
         const users = await this.prisma.user.findMany();
-        console.log(users);
+        // console.log(users);
         return users;
     }
 

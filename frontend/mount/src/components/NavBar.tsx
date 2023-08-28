@@ -1,9 +1,11 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import Button from './Button';
 import { useWidth } from '../hooks';
 import authAxios from '../axios';
+import { UserContext, useUserContext } from '../context/UserContext';
+import { NAVBAR_HEIGHT } from '../constants';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -138,7 +140,11 @@ const UserMenu: React.FC = () => {
 const NavBar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [user, setUser] = useState<User | null>(null);
+    // const [user, setUser] = useState<User | null>(null);
+	const userGlobal = useContext(UserContext);
+	const user = userGlobal.user;
+	const { loginUser, logoutUser } = useUserContext();
+
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -146,17 +152,23 @@ const NavBar: React.FC = () => {
                 const response = await authAxios.get('/users/me', {
                     withCredentials: true,
                 });
-                setUser(response.data);
+                // setUser(response.data);
+				loginUser(response.data)
             } catch (error) {
-                setUser(null);
-                console.error(error);
+				logoutUser();
+                // setUser(null);
+                // console.error(error);
             }
         };
         fetchUser();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname]);
 
     return (
-        <nav className="border-gray-200 bg-gray-900" style={{ height: 72 }}>
+        <nav
+            className="border-gray-200 bg-gray-900"
+            style={{ height: NAVBAR_HEIGHT }}
+        >
             <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link to="/" className="hidden sm:flex items-center">
                     <img
