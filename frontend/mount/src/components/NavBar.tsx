@@ -1,8 +1,9 @@
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { User } from '../types';
 import Button from './Button';
 import { useWidth } from '../hooks';
+import authAxios from '../axios';
 import { UserContext, useUserContext } from '../context/UserContext';
 import { NAVBAR_HEIGHT } from '../constants';
 
@@ -148,10 +149,9 @@ const NavBar: React.FC = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get(
-                    'http://localhost:3333/users/me',
-                    { withCredentials: true },
-                );
+                const response = await authAxios.get('/users/me', {
+                    withCredentials: true,
+                });
                 // setUser(response.data);
 				loginUser(response.data)
             } catch (error) {

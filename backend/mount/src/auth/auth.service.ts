@@ -14,7 +14,7 @@ import { Response } from 'express';
 import { SigninDto, SignupDto } from './dto';
 import { authenticator } from 'otplib';
 
-type AccessToken = { accessToken: string };
+type JWTToken = { JWTToken: string };
 
 @Injectable()
 export class AuthService {
@@ -24,17 +24,28 @@ export class AuthService {
         private config: ConfigService,
     ) {}
 
-    async signToken(userId: number, login: string): Promise<AccessToken> {
+    async signToken(
+        userId: number,
+        login: string,
+        access: boolean,
+    ): Promise<JWTToken> {
         const payload = {
             sub: userId,
             login,
         };
-        const secret = this.config.get('JWT_SECRET');
-        const accessToken = await this.jwt.signAsync(payload, {
-            expiresIn: '1d',
-            secret: secret,
-        });
-        return { accessToken };
+        if (access) {
+            const JWTToken = await this.jwt.signAsync(payload, {
+                expiresIn: this.config.get('JWT_ACCESS_TOKEN_DURATION'),
+                secret: this.config.get('JWT_ACCESS_TOKEN_SECRET'),
+            });
+            return { JWTToken };
+        } else {
+            const JWTToken = await this.jwt.signAsync(payload, {
+                expiresIn: this.config.get('JWT_REFRESH_TOKEN_DURATION'),
+                secret: this.config.get('JWT_REFRESH_TOKEN_SECRET'),
+            });
+            return { JWTToken };
+        }
     }
 
     async upsertUser(login: string, email: string): Promise<User> {
@@ -62,6 +73,34 @@ export class AuthService {
             });
             return newUser;
         }
+    }
+
+    async generateTokens(user: User, res: Response) {
+        const accessToken = await this.signToken(user.id, user.login, true);
+        res.cookie(
+            this.config.get('JWT_ACCESS_TOKEN_COOKIE'),
+            accessToken.JWTToken,
+            {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+            },
+        );
+        const refreshToken = await this.signToken(user.id, user.login, false);
+        res.cookie(
+            this.config.get('JWT_REFRESH_TOKEN_COOKIE'),
+            refreshToken.JWTToken,
+            {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+            },
+        );
+        const hash = await argon.hash(refreshToken.JWTToken);
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: { currentHashedRefreshToken: hash },
+        });
     }
 
     async signin42(code: string, res: Response): Promise<User> {
@@ -95,13 +134,7 @@ export class AuthService {
             if (user.twoFactorAuthentication) {
                 return user;
             }
-            const jwtToken = await this.signToken(user.id, user.login);
-            res.cookie(this.config.get('JWT_COOKIE'), jwtToken.accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'strict',
-            });
-            // this.gatewayService.userArrive(user.id); // nico
+            await this.generateTokens(user, res);
             return user;
         } catch (error) {
             console.log('signin42', error);
@@ -109,7 +142,7 @@ export class AuthService {
         }
     }
 
-    async signup(dto: SignupDto, res: Response): Promise<AccessToken> {
+    async signup(dto: SignupDto, res: Response) {
         const hash = await argon.hash(dto.password);
         try {
             const user = await this.prisma.user.create({
@@ -123,14 +156,7 @@ export class AuthService {
                     hash,
                 },
             });
-            const jwtToken = await this.signToken(user.id, user.login);
-            res.cookie(this.config.get('JWT_COOKIE'), jwtToken.accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'strict',
-            });
-            // this.gatewayService.userArrive(user.id); // nico
-            return jwtToken;
+            await this.generateTokens(user, res);
         } catch (error) {
             console.log('signup', error);
             if (error instanceof PrismaClientKnownRequestError) {
@@ -173,28 +199,28 @@ export class AuthService {
             where: { nickname: dto.nickname },
             data: { loginNb: user.loginNb + 1 },
         });
-        const jwtToken = await this.signToken(user.id, user.login);
-        res.cookie(this.config.get('JWT_COOKIE'), jwtToken.accessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-        });
-        // this.gatewayService.userArrive(user.id); // nico
+        await this.generateTokens(user, res);
         return user;
     }
 
-    signout(res: Response, userId: number): boolean {
-        // this.gatewayService.userLeave(userId);  // nico
+    async signout(userId: number, res: Response): Promise<void> {
         try {
             res.clearCookie(this.config.get('JWT_COOKIE'), {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
             });
-            return true;
+            res.clearCookie(this.config.get('JWT_REFRESH_TOKEN_COOKIE'), {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+            });
+            await this.prisma.user.update({
+                where: { id: userId },
+                data: { currentHashedRefreshToken: null },
+            });
         } catch (error) {
             console.log('signout', error);
-            return false;
         }
     }
 
@@ -213,17 +239,25 @@ export class AuthService {
             secret: user.twoFactorSecret,
         });
         if (!isCodeValid) {
-            throw new UnauthorizedException('Wrong authentication code');
+            throw new ForbiddenException('Wrong authentication code');
         }
         await this.prisma.user.update({
             where: { nickname },
             data: { loginNb: user.loginNb + 1 },
         });
-        const jwtToken = await this.signToken(user.id, user.login);
-        res.cookie(this.config.get('JWT_COOKIE'), jwtToken.accessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-        });
+        await this.generateTokens(user, res);
+    }
+
+    async refreshTokens(user: User, res: Response) {
+        const accessToken = await this.signToken(user.id, user.login, true);
+        res.cookie(
+            this.config.get('JWT_ACCESS_TOKEN_COOKIE'),
+            accessToken.JWTToken,
+            {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+            },
+        );
     }
 }

@@ -6,6 +6,7 @@ import { NAVBAR_HEIGHT } from '../constants';
 import { useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
 import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
+import authAxios from '../axios';
 
 interface Inputs {
     username: string;
@@ -36,10 +37,9 @@ const SettingsPage: React.FC = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get(
-                    'http://localhost:3333/users/me',
-                    { withCredentials: true },
-                );
+                const response = await authAxios.get('/users/me', {
+                    withCredentials: true,
+                });
                 setUserName(response.data.nickname);
                 setEmail(response.data.email);
                 setIsTwoFactorEnabledPrev(
