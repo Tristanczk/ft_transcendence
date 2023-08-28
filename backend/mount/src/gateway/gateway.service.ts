@@ -48,7 +48,7 @@ export class GatewayService implements OnModuleInit {
 
     @SubscribeMessage('onLeave')
     async onLeave(@MessageBody() body: OnArriveDto) {
-        // console.log('test=' + userId);
+        // console.log('test=' + idUser);
         await this.prisma.connections.deleteMany({
             where: { idConnection: body.idConnection },
         });
@@ -67,26 +67,26 @@ export class GatewayService implements OnModuleInit {
         return 'ok ';
     }
 
-    async userArrive(userId: number) {
-        // console.log('ft_arrive=' + userId);
+    async userArrive(idUser: number) {
+        // console.log('ft_arrive=' + idUser);
         await this.prisma.user.update({
-            where: { id: userId },
+            where: { id: idUser },
             data: { isConnected: true },
         });
-        this.array.push({ id: userId, nb: 0, date: Date.now() });
-        this.server.emit('updateStatus', { idUser: userId, type: 'come' });
+        this.array.push({ id: idUser, nb: 0, date: Date.now() });
+        this.server.emit('updateStatus', { idUser: idUser, type: 'come' });
     }
 
-    async userLeave(userId: number) {
-        // console.log('ft_left=' + userId);
+    async userLeave(idUser: number) {
+        // console.log('ft_left=' + idUser);
         await this.prisma.user.update({
-            where: { id: userId },
+            where: { id: idUser },
             data: { isConnected: false },
         });
         await this.prisma.connections.deleteMany({
-            where: { idUser: userId },
+            where: { idUser: idUser },
         });
-        this.server.emit('updateStatus', { idUser: userId, type: 'leave' });
+        this.server.emit('updateStatus', { idUser: idUser, type: 'leave' });
     }
 
     @SubscribeMessage('onArrive')
@@ -137,29 +137,186 @@ export class GatewayService implements OnModuleInit {
 
     handleDisconnect(client: any): void {
         // Remove the user-to-socket mapping when a client disconnects
-        const userId = Object.keys(this.userToSocketMap).find(
+        const idUser = Object.keys(this.userToSocketMap).find(
             (key) => this.userToSocketMap[key] === client,
         );
-        if (userId) {   
-            delete this.userToSocketMap[userId];
+        if (idUser) {
+            delete this.userToSocketMap[idUser];
         }
     }
 
     @SubscribeMessage('authenticate')
-    handleAuthenticate(@MessageBody() userId: string): void {
-        this.userToSocketMap[userId] = this.server;
-        console.log(userId + ' !');
+    handleAuthenticate(@MessageBody() idUser: string): void {
+        this.userToSocketMap[idUser] = this.server;
+        console.log(idUser + ' !');
     }
+
+    @SubscribeMessage('createChannel')
+    async handleNewChannel(
+        @MessageBody()
+        {
+            idAdmin,
+            isPublic,
+            password,
+        }: {
+            idAdmin: number;
+            isPublic: boolean;
+            password?: string;
+        },
+    ) {
+        await this.prisma.channels.create({
+            data: {
+                idAdmin: [idAdmin],
+                idUsers: [idAdmin],
+                isPublic: isPublic,
+                password: password,
+            },
+        });
+    }
+
+    @SubscribeMessage('deleteChannel')
+    async handleDeleteChannel(
+        @MessageBody()
+        { idChannel }: { idChannel: number },
+    ) {
+        await this.prisma.channels.delete({
+            where: {
+                id: idChannel,
+            },
+        });
+    }
+
+    @SubscribeMessage('joinChannel')
+    async handleJoinChannel(
+        @MessageBody()
+        {
+            idUser,
+            idChannel,
+            password,
+        }: {
+            idUser: number;
+            idChannel: number;
+            password?: string;
+        },
+    ) {
+        const channel = await this.prisma.channels.findUnique({
+            where: {
+                id: idChannel,
+            },
+        });
+
+        if (!channel) throw new ForbiddenException('Channel not found');
+
+        if (channel.isPublic) {
+            await this.prisma.channels.update({
+                where: {
+                    id: idChannel,
+                },
+                data: {
+                    idUsers: {
+                        push: idUser,
+                    },
+                },
+            });
+        } else {
+            if (channel.password === password) {
+                await this.prisma.channels.update({
+                    where: {
+                        id: idChannel,
+                    },
+                    data: {
+                        idUsers: {
+                            push: idUser,
+                        },
+                    },
+                });
+            } else {
+                throw new ForbiddenException('Wrong password');
+            }
+        }
+    }
+
+    @SubscribeMessage('leaveChannel')
+    async handleLeaveChannel(
+        @MessageBody()
+        {
+            idUser,
+            idChannel,
+        }: {
+            idUser: number;
+            idChannel: number;
+        },
+    ) {
+        const channel = await this.prisma.channels.findUnique({
+            where: {
+                id: idChannel,
+            },
+        });
+
+        if (!channel) throw new ForbiddenException('Channel not found');
+
+        await this.prisma.channels.update({
+            where: {
+                id: idChannel,
+            },
+            data: {
+                idUsers: {
+                    set: channel.idUsers.filter((id) => id !== idUser),
+                },
+            },
+        });
+    }
+
+    @SubscribeMessage('broadcastMessageToChannel')
+    async broadcastMessageToChannel(idUser:number, idChannel:number, message:string) {
+        const channel = await this.prisma.channels.findUnique({
+            where: {
+                id: idChannel,
+            },
+        });
+
+        if (!channel) throw new ForbiddenException('Channel not found');
+
+        const users = await this.prisma.user.findMany({
+            where: {
+                id: {
+                    in: channel.idUsers,
+                },
+            },
+        });
+
+        const sockets = users.map((user) => this.userToSocketMap[user.id]); // Get the socket for each user
+
+        sockets.forEach((socket) => {
+            socket.emit('message', { idSender: idUser, idChannel: idChannel, message: message});
+        });
+    };
 
     @SubscribeMessage('message')
     async handleMessage(
         @MessageBody()
-        { senderId, message }: { senderId: number; message: string },
+        {
+            idSender,
+            idChannel,
+            message,
+        }: {
+            idSender: number;
+            idChannel: number;
+            message: string;
+        },
     ) {
+        //Store message in DB, verifier is channel existe?
+        await this.prisma.message.create({
+            data: {
+                idSender: idSender,
+                idChannel: idChannel,
+            },
+        });
+
         // Broadcast the message to all connected clients
         const user = await this.prisma.connections.findFirst({
             where: {
-                idUser: Number(senderId),
+                idUser: Number(idSender),
             },
         });
         // if (!user) {
@@ -174,6 +331,6 @@ export class GatewayService implements OnModuleInit {
         //         '\n' +
         //         message,
         // );
-        this.server.emit('message', { senderId, message });
+        this.server.emit('message', { idSender, idChannel, message });
     }
 }
