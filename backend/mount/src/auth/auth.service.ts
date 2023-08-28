@@ -201,17 +201,24 @@ export class AuthService {
         return user;
     }
 
-    signout(res: Response): boolean {
+    async signout(userId: number, res: Response): Promise<void> {
         try {
             res.clearCookie(this.config.get('JWT_COOKIE'), {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
             });
-            return true;
+            res.clearCookie(this.config.get('JWT_REFRESH_TOKEN_COOKIE'), {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+            });
+            await this.prisma.user.update({
+                where: { id: userId },
+                data: { currentHashedRefreshToken: null },
+            });
         } catch (error) {
             console.log('signout', error);
-            return false;
         }
     }
 
@@ -230,12 +237,25 @@ export class AuthService {
             secret: user.twoFactorSecret,
         });
         if (!isCodeValid) {
-            throw new UnauthorizedException('Wrong authentication code');
+            throw new ForbiddenException('Wrong authentication code');
         }
         await this.prisma.user.update({
             where: { nickname },
             data: { loginNb: user.loginNb + 1 },
         });
         await this.generateTokens(user, res);
+    }
+
+    async refreshTokens(user: User, res: Response) {
+        const accessToken = await this.signToken(user.id, user.login, true);
+        res.cookie(
+            this.config.get('JWT_ACCESS_TOKEN_COOKIE'),
+            accessToken.JWTToken,
+            {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+            },
+        );
     }
 }

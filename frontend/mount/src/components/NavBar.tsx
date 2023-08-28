@@ -1,9 +1,9 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User } from '../types';
-import axios from 'axios';
 import Button from './Button';
 import { useWidth } from '../hooks';
+import authAxios from '../axios';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -143,10 +143,9 @@ const NavBar: React.FC = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get(
-                    'http://localhost:3333/users/me',
-                    { withCredentials: true },
-                );
+                const response = await authAxios.get('/users/me', {
+                    withCredentials: true,
+                });
                 setUser(response.data);
             } catch (error) {
                 setUser(null);

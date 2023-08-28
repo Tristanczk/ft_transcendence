@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import authAxios from 'axios';
 
 const SignOutPage: React.FC = () => {
     const [message, setMessage] = useState('Not logged in');
@@ -10,10 +10,9 @@ const SignOutPage: React.FC = () => {
     useEffect(() => {
         const signOut = async () => {
             try {
-                const response = await axios.get(
-                    'http://localhost:3333/auth/signout',
-                    { withCredentials: true },
-                );
+                const response = await authAxios.get('/auth/signout', {
+                    withCredentials: true,
+                });
                 setMessage(response.data);
                 navigate('/signin');
             } catch (error: any) {
