@@ -4,8 +4,6 @@ services:
   dev-db:
     image: postgres:13
     container_name: dev-db
-    ports:
-      - 5432:5432
     restart: on-failure
     env_file:
       - .env
@@ -40,7 +38,6 @@ services:
     container_name: backend
     ports:
       - 3333:3333
-      - 5555:5555
     restart: on-failure
     env_file:
       - .env
