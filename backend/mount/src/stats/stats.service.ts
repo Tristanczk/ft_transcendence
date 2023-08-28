@@ -13,6 +13,7 @@ export class StatsService {
 				won: true,
 				scoreA: 5,
 				scoreB: 4,
+				mode: 0,
 				UserA: {connect: {id: 1}},
 				UserB: {connect: {id: 2}},
 			}, 
@@ -24,6 +25,7 @@ export class StatsService {
 				won: false,
 				scoreA: 3,
 				scoreB: 5,
+				mode: 0,
 				UserA: {connect: {id: 1}},
 				UserB: {connect: {id: 2}},
 			}
@@ -35,6 +37,43 @@ export class StatsService {
 				won: true,
 				scoreA: 6,
 				scoreB: 2,
+				mode: 0,
+				UserA: {connect: {id: 2}},
+				UserB: {connect: {id: 1}},
+			}
+		});
+		const newGame4 = await this.prisma.games.create({
+			data: {
+				finished: true,
+				finishedAt: new Date(),
+				won: true,
+				scoreA: 5,
+				scoreB: 4,
+				mode: 0,
+				UserA: {connect: {id: 1}},
+				UserB: {connect: {id: 2}},
+			}, 
+		});
+		const newGame5 = await this.prisma.games.create({
+			data: {
+				finished: true,
+				finishedAt: new Date(),
+				won: false,
+				scoreA: 3,
+				scoreB: 5,
+				mode: 0,
+				UserA: {connect: {id: 1}},
+				UserB: {connect: {id: 2}},
+			}
+		});
+		const newGame6 = await this.prisma.games.create({
+			data: {
+				finished: true,
+				finishedAt: new Date(),
+				won: true,
+				scoreA: 6,
+				scoreB: 2,
+				mode: 0,
 				UserA: {connect: {id: 2}},
 				UserB: {connect: {id: 1}},
 			}
@@ -70,17 +109,3 @@ export class StatsService {
 		return data;
 	}
 }
-
-// model Games {
-//     id         Int      @id @default(autoincrement())
-//     createdAt  DateTime @default(now())
-//     finishedAt DateTime
-//     finished   Boolean
-//     won        Boolean
-//     scoreA     Int
-//     scoreB     Int
-
-// 	playerA    	Int
-// 	UserA		User @relation(fields: [playerA], references: [id])
-// 	playerB    	Int
-// }

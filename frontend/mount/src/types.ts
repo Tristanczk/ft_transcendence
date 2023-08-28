@@ -24,3 +24,15 @@ export type Friends = {
     idUserA: number;
     idUserB: number;
 };
+
+export type Games = {
+	id: 		number;
+	startedAt: 	Date;
+	finishedAt:	Date;
+	finished:	boolean;
+    won:		boolean;
+    scoreA: 	number;
+    scoreB: 	number;
+	playerA:	number;
+	playerB:	number;
+}

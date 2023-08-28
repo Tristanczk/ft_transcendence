@@ -1,6 +1,7 @@
 import { User } from '../../types';
 import React from 'react';
 import GlobalStats from '../stats/GlobalStats';
+import HistoryFive from '../stats/HistoryFive';
 
 interface PresentationUserProps {
     user: User;
@@ -11,6 +12,8 @@ function StatsUser({ user }: PresentationUserProps) {
         <>
             <h1 className="text-5xl font-extrabold dark:text-white">Games</h1>
             <GlobalStats />
+
+			<HistoryFive />
 
             {/* <div>
                 <div>

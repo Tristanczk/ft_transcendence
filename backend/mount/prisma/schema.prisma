@@ -38,6 +38,7 @@ model Games {
     won        Boolean
     scoreA     Int
     scoreB     Int
+	mode	   Int
 
 	playerA    	Int
 	UserA		User @relation("PlayerAGames", fields: [playerA], references: [id])
