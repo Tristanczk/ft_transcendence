@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import authAxios from 'axios';
+import authAxios from '../axios';
 
 const SignOutPage: React.FC = () => {
     const [message, setMessage] = useState('Not logged in');

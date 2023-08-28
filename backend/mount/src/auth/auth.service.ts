@@ -205,7 +205,7 @@ export class AuthService {
 
     async signout(userId: number, res: Response): Promise<void> {
         try {
-            res.clearCookie(this.config.get('JWT_COOKIE'), {
+            res.clearCookie(this.config.get('JWT_ACCESS_TOKEN_COOKIE'), {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
