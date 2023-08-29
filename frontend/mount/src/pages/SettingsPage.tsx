@@ -15,10 +15,10 @@ interface Inputs {
 }
 
 const SettingsPage: React.FC = () => {
-    const [userName, setUserName] = useState('');
-    const [email, setEmail] = useState('');
-    const [isTwoFactorEnabledPrev, setIsTwoFactorEnabledPrev] = useState(false);
-    const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(false);
+    const { user, updateUser } = useUserContext();
+    const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(
+        user ? user.twoFactorAuthentication : false,
+    );
     const [displayModal, setDisplayModal] = useState(false);
     const [displayDisableModal, setDisplayDisableModal] = useState(false);
     const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | undefined>();
@@ -28,7 +28,6 @@ const SettingsPage: React.FC = () => {
     const [update, setUpdate] = useState(false);
     const [error, setError] = useState<string | undefined>();
     const [twoFactor, setTwoFactor] = useState<string | undefined>();
-    const { user, updateUser } = useUserContext();
     const authAxios = useAuthAxios();
 
     const {
@@ -37,24 +36,24 @@ const SettingsPage: React.FC = () => {
         formState: { errors },
     } = useForm<Inputs>({ mode: 'onTouched', criteriaMode: 'all' });
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await authAxios.get('/users/me', {
-                    withCredentials: true,
-                });
-                setUserName(response.data.nickname);
-                setEmail(response.data.email);
-                setIsTwoFactorEnabledPrev(
-                    response.data.twoFactorAuthentication,
-                );
-                setIsTwoFactorEnabled(response.data.twoFactorAuthentication);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchUser();
-    }, [update, twoFactor]);
+    // useEffect(() => {
+    //     const fetchUser = async () => {
+    //         try {
+    //             const response = await authAxios.get('/users/me', {
+    //                 withCredentials: true,
+    //             });
+    //             setUserName(response.data.nickname);
+    //             setEmail(response.data.email);
+    //             setIsTwoFactorEnabledPrev(
+    //                 response.data.twoFactorAuthentication,
+    //             );
+    //             setIsTwoFactorEnabled(response.data.twoFactorAuthentication);
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //     };
+    //     fetchUser();
+    // }, [update, twoFactor]);
 
     useEffect(() => {
         if (update) {
@@ -86,8 +85,8 @@ const SettingsPage: React.FC = () => {
 
     const enableTwoFactor = async (data: ModalInputs) => {
         try {
-            await axios.post(
-                'http://localhost:3333/users/enable-2fa',
+            await authAxios.post(
+                '/users/enable-2fa',
                 {
                     code: data.validationCode,
                 },
@@ -96,6 +95,7 @@ const SettingsPage: React.FC = () => {
             setDisplayModal(false);
             setTwoFactor('enabled');
             setError(undefined);
+            updateUser({ twoFactorAuthentication: true });
         } catch (error: any) {
             console.log('error', error.response);
             setError(error.response.data);
@@ -104,8 +104,8 @@ const SettingsPage: React.FC = () => {
 
     const disableTwoFactor = async (data: ModalInputs) => {
         try {
-            await axios.post(
-                'http://localhost:3333/users/disable-2fa',
+            await authAxios.post(
+                '/users/disable-2fa',
                 {
                     code: data.validationCode,
                 },
@@ -114,6 +114,7 @@ const SettingsPage: React.FC = () => {
             setDisplayDisableModal(false);
             setTwoFactor('disabled');
             setError(undefined);
+            updateUser({ twoFactorAuthentication: false });
         } catch (error: any) {
             console.log('error', error.response);
             setError(error.response.data);
@@ -121,32 +122,35 @@ const SettingsPage: React.FC = () => {
     };
 
     const onSubmit = async (data: Inputs) => {
+        console.log('data', data);
         try {
             if (
                 isTwoFactorEnabled === true &&
-                isTwoFactorEnabledPrev === false
+                user?.twoFactorAuthentication === false
             ) {
-                const response = await axios.get(
-                    'http://localhost:3333/users/init-2fa',
-                    { withCredentials: true },
-                );
+                const response = await authAxios.get('/users/init-2fa', {
+                    withCredentials: true,
+                });
                 setQrCodeDataUrl(response.data.qrCode);
                 setTwoFactorSecret(response.data.secret);
                 setDisplayModal(true);
             } else if (
                 isTwoFactorEnabled === false &&
-                isTwoFactorEnabledPrev === true
+                user?.twoFactorAuthentication === true
             ) {
                 setDisplayDisableModal(true);
             }
-            await axios.patch(
-                'http://localhost:3333/users',
+            await authAxios.patch(
+                '/users',
                 {
                     nickname: data.username,
                     email: data.email,
                 },
                 { withCredentials: true },
             );
+            !data.username && (data.username = user?.nickname || '');
+            !data.email && (data.email = user?.email || '');
+            updateUser({ nickname: data.username, email: data.email });
             setUpdate(true);
         } catch (error) {
             console.error(error);
@@ -185,7 +189,7 @@ const SettingsPage: React.FC = () => {
                                 hasError={!!errors.username}
                                 controllerName="username"
                                 label="Username"
-                                placeholder={userName}
+                                placeholder={user ? user.nickname : ''}
                                 rules={{
                                     minLength: {
                                         value: 3,
@@ -205,7 +209,7 @@ const SettingsPage: React.FC = () => {
                                 hasError={!!errors.email}
                                 controllerName="email"
                                 label="Email"
-                                placeholder={email}
+                                placeholder={user ? user.email : ''}
                                 rules={{
                                     pattern: {
                                         value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
