@@ -157,11 +157,13 @@ export class GatewayService implements OnModuleInit {
         @MessageBody()
         {
             idAdmin,
-            isPublic,
-            password,
+            name,
+            isPublic = true,
+            password = "",
         }: {
             idAdmin: number;
-            isPublic: boolean;
+            name:string;
+            isPublic?: boolean;
             password?: string;
         },
     ) {
@@ -173,6 +175,9 @@ export class GatewayService implements OnModuleInit {
                 password: password,
             },
         });
+
+        console.log('handleNewChannel recived createChannel');
+        this.server.emit('createChannel', { idAdmin, isPublic, password });
     }
 
     @SubscribeMessage('deleteChannel')

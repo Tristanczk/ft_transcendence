@@ -4,50 +4,90 @@ import ChatWindow, { ChatWindowProps } from '../components/chatpage/ChatWindow';
 import { MessageProps } from '../components/chatpage/Message';
 import { MessageInput } from '../components/chatpage/MessageInput';
 import { socket as constSocket } from '../context/WebsocketContext';
+import ButtonsBar from '../components/chatpage/ButtonsBar';
+import ChannelsBox, { ChannelProps } from '../components/chatpage/Channels';
+import axios from 'axios';
 
 function ChatPage() {
-  const [socket, setSocket] = useState<Socket | undefined>(undefined); // Initialize socket as undefined
-  const [messages, setMessages] = useState<ChatWindowProps["messages"]>([]);
+    const [socket, setSocket] = useState<Socket | undefined>(undefined); // Initialize socket as undefined
+    const [messages, setMessages] = useState<ChatWindowProps['messages']>([]);
+    const [channels, setChannels] = useState<ChannelProps[]>([]);
 
-  const send = (message: MessageProps) => {
-    socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message});
-  };
+    const send = (message: MessageProps) => {
+        socket?.emit('message', {
+            idSender: message.idSender,
+            idChannel: message.idChannel,
+            message: message.message,
+        });
+    };
 
-  useEffect(() => {
-    setSocket(constSocket);
-  }, []); // Empty dependency array ensures this effect runs only once
+    const createChannel = async (channel: ChannelProps) => {
+        try {
+            await axios.post('http://localhost:3333/channels', {
+                idAdmin: channel.idAdmin,
+                name: channel.name,
+            });
+        } catch (error) {
+            console.error('Error creating channel:', error);
+        }
+    };
 
-  useEffect(() => {
-    if (socket) {
-      const messageListener = ({idSender, idChannel, message} : { idSender: number; idChannel: number; message: string }) => {
-       console.log(idSender);
-        const newMessage: MessageProps = {
-          idSender: idSender,
-          idChannel: idChannel,
-          message: message,
-        };
+    useEffect(() => {
+        // Fetch channels from the backend
+        async function fetchChannels() {
+            try {
+                const response = await axios.get('/api/get-channels');
+                setChannels(response.data);
+            } catch (error) {
+                console.error('Error fetching channels:', error);
+            }
+        }
 
-        setMessages((oldMessages) => [...oldMessages, newMessage]);
-        console.log("setting oldmessages to message")
-      };
+        fetchChannels();
+    }, []);
 
-      socket.on('message', messageListener);
+    useEffect(() => {
+        setSocket(constSocket);
+    }, []); // Empty dependency array ensures this effect runs only once
 
-      return () => {
-        socket.off('message', messageListener);
-      };
-    }
-  }, [socket]); // Make sure to include socket as a dependency
+    useEffect(() => {
+        if (socket) {
+            const messageListener = ({
+                idSender,
+                idChannel,
+                message,
+            }: {
+                idSender: number;
+                idChannel: number;
+                message: string;
+            }) => {
+                console.log(idSender);
+                const newMessage: MessageProps = {
+                    idSender: idSender,
+                    idChannel: idChannel,
+                    message: message,
+                };
 
-  console.log(messages);
-  return (
-    <div className="ChatPage">
-      <section className="chatbox">
-        <ChatWindow messages={messages} />
-        <MessageInput send={send} />
-      </section>
-    </div>
-  );
+                setMessages((oldMessages) => [...oldMessages, newMessage]);
+                console.log('setting oldmessages to message');
+            };
+            return () => {
+                socket.off('message', messageListener);
+            };
+        }
+    }, [socket]); // Make sure to include socket as a dependency
+
+    console.log(messages);
+    return (
+        <div className="ChatPage">
+            <ButtonsBar createChannel={createChannel}/>
+            <ChannelsBox channels={channels} />
+            <section className="Tchatbox">
+                <ChatWindow messages={messages} />
+                <MessageInput send={send} />
+            </section>
+        </div>
+    );
 }
 
 export default ChatPage;
