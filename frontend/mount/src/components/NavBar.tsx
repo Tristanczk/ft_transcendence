@@ -141,28 +141,27 @@ const NavBar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     // const [user, setUser] = useState<User | null>(null);
-	const userGlobal = useContext(UserContext);
-	const user = userGlobal.user;
-	const { loginUser, logoutUser } = useUserContext();
+    const { user, loginUser, logoutUser } = useUserContext();
 
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await authAxios.get('/users/me', {
-                    withCredentials: true,
-                });
-                // setUser(response.data);
-				loginUser(response.data)
-            } catch (error) {
-				logoutUser();
-                // setUser(null);
-                // console.error(error);
-            }
-        };
-        fetchUser();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.pathname]);
+    // useEffect(() => {
+    //     const fetchUser = async () => {
+    //         try {
+    //             const response = await authAxios.get('/users/me', {
+    //                 withCredentials: true,
+    //             });
+    //             // setUser(response.data);
+    //             loginUser(response.data);
+    //         } catch (error) {
+    //             logoutUser();
+    //             // setUser(null);
+    //             // console.error(error);
+    //         }
+    //     };
+    //     console.log('user before', user);
+    //     fetchUser();
+    //     console.log('user after', user);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [location.pathname]);
 
     return (
         <nav

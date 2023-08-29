@@ -246,6 +246,7 @@ export class AuthService {
             data: { loginNb: user.loginNb + 1 },
         });
         await this.generateTokens(user, res);
+        return user;
     }
 
     async refreshTokens(user: User, res: Response) {

@@ -10,7 +10,6 @@ import SettingsPage from './pages/SettingsPage';
 import SignInPage42 from './pages/SignInPage42';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
-import SignInResult from './pages/SignInResult';
 import { WebsocketProvider, socket } from './context/WebsocketContext';
 import TrackingOnline from './components/TrackingOnline';
 import BattlePage from './pages/BattlePage';
@@ -35,7 +34,6 @@ const App: React.FC = () => {
                         <Route path="/signin42" Component={SignInPage42} />
                         <Route path="/signout" Component={SignOutPage} />
                         <Route path="/settings" Component={SettingsPage} />
-                        <Route path="/signin/result" Component={SignInResult} />
                         <Route path="*" Component={Page404} />
                     </Routes>
                 </BrowserRouter>

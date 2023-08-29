@@ -6,6 +6,7 @@ import { useUserContext } from '../context/UserContext';
 
 const DashboardPage: React.FC = () => {
     const { user } = useUserContext();
+    console.log('user', user);
 
     return user ? (
         <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
