@@ -3,10 +3,8 @@ import React from 'react';
 import { MessageProps } from './Message';
 
 export function MessageInput({
-    user,
     send,
 }: {
-    user: string;
     send: (message: MessageProps) => void;
 }) {
     const [input, setInput] = useState('');
@@ -34,13 +32,12 @@ export function MessageInput({
                             event.preventDefault();
                             console.log('send function called');
                             send({
-                                senderId: user,
-                                username: 'username',
+                                idSender: 1,
+                                idChannel: 1,
                                 message: input,
-                                posttime: 'now',
                             });
                             setInput('');
-                        }}
+                        }}  
                     >
                         <span className="font-bold">Send</span>
                         <svg

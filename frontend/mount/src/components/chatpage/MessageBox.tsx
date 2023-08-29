@@ -3,17 +3,18 @@ import Message, { MessageProps} from "./Message";
 import { Messages } from "./Messages";
 
 export function MessageBox({
-  senderId,
-  username,
+  idSender,
+  idChannel,
   message,
-  posttime, 
 }: MessageProps) {
   // user
+  const user = 1;
+
   return (
     <div className="chat-message">
       <article
         className={
-          senderId === username
+          idSender === user
             ? "msg-container msg-self"
             : "msg-container msg-remote"
         }
@@ -21,10 +22,9 @@ export function MessageBox({
       >
           <div className="flr">
             <Message
-             senderId={senderId}
-              username={username}
+             idSender={idSender}
+              idChannel={idChannel}
               message={message}
-              posttime={posttime}
             />
         </div>
       </article>

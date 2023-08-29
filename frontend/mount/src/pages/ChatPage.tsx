@@ -10,7 +10,7 @@ function ChatPage() {
   const [messages, setMessages] = useState<ChatWindowProps["messages"]>([]);
 
   const send = (message: MessageProps) => {
-    socket?.emit('message', { senderId: message.senderId, message: message.message});
+    socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message});
   };
 
   useEffect(() => {
@@ -19,13 +19,12 @@ function ChatPage() {
 
   useEffect(() => {
     if (socket) {
-      const messageListener = ({senderId, message} : { senderId: string; message: string }) => {
-       console.log(senderId);
+      const messageListener = ({idSender, idChannel, message} : { idSender: number; idChannel: number; message: string }) => {
+       console.log(idSender);
         const newMessage: MessageProps = {
-          senderId: senderId,
-          username: "username",
+          idSender: idSender,
+          idChannel: idChannel,
           message: message,
-          posttime: "now",
         };
 
         setMessages((oldMessages) => [...oldMessages, newMessage]);
@@ -45,7 +44,7 @@ function ChatPage() {
     <div className="ChatPage">
       <section className="chatbox">
         <ChatWindow messages={messages} />
-        <MessageInput user="1" send={send} />
+        <MessageInput send={send} />
       </section>
     </div>
   );

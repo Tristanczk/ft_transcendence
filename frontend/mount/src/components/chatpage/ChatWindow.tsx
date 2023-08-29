@@ -15,10 +15,9 @@ export default function ChatWindow({ messages }: ChatWindowProps) {
                 {messages.map((message, index) => (
                     <MessageBox
                         key={index}
-                        senderId={message.senderId}
-                        username={message.username}
+                        idSender={message.idSender}
+                        idChannel={message.idChannel}
                         message={message.message}
-                        posttime={message.posttime}
                     />
                 ))}
             </div>

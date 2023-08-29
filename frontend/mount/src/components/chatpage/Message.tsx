@@ -2,13 +2,12 @@ import React from 'react';
 import Timestamp from './Timestamp';
 
 export interface MessageProps {
-    senderId: string;
-    username: string;
+    idSender: number;
+    idChannel: number;
     message: string;
-    posttime: string;
 }
 
-export default function Message({ senderId, message, posttime }: MessageProps) {
+export default function Message({ idSender, idChannel, message }: MessageProps) {
     return (
         <div className="chat-message">
             <div className="flex items-end">
