@@ -6,7 +6,8 @@ import { NAVBAR_HEIGHT } from '../constants';
 import { useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
 import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
-import authAxios from '../axios';
+import { useAuthAxios } from '../context/AuthAxiosContext';
+import { useUserContext } from '../context/UserContext';
 
 interface Inputs {
     username: string;
@@ -27,6 +28,8 @@ const SettingsPage: React.FC = () => {
     const [update, setUpdate] = useState(false);
     const [error, setError] = useState<string | undefined>();
     const [twoFactor, setTwoFactor] = useState<string | undefined>();
+    const { user, updateUser } = useUserContext();
+    const authAxios = useAuthAxios();
 
     const {
         handleSubmit,

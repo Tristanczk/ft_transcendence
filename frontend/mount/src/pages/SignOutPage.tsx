@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import authAxios from '../axios';
+import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
 
 const SignOutPage: React.FC = () => {
@@ -8,6 +8,7 @@ const SignOutPage: React.FC = () => {
     const [error, setError] = useState(false);
     const navigate = useNavigate();
     const { logoutUser } = useUserContext();
+    const authAxios = useAuthAxios();
 
     useEffect(() => {
         const signOut = async () => {

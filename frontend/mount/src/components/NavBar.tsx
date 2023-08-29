@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import Button from './Button';
 import { useWidth } from '../hooks';
-import authAxios from '../axios';
 import { UserContext, useUserContext } from '../context/UserContext';
 import { NAVBAR_HEIGHT } from '../constants';
 

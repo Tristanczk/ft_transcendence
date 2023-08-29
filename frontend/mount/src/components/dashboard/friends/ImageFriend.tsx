@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { UserSimplified } from '../../../types';
 import axios from 'axios';
+import { useAuthAxios } from '../../../context/AuthAxiosContext';
 
 interface Props {
     friend: UserSimplified;
@@ -8,11 +9,12 @@ interface Props {
 
 function ImageFriend({ friend }: Props) {
     const [imgY, setImgY] = useState<any>();
+    const authAxios = useAuthAxios();
 
     useEffect(() => {
         const fetchImg = async () => {
             try {
-                const response = await axios.get(
+                const response = await authAxios.get(
                     `http://localhost:3333/users/img/${friend.id}`,
                     {
                         params: { id: friend.id },

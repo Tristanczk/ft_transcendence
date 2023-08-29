@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { User } from '../../types';
 import React, { useEffect, useState } from 'react';
+import { useAuthAxios } from '../../context/AuthAxiosContext';
 
 interface PresentationUserProps {
     user: User;
@@ -8,11 +9,12 @@ interface PresentationUserProps {
 
 function PresentationUser({ user }: PresentationUserProps) {
     const [imgY, setImgY] = useState<any>();
+    const authAxios = useAuthAxios();
 
     useEffect(() => {
         const fetchImg = async () => {
             try {
-                const response = await axios.get(
+                const response = await authAxios.get(
                     `http://localhost:3333/users/img/${user.id}`,
                     {
                         params: { id: user.id },
