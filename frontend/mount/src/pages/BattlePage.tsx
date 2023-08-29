@@ -2,6 +2,7 @@ import React from 'react';
 import p5Types from 'p5';
 import Sketch from 'react-p5';
 import { NAVBAR_HEIGHT } from '../constants';
+import { drawRepeatingBackground } from '../functions';
 
 const TAU = 2 * Math.PI;
 const MIN_PLAYERS = 2;
@@ -237,15 +238,6 @@ const avoidCollisions = (players: Player[]) => {
     }
 };
 
-const drawRepeatingBackground = (p5: p5Types, bgImage: p5Types.Image) => {
-    p5.imageMode(p5.CORNER);
-    for (let y = 0; y < p5.height; y += bgImage.height) {
-        for (let x = 0; x < p5.width; x += bgImage.width) {
-            p5.image(bgImage, x, y);
-        }
-    }
-};
-
 const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     if (numPlayers < MIN_PLAYERS || numPlayers > MAX_PLAYERS) {
         throw new Error(
@@ -268,7 +260,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     let ball: Ball;
     let bgImage: p5Types.Image;
 
-    const resize = (p5: p5Types) => {
+    const windowResized = (p5: p5Types) => {
         p5.resizeCanvas(p5.windowWidth, p5.windowHeight - NAVBAR_HEIGHT);
         arenaSize = Math.min(
             p5.width - CANVAS_MARGIN,
@@ -279,13 +271,13 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
 
     const preload = (p5: p5Types) => {
         bgImage = p5.loadImage(
-            process.env.PUBLIC_URL + '/battle-background.webp',
+            process.env.PUBLIC_URL + '/game-background.webp',
         );
     };
 
     const setup = (p5: p5Types, canvasParentRef: Element) => {
         p5.createCanvas(0, 0).parent(canvasParentRef);
-        resize(p5);
+        windowResized(p5);
         p5.rectMode(p5.CENTER);
         p5.noStroke();
         ball = new Ball(p5, ballSpeedStart);
@@ -342,7 +334,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
             preload={preload}
             setup={setup}
             draw={draw}
-            windowResized={resize}
+            windowResized={windowResized}
         />
     );
 };

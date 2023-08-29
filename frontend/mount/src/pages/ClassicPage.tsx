@@ -1,7 +1,9 @@
 import React from 'react';
 import type P5 from 'p5';
 import Sketch from 'react-p5';
+import p5Types from 'p5';
 import { NAVBAR_HEIGHT } from '../constants';
+import { drawRepeatingBackground } from '../functions';
 
 const ASPECT_RATIO = 16 / 9;
 const CANVAS_MARGIN = 20;
@@ -32,6 +34,14 @@ const ClassicGame = () => {
 
     let ballPos: P5.Vector;
     let ballVel: P5.Vector;
+
+    let bgImage: p5Types.Image;
+
+    const preload = (p5: p5Types) => {
+        bgImage = p5.loadImage(
+            process.env.PUBLIC_URL + '/game-background.webp',
+        );
+    };
 
     const setup = (p5: P5, canvasParentRef: Element) => {
         p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(
@@ -166,7 +176,14 @@ const ClassicGame = () => {
         );
     };
 
-    return <Sketch setup={setup} draw={draw} windowResized={windowResized} />;
+    return (
+        <Sketch
+            preload={preload}
+            setup={setup}
+            draw={draw}
+            windowResized={windowResized}
+        />
+    );
 };
 
 const ClassicPage: React.FC = () => (
