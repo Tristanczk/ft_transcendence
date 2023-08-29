@@ -27,4 +27,9 @@ export class StatsController {
 	async getStats(@Param('id', ParseIntPipe) idUser: number) {
 		return this.stats.getStatsUser(idUser);
 	}
+
+	@Get('graph/:id')
+	async getDataGraph(@Param('id', ParseIntPipe) idUser: number) {
+		return this.stats.getDataGraph(idUser);
+	}
 }

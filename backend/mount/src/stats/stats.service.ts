@@ -47,34 +47,24 @@ export class StatsService {
             elo: user.elo,
             daysSinceRegister: this.dateDiff(user.createdAt, new Date()).days,
         };
-
-		// console.log(userStats)
-		
-
         return userStats;
     }
 
 	dateDiff(date1, date2): DiffDate {
 		var diff: DiffDate = {sec: 0, min:0, hours:0, days: 0}
 		var tmp = date2 - date1;
-		
 		tmp = Math.floor(tmp/1000);
 		diff.sec = tmp % 60;
-		
 		tmp = Math.floor((tmp-diff.sec)/60);
 		diff.min = tmp % 60;
-		
 		tmp = Math.floor((tmp-diff.min)/60);
 		diff.hours = tmp % 24;
-		
 		tmp = Math.floor((tmp-diff.hours)/24);
-		diff.days = tmp;
-
-		// console.log(diff)
-		
+		diff.days = tmp;		
 		return diff;
 	}
 
+	//pour toi petit curieux: je n'aurai pas fait cette fonction comme ca dans la vraie vie !
     async getGlobalStats() {
         const users = await this.prisma.user.findMany();
         const games = await this.prisma.games.findMany();
@@ -85,10 +75,84 @@ export class StatsService {
                 users.reduce((acc, curr) => acc + curr.elo, 0) / users.length,
             ),
         };
-        // console.log('global stats');
-        // console.log(globalStats);
         return globalStats;
     }
+
+	async getGamesPlayer(idUser: number) {
+		const data = await this.prisma.user.findUnique({
+            where: {
+                id: idUser,
+            },
+            include: {
+                gamesasPlayerA: true,
+                gamesasPlayerB: true,
+            },
+        });
+        if (!data) throw new NotFoundException('No user found');
+
+        const gameList = data.gamesasPlayerA.concat(data.gamesasPlayerB);
+        gameList.sort((a, b) => a.id - b.id);
+		return gameList;
+	}
+
+	async getDataGraph(idUser: number) {
+		const data = [
+			{
+				id: 'Normal mode',
+				data: [
+					{
+						x: 2000,
+						y: 7,
+					},
+					{
+						x: 2001,
+						y: 7,
+					},
+					{
+						x: 2002,
+						y: 2,
+					},
+					{
+						x: 2003,
+						y: 2,
+					},
+					{
+						x: 2004,
+						y: 3,
+					},
+				],
+			},
+			{
+				id: 'Crazy mode',
+				data: [
+					{
+						x: 2000,
+						y: 1,
+					},
+					{
+						x: 2001,
+						y: 8,
+					},
+					{
+						x: 2002,
+						y: 11,
+					},
+					{
+						x: 2003,
+						y: 12,
+					},
+					{
+						x: 2004,
+						y: 2,
+					},
+				],
+			},
+		];
+		return data;
+	}
+
+
+
 
     async createMe() {
         const date = new Date();
@@ -114,6 +178,8 @@ export class StatsService {
                 won: true,
                 scoreA: 5,
                 scoreB: 4,
+				varEloA: 0,
+				varEloB: 0,
                 mode: 0,
                 UserA: { connect: { id: 1 } },
                 UserB: { connect: { id: 2 } },
@@ -141,6 +207,8 @@ export class StatsService {
                 won: false,
                 scoreA: 3,
                 scoreB: 5,
+				varEloA: 0,
+				varEloB: 0,
                 mode: 1,
                 UserA: { connect: { id: 1 } },
                 UserB: { connect: { id: 2 } },
@@ -168,6 +236,8 @@ export class StatsService {
                 won: true,
                 scoreA: 6,
                 scoreB: 2,
+				varEloA: 0,
+				varEloB: 0,
                 mode: 0,
                 UserA: { connect: { id: 2 } },
                 UserB: { connect: { id: 1 } },
@@ -195,6 +265,8 @@ export class StatsService {
                 won: true,
                 scoreA: 5,
                 scoreB: 4,
+				varEloA: 0,
+				varEloB: 0,
                 mode: 0,
                 UserA: { connect: { id: 1 } },
                 UserB: { connect: { id: 2 } },
@@ -222,6 +294,8 @@ export class StatsService {
                 won: false,
                 scoreA: 3,
                 scoreB: 5,
+				varEloA: 0,
+				varEloB: 0,
                 mode: 0,
                 UserA: { connect: { id: 1 } },
                 UserB: { connect: { id: 2 } },
@@ -249,6 +323,8 @@ export class StatsService {
                 won: true,
                 scoreA: 6,
                 scoreB: 2,
+				varEloA: 0,
+				varEloB: 0,
                 mode: 0,
                 UserA: { connect: { id: 2 } },
                 UserB: { connect: { id: 1 } },

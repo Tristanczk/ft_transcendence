@@ -120,7 +120,7 @@ function GlobalStats() {
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-								{stats ? (stats?.me.averageDuration > 60
+								{stats && stats.me.averageDuration ? (stats?.me.averageDuration > 60
                                                 ? Math.trunc(
                                                       stats?.me.averageDuration / 60,
                                                   ) +
@@ -168,7 +168,7 @@ function GlobalStats() {
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                             </svg>
                             <span className="leading-tight">
-                                0+ brilliants games
+							{stats ? stats?.global.nbGames : 'N/A'}+ brilliants games
                             </span>
                         </li>
                         <li className="flex space-x-2 items-center">
@@ -182,7 +182,7 @@ function GlobalStats() {
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                             </svg>
                             <span className="leading-tight">
-                                Fun for 0+ users
+                                Fun for {stats ? stats?.global.nbUsers : 'N/A'}+ users
                             </span>
                         </li>
                         <li className="flex space-x-2 items-center">
@@ -196,7 +196,7 @@ function GlobalStats() {
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                             </svg>
                             <span className="leading-tight">
-                                Average Elo of 1000
+                                Average Elo of {stats ? stats?.global.averageElo : 'N/A'}
                             </span>
                         </li>
                         <li className="flex space-x-2 items-center">

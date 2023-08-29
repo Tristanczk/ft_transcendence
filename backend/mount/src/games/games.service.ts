@@ -4,14 +4,23 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { InitGameDto } from './dto/init-game.dto';
 import { updateGameDto } from './dto/update-game.dto';
 import { GameExports, UserGame } from './games.types';
 import { DiffDate } from 'src/stats/stats.type';
 
+export type CurrentGame = {
+    idGame: number;
+    idPlayerA: number;
+    eloPlayerA: number;
+    idPlayerB: number;
+    eloPlayerB: number;
+};
+
 @Injectable()
 export class GamesService {
     constructor(private prisma: PrismaService) {}
+
+    dataGamesPlaying: CurrentGame[] = [];
 
     async initGame(idUser: number, idPlayerB: number, mode: number) {
         console.log('initGame ' + idUser + ' against ' + idPlayerB);
@@ -30,11 +39,21 @@ export class GamesService {
                     won: true,
                     scoreA: 0,
                     scoreB: 0,
+                    varEloA: 0,
+                    varEloB: 0,
                     mode: mode,
                     UserA: { connect: { id: idUser } },
                     UserB: { connect: { id: idPlayerB } },
                 },
             });
+            const thisGame: CurrentGame = {
+                idGame: newGame.id,
+                idPlayerA: idUser,
+                eloPlayerA: 0,
+                idPlayerB: idPlayerB,
+                eloPlayerB: playerB.elo,
+            };
+			this.dataGamesPlaying.push(thisGame);
             return newGame.id;
         } catch (error) {
             console.log(error);
@@ -51,11 +70,17 @@ export class GamesService {
                 finishedAt: new Date(),
                 scoreA: body.scoreA,
                 scoreB: body.scoreB,
+				varEloA: 0,
+                varEloB: 0,
                 won: body.won,
             },
         });
         return retour;
     }
+
+	async computeElo(idGame: number) {
+
+	}
 
     async historyFiveGames(userId: number) {
         const data = await this.prisma.user.findUnique({
@@ -135,24 +160,29 @@ export class GamesService {
         return transformedTab;
     }
 
-	computeDuration(date1, date2): number {
-		var diff: DiffDate = {sec: 0, min:0, hours:0, days: 0}
-		var tmp = date2 - date1;
-		
-		tmp = Math.floor(tmp/1000);
-		diff.sec = tmp % 60;
-		
-		tmp = Math.floor((tmp-diff.sec)/60);
-		diff.min = tmp % 60;
-		
-		tmp = Math.floor((tmp-diff.min)/60);
-		diff.hours = tmp % 24;
-		
-		tmp = Math.floor((tmp-diff.hours)/24);
-		diff.days = tmp;
-		
-		return diff.sec + diff.min * 60 + diff.hours * 60 * 60 + diff.days * 24 * 60 * 60;
-	}
+    computeDuration(date1, date2): number {
+        var diff: DiffDate = { sec: 0, min: 0, hours: 0, days: 0 };
+        var tmp = date2 - date1;
+
+        tmp = Math.floor(tmp / 1000);
+        diff.sec = tmp % 60;
+
+        tmp = Math.floor((tmp - diff.sec) / 60);
+        diff.min = tmp % 60;
+
+        tmp = Math.floor((tmp - diff.min) / 60);
+        diff.hours = tmp % 24;
+
+        tmp = Math.floor((tmp - diff.hours) / 24);
+        diff.days = tmp;
+
+        return (
+            diff.sec +
+            diff.min * 60 +
+            diff.hours * 60 * 60 +
+            diff.days * 24 * 60 * 60
+        );
+    }
 
     //to do : amend for month just in case
     computeDuration1(start: Date, end: Date): number {
