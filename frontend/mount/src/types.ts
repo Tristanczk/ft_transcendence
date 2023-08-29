@@ -36,3 +36,18 @@ export type Games = {
 	playerA:	number;
 	playerB:	number;
 }
+
+export type GameImports = {
+	gameId: number;
+	duration: number;
+	mode: number;
+	playerA: UserGame | null;
+	playerB: UserGame | null;
+}
+
+export type UserGame = {
+	id: number;
+	nickname: string,
+	elo: number;
+	score: number;
+}

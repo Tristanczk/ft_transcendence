@@ -65,16 +65,14 @@ export class GamesService {
 
 		const gameList = data.gamesasPlayerA.concat(data.gamesasPlayerB)
 		gameList.sort((a, b) => a.id - b.id)
-		console.log(userId + ' : A=' + data.gamesasPlayerA.length + ', B=' + data.gamesasPlayerB.length + ', tot=' + gameList.length)
+		// console.log(userId + ' : A=' + data.gamesasPlayerA.length + ', B=' + data.gamesasPlayerB.length + ', tot=' + gameList.length)
 
-		// console.log(data)
 		let newGameList = [];
 		if (gameList.length <= 5) newGameList = gameList;
 		else newGameList = gameList.slice(-5);
 
 		const transformedTab = this.transformListReadable(newGameList);
 
-		console.log(transformedTab);
 		return transformedTab;
 	}
 
@@ -89,22 +87,19 @@ export class GamesService {
 			}
 		});
 
-		console.log('tab id = ' + tabId)
-
 		const users = await this.prisma.user.findMany({ where:{
 			id: {
 				in: tabId
 			}
 		}});
-		// console.log(users);
-		let transformedTab: GameExports[] = [];
 
+		let transformedTab: GameExports[] = [];
 		tab.forEach(elem => {
 			let newElem: GameExports = {gameId: -1, duration: 0, mode: 0, playerA: null, playerB: null};
 			newElem.gameId = elem.id;
 			newElem.mode = elem.mode;
-			newElem.playerA = this.getUserFormat(elem.idPlayerA, users, elem.scoreA)
-			newElem.playerB = this.getUserFormat(elem.idPlayerB, users, elem.scoreB)
+			newElem.playerA = this.getUserFormat(elem.playerA, users, elem.scoreA)
+			newElem.playerB = this.getUserFormat(elem.playerB, users, elem.scoreB)
 			transformedTab.push(newElem)	
 		})
 		return transformedTab;
@@ -112,10 +107,7 @@ export class GamesService {
 
 	getUserFormat(userId: number, users: any, score: number): UserGame {
 		let formatedUser: UserGame = {id: -1, nickname: '', elo: 0, score: 0};
-
 		const user = users.find((user) => user.id === userId);
-
-		console.log(user);
 
 		formatedUser.id = userId;
 		formatedUser.nickname = user.nickname;
@@ -125,18 +117,3 @@ export class GamesService {
 	}
 
 }
-
-// export type GameExports = {
-// 	gameId: number;
-// 	duration: number;
-// 	mode: number;
-// 	playerA: UserGame;
-// 	playerB: UserGame;
-// }
-
-// export type UserGame = {
-// 	id: number;
-// 	nickname: string,
-// 	elo: number;
-// 	score: number;
-// }
