@@ -3,7 +3,6 @@ import type P5 from 'p5';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { NAVBAR_HEIGHT } from '../constants';
-import { drawRepeatingBackground } from '../functions';
 
 const ASPECT_RATIO = 16 / 9;
 const CANVAS_MARGIN = 20;
@@ -35,11 +34,6 @@ const ClassicGame = () => {
     let ballPos: P5.Vector;
     let ballVel: P5.Vector;
 
-    let arenaHeight: number;
-    let arenaWidth: number;
-    let marginTop: number;
-    let marginLeft: number;
-
     let bgImage: p5Types.Image;
 
     const preload = (p5: p5Types) => {
@@ -51,7 +45,9 @@ const ClassicGame = () => {
     const setup = (p5: P5, canvasParentRef: Element) => {
         p5.createCanvas(0, 0).parent(canvasParentRef);
         windowResized(p5);
+        p5.rectMode(p5.CENTER);
         p5.noStroke();
+        console.log(p5.width);
         reset(p5);
     };
 
@@ -86,41 +82,29 @@ const ClassicGame = () => {
             ballPos.x = p5.constrain(ballPos.x, COLLISION_X, 1 - COLLISION_X);
         }
 
-        drawRepeatingBackground(p5, bgImage);
-        p5.rectMode(p5.CORNER);
-        p5.fill(15);
-        p5.rect(marginLeft, marginTop, arenaWidth, arenaHeight);
+        p5.background(15);
         drawPaddle(p5, true, paddleLeft);
         drawPaddle(p5, false, paddleRight);
         p5.square(
-            ballPos.x * arenaWidth + marginLeft,
-            ballPos.y * arenaHeight + marginTop,
-            BALL_SIZE * arenaWidth,
+            ballPos.x * p5.width,
+            ballPos.y * p5.height,
+            BALL_SIZE * p5.width,
         );
 
         p5.fill(255);
-        const textSize = 8 + arenaWidth / 30;
+        const textSize = 8 + p5.width / 30;
         p5.textSize(textSize);
         p5.textFont('monospace');
         p5.textAlign(p5.CENTER, p5.CENTER);
-        p5.text(
-            `${scoreLeft} - ${scoreRight}`,
-            arenaWidth / 2,
-            marginTop + textSize * 1.25,
-        );
+        p5.text(`${scoreLeft} - ${scoreRight}`, p5.width / 2, textSize * 1.25);
     };
 
     const windowResized = (p5: P5) => {
-        p5.resizeCanvas(p5.windowWidth, p5.windowHeight - NAVBAR_HEIGHT);
-        arenaHeight = Math.min(
+        const height = Math.min(
             (p5.windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
             p5.windowHeight - CANVAS_MARGIN - NAVBAR_HEIGHT,
         );
-        arenaWidth = arenaHeight * ASPECT_RATIO;
-        marginTop = (p5.height - arenaHeight) / 2;
-        marginLeft = (p5.width - arenaWidth) / 2;
-        console.log(p5.width, arenaWidth, marginLeft);
-        console.log(p5.height, arenaHeight, marginTop);
+        p5.resizeCanvas(ASPECT_RATIO * height, height);
     };
 
     const movePaddle = (
@@ -168,14 +152,12 @@ const ClassicGame = () => {
     };
 
     const drawPaddle = (p5: P5, left: boolean, y: number) => {
-        p5.rectMode(p5.CENTER);
-        p5.fill(255);
-        const paddleMargin = (PADDLE_MARGIN_X + PADDLE_WIDTH / 2) * arenaWidth;
+        const paddleMargin = (PADDLE_MARGIN_X + PADDLE_WIDTH / 2) * p5.width;
         p5.rect(
-            (left ? paddleMargin : arenaWidth - paddleMargin) + marginLeft,
-            y * arenaHeight + marginTop,
-            PADDLE_WIDTH * arenaWidth,
-            PADDLE_HEIGHT * arenaHeight,
+            left ? paddleMargin : p5.width - paddleMargin,
+            y * p5.height,
+            PADDLE_WIDTH * p5.width,
+            PADDLE_HEIGHT * p5.height,
         );
     };
 
@@ -202,6 +184,12 @@ const ClassicPage: React.FC = () => (
         className="w-full flex items-center justify-center"
         style={{
             height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+            backgroundImage: `url(${
+                process.env.PUBLIC_URL + '/game-background.webp'
+            })`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: 'auto',
+            backgroundPosition: 'center',
         }}
     >
         <ClassicGame />
