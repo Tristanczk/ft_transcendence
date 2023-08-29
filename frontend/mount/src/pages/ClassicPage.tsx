@@ -19,8 +19,11 @@ const BALL_SPEED_START = 0.0005;
 const BALL_SPEED_INCREMENT = 0.00005;
 const MAX_Y_FACTOR = 2.0;
 
-const LOW = BALL_SIZE / 2;
-const HIGH = 1 - BALL_SIZE / 2;
+const BALL_LOW = BALL_SIZE / 2 + 2 * LINE_MARGIN + LINE_WIDTH;
+const BALL_HIGH = 1 - BALL_LOW;
+const PADDLE_LOW = PADDLE_HEIGHT / 2 + 2 * LINE_MARGIN + LINE_WIDTH;
+const PADDLE_HIGH = 1 - PADDLE_LOW;
+
 const BALL_RADIUS = BALL_SIZE / 2;
 const COLLISION_X = PADDLE_MARGIN_X + PADDLE_WIDTH + BALL_RADIUS;
 const COLLISION_Y = PADDLE_HEIGHT / 2 + BALL_RADIUS;
@@ -49,8 +52,8 @@ const ClassicGame = () => {
         ballPos.x += ballVel.x * p5.deltaTime;
         ballPos.y += ballVel.y * p5.deltaTime;
 
-        if (ballPos.y <= LOW || ballPos.y >= HIGH) {
-            ballPos.y = p5.constrain(ballPos.y, LOW, HIGH);
+        if (ballPos.y <= BALL_LOW || ballPos.y >= BALL_HIGH) {
+            ballPos.y = p5.constrain(ballPos.y, BALL_LOW, BALL_HIGH);
             ballVel.y = -ballVel.y;
         }
         if (ballPos.x >= 1 + BALL_RADIUS) {
@@ -125,8 +128,7 @@ const ClassicGame = () => {
         if (p5.keyIsDown(upKey)) {
             paddle -= paddleSpeed;
         }
-        const low = PADDLE_HEIGHT / 2 + 2 * LINE_MARGIN + LINE_WIDTH;
-        return p5.constrain(paddle, low, 1 - low);
+        return p5.constrain(paddle, PADDLE_LOW, PADDLE_HIGH);
     };
 
     const hitPaddle = (
