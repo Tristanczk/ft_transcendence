@@ -11,7 +11,10 @@ export class JwtRefreshStrategy extends PassportStrategy(
     Strategy,
     'jwt-refresh-token',
 ) {
-    constructor(private config: ConfigService, private prisma: PrismaService) {
+    constructor(
+        private config: ConfigService,
+        private prisma: PrismaService,
+    ) {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (req: Request) => {
