@@ -23,13 +23,13 @@ function AddFriendElem({
 
     async function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
         setNick(e.target.value);
-        console.log('here ' + e.target.value);
+        // console.log('here ' + e.target.value);
         getPossibleFriendsList(e.target.value);
     }
 
     async function getPossibleFriendsList(nickname: string) {
         if (nickname.length >= 1) {
-            console.log('try ' + nickname);
+            // console.log('try ' + nickname);
             try {
                 const response = await axios.get(
                     `http://localhost:3333/friends/select/${nickname}`,
