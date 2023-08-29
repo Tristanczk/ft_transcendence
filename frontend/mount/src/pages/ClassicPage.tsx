@@ -34,14 +34,6 @@ const ClassicGame = () => {
     let ballPos: P5.Vector;
     let ballVel: P5.Vector;
 
-    let bgImage: p5Types.Image;
-
-    const preload = (p5: p5Types) => {
-        bgImage = p5.loadImage(
-            process.env.PUBLIC_URL + '/game-background.webp',
-        );
-    };
-
     const setup = (p5: P5, canvasParentRef: Element) => {
         p5.createCanvas(0, 0).parent(canvasParentRef);
         windowResized(p5);
@@ -169,14 +161,7 @@ const ClassicGame = () => {
         );
     };
 
-    return (
-        <Sketch
-            preload={preload}
-            setup={setup}
-            draw={draw}
-            windowResized={windowResized}
-        />
-    );
+    return <Sketch setup={setup} draw={draw} windowResized={windowResized} />;
 };
 
 const ClassicPage: React.FC = () => (
