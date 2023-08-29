@@ -32,7 +32,7 @@ export class AuthController {
             .then((user) => {
                 if (user.twoFactorAuthentication) {
                     res.json({
-                        message: 'Two-Factor authentication required',  
+                        message: 'Two-Factor authentication required',
                         user,
                     });
                 } else {
@@ -64,8 +64,11 @@ export class AuthController {
     signup(@Body() dto: SignupDto, @Res() res: Response) {
         this.authService
             .signup(dto, res)
-            .then(() => {
-                res.send('Successfully signed up!');
+            .then((user) => {
+                res.json({
+                    message: 'Two-Factor authentication required',
+                    user,
+                });
             })
             .catch((error) => {
                 res.status(401).send(error.message);
