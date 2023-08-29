@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ErrorsFormField from './ErrorsFormField';
 import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '../context/UserContext';
 
 interface TwoFactorInputs {
     validationCode: string;
@@ -16,6 +17,7 @@ interface Props {
 
 const TwoFactorForm: React.FC<Props> = ({ username }) => {
     const [error, setError] = useState<string>();
+    const { loginUser } = useUserContext();
     const {
         handleSubmit,
         control,
@@ -26,9 +28,7 @@ const TwoFactorForm: React.FC<Props> = ({ username }) => {
     const onSubmit = async (data: TwoFactorInputs) => {
         setError(undefined);
         try {
-            console.log('username', username);
-            console.log('code', data.validationCode);
-            await axios.post(
+            const response = await axios.post(
                 'http://localhost:3333/auth/authenticate-2fa',
                 {
                     nickname: username,
@@ -36,6 +36,7 @@ const TwoFactorForm: React.FC<Props> = ({ username }) => {
                 },
                 { withCredentials: true },
             );
+            loginUser(response.data.user);
             navigate('/');
         } catch (error: any) {
             console.log('error', error.response.data);

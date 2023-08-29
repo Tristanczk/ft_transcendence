@@ -5,13 +5,15 @@ interface Prop {
     user: User | null;
     loginUser: (userData: User | null) => void;
     logoutUser: () => void;
+    updateUser: (userData: Partial<User>) => void;
 }
 
 export const UserContext = React.createContext<Prop>({
-	user: null,
-	loginUser: () => {},
-	logoutUser: () => {},
-  });
+    user: null,
+    loginUser: () => {},
+    logoutUser: () => {},
+    updateUser: () => {},
+});
 
 export const UserProvider = ({ children }: any) => {
     const [user, setUser] = useState<User | null>(null);
@@ -24,8 +26,19 @@ export const UserProvider = ({ children }: any) => {
         setUser(null);
     };
 
+    const updateUser = (userData: Partial<User>) => {
+        setUser((prevUser) => {
+            if (prevUser) {
+                return { ...prevUser, ...userData };
+            }
+            return null;
+        });
+    };
+
     return (
-        <UserContext.Provider value={{ user, loginUser, logoutUser }}>
+        <UserContext.Provider
+            value={{ user, loginUser, logoutUser, updateUser }}
+        >
             {children}
         </UserContext.Provider>
     );

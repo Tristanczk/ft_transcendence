@@ -95,13 +95,16 @@ export class AuthController {
     }
 
     @Post('authenticate-2fa')
-    async enable2faPost(@Body() dto: TwoFactorCodeDto, @Res() res: Response) {
+    async authenticate2fa(@Body() dto: TwoFactorCodeDto, @Res() res: Response) {
         this.authService
             .authenticateTwoFactor(dto.nickname, dto.code, res)
-            .then(() => {
-                res.send('Two-Factor authentification successful');
+            .then((user) => {
+                res.json({
+                    message: 'Two-Factor authentification successful',
+                    user,
+                });
             })
-            .catch((error) => {
+            .catch((error: ForbiddenException) => {
                 res.status(401).send(error.message);
             });
     }

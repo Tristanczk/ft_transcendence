@@ -1,10 +1,8 @@
-import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { User } from '../types';
 import Button from './Button';
 import { useWidth } from '../hooks';
-import authAxios from '../axios';
-import { UserContext, useUserContext } from '../context/UserContext';
+import { useUserContext } from '../context/UserContext';
 import { NAVBAR_HEIGHT } from '../constants';
 
 const NavLink: React.FC<{
@@ -140,29 +138,7 @@ const UserMenu: React.FC = () => {
 const NavBar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    // const [user, setUser] = useState<User | null>(null);
-	const userGlobal = useContext(UserContext);
-	const user = userGlobal.user;
-	const { loginUser, logoutUser } = useUserContext();
-
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await authAxios.get('/users/me', {
-                    withCredentials: true,
-                });
-                // setUser(response.data);
-				loginUser(response.data)
-            } catch (error) {
-				logoutUser();
-                // setUser(null);
-                // console.error(error);
-            }
-        };
-        fetchUser();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.pathname]);
+    const { user } = useUserContext();
 
     return (
         <nav

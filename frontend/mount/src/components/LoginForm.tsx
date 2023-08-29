@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ErrorsFormField from './ErrorsFormField';
 import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '../context/UserContext';
 
 interface LoginInputs {
     username: string;
@@ -18,6 +19,7 @@ interface Props {
 
 const LoginForm: React.FC<Props> = ({ setUsername, setTwoFactor }) => {
     const [error, setError] = useState<string>();
+    const { loginUser } = useUserContext();
     const {
         handleSubmit,
         control,
@@ -41,6 +43,7 @@ const LoginForm: React.FC<Props> = ({ setUsername, setTwoFactor }) => {
                 setTwoFactor(true);
                 setUsername(data.username);
             } else {
+                loginUser(response.data.user);
                 navigate('/');
             }
         } catch (error: any) {
