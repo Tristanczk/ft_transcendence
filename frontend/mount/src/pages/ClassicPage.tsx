@@ -1,18 +1,19 @@
 import React from 'react';
 import type P5 from 'p5';
 import Sketch from 'react-p5';
-import p5Types from 'p5';
 import { NAVBAR_HEIGHT } from '../constants';
 
-const ASPECT_RATIO = 16 / 9;
+const ASPECT_RATIO = 286 / 175;
 const CANVAS_MARGIN = 20;
 const BALL_SIZE = 0.02;
 
 const PADDLE_MARGIN_X = 0.01;
-const PADDLE_MARGIN_Y = PADDLE_MARGIN_X * ASPECT_RATIO;
 const PADDLE_WIDTH = 0.015;
 const PADDLE_HEIGHT = 0.16;
 const PADDLE_SPEED = 0.001;
+
+const LINE_MARGIN = 0.01;
+const LINE_WIDTH = PADDLE_WIDTH;
 
 const BALL_SPEED_START = 0.0005;
 const BALL_SPEED_INCREMENT = 0.00005;
@@ -37,9 +38,7 @@ const ClassicGame = () => {
     const setup = (p5: P5, canvasParentRef: Element) => {
         p5.createCanvas(0, 0).parent(canvasParentRef);
         windowResized(p5);
-        p5.rectMode(p5.CENTER);
         p5.noStroke();
-        console.log(p5.width);
         reset(p5);
     };
 
@@ -75,6 +74,20 @@ const ClassicGame = () => {
         }
 
         p5.background(15);
+        p5.rectMode(p5.CORNER);
+        p5.fill(255);
+        p5.rect(
+            PADDLE_MARGIN_X * p5.width,
+            LINE_MARGIN * p5.height,
+            (1 - 2 * PADDLE_MARGIN_X) * p5.width,
+            LINE_WIDTH * p5.height,
+        );
+        p5.rect(
+            PADDLE_MARGIN_X * p5.width,
+            (1 - LINE_MARGIN - LINE_WIDTH) * p5.height,
+            (1 - 2 * PADDLE_MARGIN_X) * p5.width,
+            LINE_WIDTH * p5.height,
+        );
         drawPaddle(p5, true, paddleLeft);
         drawPaddle(p5, false, paddleRight);
         p5.square(
@@ -112,11 +125,8 @@ const ClassicGame = () => {
         if (p5.keyIsDown(upKey)) {
             paddle -= paddleSpeed;
         }
-        return p5.constrain(
-            paddle,
-            PADDLE_HEIGHT / 2 + PADDLE_MARGIN_Y,
-            1 - PADDLE_HEIGHT / 2 - PADDLE_MARGIN_Y,
-        );
+        const low = PADDLE_HEIGHT / 2 + 2 * LINE_MARGIN + LINE_WIDTH;
+        return p5.constrain(paddle, low, 1 - low);
     };
 
     const hitPaddle = (
@@ -144,6 +154,7 @@ const ClassicGame = () => {
     };
 
     const drawPaddle = (p5: P5, left: boolean, y: number) => {
+        p5.rectMode(p5.CENTER);
         const paddleMargin = (PADDLE_MARGIN_X + PADDLE_WIDTH / 2) * p5.width;
         p5.rect(
             left ? paddleMargin : p5.width - paddleMargin,
