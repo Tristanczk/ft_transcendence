@@ -44,10 +44,8 @@ const ClassicGame = () => {
     };
 
     const setup = (p5: P5, canvasParentRef: Element) => {
-        p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(
-            canvasParentRef,
-        );
-        resize(p5);
+        p5.createCanvas(0, 0).parent(canvasParentRef);
+        windowResized(p5);
         p5.rectMode(p5.CENTER);
         p5.noStroke();
         console.log(p5.width);
@@ -103,7 +101,11 @@ const ClassicGame = () => {
     };
 
     const windowResized = (p5: P5) => {
-        resize(p5);
+        const height = Math.min(
+            (p5.windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
+            p5.windowHeight - CANVAS_MARGIN - NAVBAR_HEIGHT,
+        );
+        p5.resizeCanvas(ASPECT_RATIO * height, height);
     };
 
     const movePaddle = (
@@ -158,14 +160,6 @@ const ClassicGame = () => {
             PADDLE_WIDTH * p5.width,
             PADDLE_HEIGHT * p5.height,
         );
-    };
-
-    const resize = (p5: P5) => {
-        const height = Math.min(
-            (p5.windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
-            p5.windowHeight - CANVAS_MARGIN - NAVBAR_HEIGHT,
-        );
-        p5.resizeCanvas(ASPECT_RATIO * height, height);
     };
 
     const reset = (p5: P5) => {
