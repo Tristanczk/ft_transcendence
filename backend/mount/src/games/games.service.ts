@@ -16,6 +16,11 @@ export type CurrentGame = {
     eloPlayerB: number;
 };
 
+export type VariationElo = {
+    varEloA: number;
+    varEloB: number;
+};
+
 @Injectable()
 export class GamesService {
     constructor(private prisma: PrismaService) {}
@@ -23,7 +28,7 @@ export class GamesService {
     dataGamesPlaying: CurrentGame[] = [];
 
     async initGame(idUser: number, idPlayerB: number, mode: number) {
-        console.log('initGame ' + idUser + ' against ' + idPlayerB);
+        // console.log('initGame ' + idUser + ' against ' + idPlayerB);
         //verif playerB exist
         const playerB = await this.prisma.user.findUnique({
             where: { id: idPlayerB },
@@ -53,7 +58,7 @@ export class GamesService {
                 idPlayerB: idPlayerB,
                 eloPlayerB: playerB.elo,
             };
-			this.dataGamesPlaying.push(thisGame);
+            this.dataGamesPlaying.push(thisGame);
             return newGame.id;
         } catch (error) {
             console.log(error);
@@ -62,7 +67,8 @@ export class GamesService {
     }
 
     async updateGame(idGame: number, body: updateGameDto) {
-        console.log('updateGame ' + idGame + ' result ' + body);
+        // console.log('updateGame ' + idGame + ' result ' + body);
+        const varElo: VariationElo = await this.computeElo(idGame, body.won);
         const retour = await this.prisma.games.update({
             where: { id: idGame },
             data: {
@@ -70,17 +76,59 @@ export class GamesService {
                 finishedAt: new Date(),
                 scoreA: body.scoreA,
                 scoreB: body.scoreB,
-				varEloA: 0,
-                varEloB: 0,
+                varEloA: varElo.varEloA,
+                varEloB: varElo.varEloB,
                 won: body.won,
             },
         });
         return retour;
     }
 
-	async computeElo(idGame: number) {
+    async computeElo(idGame: number, won: boolean) {
+        const gameIndex = this.dataGamesPlaying.findIndex(
+            (e) => e.idGame === idGame,
+        );
+        if (gameIndex === -1)
+            throw new NotFoundException('idGame not currently playing?');
+        const userB = await this.prisma.user.findUnique({
+            where: { id: this.dataGamesPlaying[gameIndex].idPlayerA },
+        });
+        this.dataGamesPlaying[gameIndex].eloPlayerA = userB.elo;
 
-	}
+        const probaA =
+            1 /
+            (1 +
+                Math.pow(
+                    10,
+                    (this.dataGamesPlaying[gameIndex].eloPlayerB -
+                        this.dataGamesPlaying[gameIndex].eloPlayerA) /
+                        400,
+                ));
+
+        const varEloA = Math.round(32 * ((won ? 1 : 0) - probaA));
+        const varEloB = Math.round(32 * ((won ? 0 : 1) - probaA));
+
+        // console.log('varA=' + varEloA + ', varB=' + varEloB + ', proba=' + probaA);
+        const variation: VariationElo = { varEloA: varEloA, varEloB: varEloB };
+
+        await this.prisma.user.update({
+            where: { id: this.dataGamesPlaying[gameIndex].idPlayerA },
+            data: {
+                elo: won ? { increment: varEloA } : { decrement: -varEloA },
+            },
+        });
+
+        await this.prisma.user.update({
+            where: { id: this.dataGamesPlaying[gameIndex].idPlayerB },
+            data: {
+                elo: won ? { decrement: -varEloB } : { increment: varEloB },
+            },
+        });
+
+        this.dataGamesPlaying.splice(gameIndex, 1);
+
+        return variation;
+    }
 
     async historyFiveGames(userId: number) {
         const data = await this.prisma.user.findUnique({
@@ -183,28 +231,6 @@ export class GamesService {
             diff.days * 24 * 60 * 60
         );
     }
-
-    //to do : amend for month just in case
-    computeDuration1(start: Date, end: Date): number {
-        const seconds = Math.abs(end.getSeconds() - start.getSeconds());
-        const minutes = Math.abs(end.getMinutes() - start.getMinutes());
-        const hours = Math.abs(end.getHours() - start.getHours());
-        const days = Math.abs(end.getDate() - start.getDate());
-        const duration: number =
-            days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
-
-        // console.log('duration=' + duration)
-        return duration;
-    }
-
-    // dateDiffInDays(a, b) {
-    // 	const _MS_PER_DAY = 1000 * 60 * 60 * 24;
-    // 	// Discard the time and time-zone information.
-    // 	const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-    // 	const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-
-    // 	return Math.floor((utc2 - utc1) / _MS_PER_DAY);
-    //   }
 
     getUserFormat(userId: number, users: any, score: number): UserGame {
         let formatedUser: UserGame = { id: -1, nickname: '', elo: 0, score: 0 };
