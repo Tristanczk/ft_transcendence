@@ -26,7 +26,7 @@ const SignOutPage: React.FC = () => {
             }
         };
         signOut();
-    }, [navigate]);
+    }, [navigate, logoutUser, authAxios]);
 
     if (error) {
         return <div>Sign out failed: {message}</div>;

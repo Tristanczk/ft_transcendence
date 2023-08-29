@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ToggleButton from '../components/ToggleButton';
 import Button from '../components/Button';
-import axios from 'axios';
 import { NAVBAR_HEIGHT } from '../constants';
 import { useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
@@ -35,25 +34,6 @@ const SettingsPage: React.FC = () => {
         control,
         formState: { errors },
     } = useForm<Inputs>({ mode: 'onTouched', criteriaMode: 'all' });
-
-    // useEffect(() => {
-    //     const fetchUser = async () => {
-    //         try {
-    //             const response = await authAxios.get('/users/me', {
-    //                 withCredentials: true,
-    //             });
-    //             setUserName(response.data.nickname);
-    //             setEmail(response.data.email);
-    //             setIsTwoFactorEnabledPrev(
-    //                 response.data.twoFactorAuthentication,
-    //             );
-    //             setIsTwoFactorEnabled(response.data.twoFactorAuthentication);
-    //         } catch (error) {
-    //             console.error(error);
-    //         }
-    //     };
-    //     fetchUser();
-    // }, [update, twoFactor]);
 
     useEffect(() => {
         if (update) {

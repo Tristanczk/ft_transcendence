@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { User } from '../../types';
 import React, { useEffect, useState } from 'react';
 import { useAuthAxios } from '../../context/AuthAxiosContext';

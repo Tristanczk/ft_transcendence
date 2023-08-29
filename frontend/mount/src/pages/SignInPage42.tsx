@@ -39,7 +39,7 @@ const SignInPage42: React.FC = () => {
             }
         };
         fetchUser();
-    }, [location.search, navigate]);
+    }, [location.search, navigate, loginUser]);
 
     return (
         <section className="bg-gray-50 dark:bg-gray-900">

@@ -1,6 +1,5 @@
 import { User, UserSimplified } from '../../../types';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import ShowFriendList from './ShowFriendList';
 import ShowTitleFriends from './ShowTitleFriends';
 import AddFriendElem from './AddFriendElem';
