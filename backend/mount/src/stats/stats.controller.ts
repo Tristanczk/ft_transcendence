@@ -1,5 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { StatsService } from './stats.service';
+import { GetUser } from 'src/auth/decorator';
+import { JwtGuard } from 'src/auth/guard';
+import { StatsDashboard } from './stats.type';
 
 @Controller('stats')
 export class StatsController {
@@ -10,8 +13,18 @@ export class StatsController {
 		return this.stats.createMe();
 	}
 
-	@Get('testget')
-	async getMe() {
-		return this.stats.getMe();
+	@UseGuards(JwtGuard)
+	@Get()
+	async getMyStats(@GetUser('id') id: number): Promise<StatsDashboard> {
+		const stats: StatsDashboard = {
+			me: await this.stats.getStatsUser(id),
+			global: await this.stats.getGlobalStats(),
+		}
+		return stats;
+	}
+
+	@Get(':id')
+	async getStats(@Param('id', ParseIntPipe) idUser: number) {
+		return this.stats.getStatsUser(idUser);
 	}
 }

@@ -7,6 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { InitGameDto } from './dto/init-game.dto';
 import { updateGameDto } from './dto/update-game.dto';
 import { GameExports, UserGame } from './games.types';
+import { DiffDate } from 'src/stats/stats.type';
 
 @Injectable()
 export class GamesService {
@@ -134,8 +135,27 @@ export class GamesService {
         return transformedTab;
     }
 
+	computeDuration(date1, date2): number {
+		var diff: DiffDate = {sec: 0, min:0, hours:0, days: 0}
+		var tmp = date2 - date1;
+		
+		tmp = Math.floor(tmp/1000);
+		diff.sec = tmp % 60;
+		
+		tmp = Math.floor((tmp-diff.sec)/60);
+		diff.min = tmp % 60;
+		
+		tmp = Math.floor((tmp-diff.min)/60);
+		diff.hours = tmp % 24;
+		
+		tmp = Math.floor((tmp-diff.hours)/24);
+		diff.days = tmp;
+		
+		return diff.sec + diff.min * 60 + diff.hours * 60 * 60 + diff.days * 24 * 60 * 60;
+	}
+
     //to do : amend for month just in case
-    computeDuration(start: Date, end: Date): number {
+    computeDuration1(start: Date, end: Date): number {
         const seconds = Math.abs(end.getSeconds() - start.getSeconds());
         const minutes = Math.abs(end.getMinutes() - start.getMinutes());
         const hours = Math.abs(end.getHours() - start.getHours());

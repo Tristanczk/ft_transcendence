@@ -1,12 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TestInsert from './TestInsert';
 import TestGet from './TestGet';
 import TestUpdate from './testUpdate';
+import { useUserContext } from '../../context/UserContext';
+import { StatsDashboard } from '../../types';
+import axios from 'axios';
 
 function GlobalStats() {
     const [choice, setChoice] = useState(1);
     const textShow = 'p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800';
     const textHidden = 'hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800';
+
+	const [stats, setStats] = useState<StatsDashboard | null>(null);
+
+    const { user } = useUserContext();
+
+    useEffect(() => {
+        async function getStats() {
+            try {
+                const response = await axios.get(
+                    `http://localhost:3333/stats/`,
+                    {
+                        withCredentials: true,
+                    },
+                );
+                setStats(response.data);
+                console.log(response.data);
+                return response.data;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        if (user) getStats();
+    }, []);
 
     return (
         <>
@@ -62,7 +88,7 @@ function GlobalStats() {
                         <dl className="grid max-w-screen-xl grid-cols-2 gap-8 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-6 dark:text-white sm:p-8">
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    0
+								{stats ? stats?.me.nbGames : 'N/A'}
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
                                     Games
@@ -70,7 +96,7 @@ function GlobalStats() {
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    0
+								{stats ? stats?.me.nbWins : 'N/A'}
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
                                     Wins
@@ -78,7 +104,7 @@ function GlobalStats() {
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    0%
+								{stats?.me.nbGames ? Math.round((stats?.me.nbWins / stats?.me.nbGames) * 100) : 0}%
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
                                     Success rate
@@ -86,7 +112,7 @@ function GlobalStats() {
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    1000
+								{stats ? stats?.me.elo : 'N/A'}
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
                                     Your Elo
@@ -94,7 +120,15 @@ function GlobalStats() {
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    50s
+								{stats ? (stats?.me.averageDuration > 60
+                                                ? Math.trunc(
+                                                      stats?.me.averageDuration / 60,
+                                                  ) +
+                                                  'm' +
+                                                  (stats?.me.averageDuration % 60) +
+                                                  's'
+                                                : stats?.me.averageDuration + 's') : ('N/A')}
+								{/* {stats ? stats?.me.averageDuration + 's' : 'N/A'} */}
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
                                     Average game lenght
@@ -102,7 +136,7 @@ function GlobalStats() {
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <dt className="mb-2 text-3xl font-extrabold">
-                                    0
+								{stats ? stats?.me.daysSinceRegister : 'N/A'}
                                 </dt>
                                 <dd className="text-gray-500 dark:text-gray-400">
                                     days since registration

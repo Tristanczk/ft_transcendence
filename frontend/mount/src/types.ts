@@ -53,3 +53,23 @@ export type UserGame = {
 	elo: number;
 	score: number;
 }
+
+//stats
+export type GlobalStats = {
+    nbGames: number;
+    nbUsers: number;
+    averageElo: number;
+};
+
+export type UserStats = {
+    nbGames: number;
+    nbWins: number;
+    averageDuration: number;
+    elo: number;
+    daysSinceRegister: number;
+};
+
+export type StatsDashboard = {
+	me: UserStats;
+	global: GlobalStats;
+}
