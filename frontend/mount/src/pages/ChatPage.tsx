@@ -4,8 +4,10 @@ import ChatWindow, { ChatWindowProps } from '../components/chatpage/ChatWindow';
 import { MessageProps } from '../components/chatpage/Message';
 import { MessageInput } from '../components/chatpage/MessageInput';
 import { socket as constSocket } from '../context/WebsocketContext';
-import { Button } from 'flowbite-react';
+import { Button, ListGroup } from 'flowbite-react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
+import ListGroupWithButton from '../components/chatpage/ListGroup';
+import { UserSimplified } from '../types';
 
 function ChatPage() {
   const [socket, setSocket] = useState<Socket | undefined>(undefined); // Initialize socket as undefined
@@ -42,6 +44,7 @@ function ChatPage() {
     }
   }, [socket]); // Make sure to include socket as a dependency
 
+
   const onCreateChannel = async (event: any) => {
     event.preventDefault();
     const reponse =
@@ -51,15 +54,39 @@ function ChatPage() {
           idUser: 1,
           name: "miao",
           isPublic: false,
-        } ,
+        },
         { withCredentials: true }
       );
   }
+
+  const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
+    null,
+  );
+
+  const getMyFriends = async () => {
+    // import user friends list
+    try {
+      const response = await authAxios.get(
+        'http://localhost:3333/friends/me',
+        { withCredentials: true },
+      );
+      setFriendsList(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    const fetchFriends = async () => {
+      getMyFriends();
+    };
+    fetchFriends();
+  }, []);
 
   console.log(messages);
   return (
     <div className="ChatPage">
       <section className="chatbox">
+        <ListGroupWithButton users={friendsList} />
         <Button text="miao" type="button" onClick={onCreateChannel} />
         <ChatWindow messages={messages} />
         <MessageInput send={send} />
