@@ -63,8 +63,8 @@ class Player {
 
     private drawPaddle(
         p5: p5Types,
-        innerDiameter: number,
-        outerDiameter: number,
+        innerRadius: number,
+        outerRadius: number,
     ): void {
         p5.fill('black');
         p5.beginShape();
@@ -74,16 +74,10 @@ class Player {
                 this.angle + (i / ARC_VERTICES - 0.5) * this.paddleSize * 2,
         );
         for (const angle of angles) {
-            p5.vertex(
-                (p5.cos(angle) * innerDiameter) / 2,
-                (p5.sin(angle) * innerDiameter) / 2,
-            );
+            p5.vertex(p5.cos(angle) * innerRadius, p5.sin(angle) * innerRadius);
         }
         for (const angle of angles.reverse()) {
-            p5.vertex(
-                (p5.cos(angle) * outerDiameter) / 2,
-                (p5.sin(angle) * outerDiameter) / 2,
-            );
+            p5.vertex(p5.cos(angle) * outerRadius, p5.sin(angle) * outerRadius);
         }
         p5.endShape(p5.CLOSE);
     }
@@ -94,6 +88,7 @@ class Player {
         angle: number,
         arenaSize: number,
     ) {
+        p5.fill(this.color);
         p5.circle(
             p5.cos(angle) * middleRadius,
             p5.sin(angle) * middleRadius,
@@ -106,23 +101,29 @@ class Player {
         middleRadius: number,
         arenaSize: number,
     ): void {
-        p5.fill(this.color);
         if (this.lives === 1) {
             this.drawLife(p5, middleRadius, this.angle, arenaSize);
-            return;
-        }
-        const startDot = this.angle - DOT_SHIFT * this.paddleSize;
-        const angleInc = (2 * DOT_SHIFT * this.paddleSize) / (this.lives - 1);
-        for (let i = 0; i < this.lives; ++i) {
-            this.drawLife(p5, middleRadius, startDot + i * angleInc, arenaSize);
+        } else {
+            const startDot = this.angle - DOT_SHIFT * this.paddleSize;
+            const angleInc =
+                (2 * DOT_SHIFT * this.paddleSize) / (this.lives - 1);
+            for (let i = 0; i < this.lives; ++i) {
+                this.drawLife(
+                    p5,
+                    middleRadius,
+                    startDot + i * angleInc,
+                    arenaSize,
+                );
+            }
         }
     }
 
     draw(p5: p5Types, arenaSize: number): void {
-        const innerDiameter = arenaSize * (1 - PADDLE_MARGIN - PADDLE_WIDTH);
-        const outerDiameter = arenaSize * (1 - PADDLE_MARGIN);
-        const middleRadius = (innerDiameter + outerDiameter) / 4;
-        this.drawPaddle(p5, innerDiameter, outerDiameter);
+        const innerRadius =
+            (arenaSize * (1 - PADDLE_MARGIN - PADDLE_WIDTH)) / 2;
+        const outerRadius = (arenaSize * (1 - PADDLE_MARGIN)) / 2;
+        const middleRadius = (innerRadius + outerRadius) / 2;
+        this.drawPaddle(p5, innerRadius, outerRadius);
         this.drawLives(p5, middleRadius, arenaSize);
     }
 }
