@@ -50,6 +50,21 @@ const drawBar = (p5: P5, y: number) => {
     );
 };
 
+const drawNet = (p5: P5) => {
+    p5.rectMode(p5.CENTER);
+    p5.fill(255);
+    const midX = 0.5 * p5.width;
+    const midY = 0.5 * p5.height;
+    for (
+        let y = midY;
+        y >= (LINE_MARGIN + LINE_WIDTH) * p5.height;
+        y -= 2 * BALL_SIZE * p5.width
+    ) {
+        p5.square(midX, y, BALL_SIZE * p5.width);
+        p5.square(midX, p5.height - y, BALL_SIZE * p5.width);
+    }
+};
+
 const drawBall = (p5: P5, ballPos: P5.Vector) => {
     p5.square(
         ballPos.x * p5.width,
@@ -64,7 +79,7 @@ const drawScore = (p5: P5, scoreLeft: number, scoreRight: number) => {
     p5.textSize(textSize);
     p5.textFont('monospace');
     p5.textAlign(p5.CENTER, p5.CENTER);
-    p5.text(`${scoreLeft} - ${scoreRight}`, p5.width / 2, textSize * 1.25);
+    p5.text(`${scoreLeft}   ${scoreRight}`, p5.width / 2, textSize * 1.25);
 };
 
 const movePaddle = (p5: P5, paddle: number, downKey: number, upKey: number) => {
@@ -152,6 +167,7 @@ const ClassicGame = () => {
         p5.background(15);
         drawBar(p5, LINE_MARGIN);
         drawBar(p5, 1 - LINE_MARGIN - LINE_WIDTH);
+        drawNet(p5);
         drawPaddle(p5, true, paddleLeft);
         drawPaddle(p5, false, paddleRight);
         drawBall(p5, ballPos);
