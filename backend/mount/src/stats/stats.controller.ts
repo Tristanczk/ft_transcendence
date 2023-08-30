@@ -8,11 +8,6 @@ import { StatsDashboard } from './stats.type';
 export class StatsController {
 	constructor(private stats: StatsService) {}
 
-	@Get('test')
-	async createMe() {
-		return this.stats.createMe();
-	}
-
 	@UseGuards(JwtGuard)
 	@Get()
 	async getMyStats(@GetUser('id') id: number): Promise<StatsDashboard> {

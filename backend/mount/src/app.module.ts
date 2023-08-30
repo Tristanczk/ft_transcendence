@@ -8,6 +8,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GatewayModule } from './gateway/gateway.module';
 import { StatsModule } from './stats/stats.module';
 import { GamesModule } from './games/games.module';
+import { CreateModule } from './create/create.module';
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { GamesModule } from './games/games.module';
         GatewayModule,
         StatsModule,
         GamesModule,
+        CreateModule,
     ],
     providers: [{
         provide: APP_INTERCEPTOR,
