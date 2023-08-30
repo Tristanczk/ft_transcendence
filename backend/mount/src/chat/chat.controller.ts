@@ -3,6 +3,8 @@ import { ChatService } from './chat.service';
 import { CreateChannelDto } from './dto/createchannel.dto';
 import { EditChannelDto } from './dto/editchannel.dto';
 import { MessageDto } from './dto/message.dto';
+import { JoinChannelDto } from './dto/joinchannel.dto';
+import { LeaveChannelDto } from './dto/leavechannel.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -19,13 +21,13 @@ export class ChatController {
 	}
 
 	@Post('joinChannel')
-	async joinChannel() {
-		return this.chatService.joinChannel();
+	async joinChannel(@Body() joinChannel: JoinChannelDto) {
+		return this.chatService.joinChannel(joinChannel);
 	}
 
 	@Post('leaveChannel')
-	async leaveChannel() {
-		return this.chatService.leaveChannel();
+	async leaveChannel(@Body() leaveChannel: LeaveChannelDto) {
+		return this.chatService.leaveChannel(leaveChannel);
 	}
 
 	@Patch('editChannel')
