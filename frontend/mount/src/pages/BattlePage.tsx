@@ -313,16 +313,20 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
             centerDist >= HIT_PADDLE &&
             centerDist <= 1 - PADDLE_MARGIN - PADDLE_WIDTH / 2
         ) {
+            let closestHit: number | null = null;
             for (const player of players) {
                 const hit = player.hit(ball.pos);
-                if (hit !== null) {
-                    ball.bounce(hit);
-                    currentPlayer = getRandomPlayer(
-                        players.length,
-                        currentPlayer,
-                    );
-                    break;
+                if (
+                    hit !== null &&
+                    (closestHit === null ||
+                        Math.abs(hit) < Math.abs(closestHit))
+                ) {
+                    closestHit = hit;
                 }
+            }
+            if (closestHit !== null) {
+                ball.bounce(closestHit);
+                currentPlayer = getRandomPlayer(players.length, currentPlayer);
             }
         }
         drawRepeatingBackground(p5, bgImage);
