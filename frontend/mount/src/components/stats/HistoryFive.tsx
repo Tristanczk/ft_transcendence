@@ -92,7 +92,7 @@ function HistoryFive() {
                                             </p>
                                         </div>
                                         <div className="flex-1 min-w-0 items-center justify-center text-base font-semibold text-gray-900 dark:text-white">
-                                            {game.won ? (
+                                            {(game.playerA?.id === user?.id || game.won) ? (
                                                 <button className="text-white bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                                                     <svg
                                                         className="w-2 h-2"
