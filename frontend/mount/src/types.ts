@@ -51,6 +51,7 @@ export type UserGame = {
 	id: number;
 	nickname: string,
 	elo: number;
+	eloStart: number;
 	score: number;
 }
 

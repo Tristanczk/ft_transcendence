@@ -2,6 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { GamesService } from 'src/games/games.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { DiffDate, GlobalStats, UserStats } from './stats.type';
+import { GameExtractedDB } from 'src/games/games.types';
+
+export type ArrayGraphType = {
+    id: string | number;
+    data: ArrayDataGraph[];
+};
+
+export type ArrayDataGraph = {
+    x: number | string | Date;
+    y: number | string | Date;
+};
 
 @Injectable()
 export class StatsService {
@@ -34,8 +45,8 @@ export class StatsService {
                     (acc, curr) => acc + (curr.won ? 1 : 0),
                     0,
                 ),
-            averageDuration:
-                Math.trunc(gameList.reduce(
+            averageDuration: Math.trunc(
+                gameList.reduce(
                     (acc, curr) =>
                         acc +
                         this.gameService.computeDuration(
@@ -43,28 +54,29 @@ export class StatsService {
                             curr.finishedAt,
                         ),
                     0,
-                ) / gameList.length),
+                ) / gameList.length,
+            ),
             elo: user.elo,
             daysSinceRegister: this.dateDiff(user.createdAt, new Date()).days,
         };
         return userStats;
     }
 
-	dateDiff(date1, date2): DiffDate {
-		var diff: DiffDate = {sec: 0, min:0, hours:0, days: 0}
-		var tmp = date2 - date1;
-		tmp = Math.floor(tmp/1000);
-		diff.sec = tmp % 60;
-		tmp = Math.floor((tmp-diff.sec)/60);
-		diff.min = tmp % 60;
-		tmp = Math.floor((tmp-diff.min)/60);
-		diff.hours = tmp % 24;
-		tmp = Math.floor((tmp-diff.hours)/24);
-		diff.days = tmp;		
-		return diff;
-	}
+    dateDiff(date1, date2): DiffDate {
+        var diff: DiffDate = { sec: 0, min: 0, hours: 0, days: 0 };
+        var tmp = date2 - date1;
+        tmp = Math.floor(tmp / 1000);
+        diff.sec = tmp % 60;
+        tmp = Math.floor((tmp - diff.sec) / 60);
+        diff.min = tmp % 60;
+        tmp = Math.floor((tmp - diff.min) / 60);
+        diff.hours = tmp % 24;
+        tmp = Math.floor((tmp - diff.hours) / 24);
+        diff.days = tmp;
+        return diff;
+    }
 
-	//pour toi petit curieux: je n'aurai pas fait cette fonction comme ca dans la vraie vie !
+    //pour toi petit curieux: je n'aurai pas fait cette fonction comme ca dans la vraie vie !
     async getGlobalStats() {
         const users = await this.prisma.user.findMany();
         const games = await this.prisma.games.findMany();
@@ -78,8 +90,12 @@ export class StatsService {
         return globalStats;
     }
 
-	async getGamesPlayer(idUser: number) {
-		const data = await this.prisma.user.findUnique({
+    async getGamesPlayer(
+        idUser: number,
+        nbGames: number,
+        sortAsc: boolean,
+    ): Promise<GameExtractedDB[]> {
+        const data = await this.prisma.user.findUnique({
             where: {
                 id: idUser,
             },
@@ -90,69 +106,54 @@ export class StatsService {
         });
         if (!data) throw new NotFoundException('No user found');
 
-        const gameList = data.gamesasPlayerA.concat(data.gamesasPlayerB);
-        gameList.sort((a, b) => a.id - b.id);
-		return gameList;
-	}
+        const gameList: GameExtractedDB[] = data.gamesasPlayerA.concat(
+            data.gamesasPlayerB,
+        );
 
-	async getDataGraph(idUser: number) {
-		const data = [
-			{
-				id: 'Normal mode',
-				data: [
-					{
-						x: 2000,
-						y: 7,
-					},
-					{
-						x: 2001,
-						y: 7,
-					},
-					{
-						x: 2002,
-						y: 2,
-					},
-					{
-						x: 2003,
-						y: 2,
-					},
-					{
-						x: 2004,
-						y: 3,
-					},
-				],
-			},
-			{
-				id: 'Crazy mode',
-				data: [
-					{
-						x: 2000,
-						y: 1,
-					},
-					{
-						x: 2001,
-						y: 8,
-					},
-					{
-						x: 2002,
-						y: 11,
-					},
-					{
-						x: 2003,
-						y: 12,
-					},
-					{
-						x: 2004,
-						y: 2,
-					},
-				],
-			},
-		];
-		return data;
-	}
+        if (sortAsc === true) gameList.sort((a, b) => a.id - b.id);
+        else gameList.sort((a, b) => b.id - a.id);
 
+        let newGameList: GameExtractedDB[] = [];
+        if (gameList.length <= nbGames) newGameList = gameList;
+        else newGameList = gameList.slice(-nbGames);
 
+        return newGameList;
+    }
 
+    async getDataGraph(idUser: number) {
+        let dataGraph: ArrayGraphType[] = [];
+
+        const dataSerieNormal: ArrayDataGraph[] =
+            await this.getDataGraphMode(idUser);
+        const newElemGraph: ArrayGraphType = {
+            id: 'Normal mode',
+            data: dataSerieNormal,
+        };
+        if (dataSerieNormal.length !== 0) dataGraph.push(newElemGraph);
+
+        // console.log(dataGraph);
+
+        return dataGraph;
+    }
+
+    async getDataGraphMode(idUser: number): Promise<ArrayDataGraph[]> {
+        let dataSerie: ArrayDataGraph[] = [];
+
+        const data: GameExtractedDB[] = await this.getGamesPlayer(
+            idUser,
+            30,
+            true,
+        );
+        data.forEach((game: GameExtractedDB) => {
+            const newDataElem: ArrayDataGraph = {
+                x: game.id,
+                y: idUser === game.playerA ? game.initEloA : game.initEloB,
+            };
+            dataSerie.push(newDataElem);
+        });
+        // console.log(dataSerie);
+        return dataSerie;
+    }
 
     async createMe() {
         const date = new Date();
@@ -178,8 +179,10 @@ export class StatsService {
                 won: true,
                 scoreA: 5,
                 scoreB: 4,
-				varEloA: 0,
-				varEloB: 0,
+                varEloA: 0,
+                varEloB: 0,
+                initEloA: 0,
+                initEloB: 0,
                 mode: 0,
                 UserA: { connect: { id: 1 } },
                 UserB: { connect: { id: 2 } },
@@ -207,8 +210,10 @@ export class StatsService {
                 won: false,
                 scoreA: 3,
                 scoreB: 5,
-				varEloA: 0,
-				varEloB: 0,
+                varEloA: 0,
+                varEloB: 0,
+                initEloA: 0,
+                initEloB: 0,
                 mode: 1,
                 UserA: { connect: { id: 1 } },
                 UserB: { connect: { id: 2 } },
@@ -236,8 +241,10 @@ export class StatsService {
                 won: true,
                 scoreA: 6,
                 scoreB: 2,
-				varEloA: 0,
-				varEloB: 0,
+                varEloA: 0,
+                varEloB: 0,
+                initEloA: 0,
+                initEloB: 0,
                 mode: 0,
                 UserA: { connect: { id: 2 } },
                 UserB: { connect: { id: 1 } },
@@ -265,8 +272,10 @@ export class StatsService {
                 won: true,
                 scoreA: 5,
                 scoreB: 4,
-				varEloA: 0,
-				varEloB: 0,
+                varEloA: 0,
+                varEloB: 0,
+                initEloA: 0,
+                initEloB: 0,
                 mode: 0,
                 UserA: { connect: { id: 1 } },
                 UserB: { connect: { id: 2 } },
@@ -294,8 +303,10 @@ export class StatsService {
                 won: false,
                 scoreA: 3,
                 scoreB: 5,
-				varEloA: 0,
-				varEloB: 0,
+                varEloA: 0,
+                varEloB: 0,
+                initEloA: 0,
+                initEloB: 0,
                 mode: 0,
                 UserA: { connect: { id: 1 } },
                 UserB: { connect: { id: 2 } },
@@ -323,8 +334,10 @@ export class StatsService {
                 won: true,
                 scoreA: 6,
                 scoreB: 2,
-				varEloA: 0,
-				varEloB: 0,
+                varEloA: 0,
+                varEloB: 0,
+                initEloA: 0,
+                initEloB: 0,
                 mode: 0,
                 UserA: { connect: { id: 2 } },
                 UserB: { connect: { id: 1 } },

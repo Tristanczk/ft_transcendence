@@ -41,6 +41,8 @@ model Games {
 	mode	   Int
 	varEloA	   Int
 	varEloB	   Int
+	initEloA   Int
+	initEloB   Int
 
 	playerA    	Int
 	UserA		User @relation("PlayerAGames", fields: [playerA], references: [id])

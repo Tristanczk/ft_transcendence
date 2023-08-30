@@ -27,7 +27,7 @@ export class GamesService {
 
     dataGamesPlaying: CurrentGame[] = [];
 
-    async initGame(idUser: number, idPlayerB: number, mode: number) {
+    async initGame(playerA: any, idPlayerB: number, mode: number) {
         // console.log('initGame ' + idUser + ' against ' + idPlayerB);
         //verif playerB exist
         const playerB = await this.prisma.user.findUnique({
@@ -46,15 +46,17 @@ export class GamesService {
                     scoreB: 0,
                     varEloA: 0,
                     varEloB: 0,
+					initEloA: playerA.elo,
+					initEloB: playerB.elo,
                     mode: mode,
-                    UserA: { connect: { id: idUser } },
+                    UserA: { connect: { id: playerA.id } },
                     UserB: { connect: { id: idPlayerB } },
                 },
             });
             const thisGame: CurrentGame = {
                 idGame: newGame.id,
-                idPlayerA: idUser,
-                eloPlayerA: 0,
+                idPlayerA: playerA.id,
+                eloPlayerA: playerA.elo,
                 idPlayerB: idPlayerB,
                 eloPlayerB: playerB.elo,
             };
@@ -90,10 +92,10 @@ export class GamesService {
         );
         if (gameIndex === -1)
             throw new NotFoundException('idGame not currently playing?');
-        const userB = await this.prisma.user.findUnique({
-            where: { id: this.dataGamesPlaying[gameIndex].idPlayerA },
-        });
-        this.dataGamesPlaying[gameIndex].eloPlayerA = userB.elo;
+        // const userB = await this.prisma.user.findUnique({
+        //     where: { id: this.dataGamesPlaying[gameIndex].idPlayerA },
+        // });
+        // this.dataGamesPlaying[gameIndex].eloPlayerA = userB.elo;
 
         const probaA =
             1 /
@@ -144,7 +146,6 @@ export class GamesService {
 
         const gameList = data.gamesasPlayerA.concat(data.gamesasPlayerB);
         gameList.sort((a, b) => a.id - b.id);
-        // console.log(userId + ' : A=' + data.gamesasPlayerA.length + ', B=' + data.gamesasPlayerB.length + ', tot=' + gameList.length)
 
         let newGameList = [];
         if (gameList.length <= 5) newGameList = gameList;
@@ -197,11 +198,13 @@ export class GamesService {
                 elem.playerA,
                 users,
                 elem.scoreA,
+				elem.initEloA,
             );
             newElem.playerB = this.getUserFormat(
                 elem.playerB,
                 users,
                 elem.scoreB,
+				elem.initEloB,
             );
             transformedTab.push(newElem);
         });
@@ -232,13 +235,14 @@ export class GamesService {
         );
     }
 
-    getUserFormat(userId: number, users: any, score: number): UserGame {
-        let formatedUser: UserGame = { id: -1, nickname: '', elo: 0, score: 0 };
+    getUserFormat(userId: number, users: any, score: number, initElo: number): UserGame {
+        let formatedUser: UserGame = { id: -1, nickname: '', elo: 0, eloStart:0, score: 0 };
         const user = users.find((user) => user.id === userId);
 
         formatedUser.id = userId;
         formatedUser.nickname = user.nickname;
         formatedUser.elo = user.elo;
+		formatedUser.eloStart = initElo;
         formatedUser.score = score;
         return formatedUser;
     }

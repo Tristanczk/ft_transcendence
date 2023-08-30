@@ -12,18 +12,20 @@ import { useUserContext } from '../../context/UserContext';
 function HistoryElo() {
     const [data, setGraph] = useState<Serie[] | null>(null);
     const { user } = useUserContext();
+	const [nbGame, setnbGames] = useState<number>(0)
 
     useEffect(() => {
         async function getStats() {
             try {
                 const response = await axios.get(
-                    `http://localhost:3333/stats/graph/1`,
+                    `http://localhost:3333/stats/graph/${user?.id}`,
                     {
                         withCredentials: true,
                     },
                 );
                 setGraph(response.data);
-                console.log(response.data);
+				if (response.data) setnbGames(response.data[0].data.length)
+                // console.log(response.data);
                 return response.data;
             } catch (error) {
                 console.error(error);
@@ -32,10 +34,10 @@ function HistoryElo() {
         if (user) getStats();
     }, []);
 
-    return (
-        data && (
+    return data && data.length > 0 ? (
+        <div className="w-full  p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
             <div className="parent-container">
-                <div className="graph-container" style={{ height: '400px' }}>
+                <div className="graph-container" style={{ height: '300px' }}>
                     <ResponsiveLine
                         data={data}
                         margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
@@ -54,7 +56,7 @@ function HistoryElo() {
                             tickSize: 5,
                             tickPadding: 5,
                             tickRotation: 0,
-                            legend: 'Last 90 days',
+                            legend: `Last ${nbGame} games`,
                             legendOffset: 36,
                             legendPosition: 'middle',
                         }}
@@ -67,6 +69,9 @@ function HistoryElo() {
                             legendPosition: 'middle',
                         }}
                         enableGridX={false}
+                        lineWidth={5}
+                        curve="monotoneX"
+                        enablePoints={false}
                         pointSize={10}
                         pointColor={{ theme: 'background' }}
                         pointBorderWidth={2}
@@ -76,7 +81,7 @@ function HistoryElo() {
                         enableCrosshair={false}
                         legends={[
                             {
-                                anchor: 'bottom-right',
+                                anchor: 'right',
                                 direction: 'column',
                                 justify: false,
                                 translateX: 100,
@@ -104,39 +109,10 @@ function HistoryElo() {
                     />
                 </div>
             </div>
-        )
+        </div>
+    ) : (
+        <></>
     );
 }
 
 export default HistoryElo;
-
-//  {/* <ResponsiveBump
-//                     data={data}
-//                     xPadding={0.65}
-//                     xOuterPadding={0.2}
-//                     yOuterPadding={0.65}
-//                     colors={{ scheme: 'spectral' }}
-//                     lineWidth={3}
-//                     activeLineWidth={6}
-//                     inactiveLineWidth={3}
-//                     inactiveOpacity={0.15}
-//                     startLabelTextColor={{ from: 'color', modifiers: [] }}
-//                     activePointSize={9}
-//                     inactivePointSize={0}
-//                     pointColor={{ theme: 'background' }}
-//                     pointBorderWidth={3}
-//                     activePointBorderWidth={3}
-//                     pointBorderColor={{ from: 'serie.color' }}
-//                     axisTop={null}
-//                     axisBottom={{
-//                         tickSize: 5,
-//                         tickPadding: 5,
-//                         tickRotation: 0,
-//                         legend: '',
-//                         legendPosition: 'middle',
-//                         legendOffset: 32,
-//                     }}
-//                     axisLeft={null}
-//                     margin={{ top: 40, right: 100, bottom: 40, left: 60 }}
-//                     axisRight={null}
-//                 /> */}
