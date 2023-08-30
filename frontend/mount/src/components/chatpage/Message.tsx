@@ -1,6 +1,3 @@
-import React from 'react';
-import Timestamp from './Timestamp';
-
 export interface MessageProps {
     idSender: number;
     idChannel: number;
@@ -16,7 +13,7 @@ export default function Message({ idSender, idChannel, message }: MessageProps) 
                         className="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-300 text-gray-600"
                         id="msgID"
                     >
-                        {message}
+                        {idSender}{idChannel}{message}
                     </span>
                 </div>
                 <img

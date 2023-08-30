@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Socket, io } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import ChatWindow, { ChatWindowProps } from '../components/chatpage/ChatWindow';
 import { MessageProps } from '../components/chatpage/Message';
 import { MessageInput } from '../components/chatpage/MessageInput';

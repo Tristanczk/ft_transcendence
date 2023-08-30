@@ -1,6 +1,5 @@
 import React from "react";
 import Message, { MessageProps} from "./Message";
-import { Messages } from "./Messages";
 
 export function MessageBox({
   idSender,
