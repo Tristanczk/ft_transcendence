@@ -17,6 +17,7 @@ const PADDLE_WIDTH = 0.05;
 const DEFAULT_PADDLE_SIZE = 0.2;
 const HIT_PADDLE = 1 - PADDLE_MARGIN - PADDLE_WIDTH - BALL_SIZE;
 const HIT_ANGLE_FACTOR = Math.PI * 0.3;
+const HIT_LEEWAY = Math.sqrt(2) / 2;
 const PADDLE_SPEED = 0.005;
 const BALL_SPEED_INCREMENT = 0.00007;
 
@@ -56,7 +57,7 @@ class Player {
 
     hit(ballPos: p5Types.Vector): number | null {
         const angleDiff = angleDist(this.angle, ballPos.heading());
-        const limit = this.paddleSize + BALL_SIZE / 2;
+        const limit = this.paddleSize + BALL_SIZE * HIT_LEEWAY;
         return Math.abs(angleDiff) <= limit ? angleDiff / limit : null;
     }
 
