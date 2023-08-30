@@ -10,7 +10,7 @@ import { LeaveChannelDto } from './dto/leavechannel.dto';
 export class ChatService {
     constructor(private prisma: PrismaService) {}
 
-    async createChannel(createChannelDto: CreateChannelDto) {
+    async createChannel(createChannelDto: CreateChannelDto) : Promise<CreateChannelDto> {
         const newChannel = await this.prisma.channels.create({
             data: {
                 idAdmin: [createChannelDto.idUser],
@@ -20,7 +20,12 @@ export class ChatService {
             },
         });
 
-        return newChannel;
+        console.log(createChannelDto.idUser);
+        return {
+            idUser: createChannelDto.idUser,
+            name: "miao",
+            isPublic: createChannelDto.isPublic
+        };
     }
 
     async getChannelById(channelId: number) {

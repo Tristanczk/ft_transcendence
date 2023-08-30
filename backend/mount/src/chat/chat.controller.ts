@@ -11,7 +11,9 @@ export class ChatController {
 	constructor(private chatService: ChatService) {}
 
 	@Post('createChannel')
-	async createChannel(createChannelDto: CreateChannelDto) {
+	async createChannel(@Body() createChannelDto: CreateChannelDto) : Promise<CreateChannelDto> {
+		console.log("createChannnel controller");
+		console.log(createChannelDto);
 		return this.chatService.createChannel(createChannelDto);
 	}
 
