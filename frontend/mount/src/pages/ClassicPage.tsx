@@ -105,13 +105,8 @@ const hitPaddle = (
         const paddleDiff = ballPos.y - paddle;
         if (Math.abs(paddleDiff) <= COLLISION_Y) {
             return (
-                p5.map(
-                    paddleDiff,
-                    -COLLISION_Y,
-                    COLLISION_Y,
-                    -MAX_Y_FACTOR,
-                    MAX_Y_FACTOR,
-                ) * Math.abs(ballVel.x)
+                p5.map(paddleDiff, 0, COLLISION_Y, 0, MAX_Y_FACTOR) *
+                Math.abs(ballVel.x)
             );
         }
     }
