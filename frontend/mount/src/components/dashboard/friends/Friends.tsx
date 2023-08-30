@@ -1,9 +1,9 @@
 import { User, UserSimplified } from '../../../types';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import ShowFriendList from './ShowFriendList';
 import ShowTitleFriends from './ShowTitleFriends';
 import AddFriendElem from './AddFriendElem';
+import { useAuthAxios } from '../../../context/AuthAxiosContext';
 
 interface FriendsProps {
     user: User;
@@ -14,6 +14,7 @@ function Friends({ user }: FriendsProps) {
         null,
     );
     const [change, setChange] = useState<boolean>(false);
+    const authAxios = useAuthAxios();
 
     useEffect(() => {
         const fetchFriends = async () => {
@@ -25,7 +26,7 @@ function Friends({ user }: FriendsProps) {
     const getMyFriends = async () => {
         // import user friends list
         try {
-            const response = await axios.get(
+            const response = await authAxios.get(
                 'http://localhost:3333/friends/me',
                 { withCredentials: true },
             );
@@ -41,7 +42,7 @@ function Friends({ user }: FriendsProps) {
         if (idSelected === -1) return;
         if (idSelected !== user.id) {
             try {
-                await axios.post(
+                await authAxios.post(
                     `http://localhost:3333/friends/${idSelected}`,
                     { id: idSelected },
                     { withCredentials: true },
@@ -60,9 +61,12 @@ function Friends({ user }: FriendsProps) {
         if (!idToDelete) return;
         // console.log('try to delete')
         try {
-            await axios.delete(`http://localhost:3333/friends/${idToDelete}`, {
-                withCredentials: true,
-            });
+            await authAxios.delete(
+                `http://localhost:3333/friends/${idToDelete}`,
+                {
+                    withCredentials: true,
+                },
+            );
             // console.log(response.data);
         } catch (error) {
             console.error(error);

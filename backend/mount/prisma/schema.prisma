@@ -43,6 +43,22 @@ model User {
 //     idConnection String
 // }
 
+model Channels {
+    id          Int       @id @default(autoincrement())
+    idAdmin     Int[]
+    idUsers     Int[]
+    isPublic    Boolean   @default(true)
+    password    String?
+    createdAt   DateTime  @default(now())
+}
+
+model Message {
+    id         Int        @id @default(autoincrement())
+    idChannel  Int
+    idSender   Int
+    createdAt  DateTime   @default(now())
+}
+
 model Games {
   id         Int      @id @default(autoincrement())
   createdAt  DateTime @default(now())

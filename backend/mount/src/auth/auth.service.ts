@@ -142,7 +142,7 @@ export class AuthService {
         }
     }
 
-    async signup(dto: SignupDto, res: Response) {
+    async signup(dto: SignupDto, res: Response): Promise<User> {
         const hash = await argon.hash(dto.password);
         try {
             const user = await this.prisma.user.create({
@@ -157,6 +157,7 @@ export class AuthService {
                 },
             });
             await this.generateTokens(user, res);
+            return user;
         } catch (error) {
             console.log('signup', error);
             if (error instanceof PrismaClientKnownRequestError) {
@@ -246,6 +247,7 @@ export class AuthService {
             data: { loginNb: user.loginNb + 1 },
         });
         await this.generateTokens(user, res);
+        return user;
     }
 
     async refreshTokens(user: User, res: Response) {
