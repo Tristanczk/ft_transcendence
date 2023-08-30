@@ -20,7 +20,11 @@ export class StatsController {
 
 	@Get(':id')
 	async getStats(@Param('id', ParseIntPipe) idUser: number) {
-		return this.stats.getStatsUser(idUser);
+		const stats: StatsDashboard = {
+			me: await this.stats.getStatsUser(idUser),
+			global: await this.stats.getGlobalStats(),
+		}
+		return stats;
 	}
 
 	@Get('graph/:id')

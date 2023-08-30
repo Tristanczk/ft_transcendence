@@ -9,6 +9,7 @@ import { GatewayModule } from './gateway/gateway.module';
 import { StatsModule } from './stats/stats.module';
 import { GamesModule } from './games/games.module';
 import { CreateModule } from './create/create.module';
+import { ErrorsModule } from './errors/errors.module';
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { CreateModule } from './create/create.module';
         StatsModule,
         GamesModule,
         CreateModule,
+        ErrorsModule,
     ],
     providers: [{
         provide: APP_INTERCEPTOR,

@@ -3,19 +3,20 @@ import { UserSimplified } from '../../../types';
 import axios from 'axios';
 
 interface Props {
-    friend: UserSimplified;
+	userId: number;
+	textImg: string;
 }
 
-function ImageFriend({ friend }: Props) {
+function ImageFriend({ userId, textImg }: Props) {
     const [imgY, setImgY] = useState<any>();
 
     useEffect(() => {
         const fetchImg = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:3333/users/img/${friend.id}`,
+                    `http://localhost:3333/users/img/${userId}`,
                     {
-                        params: { id: friend.id },
+                        params: { id: userId },
                         responseType: 'arraybuffer',
                         withCredentials: true,
                     },
@@ -41,7 +42,7 @@ function ImageFriend({ friend }: Props) {
             <img
                 className="w-8 h-8 rounded-full"
                 src={`data:image/png;base64,${imgY}`}
-                alt={friend.nickname}
+                alt={textImg}
             />
         </>
     ) : (

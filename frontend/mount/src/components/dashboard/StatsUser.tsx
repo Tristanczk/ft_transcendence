@@ -12,9 +12,9 @@ function StatsUser({ user }: PresentationUserProps) {
     return (
         <>
             <h1 className="text-5xl font-extrabold dark:text-white">Games</h1>
-            <GlobalStats />
-            <HistoryElo />
-            <HistoryFive />
+            <GlobalStats user={user} />
+            <HistoryElo user={user} />
+            <HistoryFive user={user} />
         </>
     );
 }

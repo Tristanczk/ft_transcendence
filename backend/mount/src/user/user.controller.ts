@@ -33,10 +33,10 @@ export class UserController {
         return user;
     }
 
-    // @Get('id/:id')
-    // getUserById(@Param('id', ParseIntPipe) userId: number) {
-    //     return user;
-    // }
+    @Get(':id')
+    getUserById(@Param('id', ParseIntPipe) userId: number) {
+        return this.userService.getUserById(userId);
+    }
 
     @Post('avatar')
     @UseInterceptors(

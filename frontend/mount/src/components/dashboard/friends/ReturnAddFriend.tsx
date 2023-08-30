@@ -1,5 +1,5 @@
 import { UserSimplified } from '../../../types';
-import ImageFriend from './imgFriend';
+import ImageFriend from './ImgFriend';
 
 interface Props {
     list: UserSimplified[] | null;
@@ -31,7 +31,10 @@ function ReturnAddFriend({ list, ButtonAddFriend, ButtonDeleteFriend }: Props) {
                                     <li className="py-3 sm:py-4" key={user.id}>
                                         <div className="flex items-center space-x-4">
                                             <div className="flex-shrink-0">
-                                                <ImageFriend friend={user} />
+                                                <ImageFriend
+                                                    userId={user.id}
+                                                    textImg={user.nickname}
+                                                />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-medium text-gray-900 truncate dark:text-white">

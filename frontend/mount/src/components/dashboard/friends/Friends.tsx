@@ -4,16 +4,18 @@ import axios from 'axios';
 import ShowFriendList from './ShowFriendList';
 import ShowTitleFriends from './ShowTitleFriends';
 import AddFriendElem from './AddFriendElem';
+import { useUserContext } from '../../../context/UserContext';
 
 interface FriendsProps {
-    user: User;
+    currUser: User;
 }
 
-function Friends({ user }: FriendsProps) {
+function Friends({ currUser }: FriendsProps) {
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
     );
     const [change, setChange] = useState<boolean>(false);
+    const { user } = useUserContext();
 
     useEffect(() => {
         const fetchFriends = async () => {
@@ -26,7 +28,7 @@ function Friends({ user }: FriendsProps) {
         // import user friends list
         try {
             const response = await axios.get(
-                'http://localhost:3333/friends/me',
+                `http://localhost:3333/friends/${currUser.id}`,
                 { withCredentials: true },
             );
             setFriendsList(response.data);
@@ -39,7 +41,7 @@ function Friends({ user }: FriendsProps) {
         event.preventDefault();
         // console.log('button clicked to add=' + idSelected);
         if (idSelected === -1) return;
-        if (idSelected !== user.id) {
+        if (idSelected !== currUser.id) {
             try {
                 await axios.post(
                     `http://localhost:3333/friends/${idSelected}`,
@@ -63,7 +65,6 @@ function Friends({ user }: FriendsProps) {
             await axios.delete(`http://localhost:3333/friends/${idToDelete}`, {
                 withCredentials: true,
             });
-            // console.log(response.data);
         } catch (error) {
             console.error(error);
         }
@@ -74,19 +75,22 @@ function Friends({ user }: FriendsProps) {
     return (
         <>
             <div>
-                <ShowTitleFriends friendsList={friendsList} />
+                <ShowTitleFriends friendsList={friendsList} idUser={currUser.id} />
                 <ShowFriendList
                     friendsList={friendsList}
                     handleDeleteFriendClick={handleDeleteFriendClick}
+					currUserId={currUser.id}
                 />
-                <div className="mb-6">
-                    <AddFriendElem
-                        ButtonAddFriend={handleClickAddFriend}
-                        ButtonDeleteFriend={handleDeleteFriendClick}
-                        change={change}
-                        setChange={setChange}
-                    />
-                </div>
+                {user && user.id === currUser.id && (
+                    <div className="mb-6">
+                        <AddFriendElem
+                            ButtonAddFriend={handleClickAddFriend}
+                            ButtonDeleteFriend={handleDeleteFriendClick}
+                            change={change}
+                            setChange={setChange}
+                        />
+                    </div>
+                )}
             </div>
         </>
     );

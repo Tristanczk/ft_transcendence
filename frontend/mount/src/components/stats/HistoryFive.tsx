@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { GameImports } from '../../types';
 import axios from 'axios';
-import { useUserContext } from '../../context/UserContext';
 import { format } from 'date-fns';
+import { User } from '../../types';
 
-function HistoryFive() {
+interface PresentationUserProps {
+    user: User;
+}
+
+function HistoryFive({ user }: PresentationUserProps) {
     const [games, setGames] = useState<GameImports[] | null>(null);
 
-    const { user } = useUserContext();
+    // const { user } = useUserContext();
 
     useEffect(() => {
         async function getGamesList() {

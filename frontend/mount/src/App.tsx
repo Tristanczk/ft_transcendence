@@ -29,6 +29,7 @@ const App: React.FC = () => {
 						<Route path="/battle" Component={BattlePage} />
 						<Route path="/classic" Component={ClassicPage} />
 						<Route path="/dashboard" Component={DashboardPage} />
+						<Route path="/dashboard/:idUserToView" Component={DashboardPage} />
 						<Route path="/chat" Component={ChatPage} />
 						<Route path="/signin" Component={SignInPage} />
 						<Route path="/signup" Component={SignUpPage} />

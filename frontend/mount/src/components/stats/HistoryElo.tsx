@@ -1,17 +1,14 @@
 import { ResponsiveLine, Serie } from '@nivo/line';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useUserContext } from '../../context/UserContext';
+import { User } from '../../types';
 
-// make sure parent container have a defined height when using
-// responsive component, otherwise height will be 0 and
-// no chart will be rendered.
-// website examples showcase many properties,
-// you'll often use just a few of them.
+interface PresentationUserProps {
+    user: User;
+}
 
-function HistoryElo() {
+function HistoryElo({ user }: PresentationUserProps) {
     const [data, setGraph] = useState<Serie[] | null>(null);
-    const { user } = useUserContext();
 	const [nbGame, setnbGames] = useState<number>(0)
 
     useEffect(() => {
@@ -25,7 +22,6 @@ function HistoryElo() {
                 );
                 setGraph(response.data);
 				if (response.data) setnbGames(response.data[0].data.length)
-                // console.log(response.data);
                 return response.data;
             } catch (error) {
                 console.error(error);
