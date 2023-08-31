@@ -10,7 +10,7 @@ import ListGroupWithButton from '../components/chatpage/ListGroup';
 import { UserSimplified } from '../types';
 
 function ChatPage() {
-  const [socket, setSocket] = useState<Socket | undefined>(undefined); // Initialize socket as undefined
+  const [socket, setSocket] = useState<Socket | undefined>(undefined);
   const [messages, setMessages] = useState<ChatWindowProps["messages"]>([]);
   const authAxios = useAuthAxios();
 
@@ -20,7 +20,7 @@ function ChatPage() {
 
   useEffect(() => {
     setSocket(constSocket);
-  }, []); // Empty dependency array ensures this effect runs only once
+  }, []);
 
   useEffect(() => {
     if (socket) {
@@ -42,7 +42,7 @@ function ChatPage() {
         socket.off('message', messageListener);
       };
     }
-  }, [socket]); // Make sure to include socket as a dependency
+  }, [socket]);
 
 
   const onCreateChannel = async (event: any) => {
@@ -64,7 +64,6 @@ function ChatPage() {
   );
 
   const getMyFriends = async () => {
-    // import user friends list
     try {
       const response = await authAxios.get(
         'http://localhost:3333/friends/me',

@@ -33,8 +33,8 @@ export class ChatController {
 	}
 
 	@Patch('editChannel')
-	async editChannel(editChannel: EditChannelDto) {
-		return this.chatService.editChannel(editChannel);
+	async editChannel(@Body() idUser: number, editChannel: EditChannelDto): Promise<EditChannelDto> {
+		return this.chatService.editChannel(idUser, editChannel);
 	}
 
 	@Post('sendMessage')

@@ -89,7 +89,42 @@ export class ChatService {
         }
     }
 
-    async editChannel(editChannel: EditChannelDto) {}
+    async editChannel(idUser: number, editChannel: EditChannelDto) {
+        try {
+            const channel = await this.prisma.channels.findUnique({
+                where: {
+                    id: editChannel.id,
+                },
+            });
+        } catch (error) {
+            throw new NotFoundException('Channel not found');
+        }
+
+        if (!editChannel.idAdmin.includes(idUser))
+            throw new Error('Not authorized');
+
+        const updatedChannel = await this.prisma.channels.update({
+            where: {
+                id: editChannel.id,
+            },
+            data: {
+                idAdmin: editChannel.idAdmin,
+                idUsers: editChannel.idUser,
+                isPublic: editChannel.isPublic,
+                name: editChannel.name,
+                password: editChannel.password, //password is optional, dont know if it resets it
+            },
+        });
+
+        const updatedChannelDto: EditChannelDto = {
+            id: updatedChannel.id,
+            idAdmin: updatedChannel.idAdmin,
+            idUser: updatedChannel.idUsers,
+            isPublic: updatedChannel.isPublic,
+            name: updatedChannel.name,
+        };
+        return updatedChannelDto;
+    }
 
     async sendMessage(message: CreateMessageDto): Promise<CreateMessageDto> {
         try {
