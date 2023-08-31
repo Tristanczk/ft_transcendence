@@ -22,6 +22,8 @@ model User {
     elo     Int
     loginNb Int
 
+	achievements String[] @default([])
+
     twoFactorAuthentication Boolean @default(false)
     isConnected             Boolean @default(false)
     twoFactorSecret         String?

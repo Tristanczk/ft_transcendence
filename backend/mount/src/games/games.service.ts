@@ -7,6 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { updateGameDto } from './dto/update-game.dto';
 import { GameExports, UserGame } from './games.types';
 import { DiffDate } from 'src/stats/stats.type';
+import { Games, User } from '@prisma/client';
 
 export type CurrentGame = {
     idGame: number;
@@ -28,7 +29,6 @@ export class GamesService {
     dataGamesPlaying: CurrentGame[] = [];
 
     async initGame(playerA: any, idPlayerB: number, mode: number) {
-        // console.log('initGame ' + idUser + ' against ' + idPlayerB);
         //verif playerB exist
         const playerB = await this.prisma.user.findUnique({
             where: { id: idPlayerB },
@@ -46,8 +46,8 @@ export class GamesService {
                     scoreB: 0,
                     varEloA: 0,
                     varEloB: 0,
-					initEloA: playerA.elo,
-					initEloB: playerB.elo,
+                    initEloA: playerA.elo,
+                    initEloB: playerB.elo,
                     mode: mode,
                     UserA: { connect: { id: playerA.id } },
                     UserB: { connect: { id: idPlayerB } },
@@ -83,6 +83,7 @@ export class GamesService {
                 won: body.won,
             },
         });
+        this.checkAchievements(retour);
         return retour;
     }
 
@@ -92,11 +93,6 @@ export class GamesService {
         );
         if (gameIndex === -1)
             throw new NotFoundException('idGame not currently playing?');
-        // const userB = await this.prisma.user.findUnique({
-        //     where: { id: this.dataGamesPlaying[gameIndex].idPlayerA },
-        // });
-        // this.dataGamesPlaying[gameIndex].eloPlayerA = userB.elo;
-
         const probaA =
             1 /
             (1 +
@@ -110,7 +106,6 @@ export class GamesService {
         const varEloA = Math.round(32 * ((won ? 1 : 0) - probaA));
         const varEloB = Math.round(32 * ((won ? 0 : 1) - probaA));
 
-        // console.log('varA=' + varEloA + ', varB=' + varEloB + ', proba=' + probaA);
         const variation: VariationElo = { varEloA: varEloA, varEloB: varEloB };
 
         await this.prisma.user.update({
@@ -198,13 +193,13 @@ export class GamesService {
                 elem.playerA,
                 users,
                 elem.scoreA,
-				elem.initEloA,
+                elem.initEloA,
             );
             newElem.playerB = this.getUserFormat(
                 elem.playerB,
                 users,
                 elem.scoreB,
-				elem.initEloB,
+                elem.initEloB,
             );
             transformedTab.push(newElem);
         });
@@ -235,15 +230,111 @@ export class GamesService {
         );
     }
 
-    getUserFormat(userId: number, users: any, score: number, initElo: number): UserGame {
-        let formatedUser: UserGame = { id: -1, nickname: '', elo: 0, eloStart:0, score: 0 };
+    getUserFormat(
+        userId: number,
+        users: any,
+        score: number,
+        initElo: number,
+    ): UserGame {
+        let formatedUser: UserGame = {
+            id: -1,
+            nickname: '',
+            elo: 0,
+            eloStart: 0,
+            score: 0,
+        };
         const user = users.find((user) => user.id === userId);
 
         formatedUser.id = userId;
         formatedUser.nickname = user.nickname;
         formatedUser.elo = user.elo;
-		formatedUser.eloStart = initElo;
+        formatedUser.eloStart = initElo;
         formatedUser.score = score;
         return formatedUser;
     }
+
+	async checkAchievements(game: Games) {
+		let achievement: String;
+		let achievNb: number;
+		let achievementsA: String[] = []
+		let achievementsB: String[] = []
+        let playerA: User = null;
+		let playerB: User = null;
+        
+		try {
+            playerA = await this.prisma.user.findUnique({
+                where: { id: game.playerA },
+            });
+            playerB = await this.prisma.user.findUnique({
+                where: { id: game.playerB },
+            });
+            
+        } catch (error) {
+            console.log(error);
+			return ;
+        }
+
+		console.log(game);
+		console.log(playerA);
+		console.log(playerB);
+
+		//achievement ELO
+		achievement = this.achievementElo(playerA)
+		achievement && achievementsA.push(achievement)
+		achievement = this.achievementElo(playerB)
+		achievement && achievementsB.push(achievement)
+
+		//achievement score
+		achievNb = this.achievementScoreTakeAll(game)
+		achievNb === 1 && achievementsA.push('classic-boss')
+		achievNb === 2 && achievementsB.push('classic-boss')
+
+		//achievement time < 60sec
+		achievNb = this.achievementClassicTime(game)
+		achievNb === 1 && achievementsA.push('classic-win-time')
+		achievNb === 2 && achievementsB.push('classic-win-time')
+
+		//achievement Marathon
+		achievement = this.achievementMarathon(game)
+		achievement && achievementsA.push(achievement)
+		achievement && achievementsB.push(achievement)
+
+		console.log('achievements:')
+		console.log(achievementsA)
+		console.log(achievementsB)
+    }
+
+	achievementElo(player: User): String {
+		if (player.elo >= 1100)
+			return 'classic-1100'
+		else if (player.elo >= 1200)
+			return 'classic-1200'
+		return null;
+	}
+
+	achievementMarathon(game: Games): String {
+		if ((game.scoreA + game.scoreB) >= 30)
+			return 'classic-marathon'
+		return null;
+	}
+
+	achievementScoreTakeAll(game: Games): number {
+		if (game.scoreA === 7 && game.scoreB === 0)
+			return 1
+		else if (game.scoreA === 0 && game.scoreB === 7)
+			return 2
+		return 0;
+	}
+
+	achievementClassicTime(game: Games): number {
+		const totalTime: number = this.computeDuration(game.createdAt, game.finishedAt)
+		if (totalTime > 60)
+			return 0;
+		if (game.won)
+			return 1
+		else if (!game.won)
+			return 2
+		return 0;
+	}
+
 }

@@ -3,6 +3,7 @@ import { GamesService } from 'src/games/games.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { DiffDate, GlobalStats, UserStats } from './stats.type';
 import { GameExtractedDB } from 'src/games/games.types';
+import { Games } from '@prisma/client';
 
 export type ArrayGraphType = {
     id: string | number;
@@ -94,7 +95,7 @@ export class StatsService {
         idUser: number,
         nbGames: number,
         sortAsc: boolean,
-    ): Promise<GameExtractedDB[]> {
+    ): Promise<Games[]> {
         const data = await this.prisma.user.findUnique({
             where: {
                 id: idUser,
@@ -106,14 +107,14 @@ export class StatsService {
         });
         if (!data) throw new NotFoundException('No user found');
 
-        const gameList: GameExtractedDB[] = data.gamesasPlayerA.concat(
+        const gameList: Games[] = data.gamesasPlayerA.concat(
             data.gamesasPlayerB,
         );
 
         if (sortAsc === true) gameList.sort((a, b) => a.id - b.id);
         else gameList.sort((a, b) => b.id - a.id);
 
-        let newGameList: GameExtractedDB[] = [];
+        let newGameList: Games[] = [];
         if (gameList.length <= nbGames) newGameList = gameList;
         else newGameList = gameList.slice(-nbGames);
 
@@ -131,7 +132,7 @@ export class StatsService {
         };
         if (dataSerieNormal.length !== 0) dataGraph.push(newElemGraph);
 
-		return dataGraph;
+        return dataGraph;
     }
 
     async getDataGraphMode(idUser: number): Promise<ArrayDataGraph[]> {
@@ -142,14 +143,14 @@ export class StatsService {
             30,
             true,
         );
-		let i: number = data.length; 
+        let i: number = data.length;
         data.forEach((game: GameExtractedDB) => {
             const newDataElem: ArrayDataGraph = {
                 x: i,
                 y: idUser === game.playerA ? game.initEloA : game.initEloB,
             };
             dataSerie.push(newDataElem);
-			i--;
+            i--;
         });
         return dataSerie;
     }
