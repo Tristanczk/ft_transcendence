@@ -1,5 +1,6 @@
 import { UserSimplified } from '../../../types';
 import ImageFriend from './ImgFriend';
+import ReactDOM from 'react-dom';
 
 interface Props {
     list: UserSimplified[] | null;
@@ -7,12 +8,7 @@ interface Props {
     ButtonDeleteFriend: any;
 }
 
-
-function ReturnAddFriend({
-    list,
-    ButtonAddFriend,
-    ButtonDeleteFriend,
-}: Props) {
+function ReturnAddFriend({ list, ButtonAddFriend, ButtonDeleteFriend }: Props) {
     return (
         list && (
             <>
@@ -36,7 +32,7 @@ function ReturnAddFriend({
                                                 <ImageFriend
                                                     userId={user.id}
                                                     textImg={user.nickname}
-													size={8}
+                                                    size={8}
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-0">

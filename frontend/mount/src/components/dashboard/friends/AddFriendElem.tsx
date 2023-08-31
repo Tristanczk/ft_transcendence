@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReturnAddFriend from './ReturnAddFriend';
 import { UserSimplified } from '../../../types';
 import OutsideClickHandler from 'react-outside-click-handler';
