@@ -5,6 +5,8 @@ import Button from './Button';
 import { useWidth } from '../hooks';
 import { UserContext, useUserContext } from '../context/UserContext';
 import { NAVBAR_HEIGHT } from '../constants';
+import ImageFriend from './dashboard/friends/ImgFriend';
+import OutsideClickHandler from 'react-outside-click-handler';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -93,57 +95,91 @@ const MenuLink: React.FC<{
     );
 };
 
-const UserMenu: React.FC = () => {
+function UserMenu() {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
+	const [showInfo, setShowInfo] = useState<boolean>(true);
+    const { user } = useUserContext();
+
     return (
-        <div className="flex items-center relative">
-            <button
-                type="button"
-                className="flex mr-3 text-sm bg-gray-800 rounded-full sm:mr-0 active:ring-4 active:ring-gray-600"
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
+        <div
+            onClick={() => {
+                setShowInfo(true);
+            }}
+        >
+            <OutsideClickHandler
+                onOutsideClick={() => {
+                    setShowInfo(false);
+					setUserMenuOpen(false);
+                }}
             >
-                <img
-                    className="w-8 h-8 rounded-full"
-                    src="/norminet.jpeg"
-                    alt="user"
-                />
-            </button>
-            <div
-                className={`z-50 absolute top-full right-0 mt-2 w-48 py-2 rounded-md shadow-xl bg-gray-800 ${
-                    userMenuOpen ? 'block' : 'hidden'
-                }`}
-            >
-                <div className="px-4 py-3">
-                    <span className="block text-sm text-white">nickname</span>
-                    <span className="block text-sm truncate text-gray-400">
-                        login if different
-                    </span>
+                <div
+                    className="flex items-center relative"
+                    onClick={() => {
+                        setShowInfo(true);
+                    }}
+                >
+                    <button
+                        type="button"
+                        className="flex mr-3 text-sm bg-gray-800 rounded-full sm:mr-0 active:ring-4 active:ring-gray-600"
+                        onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    >
+                        {user && (
+                            <ImageFriend
+                                userId={user.id}
+                                textImg={user.nickname}
+                                size={8}
+                            />
+                        )}
+                    </button>
+
+                    {showInfo && (
+                        <div
+                            className={`z-50 absolute top-full right-0 mt-2 w-48 py-2 rounded-md shadow-xl bg-gray-800 ${
+                                userMenuOpen ? 'block' : 'hidden'
+                            }`}
+                            onClick={() => {
+                                setShowInfo(true);
+                            }}
+                        >
+                            <div className="px-4 py-3">
+                                <span className="block text-sm text-white">
+                                    nickname
+                                </span>
+                                <span className="block text-sm truncate text-gray-400">
+                                    login if different
+                                </span>
+                            </div>
+                            <ul className="py-2">
+                                <MenuLink
+                                    text="Settings"
+                                    href="/settings"
+                                    onClick={() =>
+                                        setUserMenuOpen(!userMenuOpen)
+                                    }
+                                />
+                                <MenuLink
+                                    text="Sign out"
+                                    href="/signout"
+                                    onClick={() =>
+                                        setUserMenuOpen(!userMenuOpen)
+                                    }
+                                />
+                            </ul>
+                        </div>
+                    )}
                 </div>
-                <ul className="py-2">
-                    <MenuLink
-                        text="Settings"
-                        href="/settings"
-                        onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    />
-                    <MenuLink
-                        text="Sign out"
-                        href="/signout"
-                        onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    />
-                </ul>
-            </div>
+            </OutsideClickHandler>
         </div>
     );
-};
+}
 
 const NavBar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     // const [user, setUser] = useState<User | null>(null);
-	const userGlobal = useContext(UserContext);
-	const user = userGlobal.user;
-	const { loginUser, logoutUser } = useUserContext();
-
+    const userGlobal = useContext(UserContext);
+    const user = userGlobal.user;
+    const { loginUser, logoutUser } = useUserContext();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -153,15 +189,15 @@ const NavBar: React.FC = () => {
                     { withCredentials: true },
                 );
                 // setUser(response.data);
-				loginUser(response.data)
+                loginUser(response.data);
             } catch (error) {
-				logoutUser();
+                logoutUser();
                 // setUser(null);
                 // console.error(error);
             }
         };
         fetchUser();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname]);
 
     return (
@@ -181,18 +217,16 @@ const NavBar: React.FC = () => {
                     </span>
                 </Link>
                 <NavLinks current={location.pathname} />
-                <div className="flex items-center relative">
-                    {user ? (
-                        <UserMenu />
-                    ) : (
-                        <Button
-                            text="Sign in"
-                            onClick={() => {
-                                navigate('/signin');
-                            }}
-                        />
-                    )}
-                </div>
+                {user ? (
+                    <UserMenu />
+                ) : (
+                    <Button
+                        text="Sign in"
+                        onClick={() => {
+                            navigate('/signin');
+                        }}
+                    />
+                )}
             </div>
         </nav>
     );

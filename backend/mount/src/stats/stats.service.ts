@@ -131,9 +131,7 @@ export class StatsService {
         };
         if (dataSerieNormal.length !== 0) dataGraph.push(newElemGraph);
 
-        // console.log(dataGraph);
-
-        return dataGraph;
+		return dataGraph;
     }
 
     async getDataGraphMode(idUser: number): Promise<ArrayDataGraph[]> {
@@ -144,14 +142,15 @@ export class StatsService {
             30,
             true,
         );
+		let i: number = data.length; 
         data.forEach((game: GameExtractedDB) => {
             const newDataElem: ArrayDataGraph = {
-                x: game.id,
+                x: i,
                 y: idUser === game.playerA ? game.initEloA : game.initEloB,
             };
             dataSerie.push(newDataElem);
+			i--;
         });
-        // console.log(dataSerie);
         return dataSerie;
     }
 }

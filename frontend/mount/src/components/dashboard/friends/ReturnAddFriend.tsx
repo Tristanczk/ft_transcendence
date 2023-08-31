@@ -7,10 +7,12 @@ interface Props {
     ButtonDeleteFriend: any;
 }
 
-function ReturnAddFriend({ list, ButtonAddFriend, ButtonDeleteFriend }: Props) {
-    // console.log('list=');
-    // console.log(list);
 
+function ReturnAddFriend({
+    list,
+    ButtonAddFriend,
+    ButtonDeleteFriend,
+}: Props) {
     return (
         list && (
             <>
@@ -34,6 +36,7 @@ function ReturnAddFriend({ list, ButtonAddFriend, ButtonDeleteFriend }: Props) {
                                                 <ImageFriend
                                                     userId={user.id}
                                                     textImg={user.nickname}
+													size={8}
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-0">

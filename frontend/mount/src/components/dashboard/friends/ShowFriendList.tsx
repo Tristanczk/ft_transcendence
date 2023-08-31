@@ -52,6 +52,7 @@ function ShowFriendList({
                                     <ImageFriend
                                         userId={friend.id}
                                         textImg={friend.nickname}
+										size={8}
                                     />
                                 </div>
                                 <div className="flex-1 min-w-0">
