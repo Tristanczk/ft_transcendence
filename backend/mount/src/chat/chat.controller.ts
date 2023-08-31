@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs
 import { ChatService } from './chat.service';
 import { CreateChannelDto } from './dto/createchannel.dto';
 import { EditChannelDto } from './dto/editchannel.dto';
-import { MessageDto } from './dto/message.dto';
+import { CreateMessageDto, DeleteMessageDto } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
 import { LeaveChannelDto } from './dto/leavechannel.dto';
 
@@ -37,8 +37,18 @@ export class ChatController {
 		return this.chatService.editChannel(editChannel);
 	}
 
-	@Post('createMessage')
-	async createMessage(@Body() message: MessageDto) {
-		return this.chatService.createMessage(message);
+	@Post('sendMessage')
+	async sendMessage(@Body() message: CreateMessageDto) {
+		return this.chatService.sendMessage(message);
+	}
+
+	@Patch('deleteMessage')
+	async deleteMessage(@Body() idUser:number, message: DeleteMessageDto) {
+		return this.chatService.deleteMessage(idUser, message);
+	}
+
+	@Get('getMessages/:id')
+	async getMessages(@Param('id', ParseIntPipe) channelId: number, @Body() idUser:number): Promise<any> {
+		return this.chatService.getMessages(channelId, idUser);
 	}
 }
