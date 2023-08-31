@@ -9,6 +9,7 @@ import {
 } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
 import { LeaveChannelDto } from './dto/leavechannel.dto';
+import { ChannelDto } from './dto/channel.dto';
 
 @Injectable()
 export class ChatService {
@@ -124,6 +125,34 @@ export class ChatService {
             name: updatedChannel.name,
         };
         return updatedChannelDto;
+    }
+
+    async getChannels(idUser: number) {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: idUser,
+                },
+            });
+
+            if (!user) return;
+            const channels = await this.prisma.channels.findMany({
+                where: {
+                    idUsers: {
+                        has: idUser,
+                    },
+                },
+            });
+            
+            const channelDtos: ChannelDto[] = channels.map((channel) => ({
+                name: channel.name,
+                idChannel: channel.id,
+            }));
+
+            return channelDtos;
+        } catch (error) {
+            throw new NotFoundException('User not found');
+        }
     }
 
     async sendMessage(message: CreateMessageDto): Promise<CreateMessageDto> {

@@ -8,14 +8,30 @@ import { Button, ListGroup } from 'flowbite-react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import ListGroupWithButton from '../components/chatpage/ListGroup';
 import { UserSimplified } from '../types';
+import { set } from 'react-hook-form';
+import { SelectChannel } from '../components/chatpage/SelectChannel';
+import { UserContext } from '../context/UserContext';
 
 function ChatPage() {
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
   const [messages, setMessages] = useState<ChatWindowProps["messages"]>([]);
+  const [channels, setChannels] = useState<number>(0);
+  const [currentChannel, setCurrentChannel] = useState<number>(0);
   const authAxios = useAuthAxios();
 
   const send = (message: MessageProps) => {
-    socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message });
+   // socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message });
+    const response = authAxios.post(
+      '/chat/sendMessage',
+      {
+        idChannel: message.idChannel,
+        idSender: message.idSender,
+        content: message.message,
+      },
+      { withCredentials: true }
+    );
+    console.log(response);
+      setMessages((oldMessages) => [...oldMessages, message]);
   };
 
   useEffect(() => {
@@ -57,6 +73,8 @@ function ChatPage() {
         },
         { withCredentials: true }
       );
+
+      setChannels((oldChannels) => oldChannels + 1);
   }
 
   const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
@@ -79,16 +97,40 @@ function ChatPage() {
       getMyFriends();
     };
     fetchFriends();
-  }, []);
+
+    const fetchChannels = async () => {
+      if (currentChannel === 0) return;
+      const response = await authAxios.get(
+        `http://localhost:3333/chat/getChannels/${1}`,//idUser
+        { withCredentials: true },
+      );
+
+      if (!response) return;
+      setChannels(response.data.length);
+    }
+    fetchChannels();
+
+    const fetchMessages = async () => {
+      if (currentChannel === 0) return;
+      const response = await authAxios.get(
+        `http://localhost:3333/chat/getMessages${currentChannel}`,
+        // idUser
+        { withCredentials: true },
+      );
+      setMessages(response.data);
+    }
+    fetchMessages();
+  }, [currentChannel]);
 
   console.log(messages);
   return (
     <div className="ChatPage">
       <section className="chatbox">
+        <SelectChannel setCurrentChannel={setCurrentChannel} channels={channels}/>
         <ListGroupWithButton users={friendsList} />
         <Button text="miao" type="button" onClick={onCreateChannel} />
-        <ChatWindow messages={messages} />
-        <MessageInput send={send} />
+        <ChatWindow channel={currentChannel}  messages={messages} />
+        <MessageInput channel={currentChannel} send={send} />
       </section>
     </div>
   );

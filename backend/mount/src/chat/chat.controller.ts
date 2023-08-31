@@ -5,6 +5,7 @@ import { EditChannelDto } from './dto/editchannel.dto';
 import { CreateMessageDto, DeleteMessageDto } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
 import { LeaveChannelDto } from './dto/leavechannel.dto';
+import { ChannelDto } from './dto/channel.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -35,6 +36,11 @@ export class ChatController {
 	@Patch('editChannel')
 	async editChannel(@Body() idUser: number, editChannel: EditChannelDto): Promise<EditChannelDto> {
 		return this.chatService.editChannel(idUser, editChannel);
+	}
+
+	@Get('getChannels/:id')
+	async getChannels(@Param() idUser: number) : Promise<ChannelDto[] | null>{
+		return this.chatService.getChannels(idUser);
 	}
 
 	@Post('sendMessage')

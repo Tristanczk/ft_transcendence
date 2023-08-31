@@ -3,10 +3,14 @@ import React from 'react';
 import { MessageProps } from './Message';
 
 export function MessageInput({
-    send,
-}: {
-    send: (message: MessageProps) => void;
-}) {
+        send,
+        channel,
+    }: {
+        send: (message: MessageProps) => void;
+        channel: number,
+    },
+    
+) {
     const [input, setInput] = useState('');
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -33,11 +37,11 @@ export function MessageInput({
                             console.log('send function called');
                             send({
                                 idSender: 1,
-                                idChannel: 1,
+                                idChannel: channel,
                                 message: input,
                             });
                             setInput('');
-                        }}  
+                        }}
                     >
                         <span className="font-bold">Send</span>
                         <svg
