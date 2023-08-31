@@ -12,14 +12,14 @@ interface PresentationUserProps {
 function HistoryFive({ user }: PresentationUserProps) {
     const [games, setGames] = useState<GameImports[] | null>(null);
 
-    // const { user } = useUserContext();
-
     useEffect(() => {
         if (user) getGamesList();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (user) getGamesList();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     async function getGamesList() {
@@ -38,26 +38,21 @@ function HistoryFive({ user }: PresentationUserProps) {
         }
     }
 
-    let formattedDate;
-
     return games ? (
         <div className="w-full  p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
                 <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
                     Last Games
                 </h5>
-                <a
+                {/* <a
                     href="#"
                     className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
                 >
                     View all
-                </a>
+                </a> */}
             </div>
             <div className="flow-root">
-                <ul
-                    role="list"
-                    className="divide-y divide-gray-200 dark:divide-gray-700"
-                >
+                <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                     {games.length > 0 &&
                         games.map((game) => (
                             <li className="py-3 sm:py-4" key={game.gameId}>
@@ -179,12 +174,10 @@ function HistoryFive({ user }: PresentationUserProps) {
                                                   : 0) + 's'}
                                     </div>
                                     <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                        {
-                                            (formattedDate = format(
-                                                new Date(game.date),
-                                                'MMM d, yyyy',
-                                            ))
-                                        }
+                                        {format(
+                                            new Date(game.date),
+                                            'MMM d, yyyy',
+                                        )}
                                     </div>
                                 </div>
                             </li>

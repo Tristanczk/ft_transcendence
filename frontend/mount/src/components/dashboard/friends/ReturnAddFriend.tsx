@@ -1,6 +1,5 @@
 import { UserSimplified } from '../../../types';
 import ImageFriend from './ImgFriend';
-import ReactDOM from 'react-dom';
 
 interface Props {
     list: UserSimplified[] | null;

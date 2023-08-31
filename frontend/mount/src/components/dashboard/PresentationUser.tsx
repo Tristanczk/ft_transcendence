@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { User } from '../../types';
 import ImageFriend from './friends/ImgFriend';
 
