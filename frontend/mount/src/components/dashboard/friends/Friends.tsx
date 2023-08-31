@@ -24,6 +24,13 @@ function Friends({ currUser }: FriendsProps) {
         fetchFriends();
     }, []);
 
+	useEffect(() => {
+        const fetchFriends = async () => {
+            getMyFriends();
+        };
+        fetchFriends();
+    }, [currUser]);
+
     const getMyFriends = async () => {
         // import user friends list
         try {

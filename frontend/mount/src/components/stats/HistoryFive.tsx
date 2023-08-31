@@ -3,6 +3,7 @@ import { GameImports } from '../../types';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { User } from '../../types';
+import { Link } from 'react-router-dom';
 
 interface PresentationUserProps {
     user: User;
@@ -14,23 +15,28 @@ function HistoryFive({ user }: PresentationUserProps) {
     // const { user } = useUserContext();
 
     useEffect(() => {
-        async function getGamesList() {
-            try {
-                const response = await axios.get(
-                    `http://localhost:3333/games/short/${user?.id}`,
-                    {
-                        withCredentials: true,
-                    },
-                );
-                setGames(response.data);
-                console.log(response.data);
-                return response.data;
-            } catch (error) {
-                console.error(error);
-            }
-        }
         if (user) getGamesList();
     }, []);
+
+    useEffect(() => {
+        if (user) getGamesList();
+    }, [user]);
+
+    async function getGamesList() {
+        try {
+            const response = await axios.get(
+                `http://localhost:3333/games/short/${user?.id}`,
+                {
+                    withCredentials: true,
+                },
+            );
+            setGames(response.data);
+            console.log(response.data);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     let formattedDate;
 
@@ -86,12 +92,26 @@ function HistoryFive({ user }: PresentationUserProps) {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                            {game.playerA?.nickname} (
-                                            {game.playerA?.eloStart})
+                                            <Link
+                                                to={
+                                                    '/dashboard/' +
+                                                    game.playerA?.id
+                                                }
+                                            >
+                                                {game.playerA?.nickname}
+                                            </Link>{' '}
+                                            ({game.playerA?.eloStart})
                                         </p>
                                         <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                            {game.playerB?.nickname} (
-                                            {game.playerB?.eloStart})
+                                            <Link
+                                                to={
+                                                    '/dashboard/' +
+                                                    game.playerB?.id
+                                                }
+                                            >
+                                                {game.playerB?.nickname}
+                                            </Link>{' '}
+                                            ({game.playerB?.eloStart})
                                         </p>
                                     </div>
                                     <div className="flex-1 min-w-0 items-center justify-center text-base font-semibold text-gray-900 dark:text-white">
@@ -154,7 +174,9 @@ function HistoryFive({ user }: PresentationUserProps) {
                                               'm' +
                                               (game.duration % 60) +
                                               's'
-                                            : (game.duration > 0 ? game.duration : 0) + 's'}
+                                            : (game.duration > 0
+                                                  ? game.duration
+                                                  : 0) + 's'}
                                     </div>
                                     <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
                                         {

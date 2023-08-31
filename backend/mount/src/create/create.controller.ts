@@ -15,9 +15,15 @@ export class CreateController {
 		return this.createService.createGames();
 	}
 
+	@Get('games/me')
+	async createGamesForExisting() {
+		return this.createService.createGamesForExisting();
+	}
+
 	@Get('life')
 	async createLife() {
 		await this.createService.createUsers()
+		await this.createService.createFriendships()
 		await this.createService.createGames()
 		return 'Enjoy your life !';
 	}

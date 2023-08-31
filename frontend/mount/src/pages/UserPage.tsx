@@ -8,12 +8,12 @@ import StatsUser from '../components/dashboard/StatsUser';
 
 const UserPage: React.FC = () => {
     const { idUserToView } = useParams();
+	const [user, setUser] = useState<User | null>(null);
+
     let userId: number = -1;
     if (idUserToView) {
         userId = parseInt(idUserToView);
     }
-
-	const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
         const fetchUser = async () => {

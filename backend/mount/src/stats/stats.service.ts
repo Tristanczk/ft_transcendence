@@ -42,7 +42,7 @@ export class StatsService {
                     0,
                 ) +
                 user.gamesasPlayerB.reduce(
-                    (acc, curr) => acc + (curr.won ? 1 : 0),
+                    (acc, curr) => acc + (curr.won ? 0 : 1),
                     0,
                 ),
             averageDuration: Math.trunc(

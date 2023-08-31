@@ -12,23 +12,28 @@ function HistoryElo({ user }: PresentationUserProps) {
 	const [nbGame, setnbGames] = useState<number>(0)
 
     useEffect(() => {
-        async function getStats() {
-            try {
-                const response = await axios.get(
-                    `http://localhost:3333/stats/graph/${user?.id}`,
-                    {
-                        withCredentials: true,
-                    },
-                );
-                setGraph(response.data);
-				if (response.data) setnbGames(response.data[0].data.length)
-                return response.data;
-            } catch (error) {
-                console.error(error);
-            }
-        }
         if (user) getStats();
     }, []);
+
+	useEffect(() => {
+        if (user) getStats();
+    }, [user]);
+
+	async function getStats() {
+		try {
+			const response = await axios.get(
+				`http://localhost:3333/stats/graph/${user?.id}`,
+				{
+					withCredentials: true,
+				},
+			);
+			setGraph(response.data);
+			if (response.data) setnbGames(response.data[0].data.length)
+			return response.data;
+		} catch (error) {
+			console.error(error);
+		}
+	}
 
     return data && data.length > 0 ? (
         <div className="w-full  p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">

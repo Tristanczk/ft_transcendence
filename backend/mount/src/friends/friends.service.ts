@@ -10,10 +10,7 @@ import { ErrorsService } from 'src/errors/errors.service';
 
 @Injectable()
 export class FriendsService {
-    constructor(
-        private prisma: PrismaService,
-        private error: ErrorsService,
-    ) {}
+    constructor(private prisma: PrismaService) {}
 
     async getAllFriends(userId: number): Promise<GetAllUsersResponseDto[]> {
         const users = await this.prisma.user.findMany();
