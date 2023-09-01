@@ -5,8 +5,7 @@ import { FriendsService } from 'src/friends/friends.service';
 import { FriendsModule } from 'src/friends/friends.module';
 
 @Module({
-	providers: [CreateService, FriendsService],
-	controllers: [CreateController]
-  
+    providers: [CreateService, FriendsService],
+    controllers: [CreateController],
 })
 export class CreateModule {}

@@ -1,8 +1,4 @@
 import { useEffect, useState } from 'react';
-import TestInsert from './TestInsert';
-import TestGet from './TestGet';
-import TestUpdate from './testUpdate';
-import { useUserContext } from '../../context/UserContext';
 import { StatsDashboard, User } from '../../types';
 import axios from 'axios';
 
@@ -19,27 +15,29 @@ function GlobalStats({ user }: PresentationUserProps) {
 
     useEffect(() => {
         if (user) getStats();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-	useEffect(() => {
-		if (user) getStats();
+    useEffect(() => {
+        if (user) getStats();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
-	async function getStats() {
-		try {
-			const response = await axios.get(
-				`http://localhost:3333/stats/${user.id}`,
-				{
-					withCredentials: true,
-				},
-			);
-			setStats(response.data);
-			console.log(response.data);
-			return response.data;
-		} catch (error) {
-			console.error(error);
-		}
-	}
+    async function getStats() {
+        try {
+            const response = await axios.get(
+                `http://localhost:3333/stats/${user.id}`,
+                {
+                    withCredentials: true,
+                },
+            );
+            setStats(response.data);
+            // console.log(response.data);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">

@@ -12,7 +12,11 @@ function PresentationUser({ user }: PresentationUserProps) {
         <header className="mb-4 lg:mb-6 not-format">
             <address className="flex items-center mb-6 not-italic">
                 <div className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
-                    <ImageFriend userId={user.id} textImg={user.nickname} size={12} />
+                    <ImageFriend
+                        userId={user.id}
+                        textImg={user.nickname}
+                        size={12}
+                    />
                     <div>
                         <div className="text-xl font-bold text-gray-900 dark:text-white">
                             {user.nickname}

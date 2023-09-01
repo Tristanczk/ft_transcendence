@@ -13,16 +13,16 @@ export type UserStats = {
 };
 
 export type DiffDate = {
-	sec: number,
-	min: number;
-	hours: number,
-	days: number,
-}
+    sec: number;
+    min: number;
+    hours: number;
+    days: number;
+};
 
 export type StatsDashboard = {
-	me: UserStats;
-	global: GlobalStats;
-}
+    me: UserStats;
+    global: GlobalStats;
+};
 
 export type UserLeaderboard = {
     avatarPath: string;
@@ -31,5 +31,5 @@ export type UserLeaderboard = {
     id: number;
     isConnected: boolean;
     nickname: string;
-	nbGames: number;
-}
+    nbGames: number;
+};

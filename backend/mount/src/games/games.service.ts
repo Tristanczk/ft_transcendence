@@ -5,7 +5,12 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { updateGameDto } from './dto/update-game.dto';
-import { AchievType, GameExports, UserGame, dataAchievements } from './games.types';
+import {
+    AchievType,
+    GameExports,
+    UserGame,
+    dataAchievements,
+} from './games.types';
 import { DiffDate } from 'src/stats/stats.type';
 import { Games, User } from '@prisma/client';
 
@@ -253,158 +258,223 @@ export class GamesService {
         return formatedUser;
     }
 
-	async checkAchievements(game: Games) {
-		let achievement: string;
-		let achievNb: number;
-		let achievBool: boolean;
-		let achievementsA: string[] = []
-		let achievementsB: string[] = []
+    async checkAchievements(game: Games) {
+        let achievement: string;
+        let achievNb: number;
+        let achievBool: boolean;
+        let achievementsA: string[] = [];
+        let achievementsB: string[] = [];
         let playerA: User = null;
-		let playerB: User = null;
-		let gamesPlayerA: Games[] = [];
-		let gamesPlayerB: Games[] = [];
-        
-		try {
+        let playerB: User = null;
+        let gamesPlayerA: Games[] = [];
+        let gamesPlayerB: Games[] = [];
+
+        try {
             playerA = await this.prisma.user.findUnique({
                 where: { id: game.playerA },
             });
             playerB = await this.prisma.user.findUnique({
                 where: { id: game.playerB },
             });
-			gamesPlayerA = await this.getGamesPlayer(playerA.id, -1, true)
-			gamesPlayerB = await this.getGamesPlayer(playerB.id, -1, true)
-            
+            gamesPlayerA = await this.getGamesPlayer(playerA.id, -1, true);
+            gamesPlayerB = await this.getGamesPlayer(playerB.id, -1, true);
         } catch (error) {
             console.log(error);
-			return ;
+            return;
         }
 
-		//achievement ELO
-		achievement = this.achievementElo(playerA)
-		achievement && achievementsA.push(achievement)
-		achievement = this.achievementElo(playerB)
-		achievement && achievementsB.push(achievement)
+        //achievement ELO
+        achievement = this.achievementElo(playerA);
+        achievement && achievementsA.push(achievement);
+        achievement = this.achievementElo(playerB);
+        achievement && achievementsB.push(achievement);
 
-		//achievement score
-		achievNb = this.achievementScoreTakeAll(game)
-		achievNb === 1 && achievementsA.push('classic-boss')
-		achievNb === 2 && achievementsB.push('classic-boss')
+        //achievement score
+        achievNb = this.achievementScoreTakeAll(game);
+        achievNb === 1 && achievementsA.push('classic-boss');
+        achievNb === 2 && achievementsB.push('classic-boss');
 
-		//achievement time < 60sec
-		achievNb = this.achievementClassicTime(game)
-		achievNb === 1 && achievementsA.push('classic-win-time')
-		achievNb === 2 && achievementsB.push('classic-win-time')
+        //achievement time < 60sec
+        achievNb = this.achievementClassicTime(game);
+        achievNb === 1 && achievementsA.push('classic-win-time');
+        achievNb === 2 && achievementsB.push('classic-win-time');
 
-		//achievement Marathon
-		achievement = this.achievementMarathon(game)
-		achievement && achievementsA.push(achievement)
-		achievement && achievementsB.push(achievement)
+        //achievement Marathon
+        achievement = this.achievementMarathon(game);
+        achievement && achievementsA.push(achievement);
+        achievement && achievementsB.push(achievement);
 
-		//achievement based on games history
-		//played 1 game in classic mode
-		achievBool = this.achievementNbGames(gamesPlayerA, 0, playerA.id, 1, false);
-		achievBool && achievementsA.push('classic-1');
-		achievBool = this.achievementNbGames(gamesPlayerB, 0, playerB.id, 1, false);
-		achievBool && achievementsB.push('classic-1');
+        //achievement based on games history
+        //played 1 game in classic mode
+        achievBool = this.achievementNbGames(
+            gamesPlayerA,
+            0,
+            playerA.id,
+            1,
+            false,
+        );
+        achievBool && achievementsA.push('classic-1');
+        achievBool = this.achievementNbGames(
+            gamesPlayerB,
+            0,
+            playerB.id,
+            1,
+            false,
+        );
+        achievBool && achievementsB.push('classic-1');
 
-		//played 5 game in classic mode
-		achievBool = this.achievementNbGames(gamesPlayerA, 0, playerA.id, 5, false);
-		achievBool && achievementsA.push('classic-5');
-		achievBool = this.achievementNbGames(gamesPlayerB, 0, playerB.id, 5, false);
-		achievBool && achievementsB.push('classic-5');
+        //played 5 game in classic mode
+        achievBool = this.achievementNbGames(
+            gamesPlayerA,
+            0,
+            playerA.id,
+            5,
+            false,
+        );
+        achievBool && achievementsA.push('classic-5');
+        achievBool = this.achievementNbGames(
+            gamesPlayerB,
+            0,
+            playerB.id,
+            5,
+            false,
+        );
+        achievBool && achievementsB.push('classic-5');
 
-		//won 1 game in classic mode
-		achievBool = this.achievementNbGames(gamesPlayerA, 0, playerA.id, 1, true);
-		achievBool && achievementsA.push('classic-win-1');
-		achievBool = this.achievementNbGames(gamesPlayerB, 0, playerB.id, 1, true);
-		achievBool && achievementsB.push('classic-win-1');
+        //won 1 game in classic mode
+        achievBool = this.achievementNbGames(
+            gamesPlayerA,
+            0,
+            playerA.id,
+            1,
+            true,
+        );
+        achievBool && achievementsA.push('classic-win-1');
+        achievBool = this.achievementNbGames(
+            gamesPlayerB,
+            0,
+            playerB.id,
+            1,
+            true,
+        );
+        achievBool && achievementsB.push('classic-win-1');
 
-		//won 5 game in classic mode
-		achievBool = this.achievementNbGames(gamesPlayerA, 0, playerA.id, 5, true);
-		achievBool && achievementsA.push('classic-win-5');
-		achievBool = this.achievementNbGames(gamesPlayerB, 0, playerB.id, 5, true);
-		achievBool && achievementsB.push('classic-win-5');
+        //won 5 game in classic mode
+        achievBool = this.achievementNbGames(
+            gamesPlayerA,
+            0,
+            playerA.id,
+            5,
+            true,
+        );
+        achievBool && achievementsA.push('classic-win-5');
+        achievBool = this.achievementNbGames(
+            gamesPlayerB,
+            0,
+            playerB.id,
+            5,
+            true,
+        );
+        achievBool && achievementsB.push('classic-win-5');
 
-		try {
-			await this.saveAchievements(achievementsA, playerA.achievements, playerA.id)
-			await this.saveAchievements(achievementsB, playerB.achievements, playerB.id)
-		}
-		catch (error) {
-			return ;
-		}
-		return true;
+        try {
+            await this.saveAchievements(
+                achievementsA,
+                playerA.achievements,
+                playerA.id,
+            );
+            await this.saveAchievements(
+                achievementsB,
+                playerB.achievements,
+                playerB.id,
+            );
+        } catch (error) {
+            return;
+        }
+        return true;
     }
 
-	async saveAchievements(achievementsWon: string[], currAchiev: string[], idPlayer: number) {
-		const achievToSave: string[] = achievementsWon.filter((elem) => {
-			if (currAchiev.includes(elem) === false) return true;
-		})
-		currAchiev = currAchiev.concat(achievToSave);
-		try {
-			await this.prisma.user.update({where:{id: idPlayer}, data:{achievements: currAchiev}})
-		}
-		catch (error) {
-			throw error
-		}
-	}
+    async saveAchievements(
+        achievementsWon: string[],
+        currAchiev: string[],
+        idPlayer: number,
+    ) {
+        const achievToSave: string[] = achievementsWon.filter((elem) => {
+            if (currAchiev.includes(elem) === false) return true;
+        });
+        currAchiev = currAchiev.concat(achievToSave);
+        try {
+            await this.prisma.user.update({
+                where: { id: idPlayer },
+                data: { achievements: currAchiev },
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
 
-	achievementElo(player: User): string {
-		if (player.elo >= 1200)
-			return 'classic-1200'
-		else if (player.elo >= 1100)
-			return 'classic-1100'
-		return null;
-	}
+    achievementElo(player: User): string {
+        if (player.elo >= 1200) return 'classic-1200';
+        else if (player.elo >= 1100) return 'classic-1100';
+        return null;
+    }
 
-	achievementMarathon(game: Games): string {
-		if ((game.scoreA + game.scoreB) >= 30)
-			return 'classic-marathon'
-		return null;
-	}
+    achievementMarathon(game: Games): string {
+        if (game.scoreA + game.scoreB >= 30) return 'classic-marathon';
+        return null;
+    }
 
-	achievementScoreTakeAll(game: Games): number {
-		if (game.scoreA === 7 && game.scoreB === 0)
-			return 1
-		else if (game.scoreA === 0 && game.scoreB === 7)
-			return 2
-		return 0;
-	}
+    achievementScoreTakeAll(game: Games): number {
+        if (game.scoreA === 7 && game.scoreB === 0) return 1;
+        else if (game.scoreA === 0 && game.scoreB === 7) return 2;
+        return 0;
+    }
 
-	achievementClassicTime(game: Games): number {
-		const totalTime: number = this.computeDuration(game.createdAt, game.finishedAt)
-		if (totalTime > 60)
-			return 0;
-		if (game.won)
-			return 1
-		else if (!game.won)
-			return 2
-		return 0;
-	}
+    achievementClassicTime(game: Games): number {
+        const totalTime: number = this.computeDuration(
+            game.createdAt,
+            game.finishedAt,
+        );
+        if (totalTime > 60) return 0;
+        if (game.won) return 1;
+        else if (!game.won) return 2;
+        return 0;
+    }
 
-	//mode=-1: stats pour tous les modes
-	achievementNbGames(games: Games[], mode: number, idPlayer: number, nbToValidate: number, isWon: boolean): boolean {
-		let nb: number = 0;
-		games.forEach((elem) => {
-			if (isWon === true) {
-				if (elem.mode === mode && elem.won === true && elem.playerA === idPlayer)
-					nb++;
-				else if (elem.mode === mode && elem.won === false && elem.playerB === idPlayer)
-					nb++;
-			}
-			else {
-				if (elem.mode === mode)
-					nb++;
-				else if (mode === -1)
-					nb++;
-			}
-		})
-		if (nb >= nbToValidate) 
-			return true;
-		return false
-	}
+    //mode=-1: stats pour tous les modes
+    achievementNbGames(
+        games: Games[],
+        mode: number,
+        idPlayer: number,
+        nbToValidate: number,
+        isWon: boolean,
+    ): boolean {
+        let nb: number = 0;
+        games.forEach((elem) => {
+            if (isWon === true) {
+                if (
+                    elem.mode === mode &&
+                    elem.won === true &&
+                    elem.playerA === idPlayer
+                )
+                    nb++;
+                else if (
+                    elem.mode === mode &&
+                    elem.won === false &&
+                    elem.playerB === idPlayer
+                )
+                    nb++;
+            } else {
+                if (elem.mode === mode) nb++;
+                else if (mode === -1) nb++;
+            }
+        });
+        if (nb >= nbToValidate) return true;
+        return false;
+    }
 
-	//nbGames=-1 => all games
-	async getGamesPlayer(
+    //nbGames=-1 => all games
+    async getGamesPlayer(
         idUser: number,
         nbGames: number,
         sortAsc: boolean,
@@ -429,35 +499,35 @@ export class GamesService {
 
         let newGameList: Games[] = [];
         if (nbGames === -1) newGameList = gameList;
-		else if (gameList.length <= nbGames) newGameList = gameList;
+        else if (gameList.length <= nbGames) newGameList = gameList;
         else newGameList = gameList.slice(-nbGames);
 
         return newGameList;
     }
 
-	async getAchievementsUser(idUser: number): Promise<AchievType[]> {
-		try {
-			const user = await this.prisma.user.findUnique({where: {id: idUser}})
-			if (!user || user.achievements.length === 0)
-				return []
-			const achiev: AchievType[] = [];
-			user.achievements.forEach((elem) => {
-				const currAchiev: AchievType = dataAchievements.find((e) => e.id === elem)
-				if (currAchiev) {
-					const newElem: AchievType = {
-						id: elem,
-						title: currAchiev.title,
-						description: currAchiev.description
-					}
-					achiev.push(newElem);
-				}
-			});
-			return achiev;
-		}
-		catch (error)
-		{
-			throw error;
-		}
-	}
-
+    async getAchievementsUser(idUser: number): Promise<AchievType[]> {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: { id: idUser },
+            });
+            if (!user || user.achievements.length === 0) return [];
+            const achiev: AchievType[] = [];
+            user.achievements.forEach((elem) => {
+                const currAchiev: AchievType = dataAchievements.find(
+                    (e) => e.id === elem,
+                );
+                if (currAchiev) {
+                    const newElem: AchievType = {
+                        id: elem,
+                        title: currAchiev.title,
+                        description: currAchiev.description,
+                    };
+                    achiev.push(newElem);
+                }
+            });
+            return achiev;
+        } catch (error) {
+            throw error;
+        }
+    }
 }

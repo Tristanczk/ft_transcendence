@@ -11,20 +11,19 @@ interface ResponseLeaderboard {
     id: number;
     isConnected: boolean;
     nickname: string;
-	nbGames: number;
+    nbGames: number;
 }
 
 interface Props {
-	user: ResponseLeaderboard,
-	rank: number,
+    userView: ResponseLeaderboard;
+    rank: number;
 }
 
 const DashboardPage: React.FC = () => {
     const [leaderboard, setLeaderbord] = useState<ResponseLeaderboard[] | null>(
         null,
     );
-    const { user } = useUserContext();
-	let rank: number = 1;
+    let rank: number = 1;
 
     useEffect(() => {
         getLeaderboard();
@@ -51,10 +50,16 @@ const DashboardPage: React.FC = () => {
             <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                 <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
                     <article className="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-						<h1 className="text-5xl font-extrabold dark:text-white">Leaderboard</h1>
-                        {leaderboard.map((elem) => 
-							<ShowUserLeaderboard user={elem} rank={rank++} key={elem.id} />
-						)}
+                        <h1 className="text-5xl font-extrabold dark:text-white">
+                            Leaderboard
+                        </h1>
+                        {leaderboard.map((elem) => (
+                            <ShowUserLeaderboard
+                                userView={elem}
+                                rank={rank++}
+                                key={elem.id}
+                            />
+                        ))}
                     </article>
                 </div>
             </main>
@@ -64,26 +69,38 @@ const DashboardPage: React.FC = () => {
     );
 };
 
-function ShowUserLeaderboard({user, rank}: Props) {
+function ShowUserLeaderboard({ userView, rank }: Props) {
+    const { user } = useUserContext();
+    let classStyle: string =
+        'bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 flex items-center';
+    if (user && user.id === userView.id)
+        classStyle =
+            'bg-amber-100 dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 flex items-center';
     return (
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 flex items-center">
+        <div className={classStyle}>
             <span className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mr-4">
                 #{rank}
             </span>
             <div className="flex-shrink-0">
-                <ImageFriend userId={user.id} textImg={user.nickname} size={12} />
+                <ImageFriend
+                    userId={userView.id}
+                    textImg={userView.nickname}
+                    size={12}
+                />
             </div>
             <div className="ml-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white hover:underline">
-				<Link to={'/dashboard/' + user.id}>
-					{user.nickname}
-				</Link>
+                    <Link to={'/dashboard/' + userView.id}>
+                        {userView.nickname}
+                    </Link>
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Score : <span className="font-semibold">{user.elo}</span>
+                    Score :{' '}
+                    <span className="font-semibold">{userView.elo}</span>
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Games played : <span className="font-semibold">{user.nbGames}</span>
+                    Games played :{' '}
+                    <span className="font-semibold">{userView.nbGames}</span>
                 </p>
             </div>
         </div>

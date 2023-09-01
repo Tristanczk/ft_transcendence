@@ -4,7 +4,7 @@ import { StatsService } from './stats.service';
 import { GamesService } from 'src/games/games.service';
 
 @Module({
-  controllers: [StatsController],
-  providers: [StatsService, GamesService]
+    controllers: [StatsController],
+    providers: [StatsService, GamesService],
 })
 export class StatsModule {}

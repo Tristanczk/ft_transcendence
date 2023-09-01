@@ -1,6 +1,6 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty } from 'class-validator';
 
 export class GetFriendListDto {
-	@IsNotEmpty()
-	nick: string;
+    @IsNotEmpty()
+    nick: string;
 }

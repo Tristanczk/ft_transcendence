@@ -31,7 +31,7 @@ function HistoryFive({ user }: PresentationUserProps) {
                 },
             );
             setGames(response.data);
-            console.log(response.data);
+            // console.log(response.data);
             return response.data;
         } catch (error) {
             console.error(error);
@@ -87,30 +87,26 @@ function HistoryFive({ user }: PresentationUserProps) {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-gray-900 truncate dark:text-white hover:font-bold">
-                                                <Link
-                                                    to={
-                                                        '/dashboard/' +
-                                                        game.playerA?.id
-                                                    }
-                                                >
-                                                    {game.playerA?.nickname}
-                                                
-                                            {' '}
-                                            ({game.playerA?.eloStart})
-											</Link>
+                                            <Link
+                                                to={
+                                                    '/dashboard/' +
+                                                    game.playerA?.id
+                                                }
+                                            >
+                                                {game.playerA?.nickname} (
+                                                {game.playerA?.eloStart})
+                                            </Link>
                                         </p>
                                         <p className="text-sm font-medium text-gray-900 truncate dark:text-white hover:font-bold">
-                                                <Link
-                                                    to={
-                                                        '/dashboard/' +
-                                                        game.playerB?.id
-                                                    }
-                                                >
-                                                    {game.playerB?.nickname}
-                                                
-                                            {' '}
-                                            ({game.playerB?.eloStart})
-											</Link>
+                                            <Link
+                                                to={
+                                                    '/dashboard/' +
+                                                    game.playerB?.id
+                                                }
+                                            >
+                                                {game.playerB?.nickname} (
+                                                {game.playerB?.eloStart})
+                                            </Link>
                                         </p>
                                     </div>
                                     <div className="flex-1 min-w-0 items-center justify-center text-base font-semibold text-gray-900 dark:text-white">

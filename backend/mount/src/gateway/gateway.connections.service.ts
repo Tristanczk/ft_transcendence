@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 interface Props {
     id: number;
@@ -9,10 +9,10 @@ interface Props {
 
 @Injectable()
 export class GatewayConnectionsService {
-	constructor(private prisma: PrismaService) {}
-	array: Props[] = [];
+    constructor(private prisma: PrismaService) {}
+    array: Props[] = [];
 
-	async userArrive(userId: number) {
+    async userArrive(userId: number) {
         await this.prisma.user.update({
             where: { id: userId },
             data: { isConnected: true },

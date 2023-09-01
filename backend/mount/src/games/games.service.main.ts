@@ -40,6 +40,4 @@ export interface GamesServiceMain {
 @Injectable()
 export class GamesServiceMainImpl {
     constructor(private prisma: PrismaService) {}
-
-  
 }

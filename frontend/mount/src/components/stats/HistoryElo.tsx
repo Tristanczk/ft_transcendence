@@ -9,40 +9,42 @@ interface PresentationUserProps {
 
 function HistoryElo({ user }: PresentationUserProps) {
     const [data, setGraph] = useState<Serie[] | null>(null);
-	const [nbGame, setnbGames] = useState<number>(0)
+    const [nbGame, setnbGames] = useState<number>(0);
 
     useEffect(() => {
         if (user) getStats();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-	useEffect(() => {
+    useEffect(() => {
         if (user) getStats();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
-	async function getStats() {
-		try {
-			const response = await axios.get(
-				`http://localhost:3333/stats/graph/${user?.id}`,
-				{
-					withCredentials: true,
-				},
-			);
-			setGraph(response.data);
-			if (response.data) setnbGames(response.data[0].data.length)
-			return response.data;
-		} catch (error) {
-			console.error(error);
-		}
-	}
+    async function getStats() {
+        try {
+            const response = await axios.get(
+                `http://localhost:3333/stats/graph/${user?.id}`,
+                {
+                    withCredentials: true,
+                },
+            );
+            setGraph(response.data);
+            if (response.data) setnbGames(response.data[0].data.length);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return data && data.length > 0 ? (
         <div className="w-full  p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
-                    <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
-                        Graph History
-                    </h5>
-                </div>
-			<div className="parent-container">
+                <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
+                    Graph History
+                </h5>
+            </div>
+            <div className="parent-container">
                 <div className="graph-container" style={{ height: '300px' }}>
                     <ResponsiveLine
                         data={data}

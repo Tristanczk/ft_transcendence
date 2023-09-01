@@ -11,20 +11,20 @@ interface ImgAchievProps {
 }
 
 type AchievType = {
-	id: string,
-	title: string,
-	description: string,
-}
+    id: string;
+    title: string;
+    description: string;
+};
 
 function ShowAchievements({ user }: PresentationUserProps) {
-	const [dataAchiev, setAchiev] = useState<AchievType[] | null>(null);
+    const [dataAchiev, setAchiev] = useState<AchievType[] | null>(null);
 
-	useEffect(() => {
+    useEffect(() => {
         if (user) getGamesList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-	useEffect(() => {
+    useEffect(() => {
         if (user) getGamesList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
@@ -90,9 +90,7 @@ function ShowImageAchievement({ achievement }: ImgAchievProps) {
                         </h3>
                     </div>
                     <div className="px-3 py-2">
-                        <p>
-						{achievement.description}
-                        </p>
+                        <p>{achievement.description}</p>
                     </div>
                 </div>
             </div>

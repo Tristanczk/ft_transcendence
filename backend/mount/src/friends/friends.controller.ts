@@ -16,24 +16,31 @@ import { GetAllUsersResponseDto } from '../friends/dto/get-all-users.dto';
 export class FriendsController {
     constructor(private friendService: FriendsService) {}
 
-	@UseGuards(JwtGuard)
+    @UseGuards(JwtGuard)
     @Get('me')
-    getMyFriends(@GetUser('id') userId: number): Promise<GetAllUsersResponseDto[]> {
+    getMyFriends(
+        @GetUser('id') userId: number,
+    ): Promise<GetAllUsersResponseDto[]> {
         return this.friendService.getAllFriends(userId);
     }
 
-	@Get(':id')
-    getFriends(@Param('id', ParseIntPipe) userId: number): Promise<GetAllUsersResponseDto[]> {
+    @Get(':id')
+    getFriends(
+        @Param('id', ParseIntPipe) userId: number,
+    ): Promise<GetAllUsersResponseDto[]> {
         return this.friendService.getAllFriends(userId);
     }
 
-	@UseGuards(JwtGuard)
-	@Get('select/:nick')
-	getListFriendChoice(@GetUser('id') userId: number, @Param('nick') nick: string) {
-		return this.friendService.getListFriendChoice(userId, nick);
-	}
+    @UseGuards(JwtGuard)
+    @Get('select/:nick')
+    getListFriendChoice(
+        @GetUser('id') userId: number,
+        @Param('nick') nick: string,
+    ) {
+        return this.friendService.getListFriendChoice(userId, nick);
+    }
 
-	@UseGuards(JwtGuard)
+    @UseGuards(JwtGuard)
     @Post(':id')
     postFriend(
         @GetUser('id') userId: number,
@@ -42,7 +49,7 @@ export class FriendsController {
         return this.friendService.addNewFriend(userId, userToAdd);
     }
 
-	@UseGuards(JwtGuard)
+    @UseGuards(JwtGuard)
     @Delete(':id')
     deleteFriend(
         @GetUser('id') userId: number,

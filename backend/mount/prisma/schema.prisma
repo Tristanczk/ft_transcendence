@@ -12,24 +12,24 @@ model User {
     id        Int      @id @default(autoincrement())
     createdAt DateTime @default(now())
 
-    login      	String  @unique
-    nickname   	String  @unique
-    email      	String  @unique
-    hash      	String?
-    avatarPath	String
-	friends		String	@default("[]")
+    login      String  @unique
+    nickname   String  @unique
+    email      String  @unique
+    hash       String?
+    avatarPath String
+    friends    String  @default("[]")
 
     elo     Int
     loginNb Int
 
-	achievements String[] @default([])
+    achievements String[] @default([])
 
     twoFactorAuthentication Boolean @default(false)
     isConnected             Boolean @default(false)
     twoFactorSecret         String?
 
-	gamesasPlayerA	Games[] @relation("PlayerAGames")
-	gamesasPlayerB	Games[] @relation("PlayerBGames")
+    gamesasPlayerA Games[] @relation("PlayerAGames")
+    gamesasPlayerB Games[] @relation("PlayerBGames")
 }
 
 model Games {
@@ -40,14 +40,14 @@ model Games {
     won        Boolean
     scoreA     Int
     scoreB     Int
-	mode	   Int
-	varEloA	   Int
-	varEloB	   Int
-	initEloA   Int
-	initEloB   Int
+    mode       Int
+    varEloA    Int
+    varEloB    Int
+    initEloA   Int
+    initEloB   Int
 
-	playerA    	Int
-	UserA		User @relation("PlayerAGames", fields: [playerA], references: [id])
-	playerB    	Int
-	UserB		User @relation("PlayerBGames", fields: [playerB], references: [id])
+    playerA Int
+    UserA   User @relation("PlayerAGames", fields: [playerA], references: [id])
+    playerB Int
+    UserB   User @relation("PlayerBGames", fields: [playerB], references: [id])
 }

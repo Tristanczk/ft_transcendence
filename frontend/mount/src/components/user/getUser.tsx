@@ -8,7 +8,7 @@ function GetUser() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                console.log('try');
+                // console.log('try');
                 const response = await axios.get(
                     'http://localhost:3333/users/me',
                     {

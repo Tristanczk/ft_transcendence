@@ -1,7 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GamesService } from 'src/games/games.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { DiffDate, GlobalStats, UserLeaderboard, UserStats } from './stats.type';
+import {
+    DiffDate,
+    GlobalStats,
+    UserLeaderboard,
+    UserStats,
+} from './stats.type';
 import { GameExtractedDB } from 'src/games/games.types';
 import { Games, User } from '@prisma/client';
 import { LeaderbordResponseDto } from './dto/leaderbord-response.dto';
@@ -156,36 +161,36 @@ export class StatsService {
         return dataSerie;
     }
 
-	async getLeaderboard(): Promise<UserLeaderboard[]> {
-		try {
-			const leaders = await this.prisma.user.findMany({
-				orderBy: {
-					elo: 'desc'
-				},
-				take: 10,
-				include: {
-					gamesasPlayerA: true,
-					gamesasPlayerB: true,
-				},
-			})
-			let leaderboard: UserLeaderboard[] = [];
-			leaders.forEach((user) => {
-				const newElem: UserLeaderboard = {
-					id: user.id,
-					avatarPath: user.avatarPath,
-					createdAt: user.createdAt,
-					elo: user.elo,
-					isConnected: user.isConnected,
-					nickname: user.nickname,
-					nbGames: user.gamesasPlayerA.length + user.gamesasPlayerB.length,
-				}
-				leaderboard.push(newElem)
-			})
+    async getLeaderboard(): Promise<UserLeaderboard[]> {
+        try {
+            const leaders = await this.prisma.user.findMany({
+                orderBy: {
+                    elo: 'desc',
+                },
+                take: 10,
+                include: {
+                    gamesasPlayerA: true,
+                    gamesasPlayerB: true,
+                },
+            });
+            let leaderboard: UserLeaderboard[] = [];
+            leaders.forEach((user) => {
+                const newElem: UserLeaderboard = {
+                    id: user.id,
+                    avatarPath: user.avatarPath,
+                    createdAt: user.createdAt,
+                    elo: user.elo,
+                    isConnected: user.isConnected,
+                    nickname: user.nickname,
+                    nbGames:
+                        user.gamesasPlayerA.length + user.gamesasPlayerB.length,
+                };
+                leaderboard.push(newElem);
+            });
 
-			return leaderboard;
-		}
-		catch (error) {
-			throw error;
-		}
-	}
+            return leaderboard;
+        } catch (error) {
+            throw error;
+        }
+    }
 }

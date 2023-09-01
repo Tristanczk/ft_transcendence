@@ -52,12 +52,14 @@ function ShowFriendList({
                                     <ImageFriend
                                         userId={friend.id}
                                         textImg={friend.nickname}
-										size={8}
+                                        size={8}
                                     />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-900 truncate dark:text-white hover:font-bold">
-                                        <Link to={"/dashboard/" + friend.id} >{friend.nickname}</Link>
+                                        <Link to={'/dashboard/' + friend.id}>
+                                            {friend.nickname}
+                                        </Link>
                                         <ShowIsOnline
                                             userId={friend.id}
                                             initStatus={friend.isConnected}
@@ -92,19 +94,17 @@ function DeleteButton({
 }: ButtonProps) {
     const { user } = useUserContext();
 
-    return (
-        user && currUserId === user.id ? (
-            <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                <button
-                    className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                    onClick={(event) =>
-                        handleDeleteFriendClick(event, friendId)
-                    }
-                >
-                    Delete friend
-                </button>
-            </div>
-        ) : (<></>)
+    return user && currUserId === user.id ? (
+        <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+            <button
+                className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                onClick={(event) => handleDeleteFriendClick(event, friendId)}
+            >
+                Delete friend
+            </button>
+        </div>
+    ) : (
+        <></>
     );
 }
 

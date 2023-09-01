@@ -3,7 +3,7 @@ import { GamesController } from './games.controller';
 import { GamesService } from './games.service';
 
 @Module({
-  providers: [GamesService],
-  controllers: [GamesController],
+    providers: [GamesService],
+    controllers: [GamesController],
 })
 export class GamesModule {}

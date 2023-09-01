@@ -18,33 +18,36 @@ import BattlePage from './pages/BattlePage';
 import ClassicPage from './pages/ClassicPage';
 import { UserProvider } from './context/UserContext';
 import UserPage from './pages/UserPage';
-import LeaderboardPage from './pages/LeaderboardPage'
+import LeaderboardPage from './pages/LeaderboardPage';
 
 const App: React.FC = () => {
     return (
         <WebsocketProvider value={socket}>
             <UserProvider>
-				<TrackingOnline />
-				<BrowserRouter>
-					<NavBar />
-					<Routes>
-						<Route path="/" Component={HomePage} />
-						<Route path="/battle" Component={BattlePage} />
-						<Route path="/classic" Component={ClassicPage} />
-						<Route path="/dashboard" Component={DashboardPage} />
-						<Route path="/dashboard/:idUserToView" Component={UserPage} />
-						<Route path="/leaderboad" Component={LeaderboardPage} />
-						<Route path="/chat" Component={ChatPage} />
-						<Route path="/signin" Component={SignInPage} />
-						<Route path="/signup" Component={SignUpPage} />
-						<Route path="/signin42" Component={SignInPage42} />
-						<Route path="/signout" Component={SignOutPage} />
-						<Route path="/settings" Component={SettingsPage} />
-						<Route path="/signin/result" Component={SignInResult} />
-						<Route path="*" Component={Page404} />
-					</Routes>
-				</BrowserRouter>
-			</UserProvider>
+                <TrackingOnline />
+                <BrowserRouter>
+                    <NavBar />
+                    <Routes>
+                        <Route path="/" Component={HomePage} />
+                        <Route path="/battle" Component={BattlePage} />
+                        <Route path="/classic" Component={ClassicPage} />
+                        <Route path="/dashboard" Component={DashboardPage} />
+                        <Route
+                            path="/dashboard/:idUserToView"
+                            Component={UserPage}
+                        />
+                        <Route path="/leaderboad" Component={LeaderboardPage} />
+                        <Route path="/chat" Component={ChatPage} />
+                        <Route path="/signin" Component={SignInPage} />
+                        <Route path="/signup" Component={SignUpPage} />
+                        <Route path="/signin42" Component={SignInPage42} />
+                        <Route path="/signout" Component={SignOutPage} />
+                        <Route path="/settings" Component={SettingsPage} />
+                        <Route path="/signin/result" Component={SignInResult} />
+                        <Route path="*" Component={Page404} />
+                    </Routes>
+                </BrowserRouter>
+            </UserProvider>
         </WebsocketProvider>
     );
 };

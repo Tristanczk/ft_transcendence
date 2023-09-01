@@ -18,11 +18,11 @@ export class ReturnGamesListDto {
     @Exclude()
     twoFactorAuthentication: boolean;
     isConnected: boolean;
-	@Exclude()
-	twoFactorSecret: string;
-	@Exclude()
-	friends: string;
-	isYourFriend?: boolean;
+    @Exclude()
+    twoFactorSecret: string;
+    @Exclude()
+    friends: string;
+    isYourFriend?: boolean;
 
     constructor(partial: Partial<ReturnGamesListDto>) {
         Object.assign(this, partial);

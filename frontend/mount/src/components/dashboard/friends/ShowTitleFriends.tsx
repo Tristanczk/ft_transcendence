@@ -19,7 +19,9 @@ function ShowTitleFriends({ friendsList, idUser }: Props) {
                             ? `${idUser === user?.id ? `You have ` : ``} ${
                                   friendsList.length
                               } friend${friendsList.length > 1 ? 's' : ''}`
-                            : (idUser === user?.id ? `You don't have any friends yet` : `No friends`)}
+                            : idUser === user?.id
+                            ? `You don't have any friends yet`
+                            : `No friends`}
                     </small>
                 </h1>
             </div>

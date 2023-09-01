@@ -22,13 +22,15 @@ function Friends({ currUser }: FriendsProps) {
             getMyFriends();
         };
         fetchFriends();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-	useEffect(() => {
+    useEffect(() => {
         const fetchFriends = async () => {
             getMyFriends();
         };
         fetchFriends();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currUser]);
 
     const getMyFriends = async () => {
@@ -82,11 +84,14 @@ function Friends({ currUser }: FriendsProps) {
     return (
         <>
             <div>
-                <ShowTitleFriends friendsList={friendsList} idUser={currUser.id} />
+                <ShowTitleFriends
+                    friendsList={friendsList}
+                    idUser={currUser.id}
+                />
                 <ShowFriendList
                     friendsList={friendsList}
                     handleDeleteFriendClick={handleDeleteFriendClick}
-					currUserId={currUser.id}
+                    currUserId={currUser.id}
                 />
                 {user && user.id === currUser.id && (
                     <div className="mb-6">

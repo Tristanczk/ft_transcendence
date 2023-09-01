@@ -56,9 +56,9 @@ export class GatewayService implements OnModuleInit {
 
     @SubscribeMessage('ping')
     async handlePing(@MessageBody() id: number) {
-		// console.log('get ping=' + id)
-		if (id === -1) return ;
-		const l = this.array.findIndex((a) => a.id === id);
+        // console.log('get ping=' + id)
+        if (id === -1) return;
+        const l = this.array.findIndex((a) => a.id === id);
         if (l !== -1) {
             this.array[l].nb++;
             this.array[l].date = Date.now();
@@ -78,6 +78,6 @@ export class GatewayService implements OnModuleInit {
                 }
             }
         });
-		this.array = this.array.filter((arr) => arr.id !== -1)
+        this.array = this.array.filter((arr) => arr.id !== -1);
     }
 }

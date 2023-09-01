@@ -8,10 +8,10 @@ interface Prop {
 }
 
 export const UserContext = React.createContext<Prop>({
-	user: null,
-	loginUser: () => {},
-	logoutUser: () => {},
-  });
+    user: null,
+    loginUser: () => {},
+    logoutUser: () => {},
+});
 
 export const UserProvider = ({ children }: any) => {
     const [user, setUser] = useState<User | null>(null);
