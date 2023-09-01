@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { NAVBAR_HEIGHT } from '../constants';
 import { useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
+import { useUserContext } from '../context/UserContext';
 
 interface Inputs {
     username: string;
@@ -16,6 +17,7 @@ interface Inputs {
 const SignUpPage: React.FC = () => {
     const [error, setError] = useState<string>();
     const navigate = useNavigate();
+    const { loginUser } = useUserContext();
 
     const {
         handleSubmit,
@@ -28,7 +30,7 @@ const SignUpPage: React.FC = () => {
 
     const onSubmit = async (data: Inputs) => {
         try {
-            await axios.post(
+            const response = await axios.post(
                 'http://localhost:3333/auth/signup',
                 {
                     nickname: data.username,
@@ -37,6 +39,7 @@ const SignUpPage: React.FC = () => {
                 },
                 { withCredentials: true },
             );
+            loginUser(response.data.user);
             navigate('/');
         } catch (error: any) {
             setError(error.response.data);

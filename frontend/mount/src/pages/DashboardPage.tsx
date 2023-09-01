@@ -6,6 +6,7 @@ import { useUserContext } from '../context/UserContext';
 
 const DashboardPage: React.FC = () => {
     const { user } = useUserContext();
+    console.log('user', user);
 
     return user ? (
         <>

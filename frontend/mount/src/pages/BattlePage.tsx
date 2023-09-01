@@ -17,6 +17,7 @@ const PADDLE_WIDTH = 0.05;
 const DEFAULT_PADDLE_SIZE = 0.2;
 const HIT_PADDLE = 1 - PADDLE_MARGIN - PADDLE_WIDTH - BALL_SIZE;
 const HIT_ANGLE_FACTOR = Math.PI * 0.3;
+const HIT_LEEWAY = 0.6;
 const PADDLE_SPEED = 0.005;
 const BALL_SPEED_INCREMENT = 0.00007;
 
@@ -56,14 +57,14 @@ class Player {
 
     hit(ballPos: p5Types.Vector): number | null {
         const angleDiff = angleDist(this.angle, ballPos.heading());
-        const limit = this.paddleSize + BALL_SIZE / 2;
+        const limit = this.paddleSize + BALL_SIZE * HIT_LEEWAY;
         return Math.abs(angleDiff) <= limit ? angleDiff / limit : null;
     }
 
     private drawPaddle(
         p5: p5Types,
-        innerDiameter: number,
-        outerDiameter: number,
+        innerRadius: number,
+        outerRadius: number,
     ): void {
         p5.fill('black');
         p5.beginShape();
@@ -73,16 +74,10 @@ class Player {
                 this.angle + (i / ARC_VERTICES - 0.5) * this.paddleSize * 2,
         );
         for (const angle of angles) {
-            p5.vertex(
-                (p5.cos(angle) * innerDiameter) / 2,
-                (p5.sin(angle) * innerDiameter) / 2,
-            );
+            p5.vertex(p5.cos(angle) * innerRadius, p5.sin(angle) * innerRadius);
         }
         for (const angle of angles.reverse()) {
-            p5.vertex(
-                (p5.cos(angle) * outerDiameter) / 2,
-                (p5.sin(angle) * outerDiameter) / 2,
-            );
+            p5.vertex(p5.cos(angle) * outerRadius, p5.sin(angle) * outerRadius);
         }
         p5.endShape(p5.CLOSE);
     }
@@ -93,6 +88,7 @@ class Player {
         angle: number,
         arenaSize: number,
     ) {
+        p5.fill(this.color);
         p5.circle(
             p5.cos(angle) * middleRadius,
             p5.sin(angle) * middleRadius,
@@ -105,23 +101,29 @@ class Player {
         middleRadius: number,
         arenaSize: number,
     ): void {
-        p5.fill(this.color);
         if (this.lives === 1) {
             this.drawLife(p5, middleRadius, this.angle, arenaSize);
-            return;
-        }
-        const startDot = this.angle - DOT_SHIFT * this.paddleSize;
-        const angleInc = (2 * DOT_SHIFT * this.paddleSize) / (this.lives - 1);
-        for (let i = 0; i < this.lives; ++i) {
-            this.drawLife(p5, middleRadius, startDot + i * angleInc, arenaSize);
+        } else {
+            const startDot = this.angle - DOT_SHIFT * this.paddleSize;
+            const angleInc =
+                (2 * DOT_SHIFT * this.paddleSize) / (this.lives - 1);
+            for (let i = 0; i < this.lives; ++i) {
+                this.drawLife(
+                    p5,
+                    middleRadius,
+                    startDot + i * angleInc,
+                    arenaSize,
+                );
+            }
         }
     }
 
     draw(p5: p5Types, arenaSize: number): void {
-        const innerDiameter = arenaSize * (1 - PADDLE_MARGIN - PADDLE_WIDTH);
-        const outerDiameter = arenaSize * (1 - PADDLE_MARGIN);
-        const middleRadius = (innerDiameter + outerDiameter) / 4;
-        this.drawPaddle(p5, innerDiameter, outerDiameter);
+        const innerRadius =
+            (arenaSize * (1 - PADDLE_MARGIN - PADDLE_WIDTH)) / 2;
+        const outerRadius = (arenaSize * (1 - PADDLE_MARGIN)) / 2;
+        const middleRadius = (innerRadius + outerRadius) / 2;
+        this.drawPaddle(p5, innerRadius, outerRadius);
         this.drawLives(p5, middleRadius, arenaSize);
     }
 }
@@ -268,7 +270,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     let ball: Ball;
     let bgImage: p5Types.Image;
 
-    const resize = (p5: p5Types) => {
+    const windowResized = (p5: p5Types) => {
         p5.resizeCanvas(p5.windowWidth, p5.windowHeight - NAVBAR_HEIGHT);
         arenaSize = Math.min(
             p5.width - CANVAS_MARGIN,
@@ -279,13 +281,13 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
 
     const preload = (p5: p5Types) => {
         bgImage = p5.loadImage(
-            process.env.PUBLIC_URL + '/battle-background.webp',
+            process.env.PUBLIC_URL + '/game-background.webp',
         );
     };
 
     const setup = (p5: p5Types, canvasParentRef: Element) => {
         p5.createCanvas(0, 0).parent(canvasParentRef);
-        resize(p5);
+        windowResized(p5);
         p5.rectMode(p5.CENTER);
         p5.noStroke();
         ball = new Ball(p5, ballSpeedStart);
@@ -311,16 +313,20 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
             centerDist >= HIT_PADDLE &&
             centerDist <= 1 - PADDLE_MARGIN - PADDLE_WIDTH / 2
         ) {
+            let closestHit: number | null = null;
             for (const player of players) {
                 const hit = player.hit(ball.pos);
-                if (hit !== null) {
-                    ball.bounce(hit);
-                    currentPlayer = getRandomPlayer(
-                        players.length,
-                        currentPlayer,
-                    );
-                    break;
+                if (
+                    hit !== null &&
+                    (closestHit === null ||
+                        Math.abs(hit) < Math.abs(closestHit))
+                ) {
+                    closestHit = hit;
                 }
+            }
+            if (closestHit !== null) {
+                ball.bounce(closestHit);
+                currentPlayer = getRandomPlayer(players.length, currentPlayer);
             }
         }
         drawRepeatingBackground(p5, bgImage);
@@ -342,7 +348,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
             preload={preload}
             setup={setup}
             draw={draw}
-            windowResized={resize}
+            windowResized={windowResized}
         />
     );
 };
@@ -354,7 +360,7 @@ const BattlePage: React.FC = () => (
             height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
         }}
     >
-        <BattleGame numPlayers={6} />
+        <BattleGame numPlayers={3} />
     </div>
 );
 

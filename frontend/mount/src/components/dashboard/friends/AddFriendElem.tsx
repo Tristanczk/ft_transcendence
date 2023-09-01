@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import ReturnAddFriend from './ReturnAddFriend';
 import { UserSimplified } from '../../../types';
 import OutsideClickHandler from 'react-outside-click-handler';
+=======
+import { useEffect, useState } from 'react';
+import ReturnAddFriend from './ReturnAddFriend';
+import { UserSimplified } from '../../../types';
+import { useAuthAxios } from '../../../context/AuthAxiosContext';
+>>>>>>> main
 
 interface Props {
     ButtonAddFriend: any;
@@ -21,6 +28,7 @@ function AddFriendElem({
     const [possibleFriends, setPossibleFriends] = useState<
         UserSimplified[] | null
     >(null);
+    const authAxios = useAuthAxios();
 
     async function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
         setNick(e.target.value);
@@ -30,7 +38,7 @@ function AddFriendElem({
     async function getPossibleFriendsList(nickname: string) {
         if (nickname.length >= 1) {
             try {
-                const response = await axios.get(
+                const response = await authAxios.get(
                     `http://localhost:3333/friends/select/${nickname}`,
                     { withCredentials: true },
                 );

@@ -6,11 +6,11 @@ function TrackingOnline() {
     const socket = useContext(WebsocketContext);
     const { user } = useUserContext();
 
-	let userId: number = -1;
-	if (user) userId = user.id;
+    let userId = -1;
+    if (user) userId = user.id;
 
     const userObj = {
-        id:userId,
+        id: userId,
         idConnection: socket.id,
     };
 
@@ -26,7 +26,7 @@ function TrackingOnline() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId]);
 
-    return <div></div>;
+    return <></>;
 }
 
 export default TrackingOnline;

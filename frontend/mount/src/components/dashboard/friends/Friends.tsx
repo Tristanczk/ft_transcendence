@@ -1,10 +1,13 @@
 import { User, UserSimplified } from '../../../types';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import ShowFriendList from './ShowFriendList';
 import ShowTitleFriends from './ShowTitleFriends';
 import AddFriendElem from './AddFriendElem';
+<<<<<<< HEAD
 import { useUserContext } from '../../../context/UserContext';
+=======
+import { useAuthAxios } from '../../../context/AuthAxiosContext';
+>>>>>>> main
 
 interface FriendsProps {
     currUser: User;
@@ -15,7 +18,11 @@ function Friends({ currUser }: FriendsProps) {
         null,
     );
     const [change, setChange] = useState<boolean>(false);
+<<<<<<< HEAD
     const { user } = useUserContext();
+=======
+    const authAxios = useAuthAxios();
+>>>>>>> main
 
     useEffect(() => {
         const fetchFriends = async () => {
@@ -36,8 +43,13 @@ function Friends({ currUser }: FriendsProps) {
     const getMyFriends = async () => {
         // import user friends list
         try {
+<<<<<<< HEAD
             const response = await axios.get(
                 `http://localhost:3333/friends/${currUser.id}`,
+=======
+            const response = await authAxios.get(
+                'http://localhost:3333/friends/me',
+>>>>>>> main
                 { withCredentials: true },
             );
             setFriendsList(response.data);
@@ -52,7 +64,7 @@ function Friends({ currUser }: FriendsProps) {
         if (idSelected === -1) return;
         if (idSelected !== currUser.id) {
             try {
-                await axios.post(
+                await authAxios.post(
                     `http://localhost:3333/friends/${idSelected}`,
                     { id: idSelected },
                     { withCredentials: true },
@@ -71,9 +83,19 @@ function Friends({ currUser }: FriendsProps) {
         if (!idToDelete) return;
         // console.log('try to delete')
         try {
+<<<<<<< HEAD
             await axios.delete(`http://localhost:3333/friends/${idToDelete}`, {
                 withCredentials: true,
             });
+=======
+            await authAxios.delete(
+                `http://localhost:3333/friends/${idToDelete}`,
+                {
+                    withCredentials: true,
+                },
+            );
+            // console.log(response.data);
+>>>>>>> main
         } catch (error) {
             console.error(error);
         }
@@ -82,6 +104,7 @@ function Friends({ currUser }: FriendsProps) {
     };
 
     return (
+<<<<<<< HEAD
         <>
             <div>
                 <ShowTitleFriends
@@ -103,8 +126,23 @@ function Friends({ currUser }: FriendsProps) {
                         />
                     </div>
                 )}
+=======
+        <div>
+            <ShowTitleFriends friendsList={friendsList} />
+            <ShowFriendList
+                friendsList={friendsList}
+                handleDeleteFriendClick={handleDeleteFriendClick}
+            />
+            <div className="mb-6">
+                <AddFriendElem
+                    ButtonAddFriend={handleClickAddFriend}
+                    ButtonDeleteFriend={handleDeleteFriendClick}
+                    change={change}
+                    setChange={setChange}
+                />
+>>>>>>> main
             </div>
-        </>
+        </div>
     );
 }
 

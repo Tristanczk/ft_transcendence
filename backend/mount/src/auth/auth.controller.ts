@@ -13,8 +13,9 @@ import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { SignupDto, SigninDto, TwoFactorCodeDto } from './dto';
+import { JwtGuard, JwtRefreshGuard } from './guard';
 import { GetUser } from './decorator';
-import { JwtGuard } from './guard';
+import { User } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -48,17 +49,26 @@ export class AuthController {
 
     @UseGuards(JwtGuard)
     @Get('signout')
-    signout(@Res() res: Response, @GetUser('id') userId: number) {
-        if (this.authService.signout(res, userId)) res.send('Successfully signed out!');
-        else res.status(500).send('Internal server error');
+    signout(@GetUser('id') userId: number, @Res() res: Response) {
+        this.authService
+            .signout(userId, res)
+            .then(() => {
+                res.send('Successfully signed out!');
+            })
+            .catch((error) => {
+                res.status(500).send('Internal server error');
+            });
     }
 
     @Post('signup')
     signup(@Body() dto: SignupDto, @Res() res: Response) {
         this.authService
             .signup(dto, res)
-            .then(() => {
-                res.send('Successfully signed up!');
+            .then((user) => {
+                res.json({
+                    message: 'Two-Factor authentication required',
+                    user,
+                });
             })
             .catch((error) => {
                 res.status(401).send(error.message);
@@ -88,11 +98,30 @@ export class AuthController {
     }
 
     @Post('authenticate-2fa')
-    async enable2faPost(@Body() dto: TwoFactorCodeDto, @Res() res: Response) {
+    async authenticate2fa(@Body() dto: TwoFactorCodeDto, @Res() res: Response) {
         this.authService
             .authenticateTwoFactor(dto.nickname, dto.code, res)
-            .then(() => {
-                res.send('Two-Factor authentification successful');
+            .then((user) => {
+                res.json({
+                    message: 'Two-Factor authentification successful',
+                    user,
+                });
+            })
+            .catch((error: ForbiddenException) => {
+                res.status(401).send(error.message);
+            });
+    }
+
+    @UseGuards(JwtRefreshGuard)
+    @Get('refresh')
+    refresh(@GetUser() user: User, @Res() res: Response) {
+        this.authService
+            .refreshTokens(user, res)
+            .then((user) => {
+                res.json({
+                    message: 'Successfully refreshed token!',
+                    user,
+                });
             })
             .catch((error) => {
                 res.status(401).send(error.message);

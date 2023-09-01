@@ -9,18 +9,16 @@ datasource db {
 }
 
 model User {
-    id        Int      @id @default(autoincrement())
-    createdAt DateTime @default(now())
-
-    login      String  @unique
-    nickname   String  @unique
-    email      String  @unique
+    id         Int      @id @default(autoincrement())
+    createdAt  DateTime @default(now())
+    login      String   @unique
+    nickname   String   @unique
+    email      String   @unique
     hash       String?
     avatarPath String
-    friends    String  @default("[]")
-
-    elo     Int
-    loginNb Int
+    friends    String   @default("[]")
+    elo        Int
+    loginNb    Int
 
     achievements String[] @default([])
 
@@ -30,6 +28,8 @@ model User {
 
     gamesasPlayerA Games[] @relation("PlayerAGames")
     gamesasPlayerB Games[] @relation("PlayerBGames")
+
+    currentHashedRefreshToken String?
 }
 
 model Games {
@@ -50,4 +50,20 @@ model Games {
     UserA   User @relation("PlayerAGames", fields: [playerA], references: [id])
     playerB Int
     UserB   User @relation("PlayerBGames", fields: [playerB], references: [id])
+}
+
+model Channels {
+    id        Int      @id @default(autoincrement())
+    idAdmin   Int[]
+    idUsers   Int[]
+    isPublic  Boolean  @default(true)
+    password  String?
+    createdAt DateTime @default(now())
+}
+
+model Message {
+    id        Int      @id @default(autoincrement())
+    idChannel Int
+    idSender  Int
+    createdAt DateTime @default(now())
 }

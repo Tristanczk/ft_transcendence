@@ -4,8 +4,6 @@ services:
   dev-db:
     image: postgres:13
     container_name: dev-db
-    ports:
-      - 5432:5432
     restart: on-failure
     env_file:
       - .env

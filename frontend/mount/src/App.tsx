@@ -11,7 +11,6 @@ import SettingsPage from './pages/SettingsPage';
 import SignInPage42 from './pages/SignInPage42';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
-import SignInResult from './pages/SignInResult';
 import { WebsocketProvider, socket } from './context/WebsocketContext';
 import TrackingOnline from './components/TrackingOnline';
 import BattlePage from './pages/BattlePage';
@@ -19,11 +18,13 @@ import ClassicPage from './pages/ClassicPage';
 import { UserProvider } from './context/UserContext';
 import UserPage from './pages/UserPage';
 import LeaderboardPage from './pages/LeaderboardPage';
+import { AuthAxiosProvider } from './context/AuthAxiosContext';
 
 const App: React.FC = () => {
     return (
         <WebsocketProvider value={socket}>
             <UserProvider>
+			<AuthAxiosProvider>
                 <TrackingOnline />
                 <BrowserRouter>
                     <NavBar />
@@ -47,6 +48,7 @@ const App: React.FC = () => {
                         <Route path="*" Component={Page404} />
                     </Routes>
                 </BrowserRouter>
+				</AuthAxiosProvider>
             </UserProvider>
         </WebsocketProvider>
     );

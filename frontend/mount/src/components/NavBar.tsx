@@ -1,9 +1,8 @@
-import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import Button from './Button';
 import { useWidth } from '../hooks';
-import { UserContext, useUserContext } from '../context/UserContext';
+import { useUserContext } from '../context/UserContext';
 import { NAVBAR_HEIGHT } from '../constants';
 import ImageFriend from './dashboard/friends/ImgFriend';
 import OutsideClickHandler from 'react-outside-click-handler';
@@ -182,29 +181,7 @@ function UserMenu() {
 const NavBar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    // const [user, setUser] = useState<User | null>(null);
-    const userGlobal = useContext(UserContext);
-    const user = userGlobal.user;
-    const { loginUser, logoutUser } = useUserContext();
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await axios.get(
-                    'http://localhost:3333/users/me',
-                    { withCredentials: true },
-                );
-                // setUser(response.data);
-                loginUser(response.data);
-            } catch (error) {
-                logoutUser();
-                // setUser(null);
-                // console.error(error);
-            }
-        };
-        fetchUser();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.pathname]);
+    const { user } = useUserContext();
 
     return (
         <nav
