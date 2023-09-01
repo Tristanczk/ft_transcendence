@@ -1,17 +1,16 @@
 import { ChangeEvent, useState } from 'react';
-import React from 'react';
 import { MessageProps } from './Message';
+import { useUserContext } from '../../context/UserContext';
 
 export function MessageInput({
-        send,
-        channel,
-    }: {
-        send: (message: MessageProps) => void;
-        channel: number,
-    },
-    
-) {
+    send,
+    channel,
+}: {
+    send: (message: MessageProps) => void;
+    channel: number;
+}) {
     const [input, setInput] = useState('');
+    const { user } = useUserContext();
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInput(event.target.value);
@@ -32,11 +31,11 @@ export function MessageInput({
                         type="button"
                         className="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none"
                         onClick={(event) => {
-                            if (input === '') return;
+                            if (input === '' || channel === 0) return;
                             event.preventDefault();
                             console.log('send function called');
                             send({
-                                idSender: 1,
+                                idSender: (user ? user.id : 0),
                                 idChannel: channel,
                                 message: input,
                             });

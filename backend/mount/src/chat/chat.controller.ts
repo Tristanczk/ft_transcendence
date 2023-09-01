@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs
 import { ChatService } from './chat.service';
 import { CreateChannelDto } from './dto/createchannel.dto';
 import { EditChannelDto } from './dto/editchannel.dto';
-import { CreateMessageDto, DeleteMessageDto } from './dto/message.dto';
+import { CreateMessageDto, DeleteMessageDto, MessageDto } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
 import { LeaveChannelDto } from './dto/leavechannel.dto';
 import { ChannelDto } from './dto/channel.dto';
@@ -10,12 +10,18 @@ import { ChannelDto } from './dto/channel.dto';
 @Controller('chat')
 export class ChatController {
 	constructor(private chatService: ChatService) {}
-
+	
 	@Post('createChannel')
 	async createChannel(@Body() createChannelDto: CreateChannelDto) : Promise<CreateChannelDto> {
 		console.log("createChannnel controller");
 		console.log(createChannelDto);
 		return this.chatService.createChannel(createChannelDto);
+	}
+	
+	@Get('getChannels')
+	async getChannels(@Body() idUser: number) : Promise<ChannelDto[] | null>{
+		console.log("getChannels controller " + idUser);
+		return this.chatService.getChannels(idUser);
 	}
 
 	@Get(':id')
@@ -38,11 +44,6 @@ export class ChatController {
 		return this.chatService.editChannel(idUser, editChannel);
 	}
 
-	@Get('getChannels/:id')
-	async getChannels(@Param() idUser: number) : Promise<ChannelDto[] | null>{
-		return this.chatService.getChannels(idUser);
-	}
-
 	@Post('sendMessage')
 	async sendMessage(@Body() message: CreateMessageDto) {
 		return this.chatService.sendMessage(message);
@@ -54,7 +55,7 @@ export class ChatController {
 	}
 
 	@Get('getMessages/:id')
-	async getMessages(@Param('id', ParseIntPipe) channelId: number, @Body() idUser:number): Promise<any> {
+	async getMessages(@Param('id', ParseIntPipe) channelId: number, @Body() idUser:number): Promise<MessageDto[]> {
 		return this.chatService.getMessages(channelId, idUser);
 	}
 }

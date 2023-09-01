@@ -18,7 +18,7 @@ export class ChatService {
     async createChannel(
         createChannelDto: CreateChannelDto,
     ): Promise<CreateChannelDto> {
-        const newChannel = await this.prisma.channels.create({
+        await this.prisma.channels.create({
             data: {
                 idAdmin: [createChannelDto.idUser],
                 isPublic: createChannelDto.isPublic,
@@ -27,10 +27,9 @@ export class ChatService {
             },
         });
 
-        console.log(createChannelDto.idUser);
         return {
             idUser: createChannelDto.idUser,
-            name: 'miao',
+            name: createChannelDto.name,
             isPublic: createChannelDto.isPublic,
         };
     }
@@ -135,7 +134,6 @@ export class ChatService {
                 },
             });
 
-            if (!user) return;
             const channels = await this.prisma.channels.findMany({
                 where: {
                     idUsers: {
