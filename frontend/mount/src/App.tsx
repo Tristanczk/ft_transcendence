@@ -4,6 +4,7 @@ import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import Page404 from './pages/Page404';
 import DashboardPage from './pages/DashboardPage';
+
 import SignOutPage from './pages/SignOutPage';
 import ChatPage from './pages/ChatPage';
 import SettingsPage from './pages/SettingsPage';
@@ -17,6 +18,7 @@ import BattlePage from './pages/BattlePage';
 import ClassicPage from './pages/ClassicPage';
 import { UserProvider } from './context/UserContext';
 import UserPage from './pages/UserPage';
+import LeaderboardPage from './pages/LeaderboardPage'
 
 const App: React.FC = () => {
     return (
@@ -31,6 +33,7 @@ const App: React.FC = () => {
 						<Route path="/classic" Component={ClassicPage} />
 						<Route path="/dashboard" Component={DashboardPage} />
 						<Route path="/dashboard/:idUserToView" Component={UserPage} />
+						<Route path="/leaderboad" Component={LeaderboardPage} />
 						<Route path="/chat" Component={ChatPage} />
 						<Route path="/signin" Component={SignInPage} />
 						<Route path="/signup" Component={SignUpPage} />

@@ -23,3 +23,13 @@ export type StatsDashboard = {
 	me: UserStats;
 	global: GlobalStats;
 }
+
+export type UserLeaderboard = {
+    avatarPath: string;
+    createdAt: Date;
+    elo: number;
+    id: number;
+    isConnected: boolean;
+    nickname: string;
+	nbGames: number;
+}

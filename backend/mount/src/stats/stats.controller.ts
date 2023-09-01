@@ -2,11 +2,17 @@ import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
 import { StatsService } from './stats.service';
 import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
-import { StatsDashboard } from './stats.type';
+import { StatsDashboard, UserLeaderboard } from './stats.type';
+import { LeaderbordResponseDto } from './dto/leaderbord-response.dto';
 
 @Controller('stats')
 export class StatsController {
 	constructor(private stats: StatsService) {}
+
+	@Get('leaderboard')
+	async getLeaderboard(): Promise<UserLeaderboard[]> {
+		return this.stats.getLeaderboard();
+	}
 
 	@UseGuards(JwtGuard)
 	@Get()
@@ -31,4 +37,5 @@ export class StatsController {
 	async getDataGraph(@Param('id', ParseIntPipe) idUser: number) {
 		return this.stats.getDataGraph(idUser);
 	}
+
 }

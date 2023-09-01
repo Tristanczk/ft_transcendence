@@ -68,6 +68,12 @@ const NavLinks: React.FC<{ current: string }> = ({ current }) => {
                 />
                 <NavLink
                     current={current}
+                    title="Leaderboard"
+                    link="/leaderboad"
+                    icon="/pie-chart.svg"
+                />
+				<NavLink
+                    current={current}
                     title="Chat"
                     link="/chat"
                     icon="/postcard.svg"
