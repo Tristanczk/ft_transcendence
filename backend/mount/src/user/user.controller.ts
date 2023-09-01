@@ -23,21 +23,22 @@ import { editFileName, imageFileFilter } from './middlewares/middlewaresImg';
 import { Response } from 'express';
 import { TwoFactorCodeDto } from 'src/auth/dto';
 
-@UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
     constructor(private userService: UserService) {}
 
+	@UseGuards(JwtGuard)
     @Get('me')
     getMe(@GetUser() user: User) {
         return user;
     }
 
-    // @Get('id/:id')
-    // getUserById(@Param('id', ParseIntPipe) userId: number) {
-    //     return user;
-    // }
+    @Get(':id')
+    getUserById(@Param('id', ParseIntPipe) userId: number) {
+        return this.userService.getUserById(userId);
+    }
 
+	@UseGuards(JwtGuard)
     @Post('avatar')
     @UseInterceptors(
         FileInterceptor('image', {
@@ -63,16 +64,19 @@ export class UserController {
         return this.userService.uploadAvatar(userId, res);
     }
 
+	@UseGuards(JwtGuard)
     @Patch()
     editUser(@GetUser('id') userId: number, @Body() dto: EditUserDto) {
         return this.userService.editUser(userId, dto);
     }
 
+	@UseGuards(JwtGuard)
     @Get('init-2fa')
     async enable2fa(@GetUser() user: User) {
         return this.userService.initTwoFactorAuthentication(user);
     }
 
+	@UseGuards(JwtGuard)
     @Post('enable-2fa')
     async enable2faPost(
         @GetUser() user: User,
@@ -89,6 +93,7 @@ export class UserController {
             });
     }
 
+	@UseGuards(JwtGuard)
     @Post('disable-2fa')
     async disable2fa(
         @GetUser() user: User,

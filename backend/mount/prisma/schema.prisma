@@ -1,72 +1,69 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  //   url      = "postgresql://postgres:n2J5dJGelC0W4UEtiHkMZRrdrSHsLKr7@localhost:5432/nest?schema=public"
-  url      = env("DB_URL")
+    provider = "postgresql"
+    //   url      = "postgresql://postgres:n2J5dJGelC0W4UEtiHkMZRrdrSHsLKr7@localhost:5432/nest?schema=public"
+    url      = env("DB_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+    id         Int      @id @default(autoincrement())
+    createdAt  DateTime @default(now())
+    login      String   @unique
+    nickname   String   @unique
+    email      String   @unique
+    hash       String?
+    avatarPath String
+    friends    String   @default("[]")
+    elo        Int
+    loginNb    Int
 
-  login      String  @unique
-  nickname   String  @unique
-  email      String  @unique
-  hash       String?
-  avatarPath String
-  friends    String  @default("[]")
+    achievements String[] @default([])
 
-  elo     Int
-  loginNb Int
+    twoFactorAuthentication Boolean @default(false)
+    isConnected             Boolean @default(false)
+    twoFactorSecret         String?
 
-  twoFactorAuthentication Boolean @default(false)
-  isConnected             Boolean @default(false)
-  twoFactorSecret         String?
+    gamesasPlayerA Games[] @relation("PlayerAGames")
+    gamesasPlayerB Games[] @relation("PlayerBGames")
 
-  currentHashedRefreshToken String?
-}
-
-// model Friends {
-//     id        Int      @id @default(autoincrement())
-//     createdAt DateTime @default(now())
-//     idUserA   Int
-//     idUserB   Int
-// }
-
-// model Connections {
-//     id           Int      @id @default(autoincrement())
-//     createdAt    DateTime @default(now())
-//     idUser       Int
-//     idConnection String
-// }
-
-model Channels {
-    id          Int       @id @default(autoincrement())
-    idAdmin     Int[]
-    idUsers     Int[]
-    isPublic    Boolean   @default(true)
-    password    String?
-    createdAt   DateTime  @default(now())
-}
-
-model Message {
-    id         Int        @id @default(autoincrement())
-    idChannel  Int
-    idSender   Int
-    createdAt  DateTime   @default(now())
+    currentHashedRefreshToken String?
 }
 
 model Games {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now())
-  finishedAt DateTime
-  playerA    Int
-  playerB    Int
-  finished   Boolean
-  won        Boolean
-  scoreA     Int
-  scoreB     Int
+    id         Int      @id @default(autoincrement())
+    createdAt  DateTime @default(now())
+    finishedAt DateTime
+    finished   Boolean
+    won        Boolean
+    scoreA     Int
+    scoreB     Int
+    mode       Int
+    varEloA    Int
+    varEloB    Int
+    initEloA   Int
+    initEloB   Int
+
+    playerA Int
+    UserA   User @relation("PlayerAGames", fields: [playerA], references: [id])
+    playerB Int
+    UserB   User @relation("PlayerBGames", fields: [playerB], references: [id])
+}
+
+model Channels {
+    id        Int      @id @default(autoincrement())
+    idAdmin   Int[]
+    idUsers   Int[]
+    isPublic  Boolean  @default(true)
+    password  String?
+    createdAt DateTime @default(now())
+}
+
+model Message {
+    id        Int      @id @default(autoincrement())
+    idChannel Int
+    idSender  Int
+    createdAt DateTime @default(now())
 }

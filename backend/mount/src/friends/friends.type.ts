@@ -1,5 +1,4 @@
-
 export type FriendsJson = {
-	idFriend: number,
-	createdAt: number,
-}
+    idFriend: number;
+    createdAt: number;
+};
