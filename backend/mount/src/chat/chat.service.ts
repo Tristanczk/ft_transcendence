@@ -126,31 +126,39 @@ export class ChatService {
         return updatedChannelDto;
     }
 
-    async getChannels(idUser: number) {
+    async getChannels(idUser: number): Promise<ChannelDto[]> {
+        let user = null;
+        let channels = null;
+
         try {
-            const user = await this.prisma.user.findUnique({
+            user = await this.prisma.user.findUnique({
                 where: {
                     id: idUser,
                 },
             });
+        } catch (error) {
+        }
 
-            const channels = await this.prisma.channels.findMany({
+        try {
+            channels = await this.prisma.channels.findMany({
                 where: {
                     idUsers: {
                         has: idUser,
                     },
                 },
             });
-            
-            const channelDtos: ChannelDto[] = channels.map((channel) => ({
+        } catch (error) {
+        }
+
+        let channelDtos: ChannelDto[] = [];
+
+        if (channels && user) {
+            channelDtos = channels.map((channel) => ({
                 name: channel.name,
                 idChannel: channel.id,
             }));
-
-            return channelDtos;
-        } catch (error) {
-            throw new NotFoundException('User not found');
         }
+        return channelDtos;
     }
 
     async sendMessage(message: CreateMessageDto): Promise<CreateMessageDto> {

@@ -100,34 +100,43 @@ function ChatPage() {
             console.error(error);
         }
     };
+
     useEffect(() => {
         const fetchFriends = async () => {
             getMyFriends();
         };
         fetchFriends();
 
-        const fetchChannel = async () => {
-            if (currentChannel === 0) return;
-            const response = await authAxios.get(
-                `http://localhost:3333/chat/getChannels`, //idUser
-                { withCredentials: true },
-            );
+        try {
+            const fetchChannel = async () => {
+                if (currentChannel === 0) return;
+                const response = await authAxios.get(
+                    `http://localhost:3333/chat/getChannels`,
+                    {
+                        params: { idUser: user?.id },
+                        withCredentials: true,
+                    },
+                );
 
-            if (!response) return;
-            setChannels(response.data.length);
-        };
-        fetchChannel();
+                setChannels(response.data.length);
+            };
+            fetchChannel();
+        } catch (error) {
+            console.error(error);
+        }
 
-        const fetchMessages = async () => {
-            if (currentChannel === 0) return;
-            const response = await authAxios.get(
-                `http://localhost:3333/chat/getMessages/${currentChannel}`,
-                // idUser
-                { withCredentials: true },
-            );
-            setMessages(response.data);
-        };
-        fetchMessages();
+        // const fetchMessages = async () => {
+        //     if (currentChannel === 0) return;
+        //     const response = await authAxios.get(
+        //         `http://localhost:3333/chat/getMessages/${currentChannel}`,
+        //         {
+        //             params: { idUser: user?.id },
+        //             withCredentials: true,
+        //         },
+        //     );
+        //     setMessages(response.data);
+        // };
+        // fetchMessages();
     }, [currentChannel]);
 
     console.log(messages);
