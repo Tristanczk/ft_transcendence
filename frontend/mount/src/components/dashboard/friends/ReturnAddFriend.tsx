@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { UserSimplified } from '../../../types';
 import ImageFriend from './ImgFriend';
 
@@ -35,8 +36,15 @@ function ReturnAddFriend({ list, ButtonAddFriend, ButtonDeleteFriend }: Props) {
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                    {user.nickname}
+                                                <p className="text-sm font-medium text-gray-900 truncate dark:text-white hover:font-bold">
+                                                    <Link
+                                                        to={
+                                                            '/dashboard/' +
+                                                            user.id
+                                                        }
+                                                    >
+                                                        {user.nickname}
+                                                    </Link>
                                                 </p>
                                                 <p className="text-sm text-gray-500 truncate dark:text-gray-400">
                                                     {user.elo}

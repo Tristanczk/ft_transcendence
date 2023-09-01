@@ -37,7 +37,12 @@ function HistoryElo({ user }: PresentationUserProps) {
 
     return data && data.length > 0 ? (
         <div className="w-full  p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-            <div className="parent-container">
+            <div className="flex items-center justify-between mb-4">
+                    <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
+                        Graph History
+                    </h5>
+                </div>
+			<div className="parent-container">
                 <div className="graph-container" style={{ height: '300px' }}>
                     <ResponsiveLine
                         data={data}

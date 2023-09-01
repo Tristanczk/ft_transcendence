@@ -6,6 +6,7 @@ export type User = {
     elo: number;
     loginNb: number;
     twoFactorAuthentication: boolean;
+	achievements: string[];
 };
 
 export type UserSimplified = {

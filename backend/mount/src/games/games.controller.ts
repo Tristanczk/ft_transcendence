@@ -32,4 +32,9 @@ export class GamesController {
 	async historyFiveGames(@Param('id', ParseIntPipe) idUser: number) {
 		return this.gamesService.historyFiveGames(idUser);
 	}
+
+	@Get('achiev/:id')
+	async getAchievementsUser(@Param('id', ParseIntPipe) idUser: number) {
+		return this.gamesService.getAchievementsUser(idUser);
+	}
 }
