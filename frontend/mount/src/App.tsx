@@ -44,7 +44,6 @@ const App: React.FC = () => {
                         <Route path="/signin42" Component={SignInPage42} />
                         <Route path="/signout" Component={SignOutPage} />
                         <Route path="/settings" Component={SettingsPage} />
-                        <Route path="/signin/result" Component={SignInResult} />
                         <Route path="*" Component={Page404} />
                     </Routes>
                 </BrowserRouter>

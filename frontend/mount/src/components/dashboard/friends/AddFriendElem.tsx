@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import ReturnAddFriend from './ReturnAddFriend';
 import { UserSimplified } from '../../../types';
 import OutsideClickHandler from 'react-outside-click-handler';
-=======
-import { useEffect, useState } from 'react';
-import ReturnAddFriend from './ReturnAddFriend';
-import { UserSimplified } from '../../../types';
 import { useAuthAxios } from '../../../context/AuthAxiosContext';
->>>>>>> main
 
 interface Props {
     ButtonAddFriend: any;

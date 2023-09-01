@@ -344,12 +344,13 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     };
 
     return (
-        <Sketch
-            preload={preload}
-            setup={setup}
-            draw={draw}
-            windowResized={windowResized}
-        />
+		<></>
+        // <Sketch
+        //     preload={preload}
+        //     setup={setup}
+        //     draw={draw}
+        //     windowResized={windowResized}
+        // />
     );
 };
 

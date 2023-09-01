@@ -185,7 +185,7 @@ const ClassicGame = () => {
         );
     };
 
-    return <Sketch setup={setup} draw={draw} windowResized={windowResized} />;
+    return (<></>) //<Sketch setup={setup} draw={draw} windowResized={windowResized} />;
 };
 
 const ClassicPage: React.FC = () => (

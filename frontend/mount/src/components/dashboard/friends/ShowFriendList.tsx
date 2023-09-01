@@ -1,12 +1,8 @@
 import { UserSimplified } from '../../../types';
 import ShowIsOnline from './ShowIsOnline';
-<<<<<<< HEAD
-import ImageFriend from './ImgFriend';
-import { useUserContext } from '../../../context/UserContext';
-import { Link } from 'react-router-dom';
-=======
 import ImageFriend from './ImageFriend';
->>>>>>> main
+import { Link } from 'react-router-dom';
+import { useUserContext } from '../../../context/UserContext';
 
 interface Props {
     friendsList: UserSimplified[] | null;
