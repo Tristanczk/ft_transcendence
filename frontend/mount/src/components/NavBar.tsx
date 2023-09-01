@@ -149,7 +149,7 @@ function UserMenu() {
                         >
                             <div className="px-4 py-3">
                                 <span className="block text-sm text-white">
-                                    nickname
+									{user?.nickname}
                                 </span>
                                 <span className="block text-sm truncate text-gray-400">
                                     login if different
