@@ -4,12 +4,13 @@ import ChatWindow, { ChatWindowProps } from '../components/chatpage/ChatWindow';
 import { MessageProps } from '../components/chatpage/Message';
 import { MessageInput } from '../components/chatpage/MessageInput';
 import { socket as constSocket } from '../context/WebsocketContext';
-import { Button, ListGroup } from 'flowbite-react';
+import { Button } from 'flowbite-react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import ListGroupWithButton from '../components/chatpage/ListGroup';
 import { UserSimplified } from '../types';
 import { SelectChannel } from '../components/chatpage/SelectChannel';
 import { useUserContext } from '../context/UserContext';
+import { set } from 'react-hook-form';
 
 function ChatPage() {
     const [socket, setSocket] = useState<Socket | undefined>(undefined);
@@ -125,18 +126,21 @@ function ChatPage() {
             console.error(error);
         }
 
-        // const fetchMessages = async () => {
-        //     if (currentChannel === 0) return;
-        //     const response = await authAxios.get(
-        //         `http://localhost:3333/chat/getMessages/${currentChannel}`,
-        //         {
-        //             params: { idUser: user?.id },
-        //             withCredentials: true,
-        //         },
-        //     );
-        //     setMessages(response.data);
-        // };
-        // fetchMessages();
+        const fetchMessages = async () => {
+            if (currentChannel === 0) return;
+            const response = await authAxios.get(
+                `http://localhost:3333/chat/getMessages/${currentChannel}`,
+                {
+                    params: { idUser: user?.id },
+                    withCredentials: true,
+                },
+            );
+            if (!response.data)
+                setMessages([]);
+            console.log(response.data);
+            setMessages(response.data);
+        };
+        fetchMessages();
     }, [currentChannel]);
 
     console.log(messages);

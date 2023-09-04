@@ -18,6 +18,12 @@ export class ChatService {
     async createChannel(
         createChannelDto: CreateChannelDto,
     ): Promise<CreateChannelDto> {
+        // const channel = this.prisma.channels.findUnique({
+        //     where: {
+        //         name: createChannelDto.name,
+        //     },
+        // });
+
         await this.prisma.channels.create({
             data: {
                 idAdmin: [createChannelDto.idUser],
@@ -228,21 +234,23 @@ export class ChatService {
     }
 
     async getMessages(channelId: number, idUser: number) {
+        let channel = null;
+        let user = null;
+
         try {
-            const channel = await this.prisma.channels.findUnique({
+            channel = await this.prisma.channels.findUnique({
                 where: {
                     id: channelId,
                 },
             });
-            const user = await this.prisma.user.findUnique({
+            user = await this.prisma.user.findUnique({
                 where: {
                     id: idUser,
                 },
             });
             if (!channel.idUsers.includes(idUser))
-                throw new Error('Not authorized');
+                return null;
         } catch (error) {
-            throw new NotFoundException('User not found');
         }
 
         const messages = await this.prisma.message.findMany({
@@ -255,7 +263,7 @@ export class ChatService {
             id: message.id,
             idChannel: message.idChannel,
             idSender: message.idSender,
-            content: message.content,
+            message: message.content,
             createdAt: message.createdAt,
         }));
         return messageDtos;

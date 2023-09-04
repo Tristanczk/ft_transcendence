@@ -1,5 +1,6 @@
 import React from "react";
 import Message, { MessageProps} from "./Message";
+import { useUserContext } from "../../context/UserContext";
 
 export function MessageBox({
   idSender,
@@ -7,13 +8,13 @@ export function MessageBox({
   message,
 }: MessageProps) {
   // user
-  const user = 1;
+  const { user } = useUserContext();
 
   return (
     <div className="chat-message">
       <article
         className={
-          idSender === user
+          idSender === user?.id
             ? "msg-container msg-self"
             : "msg-container msg-remote"
         }

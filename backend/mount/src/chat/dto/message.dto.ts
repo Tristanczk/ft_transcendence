@@ -14,6 +14,6 @@ export interface MessageDto {
 	id: number;
 	idChannel: number;
 	idSender: number;
-	content: string;
+	message: string;
 	createdAt: Date;
 }

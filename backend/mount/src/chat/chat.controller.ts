@@ -55,7 +55,7 @@ export class ChatController {
 	}
 
 	@Get('getMessages/:id')
-	async getMessages(@Param('id', ParseIntPipe) channelId: number, @Body() idUser:number): Promise<MessageDto[]> {
+	async getMessages(@Param('id', ParseIntPipe) channelId: number, @Body() idUser:number): Promise<MessageDto[] | null> {
 		return this.chatService.getMessages(channelId, idUser);
 	}
 }

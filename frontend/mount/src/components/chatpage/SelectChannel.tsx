@@ -8,6 +8,7 @@ export function SelectChannel({
     channels: number;
 }) {
     const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        event.preventDefault();
         setCurrentChannel(parseInt(event.target.value));
     };
 
