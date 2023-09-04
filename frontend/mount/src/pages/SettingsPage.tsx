@@ -7,6 +7,7 @@ import ErrorsFormField from '../components/ErrorsFormField';
 import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
+import AvatarUploader from '../components/user/AvatarUpload';
 
 interface Inputs {
     username: string;
@@ -111,6 +112,7 @@ const SettingsPage: React.FC = () => {
                 const response = await authAxios.get('/users/init-2fa', {
                     withCredentials: true,
                 });
+                console.log('response', response.data);
                 setQrCodeDataUrl(response.data.qrCode);
                 setTwoFactorSecret(response.data.secret);
                 setDisplayModal(true);
@@ -159,6 +161,7 @@ const SettingsPage: React.FC = () => {
                                 {twoFactor}
                             </p>
                         )}
+                        {/* <AvatarUploader /> */}
                         <form
                             className="space-y-4 md:space-y-6"
                             onSubmit={handleSubmit(onSubmit)}
