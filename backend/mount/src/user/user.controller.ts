@@ -33,11 +33,6 @@ export class UserController {
         return user;
     }
 
-    @Get(':id')
-    getUserById(@Param('id', ParseIntPipe) userId: number) {
-        return this.userService.getUserById(userId);
-    }
-
     @UseGuards(JwtGuard)
     @Post('avatar')
     @UseInterceptors(
@@ -54,14 +49,6 @@ export class UserController {
         @UploadedFile() file: Express.Multer.File,
     ) {
         return this.userService.downloadAvatar(userId, file);
-    }
-
-    @Get('img/:id')
-    async seeUploadedFile(
-        @Param('id', ParseIntPipe) userId: number,
-        @Res() res,
-    ) {
-        return this.userService.uploadAvatar(userId, res);
     }
 
     @UseGuards(JwtGuard)
@@ -108,5 +95,18 @@ export class UserController {
             .catch((error: UnauthorizedException) => {
                 res.status(401).send(error.message);
             });
+    }
+
+    @Get(':id')
+    getUserById(@Param('id', ParseIntPipe) userId: number) {
+        return this.userService.getUserById(userId);
+    }
+
+    @Get('img/:id')
+    async seeUploadedFile(
+        @Param('id', ParseIntPipe) userId: number,
+        @Res() res,
+    ) {
+        return this.userService.uploadAvatar(userId, res);
     }
 }
