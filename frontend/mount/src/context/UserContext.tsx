@@ -1,5 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { User } from '../types';
+import axios from 'axios';
 
 interface Prop {
     user: User | null;
@@ -17,6 +18,22 @@ export const UserContext = React.createContext<Prop>({
 
 export const UserProvider = ({ children }: any) => {
     const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:3333/users/me',
+                    { withCredentials: true },
+                );
+                setUser(response.data);
+            } catch (error) {
+                console.error(error);
+                setUser(null);
+            }
+        };
+        fetchUser();
+    }, []);
 
     const loginUser = (userData: User | null) => {
         setUser(userData);
