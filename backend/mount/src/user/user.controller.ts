@@ -11,6 +11,7 @@ import {
     Res,
     UnauthorizedException,
     UseGuards,
+    ForbiddenException,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorator';
@@ -53,8 +54,19 @@ export class UserController {
 
     @UseGuards(JwtGuard)
     @Patch()
-    editUser(@GetUser('id') userId: number, @Body() dto: EditUserDto) {
-        return this.userService.editUser(userId, dto);
+    editUser(
+        @GetUser('id') userId: number,
+        @Body() dto: EditUserDto,
+        @Res() res: Response,
+    ) {
+        this.userService
+            .editUser(userId, dto)
+            .then(() => {
+                res.send('User successfully updated!');
+            })
+            .catch((error: ForbiddenException) => {
+                res.status(403).send(error.message);
+            });
     }
 
     @UseGuards(JwtGuard)
