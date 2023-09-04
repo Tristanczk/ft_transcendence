@@ -10,9 +10,9 @@ interface Props {
 const AuthAxiosContext = React.createContext<Props>({
     authAxios: axios.create({
         baseURL: 'http://localhost:3333',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        // headers: {
+        //     'Content-Type': 'application/json',
+        // },
     }),
 });
 
@@ -25,14 +25,15 @@ const AuthAxiosProvider: React.FC<AuthAxiosProviderProps> = ({ children }) => {
 
     const authAxios = axios.create({
         baseURL: 'http://localhost:3333',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        // headers: {
+        //     'Content-Type': 'application/json',
+        // },
     });
 
     authAxios.interceptors.response.use(
         (response) => response,
         async (error: any) => {
+            console.log('interceptor error', error);
             const originalRequest = error.config;
             if (
                 error.response &&

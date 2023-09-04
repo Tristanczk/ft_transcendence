@@ -1,24 +1,43 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+    ForbiddenException,
+    Injectable,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EditUserDto } from './dto';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
 import { User } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UserService {
     constructor(private prisma: PrismaService) {}
 
     async editUser(userId: number, dto: EditUserDto) {
-        const user = await this.prisma.user.update({
-            where: {
-                id: userId,
-            },
-            data: {
-                ...dto,
-            },
-        });
-        return user;
+        try {
+            const user = await this.prisma.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    ...dto,
+                },
+            });
+            return user;
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    console.log(error.meta);
+                    if (error.meta.target[0] === 'nickname')
+                        throw new ForbiddenException('Username already exists');
+                    else if (error.meta.target[0] === 'email')
+                        throw new ForbiddenException('Email already exists');
+                    else throw new ForbiddenException('Invalid credentials');
+                }
+            }
+            throw error;
+        }
     }
 
     async downloadAvatar(userId: number, file: Express.Multer.File) {
@@ -54,19 +73,17 @@ export class UserService {
 
     async getUserById(userId: number) {
         try {
-			const user = await this.prisma.user.findUnique({
-				where: {
-					id: userId,
-				},
-			});
-			return user;
-		}
-		catch (error) {
-			// console.log(error);
-			return null;
-		}
-	}
-
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: userId,
+                },
+            });
+            return user;
+        } catch (error) {
+            // console.log(error);
+            return null;
+        }
+    }
 
     async getAllUsers() {
         // console.log('bonjour');
