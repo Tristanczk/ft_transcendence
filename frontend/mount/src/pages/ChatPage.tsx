@@ -10,6 +10,8 @@ import ListGroupWithButton from '../components/chatpage/ListGroup';
 import { UserSimplified } from '../types';
 import { SelectChannel } from '../components/chatpage/SelectChannel';
 import { useUserContext } from '../context/UserContext';
+import { ChatSelector } from '../components/figma_chatpage/ChatSelector';
+import { Chat } from '../components/figma_chatpage/Chat';
 
 function ChatPage() {
     const [socket, setSocket] = useState<Socket | undefined>(undefined);
@@ -106,7 +108,7 @@ function ChatPage() {
             getMyFriends();
         };
         fetchFriends();
-
+        
         try {
             const fetchChannel = async () => {
                 if (currentChannel === 0) return;
@@ -124,7 +126,6 @@ function ChatPage() {
         } catch (error) {
             console.error(error);
         }
-
         const fetchMessages = async () => {
             if (currentChannel === 0) return;
             const response = await authAxios.get(
@@ -139,22 +140,15 @@ function ChatPage() {
             console.log(response.data);
             setMessages(response.data);
         };
+        
         fetchMessages();
     }, [currentChannel]);
 
     console.log(messages);
     return (
-        <div className="ChatPage">
-            <section className="chatbox">
-                <SelectChannel
-                    setCurrentChannel={setCurrentChannel}
-                    channels={channels}
-                />
-                <ListGroupWithButton users={friendsList} />
-                <Button text="miao" type="button" onClick={onCreateChannel} />
-                <ChatWindow channel={currentChannel} messages={messages} />
-                <MessageInput channel={currentChannel} send={send} />
-            </section>
+        <div className="w-96 h-56 rounded-3xl flex-col justify-start items-start gap-2.5 inline-flex">
+            <ChatSelector friends={friendsList} />
+            <Chat currentChannel={currentChannel} messages={messages} />
         </div>
     );
 }
