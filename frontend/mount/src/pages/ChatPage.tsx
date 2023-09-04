@@ -10,7 +10,6 @@ import ListGroupWithButton from '../components/chatpage/ListGroup';
 import { UserSimplified } from '../types';
 import { SelectChannel } from '../components/chatpage/SelectChannel';
 import { useUserContext } from '../context/UserContext';
-import { set } from 'react-hook-form';
 
 function ChatPage() {
     const [socket, setSocket] = useState<Socket | undefined>(undefined);
