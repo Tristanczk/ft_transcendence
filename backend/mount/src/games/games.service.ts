@@ -509,7 +509,7 @@ export class GamesService {
             const user = await this.prisma.user.findUnique({
                 where: { id: idUser },
             });
-            if (!user || user.achievements.length === 0) return [];
+            if (!user) return [];
 
             const achiev: AchievType[] = dataAchievements;
             for (let i = 0; i < achiev.length; i++) {
