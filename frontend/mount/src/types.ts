@@ -6,7 +6,8 @@ export type User = {
     elo: number;
     loginNb: number;
     twoFactorAuthentication: boolean;
-	achievements: string[];
+    achievements: string[];
+    updateAvatar: undefined | boolean;
 };
 
 export type UserSimplified = {
@@ -16,7 +17,7 @@ export type UserSimplified = {
     elo: number;
     avatarPath: any;
     isConnected: boolean;
-	isYourFriend?: boolean;
+    isYourFriend?: boolean;
 };
 
 export type Friends = {
@@ -27,16 +28,16 @@ export type Friends = {
 };
 
 export type Games = {
-	id: 		number;
-	startedAt: 	Date;
-	finishedAt:	Date;
-	finished:	boolean;
-    won:		boolean;
-    scoreA: 	number;
-    scoreB: 	number;
-	playerA:	number;
-	playerB:	number;
-}
+    id: number;
+    startedAt: Date;
+    finishedAt: Date;
+    finished: boolean;
+    won: boolean;
+    scoreA: number;
+    scoreB: number;
+    playerA: number;
+    playerB: number;
+};
 
 export type GameImports = {
 	gameId: number;
@@ -49,12 +50,12 @@ export type GameImports = {
 }
 
 export type UserGame = {
-	id: number;
-	nickname: string,
-	elo: number;
-	eloStart: number;
-	score: number;
-}
+    id: number;
+    nickname: string;
+    elo: number;
+    eloStart: number;
+    score: number;
+};
 
 //stats
 export type GlobalStats = {
@@ -72,6 +73,6 @@ export type UserStats = {
 };
 
 export type StatsDashboard = {
-	me: UserStats;
-	global: GlobalStats;
-}
+    me: UserStats;
+    global: GlobalStats;
+};

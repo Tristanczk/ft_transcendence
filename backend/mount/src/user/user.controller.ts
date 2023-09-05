@@ -11,6 +11,7 @@ import {
     Res,
     UnauthorizedException,
     UseGuards,
+    ForbiddenException,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorator';
@@ -28,20 +29,9 @@ export class UserController {
     constructor(private userService: UserService) {}
 
     @UseGuards(JwtGuard)
-    @Get('init-2fa')
-    async enable2fa(@GetUser() user: User) {
-        return this.userService.initTwoFactorAuthentication(user);
-    }
-
-    @UseGuards(JwtGuard)
     @Get('me')
     getMe(@GetUser() user: User) {
         return user;
-    }
-
-    @Get(':id')
-    getUserById(@Param('id', ParseIntPipe) userId: number) {
-        return this.userService.getUserById(userId);
     }
 
     @UseGuards(JwtGuard)
@@ -62,18 +52,27 @@ export class UserController {
         return this.userService.downloadAvatar(userId, file);
     }
 
-    @Get('img/:id')
-    async seeUploadedFile(
-        @Param('id', ParseIntPipe) userId: number,
-        @Res() res,
+    @UseGuards(JwtGuard)
+    @Patch()
+    editUser(
+        @GetUser('id') userId: number,
+        @Body() dto: EditUserDto,
+        @Res() res: Response,
     ) {
-        return this.userService.uploadAvatar(userId, res);
+        this.userService
+            .editUser(userId, dto)
+            .then(() => {
+                res.send('User successfully updated!');
+            })
+            .catch((error: ForbiddenException) => {
+                res.status(403).send(error.message);
+            });
     }
 
     @UseGuards(JwtGuard)
-    @Patch()
-    editUser(@GetUser('id') userId: number, @Body() dto: EditUserDto) {
-        return this.userService.editUser(userId, dto);
+    @Get('init-2fa')
+    async enable2fa(@GetUser() user: User) {
+        return this.userService.initTwoFactorAuthentication(user);
     }
 
     @UseGuards(JwtGuard)
@@ -108,5 +107,18 @@ export class UserController {
             .catch((error: UnauthorizedException) => {
                 res.status(401).send(error.message);
             });
+    }
+
+    @Get(':id')
+    getUserById(@Param('id', ParseIntPipe) userId: number) {
+        return this.userService.getUserById(userId);
+    }
+
+    @Get('img/:id')
+    async seeUploadedFile(
+        @Param('id', ParseIntPipe) userId: number,
+        @Res() res,
+    ) {
+        return this.userService.uploadAvatar(userId, res);
     }
 }

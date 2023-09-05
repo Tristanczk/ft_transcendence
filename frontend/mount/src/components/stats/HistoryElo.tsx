@@ -33,7 +33,7 @@ function HistoryElo({ user }: PresentationUserProps) {
             if (response.data) setnbGames(response.data[0].data.length);
             return response.data;
         } catch (error) {
-			setGraph(null);
+            setGraph(null);
             // console.error(error);
         }
     }

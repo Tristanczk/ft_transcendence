@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useUserContext } from '../../../context/UserContext';
 
 interface Props {
     userId: number;
@@ -10,6 +11,7 @@ interface Props {
 function ImageFriend({ userId, textImg, size }: Props) {
     const [imgY, setImgY] = useState<any>();
     const inputClassName = `w-${size} h-${size} rounded-full`;
+    const { user } = useUserContext();
 
     useEffect(() => {
         fetchImg();
@@ -19,9 +21,10 @@ function ImageFriend({ userId, textImg, size }: Props) {
     useEffect(() => {
         fetchImg();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userId]);
+    }, [userId, user]);
 
     const fetchImg = async () => {
+        if (!userId) return;
         try {
             const response = await axios.get(
                 `http://localhost:3333/users/img/${userId}`,

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { User } from '../types';
 import axios from 'axios';
+import { useAuthAxios } from './AuthAxiosContext';
 
 interface Prop {
     user: User | null;
@@ -18,22 +19,35 @@ export const UserContext = React.createContext<Prop>({
 
 export const UserProvider = ({ children }: any) => {
     const [user, setUser] = useState<User | null>(null);
+    const authAxios = useAuthAxios();
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get(
-                    'http://localhost:3333/users/me',
-                    { withCredentials: true },
-                );
+                const response = await authAxios.get('/users/me', {
+                    withCredentials: true,
+                });
                 setUser(response.data);
-            } catch (error) {
-                console.error(error);
-                setUser(null);
+            } catch (error: any) {
+                if (error.response && error.response.status === 401) {
+                    try {
+                        await axios.get('http://localhost:3333/auth/refresh', {
+                            withCredentials: true,
+                        });
+                        const response = await authAxios.get('/users/me', {
+                            withCredentials: true,
+                        });
+                        setUser(response.data);
+                    } catch (refreshError) {
+                        setUser(null);
+                    }
+                } else {
+                    setUser(null);
+                }
             }
         };
         fetchUser();
-    }, []);
+    }, [authAxios]);
 
     const loginUser = (userData: User | null) => {
         setUser(userData);

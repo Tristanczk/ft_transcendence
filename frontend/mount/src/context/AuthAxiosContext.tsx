@@ -10,9 +10,9 @@ interface Props {
 const AuthAxiosContext = React.createContext<Props>({
     authAxios: axios.create({
         baseURL: 'http://localhost:3333',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        // headers: {
+        //     'Content-Type': 'application/json',
+        // },
     }),
 });
 
@@ -25,9 +25,9 @@ const AuthAxiosProvider: React.FC<AuthAxiosProviderProps> = ({ children }) => {
 
     const authAxios = axios.create({
         baseURL: 'http://localhost:3333',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        // headers: {
+        //     'Content-Type': 'application/json',
+        // },
     });
 
     authAxios.interceptors.response.use(
@@ -47,7 +47,6 @@ const AuthAxiosProvider: React.FC<AuthAxiosProviderProps> = ({ children }) => {
                     });
                     return axios.request(originalRequest);
                 } catch (refreshError) {
-                    console.log('user logout');
                     logoutUser();
                     throw refreshError;
                 }

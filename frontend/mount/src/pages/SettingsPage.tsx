@@ -7,6 +7,7 @@ import ErrorsFormField from '../components/ErrorsFormField';
 import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
+import AvatarUploader from '../components/user/AvatarUpload';
 
 interface Inputs {
     username: string;
@@ -15,9 +16,6 @@ interface Inputs {
 
 const SettingsPage: React.FC = () => {
     const { user, updateUser } = useUserContext();
-    const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(
-        user ? user.twoFactorAuthentication : false,
-    );
     const [displayModal, setDisplayModal] = useState(false);
     const [displayDisableModal, setDisplayDisableModal] = useState(false);
     const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | undefined>();
@@ -26,14 +24,25 @@ const SettingsPage: React.FC = () => {
     >();
     const [update, setUpdate] = useState(false);
     const [error, setError] = useState<string | undefined>();
+    const [errorEdit, setErrorEdit] = useState<string | undefined>();
     const [twoFactor, setTwoFactor] = useState<string | undefined>();
     const authAxios = useAuthAxios();
+
+    const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(
+        user ? user.twoFactorAuthentication : false,
+    );
 
     const {
         handleSubmit,
         control,
         formState: { errors },
     } = useForm<Inputs>({ mode: 'onTouched', criteriaMode: 'all' });
+
+    useEffect(() => {
+        if (user) {
+            setIsTwoFactorEnabled(user.twoFactorAuthentication);
+        }
+    }, [user]);
 
     useEffect(() => {
         if (update) {
@@ -77,7 +86,6 @@ const SettingsPage: React.FC = () => {
             setError(undefined);
             updateUser({ twoFactorAuthentication: true });
         } catch (error: any) {
-            console.log('error', error.response);
             setError(error.response.data);
         }
     };
@@ -96,14 +104,20 @@ const SettingsPage: React.FC = () => {
             setError(undefined);
             updateUser({ twoFactorAuthentication: false });
         } catch (error: any) {
-            console.log('error', error.response);
             setError(error.response.data);
         }
     };
 
     const onSubmit = async (data: Inputs) => {
-        console.log('data', data);
         try {
+            await authAxios.patch(
+                '/users',
+                {
+                    nickname: data.username,
+                    email: data.email,
+                },
+                { withCredentials: true },
+            );
             if (
                 isTwoFactorEnabled === true &&
                 user?.twoFactorAuthentication === false
@@ -120,20 +134,12 @@ const SettingsPage: React.FC = () => {
             ) {
                 setDisplayDisableModal(true);
             }
-            await authAxios.patch(
-                '/users',
-                {
-                    nickname: data.username,
-                    email: data.email,
-                },
-                { withCredentials: true },
-            );
             !data.username && (data.username = user?.nickname || '');
             !data.email && (data.email = user?.email || '');
             updateUser({ nickname: data.username, email: data.email });
             setUpdate(true);
-        } catch (error) {
-            console.error(error);
+        } catch (error: any) {
+            setErrorEdit(error.response.data);
         }
     };
 
@@ -159,6 +165,12 @@ const SettingsPage: React.FC = () => {
                                 {twoFactor}
                             </p>
                         )}
+                        {errorEdit && (
+                            <p className="error mt-2 text-sm font-bold text-red-600 dark:text-red-500">
+                                Failed to update information: {errorEdit}
+                            </p>
+                        )}
+                        <AvatarUploader />
                         <form
                             className="space-y-4 md:space-y-6"
                             onSubmit={handleSubmit(onSubmit)}

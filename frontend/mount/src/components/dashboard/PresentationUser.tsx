@@ -6,8 +6,6 @@ interface PresentationUserProps {
 }
 
 function PresentationUser({ user }: PresentationUserProps) {
-    const dateAffiche = false;
-
     return (
         <header className="mb-4 lg:mb-6 not-format">
             <address className="flex items-center mb-6 not-italic">
@@ -24,11 +22,6 @@ function PresentationUser({ user }: PresentationUserProps) {
                         <p className="text-base font-light text-gray-500 dark:text-gray-400">
                             Current ELO: {user.elo}
                         </p>
-                        {dateAffiche && (
-                            <p className="text-base font-light text-gray-500 dark:text-gray-400">
-                                Member since {dateAffiche}
-                            </p>
-                        )}
                     </div>
                 </div>
             </address>
