@@ -40,14 +40,14 @@ export type Games = {
 };
 
 export type GameImports = {
-    gameId: number;
-    date: Date;
-    duration: number;
-    mode: number;
-    won: boolean;
-    playerA: UserGame | null;
-    playerB: UserGame | null;
-};
+	gameId: number;
+	date: Date;
+	duration: number;
+	mode: number;
+	won: boolean;
+	playerA: UserGame;
+	playerB: UserGame;
+}
 
 export type UserGame = {
     id: number;

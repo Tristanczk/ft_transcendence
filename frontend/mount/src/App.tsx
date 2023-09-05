@@ -4,7 +4,6 @@ import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import Page404 from './pages/Page404';
 import DashboardPage from './pages/DashboardPage';
-
 import SignOutPage from './pages/SignOutPage';
 import ChatPage from './pages/ChatPage';
 import SettingsPage from './pages/SettingsPage';
@@ -19,6 +18,8 @@ import { UserProvider } from './context/UserContext';
 import UserPage from './pages/UserPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import { AuthAxiosProvider } from './context/AuthAxiosContext';
+import AchievementPage from './pages/AchievementsPage';
+import GameHistoryPage from './pages/GameHistoryPage';
 
 const App: React.FC = () => {
     return (
@@ -35,6 +36,14 @@ const App: React.FC = () => {
                             <Route
                                 path="/dashboard"
                                 Component={DashboardPage}
+                            />
+                            <Route
+                                path="/achievements"
+                                Component={AchievementPage}
+                            />
+                            <Route
+                                path="/games/:idUserToView"
+                                Component={GameHistoryPage}
                             />
                             <Route
                                 path="/dashboard/:idUserToView"

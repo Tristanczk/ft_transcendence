@@ -33,7 +33,8 @@ function HistoryElo({ user }: PresentationUserProps) {
             if (response.data) setnbGames(response.data[0].data.length);
             return response.data;
         } catch (error) {
-            console.error(error);
+            setGraph(null);
+            // console.error(error);
         }
     }
 
@@ -64,7 +65,7 @@ function HistoryElo({ user }: PresentationUserProps) {
                             tickSize: 5,
                             tickPadding: 5,
                             tickRotation: 0,
-                            legend: `Last ${nbGame} games`,
+                            legend: `Last ${nbGame - 1} games`,
                             legendOffset: 36,
                             legendPosition: 'middle',
                         }}

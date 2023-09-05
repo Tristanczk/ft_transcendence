@@ -43,13 +43,13 @@ function Friends({ currUser }: FriendsProps) {
             );
             setFriendsList(response.data);
         } catch (error) {
-            console.error(error);
+			setFriendsList(null);
+            // console.error(error);
         }
     };
 
     const handleClickAddFriend = async (event: any, idSelected: number) => {
         event.preventDefault();
-        // console.log('button clicked to add=' + idSelected);
         if (idSelected === -1) return;
         if (idSelected !== currUser.id) {
             try {

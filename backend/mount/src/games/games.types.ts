@@ -37,52 +37,62 @@ export type AchievType = {
     id: string;
     title: string;
     description: string;
+	userHave: boolean;
 };
 
 export const dataAchievements: AchievType[] = [
     {
         id: 'classic-1',
-        title: 'Playing',
+        title: 'Playing I',
         description: 'Played 1 game in classic mode',
+		userHave: false,
     },
     {
         id: 'classic-5',
-        title: 'Playing',
+        title: 'Playing II',
         description: 'Played 5 games in classic mode',
+		userHave: false,
     },
     {
         id: 'classic-win-1',
-        title: 'Winning',
+        title: 'Winning I',
         description: 'Won 1 game in classic mode',
+		userHave: false,
     },
     {
         id: 'classic-win-5',
-        title: 'Winning',
+        title: 'Winning II',
         description: 'Won 5 games in classic mode',
+		userHave: false,
     },
     {
         id: 'classic-boss',
-        title: 'Winning',
+        title: 'Perfect game',
         description: 'Won a game 7-0 in classic mode',
+		userHave: false,
     },
     {
         id: 'classic-win-time',
-        title: 'Time winning',
+        title: 'The Flash',
         description: 'Won a game in less than a minute in classic mode',
+		userHave: false,
     },
     {
         id: 'classic-1100',
-        title: 'Level up',
+        title: 'Level up I',
         description: 'Reached 1100 elo in classic mode',
+		userHave: false,
     },
     {
         id: 'classic-1200',
-        title: 'Level up',
+        title: 'Level up II',
         description: 'Reached 1200 elo in classic mode',
+		userHave: false,
     },
     {
         id: 'classic-marathon',
-        title: 'Playing',
+        title: 'Marathon',
         description: 'Played a game with more than 30 points',
+		userHave: false,
     },
 ];

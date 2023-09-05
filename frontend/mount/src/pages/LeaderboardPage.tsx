@@ -45,7 +45,7 @@ const DashboardPage: React.FC = () => {
         }
     }
 
-    return leaderboard ? (
+    return (
         <>
             <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                 <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
@@ -53,19 +53,17 @@ const DashboardPage: React.FC = () => {
                         <h1 className="text-5xl font-extrabold dark:text-white">
                             Leaderboard
                         </h1>
-                        {leaderboard.map((elem) => (
+                        {leaderboard && leaderboard.length > 0 ? (leaderboard.map((elem) => (
                             <ShowUserLeaderboard
                                 userView={elem}
                                 rank={rank++}
                                 key={elem.id}
                             />
-                        ))}
+                        ))) : (<div className="mt-4">No member yet</div>)}
                     </article>
                 </div>
             </main>
         </>
-    ) : (
-        <div>No member yet</div>
     );
 };
 
