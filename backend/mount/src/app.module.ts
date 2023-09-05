@@ -6,7 +6,12 @@ import { PrismaModule } from './prisma/prisma.module';
 import { FriendsModule } from './friends/friends.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GatewayModule } from './gateway/gateway.module';
+import { StatsModule } from './stats/stats.module';
+import { GamesModule } from './games/games.module';
+import { CreateModule } from './create/create.module';
+import { ErrorsModule } from './errors/errors.module';
 import { ChatModule } from './chat/chat.module';
+
 
 @Module({
     imports: [
@@ -17,6 +22,10 @@ import { ChatModule } from './chat/chat.module';
         FriendsModule,
         GatewayModule,
         ChatModule,
+        StatsModule,
+        GamesModule,
+        CreateModule,
+        ErrorsModule,
     ],
     providers: [{
         provide: APP_INTERCEPTOR,

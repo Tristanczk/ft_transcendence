@@ -3,20 +3,23 @@ import { UserSimplified } from '../../../types';
 import { useAuthAxios } from '../../../context/AuthAxiosContext';
 
 interface Props {
-    friend: UserSimplified;
+    userId: number;
+    textImg: string;
+    size: number;
 }
 
-function ImageFriend({ friend }: Props) {
+function ImageFriend({ userId, textImg, size }: Props) {
     const [imgY, setImgY] = useState<any>();
     const authAxios = useAuthAxios();
+	const inputClassName = `w-${size} h-${size} rounded-full`;
 
     useEffect(() => {
         const fetchImg = async () => {
             try {
                 const response = await authAxios.get(
-                    `http://localhost:3333/users/img/${friend.id}`,
+                    `http://localhost:3333/users/img/${userId}`,
                     {
-                        params: { id: friend.id },
+                        params: { id: userId },
                         responseType: 'arraybuffer',
                         withCredentials: true,
                     },
@@ -39,10 +42,10 @@ function ImageFriend({ friend }: Props) {
 
     return imgY ? (
         <img
-            className="w-8 h-8 rounded-full"
-            src={`data:image/png;base64,${imgY}`}
-            alt={friend.nickname}
-        />
+                className={inputClassName}
+                src={`data:image/png;base64,${imgY}`}
+                alt={textImg}
+            />
     ) : (
         <>vide</>
     );

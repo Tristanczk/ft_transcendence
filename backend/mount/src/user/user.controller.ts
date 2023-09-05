@@ -11,6 +11,7 @@ import {
     Res,
     UnauthorizedException,
     UseGuards,
+    ForbiddenException,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorator';
@@ -23,21 +24,17 @@ import { editFileName, imageFileFilter } from './middlewares/middlewaresImg';
 import { Response } from 'express';
 import { TwoFactorCodeDto } from 'src/auth/dto';
 
-@UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
     constructor(private userService: UserService) {}
 
+    @UseGuards(JwtGuard)
     @Get('me')
     getMe(@GetUser() user: User) {
         return user;
     }
 
-    // @Get('id/:id')
-    // getUserById(@Param('id', ParseIntPipe) userId: number) {
-    //     return user;
-    // }
-
+    @UseGuards(JwtGuard)
     @Post('avatar')
     @UseInterceptors(
         FileInterceptor('image', {
@@ -55,24 +52,30 @@ export class UserController {
         return this.userService.downloadAvatar(userId, file);
     }
 
-    @Get('img/:id')
-    async seeUploadedFile(
-        @Param('id', ParseIntPipe) userId: number,
-        @Res() res,
-    ) {
-        return this.userService.uploadAvatar(userId, res);
-    }
-
+    @UseGuards(JwtGuard)
     @Patch()
-    editUser(@GetUser('id') userId: number, @Body() dto: EditUserDto) {
-        return this.userService.editUser(userId, dto);
+    editUser(
+        @GetUser('id') userId: number,
+        @Body() dto: EditUserDto,
+        @Res() res: Response,
+    ) {
+        this.userService
+            .editUser(userId, dto)
+            .then(() => {
+                res.send('User successfully updated!');
+            })
+            .catch((error: ForbiddenException) => {
+                res.status(403).send(error.message);
+            });
     }
 
+    @UseGuards(JwtGuard)
     @Get('init-2fa')
     async enable2fa(@GetUser() user: User) {
         return this.userService.initTwoFactorAuthentication(user);
     }
 
+    @UseGuards(JwtGuard)
     @Post('enable-2fa')
     async enable2faPost(
         @GetUser() user: User,
@@ -89,6 +92,7 @@ export class UserController {
             });
     }
 
+    @UseGuards(JwtGuard)
     @Post('disable-2fa')
     async disable2fa(
         @GetUser() user: User,
@@ -103,5 +107,18 @@ export class UserController {
             .catch((error: UnauthorizedException) => {
                 res.status(401).send(error.message);
             });
+    }
+
+    @Get(':id')
+    getUserById(@Param('id', ParseIntPipe) userId: number) {
+        return this.userService.getUserById(userId);
+    }
+
+    @Get('img/:id')
+    async seeUploadedFile(
+        @Param('id', ParseIntPipe) userId: number,
+        @Res() res,
+    ) {
+        return this.userService.uploadAvatar(userId, res);
     }
 }

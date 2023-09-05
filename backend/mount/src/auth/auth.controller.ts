@@ -47,19 +47,6 @@ export class AuthController {
             });
     }
 
-    @UseGuards(JwtGuard)
-    @Get('signout')
-    signout(@GetUser('id') userId: number, @Res() res: Response) {
-        this.authService
-            .signout(userId, res)
-            .then(() => {
-                res.send('Successfully signed out!');
-            })
-            .catch((error) => {
-                res.status(500).send('Internal server error');
-            });
-    }
-
     @Post('signup')
     signup(@Body() dto: SignupDto, @Res() res: Response) {
         this.authService
@@ -125,6 +112,19 @@ export class AuthController {
             })
             .catch((error) => {
                 res.status(401).send(error.message);
+            });
+    }
+
+    @UseGuards(JwtGuard)
+    @Get('signout')
+    signout(@GetUser('id') userId: number, @Res() res: Response) {
+        this.authService
+            .signout(userId, res)
+            .then(() => {
+                res.send('Successfully signed out!');
+            })
+            .catch((error) => {
+                res.status(500).send('Internal server error');
             });
     }
 }

@@ -1,13 +1,26 @@
 import { UserSimplified } from '../../../types';
 import ShowIsOnline from './ShowIsOnline';
 import ImageFriend from './ImageFriend';
+import { Link } from 'react-router-dom';
+import { useUserContext } from '../../../context/UserContext';
 
 interface Props {
     friendsList: UserSimplified[] | null;
     handleDeleteFriendClick: (event: any, idToDelete: number) => Promise<void>;
+    currUserId: number;
 }
 
-function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
+interface ButtonProps {
+    friendId: number;
+    currUserId: number;
+    handleDeleteFriendClick: (event: any, idToDelete: number) => Promise<void>;
+}
+
+function ShowFriendList({
+    friendsList,
+    handleDeleteFriendClick,
+    currUserId,
+}: Props) {
     let i: number = 0;
     if (!friendsList)
         return <div className="mb-6">You don't have friends yet</div>;
@@ -16,23 +29,7 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
 
     return friendsList.length > 0 ? (
         <>
-            <div className="mb-1">
-                {/* <h1 className="text-5xl font-extrabold dark:text-white">
-                    Friends
-                    <small className="ml-5 text-sm font-semibold text-gray-500 dark:text-gray-400">
-                        You have {friendsList.length} friend
-                        {friendsList.length !== 1 && 's'}
-                    </small>
-                </h1> */}
-
-                {/* <h1 className="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl dark:text-white">
-                    Friends
-                </h1>
-                <p className="text-base font-light text-gray-500 dark:text-gray-400">
-                    You have {friendsList.length} friend
-                    {friendsList.length !== 1 && 's'}
-                </p> */}
-            </div>
+            <div className="mb-1"></div>
             <div className="bg-white">
                 <h1 className="text-xl font-bold dark:text-white">
                     Friend{friendsList.length !== 1 && 's'} list
@@ -52,11 +49,17 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
                         >
                             <div className="flex items-center space-x-4">
                                 <div className="flex-shrink-0">
-                                    <ImageFriend friend={friend} />
+                                    <ImageFriend
+                                        userId={friend.id}
+                                        textImg={friend.nickname}
+                                        size={8}
+                                    />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                        {friend.nickname}
+                                    <p className="text-sm font-medium text-gray-900 truncate dark:text-white hover:font-bold">
+                                        <Link to={'/dashboard/' + friend.id}>
+                                            {friend.nickname}
+                                        </Link>
                                         <ShowIsOnline
                                             userId={friend.id}
                                             initStatus={friend.isConnected}
@@ -66,19 +69,13 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
                                         elo: {friend.elo}
                                     </p>
                                 </div>
-                                <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                    <button
-                                        className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                                        onClick={(event) =>
-                                            handleDeleteFriendClick(
-                                                event,
-                                                friend.id,
-                                            )
-                                        }
-                                    >
-                                        Delete friend
-                                    </button>
-                                </div>
+                                <DeleteButton
+                                    friendId={friend.id}
+                                    currUserId={currUserId}
+                                    handleDeleteFriendClick={
+                                        handleDeleteFriendClick
+                                    }
+                                />
                             </div>
                         </li>
                     ))}
@@ -86,7 +83,28 @@ function ShowFriendList({ friendsList, handleDeleteFriendClick }: Props) {
             </div>
         </>
     ) : (
-        <div className="mb-1"></div>
+        <div className="mb-1">No friends</div>
+    );
+}
+
+function DeleteButton({
+    friendId,
+    currUserId,
+    handleDeleteFriendClick,
+}: ButtonProps) {
+    const { user } = useUserContext();
+
+    return user && currUserId === user.id ? (
+        <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+            <button
+                className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                onClick={(event) => handleDeleteFriendClick(event, friendId)}
+            >
+                Delete friend
+            </button>
+        </div>
+    ) : (
+        <></>
     );
 }
 

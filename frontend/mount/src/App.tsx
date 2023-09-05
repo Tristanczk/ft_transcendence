@@ -4,6 +4,7 @@ import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import Page404 from './pages/Page404';
 import DashboardPage from './pages/DashboardPage';
+
 import SignOutPage from './pages/SignOutPage';
 import ChatPage from './pages/ChatPage';
 import SettingsPage from './pages/SettingsPage';
@@ -15,6 +16,8 @@ import TrackingOnline from './components/TrackingOnline';
 import BattlePage from './pages/BattlePage';
 import ClassicPage from './pages/ClassicPage';
 import { UserProvider } from './context/UserContext';
+import UserPage from './pages/UserPage';
+import LeaderboardPage from './pages/LeaderboardPage';
 import { AuthAxiosProvider } from './context/AuthAxiosContext';
 
 const App: React.FC = () => {
@@ -32,6 +35,14 @@ const App: React.FC = () => {
                             <Route
                                 path="/dashboard"
                                 Component={DashboardPage}
+                            />
+                            <Route
+                                path="/dashboard/:idUserToView"
+                                Component={UserPage}
+                            />
+                            <Route
+                                path="/leaderboad"
+                                Component={LeaderboardPage}
                             />
                             <Route path="/chat" Component={ChatPage} />
                             <Route path="/signin" Component={SignInPage} />
