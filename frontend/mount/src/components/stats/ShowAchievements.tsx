@@ -42,8 +42,6 @@ function ShowAchievements({ userView }: PresentationUserProps) {
                     withCredentials: true,
                 },
             );
-            console.log('user=' + userView?.id);
-            console.log(response.data);
             setAchiev(response.data);
             return response.data;
         } catch (error) {

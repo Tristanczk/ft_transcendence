@@ -23,7 +23,6 @@ export class FriendsService {
         const friendsAdapted = list.flatMap((friend) => [
             friend.idFriend !== userId ? friend.idFriend : null,
         ]);
-        console.log(friendsAdapted);
         return users
             .filter((user) => user.id !== userId)
             .filter((user) => friendsAdapted.includes(user.id))
