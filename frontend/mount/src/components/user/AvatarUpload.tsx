@@ -2,7 +2,6 @@ import React, { useState, ChangeEvent, useEffect } from 'react';
 import axios from 'axios';
 import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
-import ImageFriend from '../dashboard/friends/ImageFriend';
 
 function AvatarUploader() {
     const [imageUpdate, setImageUpdate] = useState<string | null>(null);
