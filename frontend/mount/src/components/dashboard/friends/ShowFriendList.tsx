@@ -23,7 +23,7 @@ function ShowFriendList({
 }: Props) {
     let i: number = 0;
     if (!friendsList)
-        return <div className="mb-6">You don't have friends yet</div>;
+        return <div className="mb-6">No friends</div>;
 
     const max: number = friendsList.length;
 

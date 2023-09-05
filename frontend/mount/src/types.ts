@@ -44,8 +44,8 @@ export type GameImports = {
 	duration: number;
 	mode: number;
 	won: boolean;
-	playerA: UserGame | null;
-	playerB: UserGame | null;
+	playerA: UserGame;
+	playerB: UserGame;
 }
 
 export type UserGame = {

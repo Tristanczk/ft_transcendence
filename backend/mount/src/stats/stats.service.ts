@@ -150,6 +150,14 @@ export class StatsService {
             true,
         );
         let i: number = data.length;
+		if (data.length === 0) return dataSerie;
+		if (data.length < 30) {
+			const newDataElem: ArrayDataGraph = {
+                x: 'Init',
+                y: 1000,
+            };
+            dataSerie.push(newDataElem);
+		}
         data.forEach((game: GameExtractedDB) => {
             const newDataElem: ArrayDataGraph = {
                 x: i,

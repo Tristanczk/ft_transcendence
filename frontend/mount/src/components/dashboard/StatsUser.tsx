@@ -14,7 +14,7 @@ function StatsUser({ user }: PresentationUserProps) {
         <>
             <h1 className="text-5xl font-extrabold dark:text-white">Games</h1>
             <GlobalStats user={user} />
-            <ShowAchievements user={user} />
+            <ShowAchievements userView={user} />
             <HistoryElo user={user} />
             <HistoryFive user={user} />
         </>

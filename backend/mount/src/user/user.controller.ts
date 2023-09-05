@@ -27,7 +27,13 @@ import { TwoFactorCodeDto } from 'src/auth/dto';
 export class UserController {
     constructor(private userService: UserService) {}
 
-	@UseGuards(JwtGuard)
+    @UseGuards(JwtGuard)
+    @Get('init-2fa')
+    async enable2fa(@GetUser() user: User) {
+        return this.userService.initTwoFactorAuthentication(user);
+    }
+
+    @UseGuards(JwtGuard)
     @Get('me')
     getMe(@GetUser() user: User) {
         return user;
@@ -38,7 +44,7 @@ export class UserController {
         return this.userService.getUserById(userId);
     }
 
-	@UseGuards(JwtGuard)
+    @UseGuards(JwtGuard)
     @Post('avatar')
     @UseInterceptors(
         FileInterceptor('image', {
@@ -64,19 +70,13 @@ export class UserController {
         return this.userService.uploadAvatar(userId, res);
     }
 
-	@UseGuards(JwtGuard)
+    @UseGuards(JwtGuard)
     @Patch()
     editUser(@GetUser('id') userId: number, @Body() dto: EditUserDto) {
         return this.userService.editUser(userId, dto);
     }
 
-	@UseGuards(JwtGuard)
-    @Get('init-2fa')
-    async enable2fa(@GetUser() user: User) {
-        return this.userService.initTwoFactorAuthentication(user);
-    }
-
-	@UseGuards(JwtGuard)
+    @UseGuards(JwtGuard)
     @Post('enable-2fa')
     async enable2faPost(
         @GetUser() user: User,
@@ -93,7 +93,7 @@ export class UserController {
             });
     }
 
-	@UseGuards(JwtGuard)
+    @UseGuards(JwtGuard)
     @Post('disable-2fa')
     async disable2fa(
         @GetUser() user: User,
