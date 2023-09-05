@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
-import { MessageProps } from './Message';
 import { useUserContext } from '../../context/UserContext';
+import { MessageProps } from '../chat/Messages';
 
 export function MessageInput({
     send,
@@ -38,6 +38,7 @@ export function MessageInput({
                                 idSender: (user ? user.id : 0),
                                 idChannel: channel,
                                 message: input,
+                                createdAt: new Date(),
                             });
                             setInput('');
                         }}

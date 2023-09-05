@@ -1,5 +1,5 @@
+import { MessageProps } from '../chat/Messages';
 import { MessageBox } from './MessageBox';
-import { MessageProps } from './Message';
 
 export interface ChatWindowProps {
     messages: MessageProps[];
@@ -18,6 +18,7 @@ export default function ChatWindow({ messages, channel }: ChatWindowProps & { ch
                                 idSender={message.idSender}
                                 idChannel={message.idChannel}
                                 message={message.message}
+                                createdAt={message.createdAt}
                             />
                         );
                     }

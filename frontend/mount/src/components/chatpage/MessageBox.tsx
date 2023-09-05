@@ -1,6 +1,6 @@
 import React from 'react';
-import Message, { MessageProps } from './Message';
 import { useUserContext } from '../../context/UserContext';
+import { MessageProps } from '../chat/Messages';
 
 export function MessageBox({ idSender, idChannel, message }: MessageProps) {
     // user
@@ -23,11 +23,6 @@ export function MessageBox({ idSender, idChannel, message }: MessageProps) {
                 id="msg-0"
             >
                 <div className="flr">
-                    <Message
-                        idSender={idSender}
-                        idChannel={idChannel}
-                        message={message}
-                    />
                 </div>
             </article>
         </div>

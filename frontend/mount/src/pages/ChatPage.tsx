@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import ChatWindow, { ChatWindowProps } from '../components/chatpage/ChatWindow';
-import Message, { MessageProps } from '../components/chatpage/Message';
 import { socket as constSocket } from '../context/WebsocketContext';
 import { Button } from 'flowbite-react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
@@ -11,7 +10,7 @@ import { SelectChannel } from '../components/chatpage/SelectChannel';
 import { useUserContext } from '../context/UserContext';
 import { ChatSelector } from '../components/figma_chatpage/ChatSelector';
 import { Chat } from '../components/figma_chatpage/Chat';
-import Messages from '../components/chat/Messages';
+import Messages, { MessageProps } from '../components/chat/Messages';
 import MessagesHeader from '../components/chat/MessagesHeader';
 import ChatFriendList from '../components/chat/ChatFriendList';
 import ChatListHeader from '../components/chat/ChatListHeader';
@@ -60,6 +59,7 @@ function ChatPage() {
                     idSender: idSender,
                     idChannel: idChannel,
                     message: message,
+                    createdAt: new Date(),
                 };
 
                 setMessages((oldMessages) => [...oldMessages, newMessage]);
@@ -74,22 +74,22 @@ function ChatPage() {
         }
     }, [socket]);
 
-    const onCreateChannel = async (event: any) => {
-        event.preventDefault();
+    // const onCreateChannel = async (event: any) => {
+    //     event.preventDefault();
 
-        if (user) {
-            const reponse = await authAxios.post(
-                '/chat/createChannel',
-                {
-                    idUser: user.id,
-                    name: 'miao',
-                    isPublic: false,
-                },
-                { withCredentials: true },
-            );
-            setChannels((oldChannels) => oldChannels + 1);
-        }
-    };
+    //     if (user) {
+    //         const reponse = await authAxios.post(
+    //             '/chat/createChannel',
+    //             {
+    //                 idUser: user.id,
+    //                 name: 'miao',
+    //                 isPublic: false,
+    //             },
+    //             { withCredentials: true },
+    //         );
+    //         setChannels((oldChannels) => oldChannels + 1);
+    //     }
+    // };
 
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
@@ -141,14 +141,11 @@ function ChatPage() {
             );
             if (!response.data)
                 setMessages([]);
-            console.log(response.data);
             setMessages(response.data);
         };
         
         fetchMessages();
     }, [currentChannel]);
-
-    console.log(messages);
     // return (
     //     <div className="w-96 h-56 rounded-3xl flex-col justify-start items-start gap-2.5 inline-flex">
     //         <ChatSelector friends={friendsList} />
@@ -182,7 +179,7 @@ function ChatPage() {
                         <ChatListHeader />
                         <ChatFriendList friends={friendsList} chatSelector={setCurrentChat}/>
                         <MessagesHeader currentChat={currentChat}/>
-                        <Messages />
+                        <Messages currentChat={currentChat}/>
                         <MessageInput />
                     </div>
                 </div>

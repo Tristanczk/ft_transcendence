@@ -24,9 +24,10 @@ export class ChatController {
 		return this.chatService.getChannels(idUser);
 	}
 
-	@Get(':id')
-	async getChannelById(@Param('id', ParseIntPipe) channelId: number) {
-		return this.chatService.getChannelById(channelId);
+	@Get('getChannelByUsers')
+	async getChannelByUsers(@Body() {idAdmin, idUser} : {idAdmin: number, idUser:number}): Promise<ChannelDto | null> {
+		console.log("getChannelByUsers controller");
+		return this.chatService.getChannelByUsers(idAdmin, idUser);
 	}
 
 	@Post('joinChannel')

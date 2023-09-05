@@ -26,7 +26,8 @@ export class ChatService {
 
         await this.prisma.channels.create({
             data: {
-                idAdmin: [createChannelDto.idUser],
+                idAdmin: [createChannelDto.idUser[0]],
+                idUsers: [...createChannelDto.idUser],
                 isPublic: createChannelDto.isPublic,
                 password: createChannelDto.password,
                 name: createChannelDto.name,
@@ -40,14 +41,36 @@ export class ChatService {
         };
     }
 
-    async getChannelById(channelId: number) {
+    async getChannelByUsers(
+        idAdmin: number | undefined,
+        idUser: number | undefined,
+    ): Promise<ChannelDto | null> {
+        console.log("idAdmin: " + idAdmin);
+        console.log("idUser: " + idUser);
+        if (idAdmin === undefined || idUser === undefined)
+            return null;
         try {
-            const channel = await this.prisma.channels.findUnique({
+            const channel = await this.prisma.channels.findFirst({
                 where: {
-                    id: channelId,
+
+                    idUsers: {
+                        hasEvery: [idUser, idAdmin],
+                    },
+                    isPublic: false,
                 },
             });
-            return channel;
+            console.log("channel: " + channel);
+            console.log("channel.id: " + channel.id);
+            console.log("channel.name: " + channel.name);
+            console.log("channel.isPublic: " + channel.isPublic);
+            console.log("channel.password: " + channel.password);
+
+            const channelDto: ChannelDto = {
+                idChannel: channel.id,
+                name: channel.name,
+            };
+
+            return (channelDto);
         } catch (error) {
             throw new NotFoundException('Channel not found');
         }
@@ -142,8 +165,7 @@ export class ChatService {
                     id: idUser,
                 },
             });
-        } catch (error) {
-        }
+        } catch (error) {}
 
         try {
             channels = await this.prisma.channels.findMany({
@@ -153,8 +175,7 @@ export class ChatService {
                     },
                 },
             });
-        } catch (error) {
-        }
+        } catch (error) {}
 
         let channelDtos: ChannelDto[] = [];
 
@@ -248,10 +269,8 @@ export class ChatService {
                     id: idUser,
                 },
             });
-            if (!channel.idUsers.includes(idUser))
-                return null;
-        } catch (error) {
-        }
+            if (!channel.idUsers.includes(idUser)) return null;
+        } catch (error) {}
 
         const messages = await this.prisma.message.findMany({
             where: {

@@ -1,4 +1,4 @@
-import { MessageProps } from "../chatpage/Message";
+import { MessageProps } from "../chat/Messages";
 
 export function Chat({ currentChannel, messages }: { currentChannel: number, messages: MessageProps[] }) {
 	return (
