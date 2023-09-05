@@ -33,7 +33,6 @@ const AuthAxiosProvider: React.FC<AuthAxiosProviderProps> = ({ children }) => {
     authAxios.interceptors.response.use(
         (response) => response,
         async (error: any) => {
-            console.log('interceptor error', error);
             const originalRequest = error.config;
             if (
                 error.response &&
@@ -48,7 +47,6 @@ const AuthAxiosProvider: React.FC<AuthAxiosProviderProps> = ({ children }) => {
                     });
                     return axios.request(originalRequest);
                 } catch (refreshError) {
-                    console.log('user logout');
                     logoutUser();
                     throw refreshError;
                 }

@@ -11,7 +11,7 @@ interface Props {
 function ImageFriend({ userId, textImg, size }: Props) {
     const [imgY, setImgY] = useState<any>();
     const authAxios = useAuthAxios();
-	const inputClassName = `w-${size} h-${size} rounded-full`;
+    const inputClassName = `w-${size} h-${size} rounded-full`;
 
     useEffect(() => {
         const fetchImg = async () => {
@@ -42,10 +42,10 @@ function ImageFriend({ userId, textImg, size }: Props) {
 
     return imgY ? (
         <img
-                className={inputClassName}
-                src={`data:image/png;base64,${imgY}`}
-                alt={textImg}
-            />
+            className={inputClassName}
+            src={`data:image/png;base64,${imgY}`}
+            alt={textImg}
+        />
     ) : (
         <>vide</>
     );

@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import ToggleButton from '../components/ToggleButton';
 import Button from '../components/Button';
 import { NAVBAR_HEIGHT } from '../constants';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
 import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
 import AvatarUploader from '../components/user/AvatarUpload';
-import ImageFriend from '../components/dashboard/friends/ImgFriend';
 
 interface Inputs {
     username: string;
@@ -29,11 +28,9 @@ const SettingsPage: React.FC = () => {
     const [twoFactor, setTwoFactor] = useState<string | undefined>();
     const authAxios = useAuthAxios();
 
-    console.log('user1', user);
     const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(
         user ? user.twoFactorAuthentication : false,
     );
-    console.log('isTwoFactorEnabled', isTwoFactorEnabled);
 
     const {
         handleSubmit,
@@ -89,7 +86,6 @@ const SettingsPage: React.FC = () => {
             setError(undefined);
             updateUser({ twoFactorAuthentication: true });
         } catch (error: any) {
-            console.log('error', error.response);
             setError(error.response.data);
         }
     };
@@ -108,13 +104,11 @@ const SettingsPage: React.FC = () => {
             setError(undefined);
             updateUser({ twoFactorAuthentication: false });
         } catch (error: any) {
-            console.log('error', error.response);
             setError(error.response.data);
         }
     };
 
     const onSubmit = async (data: Inputs) => {
-        console.log('data', data);
         try {
             await authAxios.patch(
                 '/users',
@@ -146,7 +140,6 @@ const SettingsPage: React.FC = () => {
             setUpdate(true);
         } catch (error: any) {
             setErrorEdit(error.response.data);
-            console.error(error);
         }
     };
 
