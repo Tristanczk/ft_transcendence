@@ -8,6 +8,7 @@ import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
 import AvatarUploader from '../components/user/AvatarUpload';
+import ImageFriend from '../components/dashboard/friends/ImgFriend';
 
 interface Inputs {
     username: string;
@@ -176,7 +177,7 @@ const SettingsPage: React.FC = () => {
                                 Failed to update information: {errorEdit}
                             </p>
                         )}
-                        {/* <AvatarUploader /> */}
+                        <AvatarUploader />
                         <form
                             className="space-y-4 md:space-y-6"
                             onSubmit={handleSubmit(onSubmit)}
