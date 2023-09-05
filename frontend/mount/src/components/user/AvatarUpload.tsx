@@ -1,18 +1,17 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import axios from 'axios';
 import { useUserContext } from '../../context/UserContext';
-import { useAuthAxios } from '../../context/AuthAxiosContext';
 
 function AvatarUploader() {
     const [imageUpdate, setImageUpdate] = useState<string | null>(null);
-    const [img, setImg] = useState<string>();
+    const [img, setImg] = useState<string | null>();
     const { user, updateUser } = useUserContext();
-    const authAxios = useAuthAxios();
 
     useEffect(() => {
         const fetchImg = async () => {
+            if (!user) return;
             try {
-                const response = await authAxios.get(
+                const response = await axios.get(
                     `http://localhost:3333/users/img/${user?.id}`,
                     {
                         params: { id: user?.id },
@@ -27,7 +26,6 @@ function AvatarUploader() {
                     ),
                 );
                 setImg(base64Image);
-                return response.data;
             } catch (error) {
                 console.error(error);
             }
@@ -66,11 +64,17 @@ function AvatarUploader() {
 
     return (
         <div className="relative w-32">
-            <img
-                className="h-32 rounded"
-                src={imageUpdate ? imageUpdate : `data:image/png;base64,${img}`}
-                alt="avatar"
-            />
+            {img && (
+                <img
+                    className="h-32 rounded"
+                    src={
+                        imageUpdate
+                            ? imageUpdate
+                            : `data:image/png;base64,${img}`
+                    }
+                    alt="avatar"
+                />
+            )}
             <label className="block text-sm font-semibold py-1 text-gray-900 dark:text-white absolute bottom-0 left-0 w-full text-center bg-white bg-opacity-60 cursor-pointer">
                 Update avatar
                 <input

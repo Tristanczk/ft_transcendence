@@ -23,7 +23,6 @@ export const UserProvider = ({ children }: any) => {
 
     useEffect(() => {
         const fetchUser = async () => {
-            console.log('user context');
             try {
                 const response = await authAxios.get('/users/me', {
                     withCredentials: true,
@@ -40,17 +39,15 @@ export const UserProvider = ({ children }: any) => {
                         });
                         setUser(response.data);
                     } catch (refreshError) {
-                        console.log('user logout');
                         setUser(null);
                     }
                 } else {
-                    console.log(error);
                     setUser(null);
                 }
             }
         };
         fetchUser();
-    }, []);
+    }, [authAxios]);
 
     const loginUser = (userData: User | null) => {
         setUser(userData);

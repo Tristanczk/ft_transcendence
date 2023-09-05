@@ -26,7 +26,6 @@ const SignInPage42: React.FC = () => {
                     'http://localhost:3333/auth/signin/42',
                     { params: { code }, withCredentials: true },
                 );
-                console.log('response', response.data);
                 if (response.data.user.twoFactorAuthentication) {
                     setUsername(response.data.user.nickname);
                     setTwoFactor(true);
