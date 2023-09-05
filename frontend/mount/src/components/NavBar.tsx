@@ -71,7 +71,7 @@ const NavLinks: React.FC<{ current: string }> = ({ current }) => {
                     link="/leaderboad"
                     icon="/pie-chart.svg"
                 />
-				<NavLink
+                <NavLink
                     current={current}
                     title="Chat"
                     link="/chat"
@@ -102,7 +102,7 @@ const MenuLink: React.FC<{
 
 function UserMenu() {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
-	const [showInfo, setShowInfo] = useState<boolean>(true);
+    const [showInfo, setShowInfo] = useState<boolean>(true);
     const { user } = useUserContext();
 
     return (
@@ -114,7 +114,7 @@ function UserMenu() {
             <OutsideClickHandler
                 onOutsideClick={() => {
                     setShowInfo(false);
-					setUserMenuOpen(false);
+                    setUserMenuOpen(false);
                 }}
             >
                 <div
@@ -148,11 +148,11 @@ function UserMenu() {
                         >
                             <div className="px-4 py-3">
                                 <span className="block text-sm text-white">
-									{user?.nickname}
+                                    {user?.nickname}
                                 </span>
-                                <span className="block text-sm truncate text-gray-400">
+                                {/* <span className="block text-sm truncate text-gray-400">
                                     login if different
-                                </span>
+                                </span> */}
                             </div>
                             <ul className="py-2">
                                 <MenuLink

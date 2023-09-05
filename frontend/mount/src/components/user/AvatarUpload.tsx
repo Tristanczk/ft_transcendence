@@ -5,9 +5,9 @@ import { useAuthAxios } from '../../context/AuthAxiosContext';
 import ImageFriend from '../dashboard/friends/ImageFriend';
 
 function AvatarUploader() {
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [imageUpdate, setImageUpdate] = useState<string | null>(null);
     const [img, setImg] = useState<string>();
-    const { user } = useUserContext();
+    const { user, updateUser } = useUserContext();
     const authAxios = useAuthAxios();
 
     useEffect(() => {
@@ -34,34 +34,31 @@ function AvatarUploader() {
             }
         };
         fetchImg();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [user]);
+
     const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const selectedImage = e.target.files?.[0];
-
+        updateUser({ updateAvatar: false });
         if (selectedImage) {
             const reader = new FileReader();
             reader.onload = () => {
-                setImagePreview(reader.result as string);
+                setImageUpdate(reader.result as string);
             };
             reader.readAsDataURL(selectedImage);
         }
 
-        // console.log(selectedImage)
         if (selectedImage) {
             let formData = new FormData();
 
             formData.append('image', selectedImage);
 
             try {
-                // console.log('try send photo')
-                const response = await axios.post(
+                await axios.post(
                     `http://localhost:3333/users/avatar`,
                     formData,
                     { withCredentials: true },
                 );
-
-                // console.log(response)
+                updateUser({ updateAvatar: true });
             } catch (error) {
                 console.error(error);
             }
@@ -69,35 +66,18 @@ function AvatarUploader() {
     };
 
     return (
-        <div style={{ position: 'relative' }}>
+        <div className="relative w-32">
             <img
-                className="w-24 h-24 rounded"
-                src={`data:image/png;base64,${img}`}
+                className="h-32 rounded"
+                src={imageUpdate ? imageUpdate : `data:image/png;base64,${img}`}
                 alt="avatar"
             />
-            <label
-                style={{
-                    position: 'absolute',
-                    top: 80,
-                    left: 0,
-                    width: 96,
-                    height: 16,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'rgba(0, 0, 0, 0.6)', // Transparency
-                    color: 'white', // Text color
-                    cursor: 'pointer', // Make it look clickable
-                }}
-                className="w-24 h-24 rounded"
-            >
-                Choose File
+            <label className="block text-sm font-semibold py-1 text-gray-900 dark:text-white absolute bottom-0 left-0 w-full text-center bg-white bg-opacity-60 cursor-pointer">
+                Update avatar
                 <input
                     type="file"
                     accept="image/*"
-                    style={{
-                        display: 'none', // Hide the default input
-                    }}
+                    className="hidden"
                     onChange={handleImageChange}
                 />
             </label>
