@@ -1,7 +1,7 @@
 export interface CreateMessageDto {
 	idChannel: number;
 	idSender: number;
-	content: string;
+	message: string;
 }
 
 export interface DeleteMessageDto {

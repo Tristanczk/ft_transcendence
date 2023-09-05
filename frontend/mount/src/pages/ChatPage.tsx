@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import ChatWindow, { ChatWindowProps } from '../components/chatpage/ChatWindow';
-import { MessageProps } from '../components/chatpage/Message';
-import { MessageInput } from '../components/chatpage/MessageInput';
+import Message, { MessageProps } from '../components/chatpage/Message';
 import { socket as constSocket } from '../context/WebsocketContext';
 import { Button } from 'flowbite-react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
@@ -12,6 +11,11 @@ import { SelectChannel } from '../components/chatpage/SelectChannel';
 import { useUserContext } from '../context/UserContext';
 import { ChatSelector } from '../components/figma_chatpage/ChatSelector';
 import { Chat } from '../components/figma_chatpage/Chat';
+import Messages from '../components/chat/Messages';
+import MessagesHeader from '../components/chat/MessagesHeader';
+import ChatFriendList from '../components/chat/ChatFriendList';
+import ChatListHeader from '../components/chat/ChatListHeader';
+import MessageInput from '../components/chat/MessageInput';
 
 function ChatPage() {
     const [socket, setSocket] = useState<Socket | undefined>(undefined);
@@ -145,10 +149,48 @@ function ChatPage() {
     }, [currentChannel]);
 
     console.log(messages);
+    // return (
+    //     <div className="w-96 h-56 rounded-3xl flex-col justify-start items-start gap-2.5 inline-flex">
+    //         <ChatSelector friends={friendsList} />
+    //         <Chat currentChannel={currentChannel} messages={messages} />
+    //     </div>
+    // );
+
+    const [currentChat, setCurrentChat] = useState<UserSimplified | null >(null);// or channel
+
+    const [isVisible, setIsVisible] = useState(false);
+
+    const toggleVisibility = () => {
+        setIsVisible(!isVisible);
+    };
+
     return (
-        <div className="w-96 h-56 rounded-3xl flex-col justify-start items-start gap-2.5 inline-flex">
-            <ChatSelector friends={friendsList} />
-            <Chat currentChannel={currentChannel} messages={messages} />
+        <div className="min-h-screen flex items-center justify-center">
+            <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onClick={toggleVisibility}
+            >
+                Toggle
+            </button>
+            <div className={`fixed inset-y-0 right-0 w-100 text-white pt-24 transform ${isVisible ? 'translate-x-0 transition-transform duration-500'
+                : 'translate-x-full transition-transform duration-200'
+                }`}
+            >
+
+                <div className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex" style={{ marginRight: "36px" }}>
+                    <div className="flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl">
+                        <ChatListHeader />
+                        <ChatFriendList friends={friendsList} chatSelector={setCurrentChat}/>
+                        <MessagesHeader currentChat={currentChat}/>
+                        <Messages />
+                        <MessageInput />
+                    </div>
+                </div>
+            </div>
+
+
+
+
         </div>
     );
 }

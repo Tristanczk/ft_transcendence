@@ -192,14 +192,14 @@ export class ChatService {
             data: {
                 idChannel: message.idChannel,
                 idSender: message.idSender,
-                content: message.content,
+                message: message.message,
             },
         });
 
         return {
             idChannel: message.idChannel,
             idSender: message.idSender,
-            content: message.content,
+            message: message.message,
         };
     }
 
@@ -263,7 +263,7 @@ export class ChatService {
             id: message.id,
             idChannel: message.idChannel,
             idSender: message.idSender,
-            message: message.content,
+            message: message.message,
             createdAt: message.createdAt,
         }));
         return messageDtos;
