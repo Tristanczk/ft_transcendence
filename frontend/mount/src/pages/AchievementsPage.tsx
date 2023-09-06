@@ -20,7 +20,7 @@ function AchievementPage() {
     async function getGamesList() {
         try {
             const response = await axios.get(
-                `http://localhost:3333/games/achiev/${user?.id}`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/games/achiev/${user?.id}`,
                 {
                     withCredentials: true,
                 },

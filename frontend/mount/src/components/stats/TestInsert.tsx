@@ -6,7 +6,7 @@ function TestInsert() {
         async function doMe() {
             // try {
             // 	const response = await axios.get(
-            // 		`http://localhost:3333/stats/test/`,
+            // 		`http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/stats/test/`,
             // 		{
             // 			withCredentials: true,
             // 		},
@@ -19,7 +19,7 @@ function TestInsert() {
 
             try {
                 const response = await axios.post(
-                    `http://localhost:3333/games/init/`,
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/games/init/`,
                     {
                         idPlayerB: 2,
                     },

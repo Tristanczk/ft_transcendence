@@ -24,7 +24,7 @@ interface PingProps {
 @Injectable()
 @WebSocketGateway({
     cors: {
-        origin: ['http://localhost:3000'],
+        origin: [`http://${process.env.REACT_APP_SERVER_ADDRESS}:3000`],
     },
 })
 export class GatewayService implements OnModuleInit {
@@ -64,7 +64,7 @@ export class GatewayService implements OnModuleInit {
                 });
             }
         } catch (error) {
-			return ;
+            return;
             throw error;
         }
     }
@@ -76,17 +76,16 @@ export class GatewayService implements OnModuleInit {
         );
         // console.log('ft_left=' + userId + ', nb_tab_left=' + nbConnexions);
         if (nbConnexions > 0) return;
-		try {
-			await this.prisma.user.update({
-				where: { id: userId },
-				data: { isConnected: false },
-			});
-			this.server.emit('updateStatus', { idUser: userId, type: 'leave' });	
-		}
-		catch (error) {
-			return ;
-			throw error
-		}
+        try {
+            await this.prisma.user.update({
+                where: { id: userId },
+                data: { isConnected: false },
+            });
+            this.server.emit('updateStatus', { idUser: userId, type: 'leave' });
+        } catch (error) {
+            return;
+            throw error;
+        }
     }
 
     @SubscribeMessage('ping')
@@ -118,6 +117,6 @@ export class GatewayService implements OnModuleInit {
             }
         });
         this.socketArray = this.socketArray.filter((arr) => arr.id !== -1);
-		// console.log(this.socketArray)
+        // console.log(this.socketArray)
     }
 }

@@ -33,7 +33,7 @@ const DashboardPage: React.FC = () => {
     async function getLeaderboard() {
         try {
             const response = await axios.get(
-                `http://localhost:3333/stats/leaderboard/`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/stats/leaderboard/`,
                 {
                     withCredentials: true,
                 },
@@ -53,13 +53,17 @@ const DashboardPage: React.FC = () => {
                         <h1 className="text-5xl font-extrabold dark:text-white">
                             Leaderboard
                         </h1>
-                        {leaderboard && leaderboard.length > 0 ? (leaderboard.map((elem) => (
-                            <ShowUserLeaderboard
-                                userView={elem}
-                                rank={rank++}
-                                key={elem.id}
-                            />
-                        ))) : (<div className="mt-4">No member yet</div>)}
+                        {leaderboard && leaderboard.length > 0 ? (
+                            leaderboard.map((elem) => (
+                                <ShowUserLeaderboard
+                                    userView={elem}
+                                    rank={rank++}
+                                    key={elem.id}
+                                />
+                            ))
+                        ) : (
+                            <div className="mt-4">No member yet</div>
+                        )}
                     </article>
                 </div>
             </main>

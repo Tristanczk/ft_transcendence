@@ -31,7 +31,7 @@ const SignUpPage: React.FC = () => {
     const onSubmit = async (data: Inputs) => {
         try {
             const response = await axios.post(
-                'http://localhost:3333/auth/signup',
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/auth/signup`,
                 {
                     nickname: data.username,
                     email: data.email,

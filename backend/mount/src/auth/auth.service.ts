@@ -77,6 +77,10 @@ export class AuthService {
 
     async generateTokens(user: User, res: Response) {
         const accessToken = await this.signToken(user.id, user.login, true);
+        console.log(
+            'domain for site',
+            this.config.get('REACT_APP_SERVER_ADDRESS'),
+        );
         res.cookie(
             this.config.get('JWT_ACCESS_TOKEN_COOKIE'),
             accessToken.JWTToken,
@@ -84,6 +88,7 @@ export class AuthService {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
+                domain: '10.34.11.10:3000',
             },
         );
         const refreshToken = await this.signToken(user.id, user.login, false);
@@ -94,6 +99,7 @@ export class AuthService {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
+                domain: '10.34.11.10:3000',
             },
         );
         const hash = await argon.hash(refreshToken.JWTToken);
@@ -112,7 +118,7 @@ export class AuthService {
                     client_id: this.config.get('REACT_APP_API42_UID'),
                     client_secret: this.config.get('API42_SECRET'),
                     code: code,
-                    redirect_uri: 'http://localhost:3000/signin42',
+                    redirect_uri: `http://${process.env.REACT_APP_SERVER_ADDRESS}:3000/signin42`,
                 },
                 { headers: { 'Content-Type': 'application/json' } },
             );
@@ -208,11 +214,13 @@ export class AuthService {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
+                domain: this.config.get('REACT_APP_SERVER_ADDRESS'),
             });
             res.clearCookie(this.config.get('JWT_REFRESH_TOKEN_COOKIE'), {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
+                domain: this.config.get('REACT_APP_SERVER_ADDRESS'),
             });
             await this.prisma.user.update({
                 where: { id: userId },
