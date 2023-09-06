@@ -9,7 +9,7 @@ import { Server } from 'socket.io';
 import { PrismaService } from '../prisma/prisma.service';
 import { Interval } from '@nestjs/schedule';
 
-interface Props {
+interface SocketProps {
     id: number;
     idConnection: string;
     nb: number;
@@ -30,7 +30,7 @@ interface PingProps {
 export class GatewayService implements OnModuleInit {
     constructor(private prisma: PrismaService) {}
 
-    array: Props[] = [];
+    socketArray: SocketProps[] = [];
 
     @WebSocketServer()
     server: Server;
@@ -48,10 +48,10 @@ export class GatewayService implements OnModuleInit {
                 where: { id: body.id },
                 data: { isConnected: true },
             });
-            const alreadyConnected = this.array.findIndex(
+            const alreadyConnected = this.socketArray.findIndex(
                 (a) => a.id === body.id,
             );
-            this.array.push({
+            this.socketArray.push({
                 id: body.id,
                 idConnection: body.idConnection,
                 nb: 0,
@@ -69,7 +69,7 @@ export class GatewayService implements OnModuleInit {
     }
 
     async userLeave(userId: number) {
-        const nbConnexions = this.array.reduce(
+        const nbConnexions = this.socketArray.reduce(
             (acc, cur) => acc + (cur.id === userId ? 1 : 0),
             0,
         );
@@ -91,12 +91,12 @@ export class GatewayService implements OnModuleInit {
     async handlePing(@MessageBody() body: PingProps) {
         const id: number = body.id;
         if (id === -1) return;
-        const l = this.array.findIndex(
+        const l = this.socketArray.findIndex(
             (a) => a.idConnection === body.idConnection,
         );
         if (l !== -1) {
-            this.array[l].nb++;
-            this.array[l].date = Date.now();
+            this.socketArray[l].nb++;
+            this.socketArray[l].date = Date.now();
         } else {
             this.userArrive(body);
         }
@@ -106,7 +106,7 @@ export class GatewayService implements OnModuleInit {
     async handleInterval() {
         const timeNow: number = Date.now();
         let idTmp: number = -1;
-        this.array.forEach((arr) => {
+        this.socketArray.forEach((arr) => {
             if (arr.id !== -1) {
                 if (timeNow - arr.date > 3000) {
                     idTmp = arr.id;
@@ -115,6 +115,7 @@ export class GatewayService implements OnModuleInit {
                 }
             }
         });
-        this.array = this.array.filter((arr) => arr.id !== -1);
+        this.socketArray = this.socketArray.filter((arr) => arr.id !== -1);
+		// console.log(this.socketArray)
     }
 }
