@@ -1,5 +1,6 @@
 import {
     ConflictException,
+    ForbiddenException,
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
@@ -68,7 +69,6 @@ export class GamesService {
             this.dataGamesPlaying.push(thisGame);
             return newGame.id;
         } catch (error) {
-            console.log(error);
             throw new ConflictException('Could not create game');
         }
     }
@@ -278,7 +278,7 @@ export class GamesService {
             gamesPlayerA = await this.getGamesPlayer(playerA.id, -1, true);
             gamesPlayerB = await this.getGamesPlayer(playerB.id, -1, true);
         } catch (error) {
-            console.log(error);
+			throw new ForbiddenException('User does not exists')
             return;
         }
 

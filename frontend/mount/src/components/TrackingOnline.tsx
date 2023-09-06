@@ -16,7 +16,7 @@ function TrackingOnline() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            socket.emit('ping', userObj.id);
+            socket.emit('ping', userObj);
         }, 2000);
 
         return () => {
