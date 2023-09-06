@@ -151,7 +151,7 @@ export class GamesService {
         	return transformedTab;
 		}
 		catch (error) {
-			throw error
+			return null;
 		} 
 	}
 

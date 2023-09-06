@@ -13,7 +13,6 @@ const UserPage: React.FC = () => {
     let userId: number = -1;
     if (idUserToView) {
         userId = parseInt(idUserToView);
-		console.log('parsed=' + userId)
 		if (!userId) userId = -1;
     }
 
@@ -25,7 +24,6 @@ const UserPage: React.FC = () => {
                     { withCredentials: true },
                 );
                 setUser(response.data);
-				console.log(response.data)
             } catch (error) {
                 setUser(null);
             }
