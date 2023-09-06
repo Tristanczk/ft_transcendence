@@ -34,12 +34,12 @@ export function MessageInput({
                             if (input === '' || channel === 0) return;
                             event.preventDefault();
                             console.log('send function called');
-                            send({
-                                idSender: (user ? user.id : 0),
-                                idChannel: channel,
-                                message: input,
-                                createdAt: new Date(),
-                            });
+                            // send({
+                            //     idSender: (user ? user.id : 0),
+                            //     idChannel: channel,
+                            //     message: input,
+                            //     createdAt: new Date(),
+                            // });
                             setInput('');
                         }}
                     >

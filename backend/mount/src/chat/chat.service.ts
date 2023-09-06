@@ -10,6 +10,7 @@ import {
 import { JoinChannelDto } from './dto/joinchannel.dto';
 import { LeaveChannelDto } from './dto/leavechannel.dto';
 import { ChannelDto } from './dto/channel.dto';
+import { GetChannelDto } from './dto/getchannel.dto';
 
 @Injectable()
 export class ChatService {
@@ -42,28 +43,20 @@ export class ChatService {
     }
 
     async getChannelByUsers(
-        idAdmin: number | undefined,
-        idUser: number | undefined,
+        getChannel: GetChannelDto,
     ): Promise<ChannelDto | null> {
-        console.log("idAdmin: " + idAdmin);
-        console.log("idUser: " + idUser);
-        if (idAdmin === undefined || idUser === undefined)
+        console.log("getChannelByUsers service " + getChannel.idAdmin + " " + getChannel.idUser);
+        if (getChannel.idAdmin === undefined || getChannel.idUser === undefined)
             return null;
         try {
             const channel = await this.prisma.channels.findFirst({
                 where: {
-
                     idUsers: {
-                        hasEvery: [idUser, idAdmin],
+                        hasEvery: [Number(getChannel.idAdmin), Number(getChannel.idUser)],
                     },
                     isPublic: false,
                 },
             });
-            console.log("channel: " + channel);
-            console.log("channel.id: " + channel.id);
-            console.log("channel.name: " + channel.name);
-            console.log("channel.isPublic: " + channel.isPublic);
-            console.log("channel.password: " + channel.password);
 
             const channelDto: ChannelDto = {
                 idChannel: channel.id,
@@ -72,8 +65,9 @@ export class ChatService {
 
             return (channelDto);
         } catch (error) {
-            throw new NotFoundException('Channel not found');
+            console.log(error);
         }
+        return null;
     }
 
     async joinChannel(joinChannel: JoinChannelDto) {

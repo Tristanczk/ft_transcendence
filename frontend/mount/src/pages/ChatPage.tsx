@@ -55,15 +55,15 @@ function ChatPage() {
                 message: string;
             }) => {
                 console.log(idSender);
-                const newMessage: MessageProps = {
-                    idSender: idSender,
-                    idChannel: idChannel,
-                    message: message,
-                    createdAt: new Date(),
-                };
+                // const newMessage: MessageProps = {
+                //     idSender: idSender,
+                //     idChannel: idChannel,
+                //     message: message,
+                //     createdAt: new Date(),
+                // };
 
-                setMessages((oldMessages) => [...oldMessages, newMessage]);
-                console.log('setting oldmessages to message');
+                // setMessages((oldMessages) => [...oldMessages, newMessage]);
+                // console.log('setting oldmessages to message');
             };
 
             socket.on('message', messageListener);
@@ -180,7 +180,7 @@ function ChatPage() {
                         <ChatFriendList friends={friendsList} chatSelector={setCurrentChat}/>
                         <MessagesHeader currentChat={currentChat}/>
                         <Messages currentChat={currentChat}/>
-                        <MessageInput />
+                        <MessageInput currentChat={currentChat} />
                     </div>
                 </div>
             </div>

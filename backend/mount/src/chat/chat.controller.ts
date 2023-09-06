@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChannelDto } from './dto/createchannel.dto';
 import { EditChannelDto } from './dto/editchannel.dto';
@@ -6,6 +6,8 @@ import { CreateMessageDto, DeleteMessageDto, MessageDto } from './dto/message.dt
 import { JoinChannelDto } from './dto/joinchannel.dto';
 import { LeaveChannelDto } from './dto/leavechannel.dto';
 import { ChannelDto } from './dto/channel.dto';
+import { query } from 'express';
+import { GetChannelDto } from './dto/getchannel.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -25,9 +27,10 @@ export class ChatController {
 	}
 
 	@Get('getChannelByUsers')
-	async getChannelByUsers(@Body() {idAdmin, idUser} : {idAdmin: number, idUser:number}): Promise<ChannelDto | null> {
+	async getChannelByUsers(@Query() getChannel: GetChannelDto): Promise<ChannelDto | null> {
 		console.log("getChannelByUsers controller");
-		return this.chatService.getChannelByUsers(idAdmin, idUser);
+		console.log(getChannel);
+		return this.chatService.getChannelByUsers(getChannel);
 	}
 
 	@Post('joinChannel')

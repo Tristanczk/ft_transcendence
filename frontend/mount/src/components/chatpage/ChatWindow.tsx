@@ -14,6 +14,7 @@ export default function ChatWindow({ messages, channel }: ChatWindowProps & { ch
                     if (message.idChannel === channel) {
                         return (
                             <MessageBox
+                                id={message.id}
                                 key={index}
                                 idSender={message.idSender}
                                 idChannel={message.idChannel}

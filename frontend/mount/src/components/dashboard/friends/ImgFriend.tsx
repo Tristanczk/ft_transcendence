@@ -5,11 +5,12 @@ interface Props {
     userId: number;
     textImg: string;
     size: number;
+    customClassName?: string;
 }
 
-function ImageFriend({ userId, textImg, size }: Props) {
+function ImageFriend({ userId, textImg, size, customClassName }: Props) {
     const [imgY, setImgY] = useState<any>();
-    const inputClassName = `w-${size} h-${size} rounded-full`;
+    const inputClassName = customClassName ?  customClassName : `w-${size} h-${size} rounded-full`;
 
     useEffect(() => {
         fetchImg();
