@@ -211,11 +211,7 @@ export class ChatService {
             },
         });
 
-        return {
-            idChannel: message.idChannel,
-            idSender: message.idSender,
-            message: message.message,
-        };
+        return newMessage;
     }
 
     async deleteMessage(idUser: number, message: DeleteMessageDto) {

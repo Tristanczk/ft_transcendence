@@ -3,8 +3,8 @@ import axios from 'axios';
 
 interface Props {
     userId: number;
-    textImg: string;
-    size: number;
+    textImg?: string;
+    size?: number;
     customClassName?: string;
 }
 

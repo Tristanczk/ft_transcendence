@@ -1,43 +1,44 @@
-import { ChangeEvent, useState } from "react";
-import { UserSimplified } from "../../types";
-import { useUserContext } from "../../context/UserContext";
-import { useAuthAxios } from "../../context/AuthAxiosContext";
+import { ChangeEvent, useState } from 'react';
+import { useUserContext } from '../../context/UserContext';
+import { useAuthAxios } from '../../context/AuthAxiosContext';
 
-export default function MessageInput({currentChat}: {currentChat: UserSimplified | null}) {
-	const [input, setInput] = useState('');
+export default function MessageInput({ idChannel }: { idChannel: number }) {
+    const [input, setInput] = useState('');
     const { user } = useUserContext();
-	const authAxios = useAuthAxios();
+    const authAxios = useAuthAxios();
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+		console.log('input: ', event.target.value);
         setInput(event.target.value);
     };
 
-	const onClick = () => {
-		const response = authAxios.post('/chat/sendMessage', {
-			idChannel: currentChat?.id,
-			idSender: user?.id,
-			content: input,
-		}, { withCredentials: true
-		})
-	};
+    const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		console.log('sending message', input, ' miao ' ,idChannel);
+        if (input === '') return;
+        setInput('');
+        authAxios.post(
+            '/chat/sendMessage',
+            {
+                idChannel: idChannel,
+                idSender: user?.id,
+                message: input,
+            },
+            { withCredentials: true },
+        );
+    };
 
     return (
         <div className="px-4 pt-4 mb-2 sm:mb-0 flex items-center pb-4 rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-xl">
             <input
-				onChange={onChange}
-				value={input}
+                onChange={onChange}
+                value={input}
                 type="text"
                 placeholder="Write your message!"
                 className="focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-6 bg-white rounded-3xl py-3 pr-12 flex-grow border-white"
             ></input>
-            <div className="relaconst [input, setInput] = useState('');
-    const { user } = useUserContext();
-
-    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setInput(event.target.value);
-    };tive">
+            <div className="relative">
                 <button
-					onClick={() => onClick}
                     type="button"
                     className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none absolute right-2 top-1/2 transform -translate-y-1/2"
                 >
@@ -58,6 +59,7 @@ export default function MessageInput({currentChat}: {currentChat: UserSimplified
                 </button>
             </div>
             <button
+                onClick={(event) => onClick(event)}
                 type="button"
                 className="inline-flex items-center justify-center rounded-3xl px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-600 hover:bg-white hover:text-blue-600 focus:outline-none ml-2"
             >

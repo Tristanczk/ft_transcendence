@@ -12,82 +12,22 @@ export interface MessageProps {
     createdAt: Date;
 }
 
-export default function Messages({
-    currentChat,
-}: {
-    currentChat: UserSimplified | null;
-}) {
+export interface MessageGroup {
+    idSender: number;
+    messages: MessageProps[];
+  }
+  interface Message {
+    messages: MessageProps[];
+  }
+
+export default function Messages({ messages }: { messages: MessageProps[] }) {
     const { user } = useUserContext();
-    const authAxios = useAuthAxios();
-    let [channel, setChannel] = useState<number>(0);
-    const [messages, setMessages] = useState<MessageProps[]>([]);
 
-    useEffect(() => {
-        const fetchChannel = async () => {
-            console.log('fetching channels for', user?.id, currentChat?.id);
-            const response = await authAxios.get(
-                'http://localhost:3333/chat/getChannelByUsers',
-                {
-                    params: { idAdmin: user?.id, idUser: currentChat?.id },
-                    withCredentials: true,
-                },
-            );
-            console.log('fetching channel response', response);
-            if (response.data.length === 0) {
-                if (user && currentChat) {
-                    console.log('creating channel', user?.id, currentChat?.id);
-                    const createChannel = async () => {
-                        const response = await authAxios.post(
-                            '/chat/createChannel',
-                            {
-                                idUser: [user?.id, currentChat?.id],
-                                name: 'Private message',
-                                isPublic: false,
-                            },
-                            { withCredentials: true },
-                        );
-                    };
-                    createChannel();
-                    setChannel(response.data.idChannel);
-                }
-            } else {
-                setChannel(response.data.idChannel);
-            }
-        };
-        fetchChannel();
+    if (!messages) return <div></div>;
 
-        const fetchMessages = async () => {
-            if (!currentChat) return;
-            const response = await authAxios.get(
-                `http://localhost:3333/chat/getMessages/${channel}`,
-                {
-                    params: { idUser: user?.id },
-                    withCredentials: true,
-                },
-            );
-            if (!response.data) setMessages([]);
-            console.log(response.data);
-            setMessages(response.data);
-        };
-        if (channel) fetchMessages();
-    }, [currentChat]);
-
-    const [letMessageSender, setLetMessageSender] = useState<number>(0);
-    const messageSelector = (messages: MessageProps[]) => {
-        for (let i = 0; i < messages.length; i++) {
-            let messageGroup: MessageProps[] = [];
-            if (messages[i].idSender === user?.id) {
-                setLetMessageSender(1);
-            } else {
-                setLetMessageSender(0);
-            }
-        }
-    };
-
-    if (!currentChat) return <div></div>;
     function groupMessagesBySender(messages: MessageProps[]) {
-        let groupedMessages: any = [];
-        let currentGroup: any = null;
+        let groupedMessages: MessageGroup[] = [];
+        let currentGroup: MessageGroup | null = null;
 
         messages.forEach((message) => {
             if (currentGroup && currentGroup.idSender === message.idSender) {
@@ -113,8 +53,11 @@ export default function Messages({
     const groupedMessages = groupMessagesBySender(messages);
 
     return (
-        <div  id="messages" className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip h-96">
-            {groupedMessages.map((group: any, groupIndex: any) => {
+        <div
+            id="messages"
+            className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip h-96"
+        >
+            {groupedMessages.map((group: MessageGroup, groupIndex: number) => {
                 const isCurrentUser = group.idSender === user?.id;
 
                 return (
@@ -152,18 +95,14 @@ export default function Messages({
                                     customClassName={`w-6 h-6 rounded-full ${
                                         isCurrentUser ? 'order-2' : 'order-1'
                                     }`}
-                                    userId={currentChat.id}
-                                    textImg={currentChat.nickname}
-                                    size={16}
+                                    userId={group.idSender}
                                 />
                             ) : (
                                 <ImageFriend
                                     customClassName={`w-6 h-6 rounded-full ${
                                         isCurrentUser ? 'order-2' : 'order-1'
                                     }`}
-                                    userId={currentChat.id}
-                                    textImg={currentChat.nickname}
-                                    size={16}
+                                    userId={group.idSender}
                                 />
                             )}
                         </div>

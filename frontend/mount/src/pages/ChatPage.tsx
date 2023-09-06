@@ -15,147 +15,86 @@ import MessagesHeader from '../components/chat/MessagesHeader';
 import ChatFriendList from '../components/chat/ChatFriendList';
 import ChatListHeader from '../components/chat/ChatListHeader';
 import MessageInput from '../components/chat/MessageInput';
+import { AxiosResponse } from 'axios';
 
 function ChatPage() {
     const [socket, setSocket] = useState<Socket | undefined>(undefined);
-    const [messages, setMessages] = useState<ChatWindowProps['messages']>([]);
-    const [channels, setChannels] = useState<number>(0);
-    const [currentChannel, setCurrentChannel] = useState<number>(0);
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
-
-    const send = (message: MessageProps) => {
-        // socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message });
-        const response = authAxios.post(
-            '/chat/sendMessage',
-            {
-                idChannel: message.idChannel,
-                idSender: message.idSender,
-                content: message.message,
-            },
-            { withCredentials: true },
-        );
-        console.log(response);
-        setMessages((oldMessages) => [...oldMessages, message]);
-    };
+    let [channel, setChannel] = useState<number>(0);
+    const [messages, setMessages] = useState<MessageProps[]>([]);
+    const [currentChat, setCurrentChat] = useState<UserSimplified | null>(null); // or channel
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         setSocket(constSocket);
     }, []);
 
-    useEffect(() => {
-        if (socket) {
-            const messageListener = ({
-                idSender,
-                idChannel,
-                message,
-            }: {
-                idSender: number;
-                idChannel: number;
-                message: string;
-            }) => {
-                console.log(idSender);
-                // const newMessage: MessageProps = {
-                //     idSender: idSender,
-                //     idChannel: idChannel,
-                //     message: message,
-                //     createdAt: new Date(),
-                // };
-
-                // setMessages((oldMessages) => [...oldMessages, newMessage]);
-                // console.log('setting oldmessages to message');
-            };
-
-            socket.on('message', messageListener);
-
-            return () => {
-                socket.off('message', messageListener);
-            };
-        }
-    }, [socket]);
-
-    // const onCreateChannel = async (event: any) => {
-    //     event.preventDefault();
-
-    //     if (user) {
-    //         const reponse = await authAxios.post(
-    //             '/chat/createChannel',
-    //             {
-    //                 idUser: user.id,
-    //                 name: 'miao',
-    //                 isPublic: false,
-    //             },
-    //             { withCredentials: true },
-    //         );
-    //         setChannels((oldChannels) => oldChannels + 1);
-    //     }
-    // };
-
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
     );
 
-    const getMyFriends = async () => {
-        try {
-            const response = await authAxios.get(
-                'http://localhost:3333/friends/me',
-                { withCredentials: true },
-            );
-            setFriendsList(response.data);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
     useEffect(() => {
         const fetchFriends = async () => {
-            getMyFriends();
+            try {
+                const response = await authAxios.get(
+                    'http://localhost:3333/friends/me',
+                    { withCredentials: true },
+                );
+                setFriendsList(response.data);
+            } catch (error) {
+                console.error(error);
+            }
         };
         fetchFriends();
-        
-        try {
-            const fetchChannel = async () => {
-                if (currentChannel === 0) return;
-                const response = await authAxios.get(
-                    `http://localhost:3333/chat/getChannels`,
-                    {
-                        params: { idUser: user?.id },
-                        withCredentials: true,
-                    },
-                );
 
-                setChannels(response.data.length);
-            };
-            fetchChannel();
-        } catch (error) {
-            console.error(error);
-        }
-        const fetchMessages = async () => {
-            if (currentChannel === 0) return;
+        const fetchChannel = async () => {
+            console.log('fetching channels for', user?.id, currentChat?.id);
             const response = await authAxios.get(
-                `http://localhost:3333/chat/getMessages/${currentChannel}`,
+                'http://localhost:3333/chat/getChannelByUsers',
+                {
+                    params: { idAdmin: user?.id, idUser: currentChat?.id },
+                    withCredentials: true,
+                },
+            );
+            console.log('fetching channel response', response);
+            if (response.data.length === 0) {
+                if (user && currentChat) {
+                    console.log('creating channel', user?.id, currentChat?.id);
+                    const response = await authAxios.post(
+                        '/chat/createChannel',
+                        {
+                            idUser: [user?.id, currentChat?.id],
+                            name: 'Private message',
+                            isPublic: false,
+                        },
+                        { withCredentials: true },
+                    );
+                }
+                setChannel(response.data.idChannel);
+            } else {
+                setChannel(response.data.idChannel);
+            }
+        };
+        console.log('channel: ', channel);
+        fetchChannel();
+
+        const fetchMessages = async () => {
+            console.log('fetching messages for', channel);
+            if (!currentChat) return;
+            const response = await authAxios.get(
+                `http://localhost:3333/chat/getMessages/${channel}`,
                 {
                     params: { idUser: user?.id },
                     withCredentials: true,
                 },
             );
-            if (!response.data)
-                setMessages([]);
+            if (!response.data) setMessages([]);
+            console.log(response.data);
             setMessages(response.data);
         };
-        
-        fetchMessages();
-    }, [currentChannel]);
-    // return (
-    //     <div className="w-96 h-56 rounded-3xl flex-col justify-start items-start gap-2.5 inline-flex">
-    //         <ChatSelector friends={friendsList} />
-    //         <Chat currentChannel={currentChannel} messages={messages} />
-    //     </div>
-    // );
-
-    const [currentChat, setCurrentChat] = useState<UserSimplified | null >(null);// or channel
-
-    const [isVisible, setIsVisible] = useState(false);
+        if (channel) fetchMessages();
+    }, [currentChat, channel]);
 
     const toggleVisibility = () => {
         setIsVisible(!isVisible);
@@ -169,27 +108,76 @@ function ChatPage() {
             >
                 Toggle
             </button>
-            <div className={`fixed inset-y-0 right-0 w-100 text-white pt-24 transform ${isVisible ? 'translate-x-0 transition-transform duration-500'
-                : 'translate-x-full transition-transform duration-200'
+            <div
+                className={`fixed inset-y-0 right-0 w-100 text-white pt-24 transform ${
+                    isVisible
+                        ? 'translate-x-0 transition-transform duration-500'
+                        : 'translate-x-full transition-transform duration-200'
                 }`}
             >
-
-                <div className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex" style={{ marginRight: "36px" }}>
+                <div
+                    className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex"
+                    style={{ marginRight: '36px' }}
+                >
                     <div className="flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl">
                         <ChatListHeader />
-                        <ChatFriendList friends={friendsList} chatSelector={setCurrentChat}/>
-                        <MessagesHeader currentChat={currentChat}/>
-                        <Messages currentChat={currentChat}/>
-                        <MessageInput currentChat={currentChat} />
+                        <ChatFriendList
+                            friends={friendsList}
+                            chatSelector={setCurrentChat}
+                        />
+                        <MessagesHeader currentChat={currentChat} />
+                        <Messages messages={messages} />
+                        <MessageInput idChannel={channel} />
                     </div>
                 </div>
             </div>
-
-
-
-
         </div>
     );
 }
 
 export default ChatPage;
+
+// const send = (message: MessageProps) => {
+//     // socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message });
+//     const response = authAxios.post(
+//         '/chat/sendMessage',
+//         {
+//             idChannel: message.idChannel,
+//             idSender: message.idSender,
+//             content: message.message,
+//         },
+//         { withCredentials: true },
+//     );
+//     console.log(response);
+//     setMessages((oldMessages) => [...oldMessages, message]);
+// };
+// useEffect(() => {
+//     if (socket) {
+//         const messageListener = ({
+//             idSender,
+//             idChannel,
+//             message,
+//         }: {
+//             idSender: number;
+//             idChannel: number;
+//             message: string;
+//         }) => {
+//             console.log(idSender);
+// const newMessage: MessageProps = {
+//     idSender: idSender,
+//     idChannel: idChannel,
+//     message: message,
+//     createdAt: new Date(),
+// };
+
+// setMessages((oldMessages) => [...oldMessages, newMessage]);
+// console.log('setting oldmessages to message');
+//         };
+
+//         socket.on('message', messageListener);
+
+//         return () => {
+//             socket.off('message', messageListener);
+//         };
+//     }
+// }, [socket]);

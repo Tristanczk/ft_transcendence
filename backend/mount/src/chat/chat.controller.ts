@@ -49,7 +49,8 @@ export class ChatController {
 	}
 
 	@Post('sendMessage')
-	async sendMessage(@Body() message: CreateMessageDto) {
+	async sendMessage(@Body() message: CreateMessageDto): Promise<CreateMessageDto>{
+		console.log("sendMessage controller" + message.idChannel + " " + message.idSender + " " + message.message);
 		return this.chatService.sendMessage(message);
 	}
 
