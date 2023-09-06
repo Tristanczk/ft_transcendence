@@ -56,7 +56,7 @@ export class FriendsService {
                 throw new BadRequestException(`Error updating database`);
             }
         } catch (error) {
-            throw error;
+            return ;
         }
     }
 
