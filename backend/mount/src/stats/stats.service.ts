@@ -161,7 +161,7 @@ export class StatsService {
         data.forEach((game: GameExtractedDB) => {
             const newDataElem: ArrayDataGraph = {
                 x: i,
-                y: idUser === game.playerA ? game.initEloA : game.initEloB,
+                y: idUser === game.playerA ? (game.initEloA + game.varEloA) : (game.initEloB + game.varEloB),
             };
             dataSerie.push(newDataElem);
             i--;

@@ -11,6 +11,7 @@ function GameHistoryPage() {
     let userId: number = -1;
     if (idUserToView) {
         userId = parseInt(idUserToView);
+        if (!userId) userId = -1;
     }
 
     useEffect(() => {
@@ -34,18 +35,20 @@ function GameHistoryPage() {
         }
     }
 
-    return (
+    return dataGames && userId !== -1 ? (
         <>
             <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                 <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
                     <article className="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                         <h1 className="mb-4 text-5xl font-extrabold dark:text-white">
-                            Game history of{' '}
-                            {dataGames && dataGames.length > 0
-                                ? dataGames[0].playerA.id === userId
-                                    ? dataGames[0].playerA.nickname
-                                    : dataGames[0].playerB.nickname
-                                : 'N/A'}
+                            Game history
+                            {dataGames.length > 0
+                                ? ` of ${
+                                      dataGames[0].playerA.id === userId
+                                          ? dataGames[0].playerA.nickname
+                                          : dataGames[0].playerB.nickname
+                                  }`
+                                : ''}
                         </h1>
                         {dataGames && dataGames.length > 0 ? (
                             dataGames.map((elem) => (
@@ -64,6 +67,8 @@ function GameHistoryPage() {
                 </div>
             </main>
         </>
+    ) : (
+        <NoUser></NoUser>
     );
 }
 
@@ -146,5 +151,25 @@ function ShowGameElem({ game, userId }: ShowGameProps) {
                 </p>
             </div>
         </div>
+    );
+}
+
+function NoUser() {
+    const { idUserToView } = useParams();
+    return (
+        <>
+            <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
+                <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
+                    <article className="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                        <h2 className="text-3xl font-extrabold dark:text-white">
+                            No user found
+                        </h2>
+                        <p className="mt-4 mb-4">
+                            '{idUserToView}' cannot be found on our server.
+                        </p>
+                    </article>
+                </div>
+            </main>
+        </>
     );
 }

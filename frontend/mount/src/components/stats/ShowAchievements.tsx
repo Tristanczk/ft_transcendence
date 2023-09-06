@@ -21,6 +21,7 @@ export type AchievType = {
 
 function ShowAchievements({ userView }: PresentationUserProps) {
     const [dataAchiev, setAchiev] = useState<AchievType[] | null>(null);
+    const [nbAchiev, setNbachiev] = useState<number>(0);
     const { user } = useUserContext();
 
     useEffect(() => {
@@ -43,10 +44,18 @@ function ShowAchievements({ userView }: PresentationUserProps) {
                 },
             );
             setAchiev(response.data);
+            if (response.data && response.data.length > 0) {
+                const responseData: AchievType[] = response.data;
+                let nbAchievOk: number = 0;
+                responseData.forEach((elem) => {
+                    if (elem.userHave) nbAchievOk++;
+                });
+                setNbachiev(nbAchievOk);
+            } else setNbachiev(0);
+
             return response.data;
         } catch (error) {
             setAchiev(null);
-            // console.error(error);
         }
     }
 
@@ -70,7 +79,7 @@ function ShowAchievements({ userView }: PresentationUserProps) {
                     className="flow-root"
                     style={{ display: 'flex', flexWrap: 'wrap' }}
                 >
-                    {dataAchiev && dataAchiev.length > 0
+                    {dataAchiev && dataAchiev.length > 0 && nbAchiev > 0
                         ? dataAchiev.map(
                               (elem) =>
                                   elem.userHave && (

@@ -45,15 +45,9 @@ function HistoryFive({ user }: PresentationUserProps) {
                     Last Games
                 </h5>
                 <div className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
-                    <Link to={'/games/' + user.id}>View all</Link>
+                    {games && games.length > 0 && <Link to={'/games/' + user.id}>View all</Link>}
                 </div>
 
-                {/* <a
-                    href="/games/"
-                    className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
-                >
-                    View all
-                </a> */}
             </div>
             <div className="flow-root">
                 <ul className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -186,6 +180,7 @@ function HistoryFive({ user }: PresentationUserProps) {
                                 </div>
                             </li>
                         ))}
+						{games.length === 0 && 'No games played yet'}
                 </ul>
             </div>
         </div>
