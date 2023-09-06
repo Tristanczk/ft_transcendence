@@ -137,7 +137,6 @@ export class AuthService {
             await this.generateTokens(user, res);
             return user;
         } catch (error) {
-            console.log('signin42', error);
             throw error;
         }
     }
@@ -159,7 +158,6 @@ export class AuthService {
             await this.generateTokens(user, res);
             return user;
         } catch (error) {
-            console.log('signup', error);
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') {
                     if (error.meta.target[0] === 'login')
@@ -221,7 +219,7 @@ export class AuthService {
                 data: { currentHashedRefreshToken: null },
             });
         } catch (error) {
-            console.log('signout', error);
+            throw error;
         }
     }
 
