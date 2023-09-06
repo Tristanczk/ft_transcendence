@@ -24,7 +24,7 @@ function HistoryElo({ user }: PresentationUserProps) {
     async function getStats() {
         try {
             const response = await axios.get(
-                `http://localhost:3333/stats/graph/${user?.id}`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/stats/graph/${user?.id}`,
                 {
                     withCredentials: true,
                 },

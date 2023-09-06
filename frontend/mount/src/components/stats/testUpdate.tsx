@@ -8,7 +8,7 @@ function TestUpdate() {
 
             try {
                 const response = await axios.put(
-                    `http://localhost:3333/games/${nb}`,
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/games/${nb}`,
                     {
                         scoreA: 8,
                         scoreB: 4,

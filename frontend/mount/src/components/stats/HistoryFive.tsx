@@ -25,7 +25,7 @@ function HistoryFive({ user }: PresentationUserProps) {
     async function getGamesList() {
         try {
             const response = await axios.get(
-                `http://localhost:3333/games/short/${user?.id}`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/games/short/${user?.id}`,
                 {
                     withCredentials: true,
                 },

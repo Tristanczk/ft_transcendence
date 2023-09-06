@@ -9,7 +9,7 @@ interface Props {
 
 const AuthAxiosContext = React.createContext<Props>({
     authAxios: axios.create({
-        baseURL: 'http://localhost:3333',
+        baseURL: `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333`,
         // headers: {
         //     'Content-Type': 'application/json',
         // },
@@ -24,7 +24,7 @@ const AuthAxiosProvider: React.FC<AuthAxiosProviderProps> = ({ children }) => {
     const { logoutUser } = useUserContext();
 
     const authAxios = axios.create({
-        baseURL: 'http://localhost:3333',
+        baseURL: `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333`,
         // headers: {
         //     'Content-Type': 'application/json',
         // },
@@ -42,9 +42,12 @@ const AuthAxiosProvider: React.FC<AuthAxiosProviderProps> = ({ children }) => {
                 console.log('Interceptor activated');
                 originalRequest!._retry = true;
                 try {
-                    await axios.get('http://localhost:3333/auth/refresh', {
-                        withCredentials: true,
-                    });
+                    await axios.get(
+                        `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/auth/refresh`,
+                        {
+                            withCredentials: true,
+                        },
+                    );
                     return axios.request(originalRequest);
                 } catch (refreshError) {
                     logoutUser();

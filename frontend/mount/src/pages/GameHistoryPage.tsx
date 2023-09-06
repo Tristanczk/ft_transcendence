@@ -23,7 +23,7 @@ function GameHistoryPage() {
         try {
             if (userId === -1) return;
             const response = await axios.get(
-                `http://localhost:3333/games/all/${userId}`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/games/all/${userId}`,
                 {
                     withCredentials: true,
                 },

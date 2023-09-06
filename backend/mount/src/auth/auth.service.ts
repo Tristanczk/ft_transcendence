@@ -82,7 +82,7 @@ export class AuthService {
             accessToken.JWTToken,
             {
                 httpOnly: true,
-                secure: true,
+                secure: false,
                 sameSite: 'strict',
             },
         );
@@ -92,7 +92,7 @@ export class AuthService {
             refreshToken.JWTToken,
             {
                 httpOnly: true,
-                secure: true,
+                secure: false,
                 sameSite: 'strict',
             },
         );
@@ -112,7 +112,7 @@ export class AuthService {
                     client_id: this.config.get('REACT_APP_API42_UID'),
                     client_secret: this.config.get('API42_SECRET'),
                     code: code,
-                    redirect_uri: 'http://localhost:3000/signin42',
+                    redirect_uri: `http://${process.env.REACT_APP_SERVER_ADDRESS}:3000/signin42`,
                 },
                 { headers: { 'Content-Type': 'application/json' } },
             );

@@ -38,7 +38,7 @@ function ShowAchievements({ userView }: PresentationUserProps) {
         try {
             if (!userView) return;
             const response = await axios.get(
-                `http://localhost:3333/games/achiev/${userView?.id}`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/games/achiev/${userView?.id}`,
                 {
                     withCredentials: true,
                 },

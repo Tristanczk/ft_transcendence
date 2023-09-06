@@ -31,7 +31,7 @@ const LoginForm: React.FC<Props> = ({ setUsername, setTwoFactor }) => {
         setError(undefined);
         try {
             const response = await axios.post(
-                'http://localhost:3333/auth/signin',
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/auth/signin`,
                 {
                     nickname: data.username,
                     password: data.password,

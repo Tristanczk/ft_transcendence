@@ -27,7 +27,7 @@ function ImageFriend({ userId, textImg, size }: Props) {
         if (!userId) return;
         try {
             const response = await axios.get(
-                `http://localhost:3333/users/img/${userId}`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/users/img/${userId}`,
                 {
                     params: { id: userId },
                     responseType: 'arraybuffer',

@@ -32,7 +32,7 @@ function AddFriendElem({
         if (nickname.length >= 1) {
             try {
                 const response = await authAxios.get(
-                    `http://localhost:3333/friends/select/${nickname}`,
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/friends/select/${nickname}`,
                     { withCredentials: true },
                 );
                 setPossibleFriends(response.data);

@@ -29,7 +29,7 @@ const TwoFactorForm: React.FC<Props> = ({ username }) => {
         setError(undefined);
         try {
             const response = await axios.post(
-                'http://localhost:3333/auth/authenticate-2fa',
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/auth/authenticate-2fa`,
                 {
                     nickname: username,
                     code: data.validationCode,

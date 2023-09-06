@@ -20,7 +20,7 @@ const UserPage: React.FC = () => {
         const fetchUser = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:3333/users/${userId}`,
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/users/${userId}`,
                     { withCredentials: true },
                 );
                 setUser(response.data);

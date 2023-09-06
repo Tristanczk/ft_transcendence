@@ -24,16 +24,21 @@ export const UserProvider = ({ children }: any) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
+                console.log('try user context');
                 const response = await authAxios.get('/users/me', {
                     withCredentials: true,
                 });
                 setUser(response.data);
             } catch (error: any) {
+                console.error('user context refresh error', error);
                 if (error.response && error.response.status === 401) {
                     try {
-                        await axios.get('http://localhost:3333/auth/refresh', {
-                            withCredentials: true,
-                        });
+                        await axios.get(
+                            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/auth/refresh`,
+                            {
+                                withCredentials: true,
+                            },
+                        );
                         const response = await authAxios.get('/users/me', {
                             withCredentials: true,
                         });

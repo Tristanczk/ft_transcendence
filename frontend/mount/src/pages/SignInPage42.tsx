@@ -23,7 +23,7 @@ const SignInPage42: React.FC = () => {
         const fetchUser = async () => {
             try {
                 const response = await axios.get(
-                    'http://localhost:3333/auth/signin/42',
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/auth/signin/42`,
                     { params: { code }, withCredentials: true },
                 );
                 if (response.data.user.twoFactorAuthentication) {

@@ -12,7 +12,7 @@ function AvatarUploader() {
             if (!user) return;
             try {
                 const response = await axios.get(
-                    `http://localhost:3333/users/img/${user?.id}`,
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/users/img/${user?.id}`,
                     {
                         params: { id: user?.id },
                         responseType: 'arraybuffer',
@@ -51,7 +51,7 @@ function AvatarUploader() {
 
             try {
                 await axios.post(
-                    `http://localhost:3333/users/avatar`,
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/users/avatar`,
                     formData,
                     { withCredentials: true },
                 );
