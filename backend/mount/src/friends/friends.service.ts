@@ -6,7 +6,6 @@ import {
 import { GetAllUsersResponseDto } from '../friends/dto/get-all-users.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { FriendsJson } from './friends.type';
-import { ErrorsService } from 'src/errors/errors.service';
 
 @Injectable()
 export class FriendsService {
