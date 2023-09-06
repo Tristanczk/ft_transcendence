@@ -64,6 +64,7 @@ export class GatewayService implements OnModuleInit {
                 });
             }
         } catch (error) {
+			return ;
             throw error;
         }
     }
@@ -83,6 +84,7 @@ export class GatewayService implements OnModuleInit {
 			this.server.emit('updateStatus', { idUser: userId, type: 'leave' });	
 		}
 		catch (error) {
+			return ;
 			throw error
 		}
     }
