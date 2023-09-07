@@ -57,7 +57,7 @@ const generateId = (games: Record<string, Game>) => {
     }
 };
 
-interface SocketProps {
+export type SocketProps = {
     id: number;
     idConnection: string;
     nb: number;
@@ -113,7 +113,6 @@ export class GatewayService implements OnModuleInit {
             }
         } catch (error) {
             return;
-            throw error;
         }
     }
 
@@ -138,6 +137,7 @@ export class GatewayService implements OnModuleInit {
 
     @SubscribeMessage('ping')
     async handlePing(@MessageBody() body: PingProps) {
+		console.log(body);
         const id: number = body.id;
         if (id === -1) return;
         const l = this.socketArray.findIndex(

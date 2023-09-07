@@ -4,6 +4,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode } from '../shared/misc';
+// import { useUserContext } from '../context/UserContext';
 
 const joinGame = (
     mode: GameMode,
@@ -11,6 +12,9 @@ const joinGame = (
     navigate: NavigateFunction,
     setError: (error: string) => void,
 ) => {
+	// const { user } = useUserContext();
+	// let userId: number = -1;
+	// if (user) userId = user.id;
     socket.emit('joinGame', mode, (response: any) => {
         if (response.error) {
             setError(response.error);
