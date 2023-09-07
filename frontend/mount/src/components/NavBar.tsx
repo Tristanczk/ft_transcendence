@@ -196,6 +196,11 @@ const NavBar: React.FC<{
     }, [user]);
     //TO DO: add useeffect to get gameId if necessary
 
+    const handleRejoin = () => {
+        //TO DO: check if game is still available, if yes redirect, if no error message
+        navigate(`/game/${gameId}`);
+    };
+
     return (
         <nav
             className="border-gray-200 bg-gray-900"
@@ -215,12 +220,7 @@ const NavBar: React.FC<{
                 <NavLinks current={location.pathname} />
                 <div className="flex items-center">
                     {gameId && location.pathname !== `/game/${gameId}` && (
-                        <Button
-                            text="Rejoin game"
-                            onClick={() => {
-                                navigate(`/game/${gameId}`);
-                            }}
-                        />
+                        <Button text="Rejoin game" onClick={handleRejoin} />
                     )}
                     {user ? (
                         <UserMenu />
