@@ -180,10 +180,15 @@ export class GatewayService implements OnModuleInit {
         if (this.clients[client.id]) {
             return {
                 error: `You are already in game ${this.clients[client.id]}`,
+                errorCode: 'alreadyInGame',
+                gameId: this.clients[client.id],
             };
         }
         if (!isGameMode(gameMode)) {
-            return { error: `Invalid game mode: ${gameMode}` };
+            return {
+                error: `Invalid game mode: ${gameMode}`,
+                errorCode: 'invalidGameMode',
+            };
         }
         for (const game of Object.values(this.games)) {
             if (game.info.mode === gameMode && game.info.state === 'waiting') {

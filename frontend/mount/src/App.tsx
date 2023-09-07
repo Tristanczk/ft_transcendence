@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
@@ -21,15 +21,25 @@ import GameHistoryPage from './pages/GameHistoryPage';
 import GamePage from './pages/GamePage';
 
 const App: React.FC = () => {
+    const [gameId, setGameId] = useState<string | undefined>(undefined);
+
     return (
         <WebsocketProvider value={socket}>
             <UserProvider>
                 <AuthAxiosProvider>
                     <TrackingOnline />
                     <BrowserRouter>
-                        <NavBar />
+                        <NavBar gameId={gameId} setGameId={setGameId} />
                         <Routes>
-                            <Route path="/" Component={HomePage} />
+                            <Route
+                                path="/"
+                                element={
+                                    <HomePage
+                                        gameId={gameId}
+                                        setGameId={setGameId}
+                                    />
+                                }
+                            />
                             <Route path="/game/:gameId" Component={GamePage} />
                             <Route
                                 path="/dashboard"

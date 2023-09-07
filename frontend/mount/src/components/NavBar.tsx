@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { useUserContext } from '../context/UserContext';
@@ -6,6 +6,7 @@ import { NAVBAR_HEIGHT } from '../constants';
 import ImageFriend from './dashboard/friends/ImgFriend';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { useWindowSize } from 'usehooks-ts';
+import { set } from 'date-fns';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -178,10 +179,22 @@ function UserMenu() {
     );
 }
 
-const NavBar: React.FC = () => {
+const NavBar: React.FC<{
+    gameId: string | undefined;
+    setGameId: (gameId: string | undefined) => void;
+}> = ({ gameId, setGameId }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useUserContext();
+
+    useEffect(() => {
+        console.log(location.pathname);
+    });
+
+    useEffect(() => {
+        setGameId(undefined);
+    }, [user]);
+    //TO DO: add useeffect to get gameId if necessary
 
     return (
         <nav
@@ -200,16 +213,26 @@ const NavBar: React.FC = () => {
                     </span>
                 </Link>
                 <NavLinks current={location.pathname} />
-                {user ? (
-                    <UserMenu />
-                ) : (
-                    <Button
-                        text="Sign in"
-                        onClick={() => {
-                            navigate('/signin');
-                        }}
-                    />
-                )}
+                <div className="flex items-center">
+                    {gameId && location.pathname !== `/game/${gameId}` && (
+                        <Button
+                            text="Rejoin game"
+                            onClick={() => {
+                                navigate(`/game/${gameId}`);
+                            }}
+                        />
+                    )}
+                    {user ? (
+                        <UserMenu />
+                    ) : (
+                        <Button
+                            text="Sign in"
+                            onClick={() => {
+                                navigate('/signin');
+                            }}
+                        />
+                    )}
+                </div>
             </div>
         </nav>
     );

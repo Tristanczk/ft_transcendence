@@ -206,12 +206,12 @@ export class AuthService {
         try {
             res.clearCookie(this.config.get('JWT_ACCESS_TOKEN_COOKIE'), {
                 httpOnly: true,
-                secure: true,
+                secure: false,
                 sameSite: 'strict',
             });
             res.clearCookie(this.config.get('JWT_REFRESH_TOKEN_COOKIE'), {
                 httpOnly: true,
-                secure: true,
+                secure: false,
                 sameSite: 'strict',
             });
             await this.prisma.user.update({
