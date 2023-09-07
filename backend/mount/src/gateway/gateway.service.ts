@@ -39,6 +39,7 @@ import {
     DEFAULT_MAYHEM_OBJECTS,
     GameInfo,
 } from 'src/shared/game_info';
+import { Users } from './gateway.users';
 
 const ID_SIZE = 7;
 const ID_BASE = 36;
@@ -57,12 +58,12 @@ const generateId = (games: Record<string, Game>) => {
     }
 };
 
-interface SocketProps {
+export type SocketProps = {
     id: number;
     idConnection: string;
     nb: number;
     date: number;
-}
+};
 
 interface PingProps {
     id: number;
@@ -79,6 +80,8 @@ export class GatewayService implements OnModuleInit {
     constructor(private prisma: PrismaService) {}
 
     socketArray: SocketProps[] = [];
+
+    users: Users = new Users(this.prisma);
 
     @WebSocketServer()
     server: Server;
@@ -113,7 +116,6 @@ export class GatewayService implements OnModuleInit {
             }
         } catch (error) {
             return;
-            throw error;
         }
     }
 
@@ -138,17 +140,19 @@ export class GatewayService implements OnModuleInit {
 
     @SubscribeMessage('ping')
     async handlePing(@MessageBody() body: PingProps) {
-        const id: number = body.id;
-        if (id === -1) return;
-        const l = this.socketArray.findIndex(
-            (a) => a.idConnection === body.idConnection,
-        );
-        if (l !== -1) {
-            this.socketArray[l].nb++;
-            this.socketArray[l].date = Date.now();
-        } else {
-            this.userArrive(body);
-        }
+        console.log(body);
+        this.users.checkUserAlreadyHere(body.id, body.idConnection);
+        // const id: number = body.id;
+        // if (id === -1) return;
+        // const l = this.socketArray.findIndex(
+        //     (a) => a.idConnection === body.idConnection,
+        // );
+        // if (l !== -1) {
+        //     this.socketArray[l].nb++;
+        //     this.socketArray[l].date = Date.now();
+        // } else {
+        //     this.userArrive(body);
+        // }
     }
 
     @Interval(1000)
