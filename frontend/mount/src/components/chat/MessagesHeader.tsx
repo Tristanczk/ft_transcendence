@@ -24,7 +24,7 @@ export default function MessagesHeader({
 					<ImageFriend
                     userId={currentChat.id}
                     textImg={currentChat.nickname}
-                    size={16}
+                    customClassName='w-10 sm:w-16 h-10 sm:h-16 rounded-full'
                 />
                 </div>
                 <div className="flex flex-col leading-tight">

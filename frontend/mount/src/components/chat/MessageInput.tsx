@@ -1,37 +1,60 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useContext, useState } from 'react';
 import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
+import { WebsocketContext } from '../../context/WebsocketContext';
 
 export default function MessageInput({ idChannel }: { idChannel: number }) {
     const [input, setInput] = useState('');
+    const socket = useContext(WebsocketContext);
     const { user } = useUserContext();
     const authAxios = useAuthAxios();
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-		console.log('input: ', event.target.value);
+        console.log('input: ', event.target.value);
         setInput(event.target.value);
     };
 
-    const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-		event.preventDefault();
-		console.log('sending message', input, ' miao ' ,idChannel);
+    const handleSendMessage = async () => {
+        console.log('sending message', input, ' miao ', idChannel);
         if (input === '') return;
         setInput('');
-        authAxios.post(
+        const response = await authAxios.post(
             '/chat/sendMessage',
             {
-                idChannel: idChannel,
                 idSender: user?.id,
+                idChannel: idChannel,
                 message: input,
             },
             { withCredentials: true },
         );
+        socket?.emit('message', {
+            idSender: user?.id,
+            idChannel: idChannel,
+            message: input,
+        });
+    };
+
+    const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            if (!event.shiftKey) {
+                event.preventDefault();
+                handleSendMessage();
+            } else {
+                setInput(input + '\n'); // TODO ne marche pas le newline. Enlever avant de push final si pas réso
+            }
+        }
+    };
+
+    const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        handleSendMessage();
     };
 
     return (
         <div className="px-4 pt-4 mb-2 sm:mb-0 flex items-center pb-4 rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-xl">
             <input
                 onChange={onChange}
+                onKeyDown={onKeyPress}
                 value={input}
                 type="text"
                 placeholder="Write your message!"

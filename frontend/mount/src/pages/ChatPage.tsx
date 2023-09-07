@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import ChatWindow, { ChatWindowProps } from '../components/chatpage/ChatWindow';
-import { socket as constSocket } from '../context/WebsocketContext';
+import { WebsocketContext, socket as constSocket } from '../context/WebsocketContext';
 import { Button } from 'flowbite-react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import ListGroupWithButton from '../components/chatpage/ListGroup';
@@ -18,18 +18,14 @@ import MessageInput from '../components/chat/MessageInput';
 import { AxiosResponse } from 'axios';
 
 function ChatPage() {
-    const [socket, setSocket] = useState<Socket | undefined>(undefined);
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     let [channel, setChannel] = useState<number>(0);
     const [messages, setMessages] = useState<MessageProps[]>([]);
     const [currentChat, setCurrentChat] = useState<UserSimplified | null>(null); // or channel
     const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-        setSocket(constSocket);
-    }, []);
-
+    const socket = useContext(WebsocketContext);
+  
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
     );
@@ -96,6 +92,12 @@ function ChatPage() {
         if (channel) fetchMessages();
     }, [currentChat, channel]);
 
+    socket.on('message', (message: MessageProps) => {
+        console.log('received message', message);
+        //if current channel, else notification => channelid
+        setMessages((oldMessages) => [...oldMessages, message]);
+    });
+
     const toggleVisibility = () => {
         setIsVisible(!isVisible);
     };
@@ -124,6 +126,7 @@ function ChatPage() {
                         <ChatFriendList
                             friends={friendsList}
                             chatSelector={setCurrentChat}
+                            // notifications={notifications} int[] of channel ids
                         />
                         <MessagesHeader currentChat={currentChat} />
                         <Messages messages={messages} />
@@ -138,7 +141,7 @@ function ChatPage() {
 export default ChatPage;
 
 // const send = (message: MessageProps) => {
-//     // socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message });
+     // socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message });
 //     const response = authAxios.post(
 //         '/chat/sendMessage',
 //         {

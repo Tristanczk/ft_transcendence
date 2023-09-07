@@ -8,6 +8,7 @@ import {
 import { Server } from 'socket.io';
 import { PrismaService } from '../prisma/prisma.service';
 import { Interval } from '@nestjs/schedule';
+import { CreateMessageDto } from 'src/chat/dto/message.dto';
 
 interface Props {
     id: number;
@@ -79,5 +80,17 @@ export class GatewayService implements OnModuleInit {
             }
         });
         this.array = this.array.filter((arr) => arr.id !== -1);
+    }
+
+    @SubscribeMessage('message')
+    handleMessage(@MessageBody() messageBody: CreateMessageDto) {
+
+        /*
+        get all user of messageBody.idChannel
+        for each user
+            for socket in user
+                this.socket.to(userid).emit('message', messageBody)
+        */
+        console.log(messageBody);
     }
 }
