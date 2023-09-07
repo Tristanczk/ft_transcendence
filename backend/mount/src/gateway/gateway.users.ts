@@ -1,13 +1,13 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SocketProps } from './gateway.service';
+import { HandlePingProp, SocketProps } from './gateway.service';
 import { User } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 
 type DefineTitle = {
-	indivUser: IndivUser | null;
-	lastPing: number;
-	key: string;
-}
+    indivUser: IndivUser | null;
+    lastPing: number;
+    key: string;
+};
 
 export class Users {
     users: IndivUser[];
@@ -36,7 +36,8 @@ export class Users {
     }
 
     //si userId = -1, on a un user inconnu
-    async addUserToSocket(userId: number, socketId: string) {
+    //return true si creation user, false sinon
+    async addUserToSocket(userId: number, socketId: string): Promise<boolean> {
         let userToAdd: IndivUser | null = this.getIndivUserById(userId);
         if (!userToAdd) {
             //verif user
@@ -47,18 +48,30 @@ export class Users {
             userToAdd = new IndivUser(userIdVerified, socketId, this.prisma);
             this.users.push(userToAdd);
             this.nbUsers += 1;
-			console.log('create newUser: ' + userToAdd.userId)
+            console.log('create newUser: ' + userToAdd.userId);
+        } else {
+            userToAdd.addNewSocketId(socketId);
         }
-		else {
-			userToAdd.addNewSocketId(socketId);
-		}
 
-		console.log('userToAdd:' + userToAdd.userId + ', ' + userToAdd.lastPingTime + ', sockets:');
-		console.log(userToAdd.sockets)
+        console.log(
+            'userToAdd:' +
+                userToAdd.userId +
+                ', ' +
+                userToAdd.lastPingTime +
+                ', sockets:',
+        );
+        console.log(userToAdd.sockets); 
 
         //ajoute au tableau de sockets
-        this.socketIds[socketId] = {indivUser: userToAdd, lastPing: Date.now(), key: socketId};
-		this.socketIds[socketId].indivUser.updateTimeLastSeen();
+        this.socketIds[socketId] = {
+            indivUser: userToAdd,
+            lastPing: Date.now(),
+            key: socketId,
+        };
+        const toNotify: boolean =
+            this.socketIds[socketId].indivUser.updateTimeLastSeen(socketId);
+
+        return toNotify;
     }
 
     getIndivUserById(userId: number): IndivUser | null {
@@ -69,88 +82,113 @@ export class Users {
             }
         }
         return null;
-    }
+    } 
 
-    checkUserAlreadyHere(userId: number, socketId: string) {
-		// console.log('checkUserAlreadyHere: ' + userId + ', socket=' + socketId);
+    async checkUserAlreadyHere(
+        userId: number,
+        socketId: string,
+    ): Promise<boolean> {
+        // console.log('checkUserAlreadyHere: ' + userId + ', socket=' + socketId);
+        let toNotify: boolean = false;
         if (!this.socketIds[socketId]) {
-            this.addUserToSocket(userId, socketId);
+            toNotify = await this.addUserToSocket(userId, socketId);
         } else {
-            //check if userId toujours le meme
-            //si oui, modifie juste date apres PING
-            //si non, on modifie le user
+            //check if userId toujours le meme: oui=modifie date, non: modifie user
             if (this.socketIds[socketId].indivUser.userId === userId) {
-                this.socketIds[socketId].indivUser.updateTimeLastSeen();
+                toNotify =
+                    this.socketIds[socketId].indivUser.updateTimeLastSeen(socketId);
+                    console.log('still ' + userId + ', socket=' + socketId)
             } else {
-				this.addUserToSocket(userId, socketId);
+                toNotify = await this.addUserToSocket(userId, socketId);
             }
         }
+        this.socketIds[socketId].lastPing = Date.now();
+        return toNotify;
     }
 
     removeUser() {}
 
-    checkConnections() {
-		let usersLeaving: number[] = [];
-		const timeNow: number = Date.now();
-		for (const elem of Object.values(this.socketIds)) {
-			if (timeNow - elem.lastPing > 3000) {
-				console.log('disconnecting ? ' + elem.key)
-				elem.indivUser.checkStillConnected()
-				delete this.socketIds[elem.key]
-			}
-		}
-	}
-}
+    checkConnections(): number[] {
+        let usersLeaving: number[] = []; //tableau de ID users a notifier
+        const timeNow: number = Date.now();
+        for (const elem of Object.values(this.socketIds)) {
+            if (timeNow - elem.lastPing > 3000) {
+                console.log('disconnecting ? ' + elem.key);
+                if (elem.indivUser.checkStillConnected(elem.key) === true) {
+                    console.log('disconnecting = ' + elem.key);
+                    usersLeaving.push(elem.indivUser.userId);
+                }
+                delete this.socketIds[elem.key];
+            }
+        }
+        return usersLeaving;
+    }
+} 
 
 export class IndivUser {
     userId: number;
     isSignedIn: boolean;
-	isConnected: boolean;
+    isConnected: boolean;
     isPlaying: boolean;
     sockets: string[];
     lastPingTime: number;
 
-    constructor(userId: number, socketId: string, private prisma: PrismaService) {
+    constructor(
+        userId: number,
+        socketId: string,
+        private prisma: PrismaService,
+    ) {
         this.userId = userId;
+        this.isConnected = false;
         this.isSignedIn = userId === -1 ? false : true;
         this.isPlaying = false;
         this.sockets = [socketId];
         this.lastPingTime = Date.now();
     }
 
-	//return true if need to emit message
-    async checkStillConnected(): Promise<boolean> {
-		// if (this.isConnected === false) return false;
+    //return true if need to emit message
+    checkStillConnected(socketId: string): boolean {
+        // if (this.isConnected === false) return false;
         const timeNow: number = Date.now();
-		if (timeNow - this.lastPingTime > 3000) {
-			this.isConnected = false;
-			this.updateStatusUserDB(false);
-			return true;
-		}
-		return false;
+        console.log('isconnected ' + this.userId + ', date=' + this.lastPingTime + ' vs now=' + timeNow + ' diff=' + (timeNow - this.lastPingTime))
+
+        if (timeNow - this.lastPingTime > 3000) {
+            this.isConnected = false;
+            this.updateStatusUserDB(false);
+            // this.sockets
+            console.log('non')
+            return true;
+        }
+        return false;
+    } 
+
+    async updateStatusUserDB(newStatus: boolean): Promise<boolean> {
+        try {
+            await this.prisma.user.update({
+                where: { id: this.userId },
+                data: { isConnected: newStatus },
+            });
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
-	async updateStatusUserDB(newStatus: boolean): Promise<boolean> {
-		try {
-			await this.prisma.user.update({
-				where: { id: this.userId },
-				data: { isConnected: newStatus },
-			});
-			return true;
-		} catch (error) {
-			return false;
-		}
-	}
-
-    updateTimeLastSeen() {
-		if (this.isConnected === false) {
-			this.isConnected = true;
-			this.updateStatusUserDB(true);
-		}
+    updateTimeLastSeen(socketId: string): boolean {
+        let boolConnection: boolean = false;
+        if (this.isConnected === false) {
+            this.isConnected = true;
+            this.updateStatusUserDB(true);
+            boolConnection = true;
+        }
         this.lastPingTime = Date.now();
+        // this.sockets[socketId] = Date.now();
+        return boolConnection;
     }
 
-	addNewSocketId(socketId: string) {
-		this.sockets.push(socketId);
-	}
+    addNewSocketId(socketId: string): boolean {
+        this.sockets.push(socketId); //] = Date.now();
+        if (this.isConnected) return false;
+        return true;
+    }
 }

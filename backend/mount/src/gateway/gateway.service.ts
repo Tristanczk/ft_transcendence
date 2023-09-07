@@ -70,6 +70,11 @@ interface PingProps {
     idConnection: string;
 }
 
+export type HandlePingProp = {
+    idUser: number;
+    type: 'in' | 'out';
+}
+
 @Injectable()
 @WebSocketGateway({
     cors: {
@@ -92,56 +97,59 @@ export class GatewayService implements OnModuleInit {
         });
     }
 
-    async userArrive(body: PingProps) {
-        // console.log('ft_arrive=' + body.id);
-        try {
-            await this.prisma.user.update({
-                where: { id: body.id },
-                data: { isConnected: true },
-            });
-            const alreadyConnected = this.socketArray.findIndex(
-                (a) => a.id === body.id,
-            );
-            this.socketArray.push({
-                id: body.id,
-                idConnection: body.idConnection,
-                nb: 0,
-                date: Date.now(),
-            });
-            if (alreadyConnected === -1) {
-                this.server.emit('updateStatus', {
-                    idUser: body.id,
-                    type: 'come',
-                });
-            }
-        } catch (error) {
-            return;
-        }
-    }
+    // async userArrive(body: PingProps) {
+    //     // console.log('ft_arrive=' + body.id);
+    //     try {
+    //         await this.prisma.user.update({
+    //             where: { id: body.id },
+    //             data: { isConnected: true },
+    //         });
+    //         const alreadyConnected = this.socketArray.findIndex(
+    //             (a) => a.id === body.id,
+    //         );
+    //         this.socketArray.push({
+    //             id: body.id,
+    //             idConnection: body.idConnection,
+    //             nb: 0,
+    //             date: Date.now(),
+    //         });
+    //         if (alreadyConnected === -1) {
+    //             this.server.emit('updateStatus', {
+    //                 idUser: body.id,
+    //                 type: 'come',
+    //             });
+    //         }
+    //     } catch (error) {
+    //         return;
+    //     }
+    // }
 
-    async userLeave(userId: number) {
-        const nbConnexions = this.socketArray.reduce(
-            (acc, cur) => acc + (cur.id === userId ? 1 : 0),
-            0,
-        );
-        // console.log('ft_left=' + userId + ', nb_tab_left=' + nbConnexions);
-        if (nbConnexions > 0) return;
-        try {
-            await this.prisma.user.update({
-                where: { id: userId },
-                data: { isConnected: false },
-            });
-            this.server.emit('updateStatus', { idUser: userId, type: 'leave' });
-        } catch (error) {
-            return;
-            throw error;
-        }
-    }
+    // async userLeave(userId: number) {
+    //     const nbConnexions = this.socketArray.reduce(
+    //         (acc, cur) => acc + (cur.id === userId ? 1 : 0),
+    //         0,
+    //     );
+    //     // console.log('ft_left=' + userId + ', nb_tab_left=' + nbConnexions);
+    //     if (nbConnexions > 0) return;
+    //     try {
+    //         await this.prisma.user.update({
+    //             where: { id: userId },
+    //             data: { isConnected: false },
+    //         });
+    //         this.server.emit('updateStatus', { idUser: userId, type: 'leave' });
+    //     } catch (error) {
+    //         return;
+    //         throw error;
+    //     }
+    // }
 
     @SubscribeMessage('ping')
     async handlePing(@MessageBody() body: PingProps) {
         console.log(body);
-        this.users.checkUserAlreadyHere(body.id, body.idConnection);
+        const toNotify: boolean = await this.users.checkUserAlreadyHere(body.id, body.idConnection);
+        if (toNotify) {
+            this.server.emit('updateStatus', {idUser: body.id, type: 'come'});
+        } 
         // const id: number = body.id;
         // if (id === -1) return;
         // const l = this.socketArray.findIndex(
@@ -157,18 +165,24 @@ export class GatewayService implements OnModuleInit {
 
     @Interval(1000)
     async handleInterval() {
-        const timeNow: number = Date.now();
-        let idTmp: number = -1;
-        this.socketArray.forEach((arr) => {
-            if (arr.id !== -1) {
-                if (timeNow - arr.date > 3000) {
-                    idTmp = arr.id;
-                    arr.id = -1;
-                    this.userLeave(idTmp);
-                }
-            }
-        });
-        this.socketArray = this.socketArray.filter((arr) => arr.id !== -1);
+        const tab: number[] = this.users.checkConnections();
+        console.log(tab);
+        for (const elem of tab) {
+            this.server.emit('updateStatus', { idUser: elem, type: 'leave' });
+            console.log('leaving, user=' + elem)
+        }
+        // const timeNow: number = Date.now();
+        // let idTmp: number = -1;
+        // this.socketArray.forEach((arr) => {
+        //     if (arr.id !== -1) {
+        //         if (timeNow - arr.date > 3000) {
+        //             idTmp = arr.id;
+        //             arr.id = -1;
+        //             this.userLeave(idTmp);
+        //         }
+        //     }
+        // });
+        // this.socketArray = this.socketArray.filter((arr) => arr.id !== -1);
         // console.log(this.socketArray)
     }
 
