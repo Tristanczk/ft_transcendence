@@ -17,7 +17,7 @@ const NavLink: React.FC<{
     const innerDivStyle = 'block py-2 pl-3 pr-4 rounded';
     const isActive = current === link;
     const { width } = useWindowSize();
-    const showText = width && width >= 640;
+    const showText = width && width >= 768;
 
     return (
         <li>
@@ -53,7 +53,7 @@ const NavLink: React.FC<{
 const NavLinks: React.FC<{ current: string }> = ({ current }) => {
     return (
         <div className="items-center justify-between flex w-auto">
-            <ul className="text-xl sm:text-base flex font-medium p-0 rounded-lg flex-row space-x-2 sm:space-x-8 mt-0 border-0 bg-gray-900 border-gray-700">
+            <ul className="text-xl md:text-base flex font-medium p-0 rounded-lg flex-row space-x-2 md:space-x-8 mt-0 border-0 bg-gray-900 border-gray-700">
                 <NavLink
                     current={current}
                     title="Home"
@@ -64,19 +64,19 @@ const NavLinks: React.FC<{ current: string }> = ({ current }) => {
                     current={current}
                     title="Dashboard"
                     link="/dashboard"
-                    icon="/pie-chart.svg"
+                    icon="/navlinks/pie-chart.svg"
                 />
                 <NavLink
                     current={current}
                     title="Leaderboard"
                     link="/leaderboad"
-                    icon="/pie-chart.svg"
+                    icon="/navlinks/podium.png"
                 />
                 <NavLink
                     current={current}
                     title="Chat"
                     link="/chat"
-                    icon="/postcard.svg"
+                    icon="/navlinks/postcard.svg"
                 />
             </ul>
         </div>
@@ -126,7 +126,7 @@ function UserMenu() {
                 >
                     <button
                         type="button"
-                        className="flex mr-3 text-sm bg-gray-800 rounded-full sm:mr-0 active:ring-4 active:ring-gray-600"
+                        className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 active:ring-4 active:ring-gray-600"
                         onClick={() => setUserMenuOpen(!userMenuOpen)}
                     >
                         {user && (
@@ -207,7 +207,7 @@ const NavBar: React.FC<{
             style={{ height: NAVBAR_HEIGHT }}
         >
             <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
-                <Link to="/" className="hidden sm:flex items-center">
+                <Link to="/" className="hidden md:flex items-center">
                     <img
                         src="/logo192.png"
                         className="w-8 h-8 mr-3"
