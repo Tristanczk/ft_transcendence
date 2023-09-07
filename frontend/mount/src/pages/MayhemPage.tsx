@@ -39,7 +39,39 @@ const map1: Obstacles = [
     { x: 0.85, y: 0.85, width: 0.1, height: 0.1 },
 ];
 
-const maps = [map1];
+const map2: Obstacles = [
+    { x: 0.5, y: 0.5, width: 0.05, height: 0.05 },
+    { x: 0.45, y: 0.45, width: 0.05, height: 0.05 },
+    { x: 0.4, y: 0.4, width: 0.05, height: 0.05 },
+    { x: 0.35, y: 0.4, width: 0.05, height: 0.05 },
+    { x: 0.3, y: 0.4, width: 0.05, height: 0.05 },
+    { x: 0.25, y: 0.45, width: 0.05, height: 0.05 },
+    { x: 0.2, y: 0.5, width: 0.05, height: 0.05 },
+    { x: 0.2, y: 0.55, width: 0.05, height: 0.05 },
+    { x: 0.2, y: 0.6, width: 0.05, height: 0.05 },
+    { x: 0.25, y: 0.65, width: 0.05, height: 0.05 },
+    { x: 0.3, y: 0.7, width: 0.05, height: 0.05 },
+    { x: 0.35, y: 0.75, width: 0.05, height: 0.05 },
+    { x: 0.4, y: 0.8, width: 0.05, height: 0.05 },
+    { x: 0.45, y: 0.85, width: 0.05, height: 0.05 },
+    { x: 0.5, y: 0.9, width: 0.05, height: 0.05 },
+
+    { x: 0.55, y: 0.85, width: 0.05, height: 0.05 },
+    { x: 0.6, y: 0.8, width: 0.05, height: 0.05 },
+    { x: 0.65, y: 0.75, width: 0.05, height: 0.05 },
+    { x: 0.7, y: 0.7, width: 0.05, height: 0.05 },
+    { x: 0.75, y: 0.65, width: 0.05, height: 0.05 },
+    { x: 0.8, y: 0.6, width: 0.05, height: 0.05 },
+    { x: 0.8, y: 0.55, width: 0.05, height: 0.05 },
+    { x: 0.8, y: 0.5, width: 0.05, height: 0.05 },
+    { x: 0.75, y: 0.45, width: 0.05, height: 0.05 },
+    { x: 0.7, y: 0.4, width: 0.05, height: 0.05 },
+    { x: 0.65, y: 0.4, width: 0.05, height: 0.05 },
+    { x: 0.6, y: 0.4, width: 0.05, height: 0.05 },
+    { x: 0.55, y: 0.45, width: 0.05, height: 0.05 },
+];
+
+const maps = [map2];
 
 const drawPaddle = (p5: P5, left: boolean, y: number) => {
     p5.rectMode(p5.CENTER);
@@ -94,8 +126,8 @@ const drawObstacle = (p5: P5, obstacle: Obstacle) => {
     p5.rect(
         obstacle.x * p5.width,
         obstacle.y * p5.height,
-        obstacle.width * p5.width,
-        obstacle.height * p5.height,
+        Math.ceil(obstacle.width * p5.width),
+        Math.ceil(obstacle.height * p5.height),
     );
 };
 
