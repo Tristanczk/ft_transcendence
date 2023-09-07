@@ -22,56 +22,7 @@ import {
     PADDLE_SPEED,
     PADDLE_WIDTH,
 } from '../shared/classic_mayhem';
-
-type Obstacle = {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-};
-
-type Obstacles = Obstacle[];
-
-const map1: Obstacles = [
-    { x: 0.15, y: 0.15, width: 0.1, height: 0.1 },
-    { x: 0.15, y: 0.85, width: 0.1, height: 0.1 },
-    { x: 0.85, y: 0.15, width: 0.1, height: 0.1 },
-    { x: 0.85, y: 0.85, width: 0.1, height: 0.1 },
-];
-
-const map2: Obstacles = [
-    { x: 0.5, y: 0.5, width: 0.05, height: 0.05 },
-    { x: 0.45, y: 0.45, width: 0.05, height: 0.05 },
-    { x: 0.4, y: 0.4, width: 0.05, height: 0.05 },
-    { x: 0.35, y: 0.4, width: 0.05, height: 0.05 },
-    { x: 0.3, y: 0.4, width: 0.05, height: 0.05 },
-    { x: 0.25, y: 0.45, width: 0.05, height: 0.05 },
-    { x: 0.2, y: 0.5, width: 0.05, height: 0.05 },
-    { x: 0.2, y: 0.55, width: 0.05, height: 0.05 },
-    { x: 0.2, y: 0.6, width: 0.05, height: 0.05 },
-    { x: 0.25, y: 0.65, width: 0.05, height: 0.05 },
-    { x: 0.3, y: 0.7, width: 0.05, height: 0.05 },
-    { x: 0.35, y: 0.75, width: 0.05, height: 0.05 },
-    { x: 0.4, y: 0.8, width: 0.05, height: 0.05 },
-    { x: 0.45, y: 0.85, width: 0.05, height: 0.05 },
-    { x: 0.5, y: 0.9, width: 0.05, height: 0.05 },
-
-    { x: 0.55, y: 0.85, width: 0.05, height: 0.05 },
-    { x: 0.6, y: 0.8, width: 0.05, height: 0.05 },
-    { x: 0.65, y: 0.75, width: 0.05, height: 0.05 },
-    { x: 0.7, y: 0.7, width: 0.05, height: 0.05 },
-    { x: 0.75, y: 0.65, width: 0.05, height: 0.05 },
-    { x: 0.8, y: 0.6, width: 0.05, height: 0.05 },
-    { x: 0.8, y: 0.55, width: 0.05, height: 0.05 },
-    { x: 0.8, y: 0.5, width: 0.05, height: 0.05 },
-    { x: 0.75, y: 0.45, width: 0.05, height: 0.05 },
-    { x: 0.7, y: 0.4, width: 0.05, height: 0.05 },
-    { x: 0.65, y: 0.4, width: 0.05, height: 0.05 },
-    { x: 0.6, y: 0.4, width: 0.05, height: 0.05 },
-    { x: 0.55, y: 0.45, width: 0.05, height: 0.05 },
-];
-
-const maps = [map2];
+import { Obstacle, Obstacles, maps } from '../mayhem_maps';
 
 const drawPaddle = (p5: P5, left: boolean, y: number) => {
     p5.rectMode(p5.CENTER);
@@ -124,8 +75,8 @@ const drawObstacle = (p5: P5, obstacle: Obstacle) => {
     p5.rectMode(p5.CENTER);
     p5.fill(255);
     p5.rect(
-        obstacle.x * p5.width,
-        obstacle.y * p5.height,
+        Math.round(obstacle.x * p5.width),
+        Math.round(obstacle.y * p5.height),
         Math.ceil(obstacle.width * p5.width),
         Math.ceil(obstacle.height * p5.height),
     );
@@ -214,6 +165,8 @@ const hitObstacle = (
             ballVel.y = -ballVel.y;
             ballPos.y = bottom + BALL_SIZE / 2;
         }
+        --obstacle.lives;
+        console.log(obstacle.lives);
     }
 };
 
@@ -266,8 +219,11 @@ const MayhemGame = () => {
             ballPos.x = p5.constrain(ballPos.x, COLLISION_X, 1 - COLLISION_X);
         }
 
-        for (const obstacle of obstacles) {
+        for (const obstacle of [...obstacles]) {
             hitObstacle(p5, ballPos, ballVel, obstacle);
+            if (obstacle.lives <= 0) {
+                obstacles = obstacles.filter((o) => o !== obstacle);
+            }
         }
 
         p5.background(15);
