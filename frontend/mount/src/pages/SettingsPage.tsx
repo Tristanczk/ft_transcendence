@@ -8,6 +8,7 @@ import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
 import AvatarUploader from '../components/user/AvatarUpload';
+import NotConnected from '../components/NotConnected';
 
 interface Inputs {
     username: string;
@@ -143,7 +144,7 @@ const SettingsPage: React.FC = () => {
         }
     };
 
-    return (
+    return user ? (
         <section className="bg-gray-50 dark:bg-gray-900">
             <div
                 className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
@@ -252,6 +253,8 @@ const SettingsPage: React.FC = () => {
                 </div>
             </div>
         </section>
+    ) : (
+        <NotConnected message="Please signup or log in to access your settings" />
     );
 };
 

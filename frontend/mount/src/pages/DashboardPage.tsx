@@ -21,7 +21,7 @@ const DashboardPage: React.FC = () => {
             </main>
         </>
     ) : (
-        <NotConnected />
+        <NotConnected message="Please signup or log in to access your dashboard" />
     );
 };
 

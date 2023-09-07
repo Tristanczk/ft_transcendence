@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
+import NotConnected from '../components/NotConnected';
 
 const SignOutPage: React.FC = () => {
     const [message, setMessage] = useState('Not logged in');
@@ -20,7 +21,6 @@ const SignOutPage: React.FC = () => {
                 logoutUser();
                 navigate('/signin');
             } catch (error: any) {
-                console.error(error);
                 setError(true);
                 setMessage(error.response.data.message);
             }
@@ -29,7 +29,7 @@ const SignOutPage: React.FC = () => {
     }, [navigate, logoutUser, authAxios]);
 
     if (error) {
-        return <div>Sign out failed: {message}</div>;
+        return <NotConnected message="Please signup or log in" />;
     } else {
         return <div>{message}</div>;
     }

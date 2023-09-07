@@ -1,7 +1,7 @@
 import Button from './Button';
 import { useNavigate } from 'react-router-dom';
 
-function NotConnected() {
+function NotConnected({ message }: { message: string }) {
     const navigate = useNavigate();
     return (
         <>
@@ -11,9 +11,7 @@ function NotConnected() {
                         <h2 className="text-3xl font-extrabold dark:text-white">
                             Not connected...
                         </h2>
-                        <p className="mt-4 mb-4">
-                            Please signup or loging to access your dashboard
-                        </p>
+                        <p className="mt-4 mb-4">{message}</p>
                         <Button
                             text="Sign in"
                             onClick={() => {
