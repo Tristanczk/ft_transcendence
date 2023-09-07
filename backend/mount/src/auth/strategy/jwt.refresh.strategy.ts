@@ -34,6 +34,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
                 id: payload.sub,
             },
         });
+        // TODO check if user is null
         const valid = await argon.verify(
             user.currentHashedRefreshToken,
             refreshToken,
