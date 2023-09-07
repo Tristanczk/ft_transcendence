@@ -94,6 +94,7 @@ export class Users {
 		const timeNow: number = Date.now();
 		for (const elem of Object.values(this.socketIds)) {
 			if (timeNow - elem.lastPing > 3000) {
+				console.log('disconnecting ? ' + elem.key)
 				elem.indivUser.checkStillConnected()
 				delete this.socketIds[elem.key]
 			}

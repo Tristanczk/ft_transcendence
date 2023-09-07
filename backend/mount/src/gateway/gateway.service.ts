@@ -142,18 +142,17 @@ export class GatewayService implements OnModuleInit {
     async handlePing(@MessageBody() body: PingProps) {
         console.log(body);
         this.users.checkUserAlreadyHere(body.id, body.idConnection);
-        return;
-        const id: number = body.id;
-        if (id === -1) return;
-        const l = this.socketArray.findIndex(
-            (a) => a.idConnection === body.idConnection,
-        );
-        if (l !== -1) {
-            this.socketArray[l].nb++;
-            this.socketArray[l].date = Date.now();
-        } else {
-            this.userArrive(body);
-        }
+        // const id: number = body.id;
+        // if (id === -1) return;
+        // const l = this.socketArray.findIndex(
+        //     (a) => a.idConnection === body.idConnection,
+        // );
+        // if (l !== -1) {
+        //     this.socketArray[l].nb++;
+        //     this.socketArray[l].date = Date.now();
+        // } else {
+        //     this.userArrive(body);
+        // }
     }
 
     @Interval(1000)
