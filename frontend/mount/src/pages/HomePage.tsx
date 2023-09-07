@@ -15,6 +15,7 @@ const joinGame = (
     setGameId: (gameId: string | undefined) => void,
     setMatchmaking: (matchmaking: boolean) => void,
 ) => {
+    //manage so that a game is not created while the matchmaking is not over (2 players connected to the game)
     socket.emit('joinGame', mode, (response: any) => {
         if (response.error) {
             setError(response.error);
@@ -70,6 +71,7 @@ const GameButton = ({
     </button>
 );
 
+//TO DO link with backend to actually cancel matchmaking and the game currently activated
 const CancelButton = ({
     text,
     socket,
