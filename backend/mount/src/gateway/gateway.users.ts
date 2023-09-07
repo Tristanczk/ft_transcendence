@@ -3,10 +3,16 @@ import { SocketProps } from './gateway.service';
 import { User } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 
+type DefineTitle = {
+	indivUser: IndivUser | null;
+	lastPing: number;
+	key: string;
+}
+
 export class Users {
     users: IndivUser[];
     private nbUsers: number;
-    private socketIds: Record<string, IndivUser> = {};
+    private socketIds: Record<string, DefineTitle> = {};
 
     constructor(private prisma: PrismaService) {
         this.users = [];
@@ -30,7 +36,7 @@ export class Users {
     }
 
     //si userId = -1, on a un user inconnu
-    async addUserToSocket(userId: number, client: Socket) {
+    async addUserToSocket(userId: number, socketId: string) {
         let userToAdd: IndivUser | null = this.getIndivUserById(userId);
         if (!userToAdd) {
             //verif user
@@ -38,14 +44,21 @@ export class Users {
             if (await this.verifUserId(userId)) userIdVerified = userId;
 
             //cree nouveau user et ajoute au tableau de users
-            userToAdd = new IndivUser(userIdVerified, client.id);
+            userToAdd = new IndivUser(userIdVerified, socketId, this.prisma);
             this.users.push(userToAdd);
             this.nbUsers += 1;
+			console.log('create newUser: ' + userToAdd.userId)
         }
+		else {
+			userToAdd.addNewSocketId(socketId);
+		}
+
+		console.log('userToAdd:' + userToAdd.userId + ', ' + userToAdd.lastPingTime + ', sockets:');
+		console.log(userToAdd.sockets)
 
         //ajoute au tableau de sockets
-        this.socketIds[client.id] = userToAdd;
-		this.socketIds[client.id].updateTimeLastSeen();
+        this.socketIds[socketId] = {indivUser: userToAdd, lastPing: Date.now(), key: socketId};
+		this.socketIds[socketId].indivUser.updateTimeLastSeen();
     }
 
     getIndivUserById(userId: number): IndivUser | null {
@@ -58,17 +71,18 @@ export class Users {
         return null;
     }
 
-    checkUserAlreadyHere(userId: number, client: Socket) {
-        if (!this.socketIds[client.id]) {
-            this.addUserToSocket(userId, client);
+    checkUserAlreadyHere(userId: number, socketId: string) {
+		// console.log('checkUserAlreadyHere: ' + userId + ', socket=' + socketId);
+        if (!this.socketIds[socketId]) {
+            this.addUserToSocket(userId, socketId);
         } else {
             //check if userId toujours le meme
             //si oui, modifie juste date apres PING
             //si non, on modifie le user
-            if (this.socketIds[client.id].userId === userId) {
-                this.socketIds[client.id].updateTimeLastSeen();
+            if (this.socketIds[socketId].indivUser.userId === userId) {
+                this.socketIds[socketId].indivUser.updateTimeLastSeen();
             } else {
-				this.addUserToSocket(userId, client);
+				this.addUserToSocket(userId, socketId);
             }
         }
     }
@@ -77,7 +91,13 @@ export class Users {
 
     checkConnections() {
 		let usersLeaving: number[] = [];
-
+		const timeNow: number = Date.now();
+		for (const elem of Object.values(this.socketIds)) {
+			if (timeNow - elem.lastPing > 3000) {
+				elem.indivUser.checkStillConnected()
+				delete this.socketIds[elem.key]
+			}
+		}
 	}
 }
 
@@ -93,13 +113,13 @@ export class IndivUser {
         this.userId = userId;
         this.isSignedIn = userId === -1 ? false : true;
         this.isPlaying = false;
-        this.sockets.push(socketId);
+        this.sockets = [socketId];
         this.lastPingTime = Date.now();
     }
 
 	//return true if need to emit message
     async checkStillConnected(): Promise<boolean> {
-		if (this.isConnected === false) return false;
+		// if (this.isConnected === false) return false;
         const timeNow: number = Date.now();
 		if (timeNow - this.lastPingTime > 3000) {
 			this.isConnected = false;
@@ -128,4 +148,8 @@ export class IndivUser {
 		}
         this.lastPingTime = Date.now();
     }
+
+	addNewSocketId(socketId: string) {
+		this.sockets.push(socketId);
+	}
 }
