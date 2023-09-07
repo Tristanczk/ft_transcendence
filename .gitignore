@@ -9,7 +9,11 @@ node_modules
 !.vscode/extensions.json
 
 .env*
+.*env
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+backend/mount/src/shared.ts
+frontend/mount/src/shared.ts
