@@ -10,7 +10,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Interval } from '@nestjs/schedule';
 import { create as createRandomSeed } from 'random-seed';
 import {
-    ApiResult,
     BALL_HIGH,
     BALL_LOW,
     BALL_RADIUS,
@@ -18,14 +17,6 @@ import {
     BALL_SPEED_START,
     COLLISION_X,
     COLLISION_Y,
-    ClassicGameObjects,
-    DEFAULT_BATTLE_OBJECTS,
-    DEFAULT_CLASSIC_OBJECTS,
-    DEFAULT_MAYHEM_OBJECTS,
-    GameInfo,
-    GameMode,
-    KeyEvent,
-    MAX_PLAYERS,
     MAX_Y_FACTOR,
     PADDLE_HIGH,
     PADDLE_LOW,
@@ -33,8 +24,21 @@ import {
     PADDLE_SPEED,
     PADDLE_WIDTH,
     WINNING_SCORE,
+} from 'src/shared/classic_mayhem';
+import {
+    ApiResult,
+    GameMode,
+    KeyEvent,
+    MAX_PLAYERS,
     isGameMode,
-} from 'src/shared';
+} from 'src/shared/misc';
+import {
+    ClassicGameObjects,
+    DEFAULT_BATTLE_OBJECTS,
+    DEFAULT_CLASSIC_OBJECTS,
+    DEFAULT_MAYHEM_OBJECTS,
+    GameInfo,
+} from 'src/shared/game_info';
 
 const ID_SIZE = 7;
 const ID_BASE = 36;

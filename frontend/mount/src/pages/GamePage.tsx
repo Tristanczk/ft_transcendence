@@ -4,9 +4,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
 import ClassicGame from '../games/ClassicGame';
-import { ApiResult, GameInfo, KeyEventType } from '../shared';
 import MayhemGame from '../games/MayhemGame';
 import BattleGame from '../games/BattleGame';
+import { GameInfo } from '../shared/game_info';
+import { ApiResult, KeyEventType } from '../shared/misc';
 
 const Game = ({
     gameInfo,

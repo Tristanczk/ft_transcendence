@@ -1,16 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../constants';
-import { MayhemGameObjects, Players } from '../shared';
-
-const ASPECT_RATIO = 286 / 175;
-const BALL_SIZE = 0.018;
-
-const PADDLE_MARGIN_X = 0.01;
-const PADDLE_WIDTH = 0.015;
-const PADDLE_HEIGHT = 0.16;
-
-const LINE_MARGIN = 0.01;
-const LINE_WIDTH = PADDLE_WIDTH;
+import {
+    ASPECT_RATIO,
+    BALL_SIZE,
+    LINE_MARGIN,
+    LINE_WIDTH,
+    PADDLE_HEIGHT,
+    PADDLE_MARGIN_X,
+    PADDLE_WIDTH,
+} from '../shared/classic_mayhem';
+import { MayhemGameObjects, Players } from '../shared/game_info';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
@@ -34,7 +33,6 @@ const drawBar = (
     );
 };
 
-// TODO multicolor wave
 const drawNet = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
     ctx.fillStyle = 'white';
     const rectSize = BALL_SIZE * canvas.width;
@@ -70,15 +68,15 @@ const drawPaddle = (
 const drawBall = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
-    ballX: number,
-    ballY: number,
+    ballPosX: number,
+    ballPosY: number,
 ) => {
     const ballSize = BALL_SIZE * canvas.width;
     const halfBallSize = 0.5 * ballSize;
     ctx.fillStyle = 'white';
     ctx.fillRect(
-        ballX * canvas.width - halfBallSize,
-        ballY * canvas.height - halfBallSize,
+        ballPosX * canvas.width - halfBallSize,
+        ballPosY * canvas.height - halfBallSize,
         ballSize,
         ballSize,
     );
@@ -114,6 +112,7 @@ const MayhemGame = ({
     windowHeight: number;
     players: Players;
 }) => {
+    const { ballPosX, ballPosY } = gameObjects;
     const arenaHeight = Math.min(
         (windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
         windowHeight - NAVBAR_HEIGHT - CANVAS_MARGIN,
@@ -123,8 +122,10 @@ const MayhemGame = ({
     const ref = useRef<HTMLCanvasElement | null>(null);
 
     useEffect(() => {
-        const canvas = ref.current!;
-        const ctx = canvas.getContext('2d')!;
+        const canvas = ref.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
         canvas.width = arenaWidth;
         canvas.height = arenaHeight;
         canvas.style.width = `${arenaWidth}px`;
@@ -134,9 +135,9 @@ const MayhemGame = ({
         drawBar(canvas, ctx, LINE_MARGIN);
         drawBar(canvas, ctx, 1 - LINE_MARGIN - LINE_WIDTH);
         drawNet(canvas, ctx);
-        if (players[0] !== null) drawPaddle(canvas, ctx, true, players[0].pos);
-        if (players[1] !== null) drawPaddle(canvas, ctx, false, players[1].pos);
-        drawBall(canvas, ctx, 0.5, 0.5);
+        if (players[0]) drawPaddle(canvas, ctx, true, players[0].pos);
+        if (players[1]) drawPaddle(canvas, ctx, false, players[1].pos);
+        drawBall(canvas, ctx, ballPosX, ballPosY);
         drawScore(canvas, ctx, players);
     });
 

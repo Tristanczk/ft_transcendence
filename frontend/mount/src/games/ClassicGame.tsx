@@ -3,14 +3,13 @@ import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../constants';
 import {
     ASPECT_RATIO,
     BALL_SIZE,
-    ClassicGameObjects,
     LINE_MARGIN,
     LINE_WIDTH,
     PADDLE_HEIGHT,
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
-    Players,
-} from '../shared';
+} from '../shared/classic_mayhem';
+import { ClassicGameObjects, Players } from '../shared/game_info';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,

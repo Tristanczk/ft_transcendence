@@ -7,8 +7,8 @@ COMPILED := backend/mount/dist \
 			frontend/mount/build \
 			frontend/mount/node_modules
 
-BACKEND_SHARED := backend/mount/src/shared.ts
-FRONTEND_SHARED := frontend/mount/src/shared.ts
+BACKEND_SHARED := backend/mount/src/shared
+FRONTEND_SHARED := frontend/mount/src/shared
 SHARED := $(BACKEND_SHARED) $(FRONTEND_SHARED)
 
 build: shared
@@ -29,7 +29,7 @@ revolume: down
 	$(MAKE) build
 
 shared:
-	cp shared.ts $(BACKEND_SHARED)
-	cp shared.ts $(FRONTEND_SHARED)
+	cp -r shared $(BACKEND_SHARED)
+	cp -r shared $(FRONTEND_SHARED)
 
 .PHONY: build down clean re revolume shared
