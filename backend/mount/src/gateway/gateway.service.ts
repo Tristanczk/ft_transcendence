@@ -194,13 +194,13 @@ export class GatewayService implements OnModuleInit {
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
                 game.addPlayer(client.id);
                 this.clients[client.id] = game.id;
-                return { gameId: game.id };
+                return { gameId: game.id, status: 'joined' };
             }
         }
         const game = new Game(generateId(this.games), gameMode, client.id);
         this.games[game.id] = game;
         this.clients[client.id] = game.id;
-        return { gameId: game.id };
+        return { gameId: game.id, status: 'waiting' };
     }
 
     @SubscribeMessage('quitGame')
