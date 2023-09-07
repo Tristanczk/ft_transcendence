@@ -15,5 +15,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-backend/mount/src/shared.ts
-frontend/mount/src/shared.ts
+backend/mount/src/shared
+frontend/mount/src/shared
