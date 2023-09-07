@@ -6,6 +6,8 @@ import { Socket } from 'socket.io-client';
 import { GameMode } from '../shared/misc';
 import { set } from 'date-fns';
 
+const activateMatchmaking = true;
+
 const joinGame = (
     mode: GameMode,
     socket: Socket,
@@ -15,7 +17,6 @@ const joinGame = (
     setGameId: (gameId: string | undefined) => void,
     setMatchmaking: (matchmaking: boolean) => void,
 ) => {
-    //manage so that a game is not created while the matchmaking is not over (2 players connected to the game)
     socket.emit('joinGame', mode, (response: any) => {
         if (response.error) {
             setError(response.error);
@@ -26,7 +27,8 @@ const joinGame = (
         } else {
             setGameId(response.gameId);
             if (response.status === 'waiting') {
-                setMatchmaking(true);
+                if (activateMatchmaking) setMatchmaking(true);
+                else navigate(`/game/${response.gameId}`);
             } else {
                 navigate(`/game/${response.gameId}`);
             }
