@@ -66,23 +66,39 @@ const drawBall = (p5: P5, ballPos: P5.Vector) => {
 
 const drawObstacle = (p5: P5, obstacle: MayhemCell, x: number, y: number) => {
     if (obstacle.lives > 0) {
-        const screenX =
-            p5.width * (0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH));
-        const screenY =
-            p5.height * (0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT));
-        // TODO display differently depending on lives / startingLives
-        p5.square(screenX, screenY, Math.ceil(BALL_WIDTH * p5.width));
+        const screenX = Math.round(
+            p5.width * (0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH)),
+        );
+        const screenY = Math.round(
+            p5.height * (0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT)),
+        );
+        const obstacleSize = Math.ceil(BALL_WIDTH * p5.width);
+        const ratio =
+            obstacle.lives === Infinity
+                ? 1
+                : obstacle.lives / obstacle.startingLives;
+        for (let i = 0; i < obstacleSize; i++) {
+            for (let j = 0; j < obstacleSize; j++) {
+                if (Math.random() <= ratio) {
+                    const pixelIdx =
+                        4 * (screenX + i + (screenY + j) * p5.width);
+                    p5.pixels[pixelIdx] = 255;
+                    p5.pixels[pixelIdx + 1] = 255;
+                    p5.pixels[pixelIdx + 2] = 255;
+                }
+            }
+        }
     }
 };
 
 const drawObstacles = (p5: P5, obstacles: MayhemMap) => {
-    p5.rectMode(p5.CENTER);
-    p5.fill(255);
+    p5.loadPixels();
     obstacles.forEach((row, y) => {
         row.forEach((obstacle, x) => {
             drawObstacle(p5, obstacle, x, y);
         });
     });
+    p5.updatePixels();
 };
 
 const drawScore = (p5: P5, scoreLeft: number, scoreRight: number) => {
