@@ -2,6 +2,7 @@ import { ChangeEvent, useContext, useState } from 'react';
 import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { WebsocketContext } from '../../context/WebsocketContext';
+import EmojiPicker from 'emoji-picker-react';
 
 export default function MessageInput({ idChannel }: { idChannel: number }) {
     const [input, setInput] = useState('');

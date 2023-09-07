@@ -93,7 +93,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
             setMessages(response.data);
         };
         if (channel) fetchMessages();
-    }, [currentChat, channel]);
+    }, [currentChat, channel, socket]);
 
     socket.on('message', (message: MessageProps) => {
         console.log('received message', message);
@@ -123,7 +123,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                     />
                     {channel ? (
                         <>
-                            <MessagesHeader currentChat={currentChat} />
+                            <MessagesHeader currentChat={currentChat} setCurrentChat={setCurrentChat}/>
                             <Messages messages={messages} />
                             <MessageInput idChannel={channel} />
                         </>

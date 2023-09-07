@@ -1,12 +1,13 @@
+import { Link } from 'react-router-dom';
 import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
 
 export default function ChatFriendListElement({
     friend,
-	chatSelector,
+    chatSelector,
 }: {
     friend: UserSimplified;
-	chatSelector: (friend: UserSimplified) => void;
+    chatSelector: (friend: UserSimplified) => void;
 }) {
     return (
         <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
@@ -18,12 +19,17 @@ export default function ChatFriendListElement({
                 />
                 <div className="ml-2 flex flex-col">
                     <div className="leading-snug text-sm text-gray-900 font-medium">
-                        {friend.nickname}
+                        <Link to={'/dashboard/' + friend.id}>
+                            {friend.nickname}
+                        </Link>
                     </div>
                 </div>
             </div>
             <button
-				onClick={() => {chatSelector(friend)}}>
+                onClick={() => {
+                    chatSelector(friend);
+                }}
+            >
                 {' '}
                 <svg
                     className="text-blue-600 w-6 h-6"
