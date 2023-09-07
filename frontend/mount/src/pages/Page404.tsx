@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 
@@ -12,6 +12,10 @@ const goBack = (navigate: NavigateFunction) => {
 
 const Page404: React.FC = () => {
     const navigate = useNavigate();
+    useEffect(() => {
+        window.history.replaceState({}, '', '/404');
+    }, []);
+
     return (
         <section className="bg-gray-900">
             <div className="container mx-auto min-h-screen px-6 py-12 max-w-4xl">
