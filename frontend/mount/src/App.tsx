@@ -12,14 +12,13 @@ import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import { WebsocketProvider, socket } from './context/WebsocketContext';
 import TrackingOnline from './components/TrackingOnline';
-import BattlePage from './pages/BattlePage';
-import ClassicPage from './pages/ClassicPage';
 import { UserProvider } from './context/UserContext';
 import UserPage from './pages/UserPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import { AuthAxiosProvider } from './context/AuthAxiosContext';
 import AchievementPage from './pages/AchievementsPage';
 import GameHistoryPage from './pages/GameHistoryPage';
+import GamePage from './pages/GamePage';
 
 const App: React.FC = () => {
     return (
@@ -31,8 +30,7 @@ const App: React.FC = () => {
                         <NavBar />
                         <Routes>
                             <Route path="/" Component={HomePage} />
-                            <Route path="/battle" Component={BattlePage} />
-                            <Route path="/classic" Component={ClassicPage} />
+                            <Route path="/game/:gameId" Component={GamePage} />
                             <Route
                                 path="/dashboard"
                                 Component={DashboardPage}

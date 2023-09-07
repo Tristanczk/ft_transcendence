@@ -1,11 +1,11 @@
 import React, { ReactNode, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
-import { useWidth } from '../hooks';
 import { useUserContext } from '../context/UserContext';
 import { NAVBAR_HEIGHT } from '../constants';
 import ImageFriend from './dashboard/friends/ImgFriend';
 import OutsideClickHandler from 'react-outside-click-handler';
+import { useWindowSize } from 'usehooks-ts';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -15,7 +15,7 @@ const NavLink: React.FC<{
 }> = ({ title, current, link, icon }) => {
     const innerDivStyle = 'block py-2 pl-3 pr-4 rounded';
     const isActive = current === link;
-    const width = useWidth();
+    const { width } = useWindowSize();
     const showText = width && width >= 640;
 
     return (
@@ -62,7 +62,7 @@ const NavLinks: React.FC<{ current: string }> = ({ current }) => {
                 <NavLink
                     current={current}
                     title="Dashboard"
-                    link="/dashboard" // TODO /dashboard/:login
+                    link="/dashboard"
                     icon="/pie-chart.svg"
                 />
                 <NavLink
