@@ -29,6 +29,7 @@ revolume: down
 	$(MAKE) build
 
 shared:
+	rm -rf $(SHARED)
 	cp -r shared $(BACKEND_SHARED)
 	cp -r shared $(FRONTEND_SHARED)
 
