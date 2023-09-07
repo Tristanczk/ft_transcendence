@@ -6,7 +6,6 @@ import { NAVBAR_HEIGHT } from '../constants';
 import ImageFriend from './dashboard/friends/ImgFriend';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { useWindowSize } from 'usehooks-ts';
-import { set } from 'date-fns';
 
 const NavLink: React.FC<{
     title: ReactNode;
