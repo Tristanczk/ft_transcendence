@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import ChatWindow, { ChatWindowProps } from '../components/chatpage/ChatWindow';
-import { WebsocketContext, socket as constSocket } from '../context/WebsocketContext';
+import {
+    WebsocketContext,
+    socket as constSocket,
+} from '../context/WebsocketContext';
 import { Button } from 'flowbite-react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import ListGroupWithButton from '../components/chatpage/ListGroup';
@@ -17,7 +20,7 @@ import ChatListHeader from '../components/chat/ChatListHeader';
 import MessageInput from '../components/chat/MessageInput';
 import { AxiosResponse } from 'axios';
 
-function ChatPage() {
+function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     let [channel, setChannel] = useState<number>(0);
@@ -25,7 +28,7 @@ function ChatPage() {
     const [currentChat, setCurrentChat] = useState<UserSimplified | null>(null); // or channel
     const [isVisible, setIsVisible] = useState(false);
     const socket = useContext(WebsocketContext);
-  
+
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
     );
@@ -98,40 +101,35 @@ function ChatPage() {
         setMessages((oldMessages) => [...oldMessages, message]);
     });
 
-    const toggleVisibility = () => {
-        setIsVisible(!isVisible);
-    };
-
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={toggleVisibility}
-            >
-                Toggle
-            </button>
+        <div
+            className={`fixed inset-y-0 right-0 w-100 text-white transform top-28 ${
+                isChatVisible
+                    ? 'translate-x-0 transition-transform duration-500'
+                    : 'translate-x-full transition-transform duration-200'
+            }`}
+        >
             <div
-                className={`fixed inset-y-0 right-0 w-100 text-white pt-24 transform ${
-                    isVisible
-                        ? 'translate-x-0 transition-transform duration-500'
-                        : 'translate-x-full transition-transform duration-200'
-                }`}
+                className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex"
+                style={{ marginRight: '36px' }}
             >
-                <div
-                    className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex"
-                    style={{ marginRight: '36px' }}
-                >
-                    <div className="flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl">
-                        <ChatListHeader />
-                        <ChatFriendList
-                            friends={friendsList}
-                            chatSelector={setCurrentChat}
-                            // notifications={notifications} int[] of channel ids
-                        />
-                        <MessagesHeader currentChat={currentChat} />
-                        <Messages messages={messages} />
-                        <MessageInput idChannel={channel} />
-                    </div>
+                <div className="flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl">
+                    <ChatListHeader />
+                    <ChatFriendList
+                        friends={friendsList}
+                        chatSelector={setCurrentChat}
+                        currentChat={currentChat}
+                        // notifications={notifications} int[] of channel ids
+                    />
+                    {channel ? (
+                        <>
+                            <MessagesHeader currentChat={currentChat} />
+                            <Messages messages={messages} />
+                            <MessageInput idChannel={channel} />
+                        </>
+                    ) : (
+                        ''
+                    )}
                 </div>
             </div>
         </div>
@@ -141,7 +139,7 @@ function ChatPage() {
 export default ChatPage;
 
 // const send = (message: MessageProps) => {
-     // socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message });
+// socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message });
 //     const response = authAxios.post(
 //         '/chat/sendMessage',
 //         {

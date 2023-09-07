@@ -49,7 +49,10 @@ const NavLink: React.FC<{
     );
 };
 
-const NavLinks: React.FC<{ current: string }> = ({ current }) => {
+const NavLinks: React.FC<{
+    current: string;
+    toggleChatVisibility: () => void;
+}> = ({ current, toggleChatVisibility }) => {
     return (
         <div className="items-center justify-between flex w-auto">
             <ul className="text-xl sm:text-base flex font-medium p-0 rounded-lg flex-row space-x-2 sm:space-x-8 mt-0 border-0 bg-gray-900 border-gray-700">
@@ -68,15 +71,15 @@ const NavLinks: React.FC<{ current: string }> = ({ current }) => {
                 <NavLink
                     current={current}
                     title="Leaderboard"
-                    link="/leaderboad"
+                    link="/leaderboard"
                     icon="/pie-chart.svg"
                 />
-				<NavLink
-                    current={current}
-                    title="Chat"
-                    link="/chat"
-                    icon="/postcard.svg"
-                />
+                <li>
+                    <button
+                        className="block py-2 pl-3 pr-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
+                        onClick={toggleChatVisibility}
+                    >Chat</button>
+                </li>
             </ul>
         </div>
     );
@@ -102,7 +105,7 @@ const MenuLink: React.FC<{
 
 function UserMenu() {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
-	const [showInfo, setShowInfo] = useState<boolean>(true);
+    const [showInfo, setShowInfo] = useState<boolean>(true);
     const { user } = useUserContext();
 
     return (
@@ -114,7 +117,7 @@ function UserMenu() {
             <OutsideClickHandler
                 onOutsideClick={() => {
                     setShowInfo(false);
-					setUserMenuOpen(false);
+                    setUserMenuOpen(false);
                 }}
             >
                 <div
@@ -148,7 +151,7 @@ function UserMenu() {
                         >
                             <div className="px-4 py-3">
                                 <span className="block text-sm text-white">
-									{user?.nickname}
+                                    {user?.nickname}
                                 </span>
                                 <span className="block text-sm truncate text-gray-400">
                                     login if different
@@ -178,7 +181,9 @@ function UserMenu() {
     );
 }
 
-const NavBar: React.FC = () => {
+const NavBar: React.FC<{ toggleChatVisibility: () => void }> = ({
+    toggleChatVisibility,
+}) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useUserContext();
@@ -199,7 +204,10 @@ const NavBar: React.FC = () => {
                         lipong.org
                     </span>
                 </Link>
-                <NavLinks current={location.pathname} />
+                <NavLinks
+                    current={location.pathname}
+                    toggleChatVisibility={toggleChatVisibility}
+                />
                 {user ? (
                     <UserMenu />
                 ) : (

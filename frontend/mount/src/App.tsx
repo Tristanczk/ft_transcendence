@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
@@ -21,13 +21,21 @@ import LeaderboardPage from './pages/LeaderboardPage';
 import { AuthAxiosProvider } from './context/AuthAxiosContext';
 
 const App: React.FC = () => {
+    const [isChatVisible, setIsChatVisible] = useState(false);
+
+    const toggleChatVisibility = () => {
+        console.log('toggleChatVisibility');
+        setIsChatVisible((prev) => !prev);
+    };
+
     return (
         <WebsocketProvider value={socket}>
             <UserProvider>
                 <AuthAxiosProvider>
                     <TrackingOnline />
                     <BrowserRouter>
-                        <NavBar />
+                        <NavBar toggleChatVisibility={toggleChatVisibility} />
+                        {<ChatPage isChatVisible={isChatVisible}/>}
                         <Routes>
                             <Route path="/" Component={HomePage} />
                             <Route path="/battle" Component={BattlePage} />
@@ -41,13 +49,15 @@ const App: React.FC = () => {
                                 Component={UserPage}
                             />
                             <Route
-                                path="/leaderboad"
+                                path="/leaderboard"
                                 Component={LeaderboardPage}
                             />
-                            <Route path="/chat" Component={ChatPage} />
                             <Route path="/signin" Component={SignInPage} />
                             <Route path="/signup" Component={SignUpPage} />
-                            <Route path="/signin42" Component={SignInPage42} />
+                            <Route
+                                path="/signin42"
+                                Component={SignInPage42}
+                            />
                             <Route path="/signout" Component={SignOutPage} />
                             <Route path="/settings" Component={SettingsPage} />
                             <Route path="*" Component={Page404} />

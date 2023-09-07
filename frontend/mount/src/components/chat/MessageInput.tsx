@@ -16,7 +16,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
 
     const handleSendMessage = async () => {
         console.log('sending message', input, ' miao ', idChannel);
-        if (input === '') return;
+        if (input === '' || idChannel === 0) return;
         setInput('');
         const response = await authAxios.post(
             '/chat/sendMessage',
