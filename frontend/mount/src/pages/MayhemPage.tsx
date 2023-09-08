@@ -300,8 +300,8 @@ const MayhemGame = () => {
         drawBar(p5, 1 - LINE_MARGIN - LINE_WIDTH);
         drawPaddle(p5, true, paddleLeft);
         drawPaddle(p5, false, paddleRight);
-        drawBall(p5, ballPos);
         drawObstacles(p5, obstacles);
+        drawBall(p5, ballPos);
         drawScore(p5, scoreLeft, scoreRight);
     };
 
