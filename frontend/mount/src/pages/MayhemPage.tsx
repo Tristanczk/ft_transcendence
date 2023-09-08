@@ -71,8 +71,8 @@ const drawObstacle = (p5: P5, obstacle: MayhemCell, x: number, y: number) => {
     if (obstacle.lives > 0) {
         const obstacleSize = Math.ceil(BALL_WIDTH * p5.width);
         const { posX, posY } = getObstaclePos(x, y);
-        const screenX = Math.round(p5.width * posX);
-        const screenY = Math.round(p5.height * posY);
+        const screenX = Math.round(p5.width * (posX - BALL_WIDTH / 2));
+        const screenY = Math.round(p5.height * (posY - BALL_HEIGHT / 2));
         const ratio =
             obstacle.lives === Infinity
                 ? 1
@@ -141,63 +141,6 @@ const hitPaddle = (
     return null;
 };
 
-type ObstacleCollision =
-    | {
-          collided: false;
-      }
-    | {
-          collided: true;
-          side: 'left' | 'right' | 'top' | 'bottom';
-          distance: number;
-      };
-
-const hitObstacle = (
-    ballPos: P5.Vector,
-    ballVel: P5.Vector,
-    posX: number,
-    posY: number,
-    obstacles: MayhemMap,
-    x: number,
-    y: number,
-) => {
-    const left = posX - BALL_WIDTH;
-    const right = posX + BALL_WIDTH;
-    const top = posY - BALL_HEIGHT;
-    const bottom = posY + BALL_HEIGHT;
-
-    if (
-        ballPos.x >= left &&
-        ballPos.x <= right &&
-        ballPos.y >= top &&
-        ballPos.y <= bottom
-    ) {
-        const distances = [
-            ballVel.x > 0 ? (ballPos.x - left) / ballVel.x : Infinity,
-            ballVel.x < 0 ? (ballPos.x - right) / ballVel.x : Infinity,
-            ballVel.y > 0 ? (ballPos.y - top) / ballVel.y : Infinity,
-            ballVel.y < 0 ? (ballPos.y - bottom) / ballVel.y : Infinity,
-        ];
-
-        const collisionSide = distances.indexOf(Math.min(...distances));
-        console.log(collisionSide);
-
-        if (collisionSide === 0) {
-            ballVel.x = -ballVel.x;
-            ballPos.x = left - BALL_WIDTH / 2;
-        } else if (collisionSide === 1) {
-            ballVel.x = -ballVel.x;
-            ballPos.x = right + BALL_WIDTH / 2;
-        } else if (collisionSide === 2) {
-            ballVel.y = -ballVel.y;
-            ballPos.y = top - BALL_HEIGHT / 2;
-        } else {
-            ballVel.y = -ballVel.y;
-            ballPos.y = bottom + BALL_HEIGHT / 2;
-        }
-        --obstacles[y][x].lives;
-    }
-};
-
 const hitObstacles = (
     ballPos: P5.Vector,
     ballVel: P5.Vector,
@@ -209,7 +152,51 @@ const hitObstacles = (
             const obstacle = row[x];
             if (obstacle.lives > 0) {
                 const { posX, posY } = getObstaclePos(x, y);
-                hitObstacle(ballPos, ballVel, posX, posY, obstacles, x, y);
+                const left = posX - BALL_WIDTH;
+                const right = posX + BALL_WIDTH;
+                const top = posY - BALL_HEIGHT;
+                const bottom = posY + BALL_HEIGHT;
+
+                if (
+                    ballPos.x >= left &&
+                    ballPos.x <= right &&
+                    ballPos.y >= top &&
+                    ballPos.y <= bottom
+                ) {
+                    const distances = [
+                        ballVel.x > 0
+                            ? (ballPos.x - left) / ballVel.x
+                            : Infinity,
+                        ballVel.x < 0
+                            ? (ballPos.x - right) / ballVel.x
+                            : Infinity,
+                        ballVel.y > 0
+                            ? (ballPos.y - top) / ballVel.y
+                            : Infinity,
+                        ballVel.y < 0
+                            ? (ballPos.y - bottom) / ballVel.y
+                            : Infinity,
+                    ];
+
+                    const collisionSide = distances.indexOf(
+                        Math.min(...distances),
+                    );
+
+                    if (collisionSide === 0) {
+                        ballVel.x = -ballVel.x;
+                        ballPos.x = left - BALL_WIDTH / 2;
+                    } else if (collisionSide === 1) {
+                        ballVel.x = -ballVel.x;
+                        ballPos.x = right + BALL_WIDTH / 2;
+                    } else if (collisionSide === 2) {
+                        ballVel.y = -ballVel.y;
+                        ballPos.y = top - BALL_HEIGHT / 2;
+                    } else {
+                        ballVel.y = -ballVel.y;
+                        ballPos.y = bottom + BALL_HEIGHT / 2;
+                    }
+                    --obstacles[y][x].lives;
+                }
             }
         }
     }
