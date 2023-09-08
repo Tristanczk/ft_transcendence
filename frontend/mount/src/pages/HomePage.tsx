@@ -4,7 +4,6 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode } from '../shared/misc';
-import { set } from 'date-fns';
 
 const activateMatchmaking = true;
 

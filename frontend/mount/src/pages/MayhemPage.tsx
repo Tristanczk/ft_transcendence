@@ -74,12 +74,13 @@ const drawObstacle = (p5: P5, obstacle: MayhemCell, x: number, y: number) => {
         const screenX = Math.round(p5.width * (posX - BALL_WIDTH / 2));
         const screenY = Math.round(p5.height * (posY - BALL_HEIGHT / 2));
         const ratio =
-            obstacle.lives === Infinity
+            obstacle.lives === Infinity ||
+            obstacle.lives === obstacle.startingLives
                 ? 1
                 : obstacle.lives / obstacle.startingLives;
         for (let i = 0; i < obstacleSize; i++) {
             for (let j = 0; j < obstacleSize; j++) {
-                if (Math.random() <= ratio) {
+                if (ratio === 1 || Math.random() <= ratio) {
                     const pixelIdx =
                         4 * (screenX + i + (screenY + j) * p5.width);
                     p5.pixels[pixelIdx] = 255;
@@ -129,7 +130,7 @@ const hitPaddle = (
     ballVel: P5.Vector,
 ): number | null => {
     const x = left ? ballPos.x : 1 - ballPos.x;
-    if (PADDLE_MARGIN_X + PADDLE_WIDTH / 2 <= x && x <= COLLISION_X) {
+    if (PADDLE_MARGIN_X <= x && x <= COLLISION_X) {
         const paddleDiff = ballPos.y - paddle;
         if (Math.abs(paddleDiff) <= COLLISION_Y) {
             return (
@@ -141,50 +142,84 @@ const hitPaddle = (
     return null;
 };
 
+const hitPaddles = (
+    p5: P5,
+    paddleLeft: number,
+    paddleRight: number,
+    ballPos: P5.Vector,
+    ballVel: P5.Vector,
+) => {
+    const newVelY =
+        hitPaddle(p5, true, paddleLeft, ballPos, ballVel) ||
+        hitPaddle(p5, false, paddleRight, ballPos, ballVel);
+    if (newVelY !== null) {
+        ballVel.x = -(ballVel.x + Math.sign(ballVel.x) * BALL_SPEED_INCREMENT);
+        ballVel.y = newVelY;
+        ballPos.x = p5.constrain(ballPos.x, COLLISION_X, 1 - COLLISION_X);
+    }
+};
+
+type ObstacleCollision = {
+    surface: number;
+    x: number;
+    y: number;
+    newPos: P5.Vector;
+    newVel: P5.Vector;
+};
+
 const hitObstacle = (
-    obstacle: MayhemCell,
     x: number,
     y: number,
     ballPos: P5.Vector,
     ballVel: P5.Vector,
-) => {
+): ObstacleCollision | null => {
     const { posX, posY } = getObstaclePos(x, y);
     const left = posX - BALL_WIDTH;
     const right = posX + BALL_WIDTH;
     const top = posY - BALL_HEIGHT;
     const bottom = posY + BALL_HEIGHT;
-
     if (
-        ballPos.x >= left &&
-        ballPos.x <= right &&
-        ballPos.y >= top &&
-        ballPos.y <= bottom
-    ) {
-        const distances = [
-            ballVel.x > 0 ? (ballPos.x - left) / ballVel.x : Infinity,
-            ballVel.x < 0 ? (ballPos.x - right) / ballVel.x : Infinity,
-            ballVel.y > 0 ? (ballPos.y - top) / ballVel.y : Infinity,
-            ballVel.y < 0 ? (ballPos.y - bottom) / ballVel.y : Infinity,
-        ];
-
-        const collisionSide = distances.indexOf(Math.min(...distances));
-        console.log(collisionSide, Math.min(...distances));
-
-        if (collisionSide === 0) {
-            ballVel.x = -ballVel.x;
-            ballPos.x = left - BALL_WIDTH / 2;
-        } else if (collisionSide === 1) {
-            ballVel.x = -ballVel.x;
-            ballPos.x = right + BALL_WIDTH / 2;
-        } else if (collisionSide === 2) {
-            ballVel.y = -ballVel.y;
-            ballPos.y = top - BALL_HEIGHT / 2;
-        } else {
-            ballVel.y = -ballVel.y;
-            ballPos.y = bottom + BALL_HEIGHT / 2;
-        }
-        --obstacle.lives;
+        ballPos.x <= left ||
+        ballPos.x >= right ||
+        ballPos.y <= top ||
+        ballPos.y >= bottom
+    )
+        return null;
+    const distances = [
+        ballVel.y <= 0
+            ? Infinity
+            : Math.abs(ballPos.y - top) / Math.abs(ballVel.y),
+        ballVel.x >= 0
+            ? Infinity
+            : Math.abs(ballPos.x - right) / Math.abs(ballVel.x),
+        ballVel.y >= 0
+            ? Infinity
+            : Math.abs(ballPos.y - bottom) / Math.abs(ballVel.y),
+        ballVel.x <= 0
+            ? Infinity
+            : Math.abs(ballPos.x - left) / Math.abs(ballVel.x),
+    ];
+    const collisionSide = distances.indexOf(Math.min(...distances));
+    const newPos = ballPos.copy();
+    const newVel = ballVel.copy();
+    if (collisionSide === 0) {
+        newVel.y = -ballVel.y;
+        newPos.y = top;
+    } else if (collisionSide === 1) {
+        newVel.x = -ballVel.x;
+        newPos.x = right;
+    } else if (collisionSide === 2) {
+        newVel.y = -ballVel.y;
+        newPos.y = bottom;
+    } else {
+        newVel.x = -ballVel.x;
+        newPos.x = left;
     }
+    const surface =
+        collisionSide & 1
+            ? Math.min(distances[0], distances[2]) / BALL_HEIGHT
+            : Math.min(distances[1], distances[3]) / BALL_WIDTH;
+    return { surface, x, y, newPos, newVel };
 };
 
 const hitObstacles = (
@@ -192,14 +227,29 @@ const hitObstacles = (
     ballVel: P5.Vector,
     obstacles: MayhemMap,
 ) => {
+    let bestCollision: ObstacleCollision | null = null;
     for (let y = 0; y < obstacles.length; ++y) {
         const row = obstacles[y];
         for (let x = 0; x < row.length; ++x) {
             const obstacle = row[x];
             if (obstacle.lives > 0) {
-                hitObstacle(obstacle, x, y, ballPos, ballVel);
+                const collision = hitObstacle(x, y, ballPos, ballVel);
+                if (
+                    collision &&
+                    (!bestCollision ||
+                        collision.surface > bestCollision.surface)
+                ) {
+                    bestCollision = collision;
+                }
             }
         }
+    }
+    if (bestCollision) {
+        ballPos.x = bestCollision.newPos.x;
+        ballPos.y = bestCollision.newPos.y;
+        ballVel.x = bestCollision.newVel.x;
+        ballVel.y = bestCollision.newVel.y;
+        --obstacles[bestCollision.y][bestCollision.x].lives;
     }
 };
 
@@ -240,18 +290,7 @@ const MayhemGame = () => {
             reset(p5);
         }
 
-        const newVelY =
-            hitPaddle(p5, true, paddleLeft, ballPos, ballVel) ||
-            hitPaddle(p5, false, paddleRight, ballPos, ballVel);
-        if (newVelY !== null) {
-            ballVel.x = -(
-                ballVel.x +
-                Math.sign(ballVel.x) * BALL_SPEED_INCREMENT
-            );
-            ballVel.y = newVelY;
-            ballPos.x = p5.constrain(ballPos.x, COLLISION_X, 1 - COLLISION_X);
-        }
-
+        hitPaddles(p5, paddleLeft, paddleRight, ballPos, ballVel);
         hitObstacles(ballPos, ballVel, obstacles);
 
         p5.background(15);
