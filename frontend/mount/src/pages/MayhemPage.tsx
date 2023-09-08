@@ -26,12 +26,15 @@ import {
 import {
     MAYHEM_GRID_HALF_HEIGHT,
     MAYHEM_GRID_HALF_WIDTH,
-    MAYHEM_GRID_HEIGHT,
-    MAYHEM_GRID_WIDTH,
     MayhemCell,
     MayhemMap,
     maps,
 } from '../mayhem_maps';
+
+const getObstaclePos = (x: number, y: number) => ({
+    x: 0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH),
+    y: 0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT),
+});
 
 const drawPaddle = (p5: P5, left: boolean, y: number) => {
     p5.rectMode(p5.CENTER);
@@ -66,13 +69,15 @@ const drawBall = (p5: P5, ballPos: P5.Vector) => {
 
 const drawObstacle = (p5: P5, obstacle: MayhemCell, x: number, y: number) => {
     if (obstacle.lives > 0) {
+        const obstacleSize = Math.ceil(BALL_WIDTH * p5.width);
         const screenX = Math.round(
-            p5.width * (0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH)),
+            p5.width * (0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH)) -
+                obstacleSize / 2,
         );
         const screenY = Math.round(
-            p5.height * (0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT)),
+            p5.height * (0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT)) -
+                obstacleSize / 2,
         );
-        const obstacleSize = Math.ceil(BALL_WIDTH * p5.width);
         const ratio =
             obstacle.lives === Infinity
                 ? 1
@@ -141,93 +146,90 @@ const hitPaddle = (
     return null;
 };
 
-// const hitObstacle = (
-//     p5: P5,
-//     ballPos: P5.Vector,
-//     ballVel: P5.Vector,
-//     obstacle: Obstacle,
-// ) => {
-//     const left = obstacle.x - (obstacle.width + BALL_WIDTH) / 2;
-//     const right = obstacle.x + (obstacle.width + BALL_WIDTH) / 2;
-//     const top = obstacle.y - (obstacle.height + BALL_HEIGHT) / 2;
-//     const bottom = obstacle.y + (obstacle.height + BALL_HEIGHT) / 2;
+const hitObstacle = (
+    p5: P5,
+    ballPos: P5.Vector,
+    ballVel: P5.Vector,
+    obstacle: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        lives: number;
+    },
+    obstacles: MayhemMap,
+    x: number,
+    y: number,
+) => {
+    const left = obstacle.x - (obstacle.width + BALL_WIDTH) / 2;
+    const right = obstacle.x + (obstacle.width + BALL_WIDTH) / 2;
+    const top = obstacle.y - (obstacle.height + BALL_HEIGHT) / 2;
+    const bottom = obstacle.y + (obstacle.height + BALL_HEIGHT) / 2;
 
-//     if (
-//         ballPos.x >= left &&
-//         ballPos.x <= right &&
-//         ballPos.y >= top &&
-//         ballPos.y <= bottom
-//     ) {
-//         const distances = [
-//             ballVel.x > 0 ? (ballPos.x - left) / ballVel.x : Infinity,
-//             ballVel.x < 0 ? (ballPos.x - right) / ballVel.x : Infinity,
-//             ballVel.y > 0 ? (ballPos.y - top) / ballVel.y : Infinity,
-//             ballVel.y < 0 ? (ballPos.y - bottom) / ballVel.y : Infinity,
-//         ];
+    if (
+        ballPos.x >= left &&
+        ballPos.x <= right &&
+        ballPos.y >= top &&
+        ballPos.y <= bottom
+    ) {
+        const distances = [
+            ballVel.x > 0 ? (ballPos.x - left) / ballVel.x : Infinity,
+            ballVel.x < 0 ? (ballPos.x - right) / ballVel.x : Infinity,
+            ballVel.y > 0 ? (ballPos.y - top) / ballVel.y : Infinity,
+            ballVel.y < 0 ? (ballPos.y - bottom) / ballVel.y : Infinity,
+        ];
 
-//         const collisionSide = distances.indexOf(Math.min(...distances));
+        const collisionSide = distances.indexOf(Math.min(...distances));
+        console.log(collisionSide);
 
-//         if (collisionSide === 0) {
-//             ballVel.x = -ballVel.x;
-//             ballPos.x = left - BALL_WIDTH / 2;
-//         } else if (collisionSide === 1) {
-//             ballVel.x = -ballVel.x;
-//             ballPos.x = right + BALL_WIDTH / 2;
-//         } else if (collisionSide === 2) {
-//             ballVel.y = -ballVel.y;
-//             ballPos.y = top - BALL_HEIGHT / 2;
-//         } else {
-//             ballVel.y = -ballVel.y;
-//             ballPos.y = bottom + BALL_HEIGHT / 2;
-//         }
-//         --obstacle.lives;
-//         console.log(obstacle.lives);
-//     }
-// };
+        if (collisionSide === 0) {
+            ballVel.x = -ballVel.x;
+            ballPos.x = left - BALL_WIDTH / 2;
+        } else if (collisionSide === 1) {
+            ballVel.x = -ballVel.x;
+            ballPos.x = right + BALL_WIDTH / 2;
+        } else if (collisionSide === 2) {
+            ballVel.y = -ballVel.y;
+            ballPos.y = top - BALL_HEIGHT / 2;
+        } else {
+            ballVel.y = -ballVel.y;
+            ballPos.y = bottom + BALL_HEIGHT / 2;
+        }
+        --obstacles[y][x].lives;
+        --obstacle.lives;
+        console.log(obstacle.lives);
+    }
+};
 
-// const hitObstacles = (
-//     p5: P5,
-//     ballPos: P5.Vector,
-//     ballVel: P5.Vector,
-//     obstacle: Obstacle,
-// ) => {
-//     const left = obstacle.x - (obstacle.width + BALL_WIDTH) / 2;
-//     const right = obstacle.x + (obstacle.width + BALL_WIDTH) / 2;
-//     const top = obstacle.y - (obstacle.height + BALL_HEIGHT) / 2;
-//     const bottom = obstacle.y + (obstacle.height + BALL_HEIGHT) / 2;
-
-//     if (
-//         ballPos.x >= left &&
-//         ballPos.x <= right &&
-//         ballPos.y >= top &&
-//         ballPos.y <= bottom
-//     ) {
-//         const distances = [
-//             ballVel.x > 0 ? (ballPos.x - left) / ballVel.x : Infinity,
-//             ballVel.x < 0 ? (ballPos.x - right) / ballVel.x : Infinity,
-//             ballVel.y > 0 ? (ballPos.y - top) / ballVel.y : Infinity,
-//             ballVel.y < 0 ? (ballPos.y - bottom) / ballVel.y : Infinity,
-//         ];
-
-//         const collisionSide = distances.indexOf(Math.min(...distances));
-
-//         if (collisionSide === 0) {
-//             ballVel.x = -ballVel.x;
-//             ballPos.x = left - BALL_WIDTH / 2;
-//         } else if (collisionSide === 1) {
-//             ballVel.x = -ballVel.x;
-//             ballPos.x = right + BALL_WIDTH / 2;
-//         } else if (collisionSide === 2) {
-//             ballVel.y = -ballVel.y;
-//             ballPos.y = top - BALL_HEIGHT / 2;
-//         } else {
-//             ballVel.y = -ballVel.y;
-//             ballPos.y = bottom + BALL_HEIGHT / 2;
-//         }
-//         --obstacle.lives;
-//         console.log(obstacle.lives);
-//     }
-// };
+const hitObstacles = (
+    p5: P5,
+    ballPos: P5.Vector,
+    ballVel: P5.Vector,
+    obstacles: MayhemMap,
+) => {
+    obstacles.forEach((row, y) => {
+        row.forEach((obstacle, x) => {
+            if (obstacle.lives > 0) {
+                const { x: posX, y: posY } = getObstaclePos(x, y);
+                hitObstacle(
+                    p5,
+                    ballPos,
+                    ballVel,
+                    {
+                        x: posX,
+                        y: posY,
+                        width: BALL_WIDTH,
+                        height: BALL_HEIGHT,
+                        lives: obstacle.lives,
+                    },
+                    obstacles,
+                    x,
+                    y,
+                );
+            }
+        });
+    });
+};
 
 const MayhemGame = () => {
     let scoreLeft = 0;
@@ -278,7 +280,7 @@ const MayhemGame = () => {
             ballPos.x = p5.constrain(ballPos.x, COLLISION_X, 1 - COLLISION_X);
         }
 
-        // hitObstacles(p5, ballPos, ballVel, obstacles);
+        hitObstacles(p5, ballPos, ballVel, obstacles);
 
         p5.background(15);
         drawBar(p5, LINE_MARGIN);
