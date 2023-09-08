@@ -30,7 +30,7 @@ import {
     MayhemMap,
     maps,
 } from '../mayhem_maps';
-import { randomChoice, randomFloat } from '../shared/functions';
+import { clamp, randomChoice, randomFloat } from '../shared/functions';
 
 type ObstacleCollision = {
     surface: number;
@@ -48,26 +48,53 @@ const getObstaclePos = (x: number, y: number) => ({
 });
 
 class Ball {
-    posX: number;
-    posY: number;
-    velX: number;
-    velY: number;
+    posX!: number;
+    posY!: number;
+    velX!: number;
+    velY!: number;
 
     constructor() {
+        this.reset();
+    }
+
+    private reset() {
         this.posX = 0.5;
         this.posY = 0.5;
         this.velX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
         this.velY = randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
     }
 
+    public move(p5: P5) {
+        this.posX += this.velX * p5.deltaTime;
+        this.posY += this.velY * p5.deltaTime;
+    }
+
     public draw(p5: P5) {
         p5.rectMode(p5.CENTER);
-        p5.fill(225, 29, 72);
+        p5.fill(255);
         p5.square(
             this.posX * p5.width,
             this.posY * p5.height,
             BALL_WIDTH * p5.width,
         );
+    }
+
+    public checkScore(scoreLeft: number, scoreRight: number): [number, number] {
+        if (this.posX >= 1 + BALL_RADIUS) {
+            ++scoreLeft;
+            this.reset();
+        } else if (this.posX <= -BALL_RADIUS) {
+            ++scoreRight;
+            this.reset();
+        }
+        return [scoreLeft, scoreRight];
+    }
+
+    public hitBar() {
+        if (this.posY <= BALL_LOW || this.posY >= BALL_HIGH) {
+            this.posY = clamp(this.posY, BALL_LOW, BALL_HIGH);
+            this.velY = -this.velY;
+        }
     }
 
     private hitObstacle(x: number, y: number): ObstacleCollision | null {
@@ -180,7 +207,7 @@ class Ball {
 
 const drawPaddle = (p5: P5, left: boolean, y: number) => {
     p5.rectMode(p5.CENTER);
-    p5.fill(225, 29, 72);
+    p5.fill(255);
     const paddleMargin = (PADDLE_MARGIN_X + PADDLE_WIDTH / 2) * p5.width;
     p5.rect(
         left ? paddleMargin : p5.width - paddleMargin,
@@ -192,7 +219,7 @@ const drawPaddle = (p5: P5, left: boolean, y: number) => {
 
 const drawBar = (p5: P5, y: number) => {
     p5.rectMode(p5.CORNER);
-    p5.fill(225, 29, 72);
+    p5.fill(255);
     p5.rect(
         PADDLE_MARGIN_X * p5.width,
         y * p5.height,
@@ -217,9 +244,9 @@ const drawObstacle = (p5: P5, obstacle: MayhemCell, x: number, y: number) => {
                 if (ratio === 1 || Math.random() <= ratio) {
                     const pixelIdx =
                         4 * (screenX + i + (screenY + j) * p5.width);
-                    p5.pixels[pixelIdx] = 225;
-                    p5.pixels[pixelIdx + 1] = 29;
-                    p5.pixels[pixelIdx + 2] = 72;
+                    p5.pixels[pixelIdx] = 255;
+                    p5.pixels[pixelIdx + 1] = 255;
+                    p5.pixels[pixelIdx + 2] = 255;
                 }
             }
         }
@@ -237,7 +264,7 @@ const drawObstacles = (p5: P5, obstacles: MayhemMap) => {
 };
 
 const drawScore = (p5: P5, scoreLeft: number, scoreRight: number) => {
-    p5.fill(225, 29, 72);
+    p5.fill(255);
     const textSize = 8 + p5.width / 30;
     p5.textSize(textSize);
     p5.textFont('monospace');
@@ -264,7 +291,7 @@ const MayhemGame = () => {
     let paddleRight = 0.5;
 
     const obstacles = randomChoice(maps);
-    const balls = [new Ball()];
+    const balls = [new Ball(), new Ball(), new Ball()];
 
     const setup = (p5: P5, canvasParentRef: Element) => {
         p5.createCanvas(0, 0).parent(canvasParentRef);
@@ -275,23 +302,14 @@ const MayhemGame = () => {
     const draw = (p5: P5) => {
         paddleLeft = movePaddle(p5, paddleLeft, 83, 87);
         paddleRight = movePaddle(p5, paddleRight, p5.DOWN_ARROW, p5.UP_ARROW);
-        balls[0].posX += balls[0].velX * p5.deltaTime;
-        balls[0].posY += balls[0].velY * p5.deltaTime;
 
-        if (balls[0].posY <= BALL_LOW || balls[0].posY >= BALL_HIGH) {
-            balls[0].posY = p5.constrain(balls[0].posY, BALL_LOW, BALL_HIGH);
-            balls[0].velY = -balls[0].velY;
+        for (const ball of balls) {
+            ball.move(p5);
+            ball.hitBar();
+            [scoreLeft, scoreRight] = ball.checkScore(scoreLeft, scoreRight);
+            ball.hitPaddles(p5, paddleLeft, paddleRight);
+            ball.hitObstacles(obstacles);
         }
-        if (balls[0].posX >= 1 + BALL_RADIUS) {
-            ++scoreLeft;
-            balls[0] = new Ball();
-        } else if (balls[0].posX <= -BALL_RADIUS) {
-            ++scoreRight;
-            balls[0] = new Ball();
-        }
-
-        balls[0].hitPaddles(p5, paddleLeft, paddleRight);
-        balls[0].hitObstacles(obstacles);
 
         p5.background(15);
         drawBar(p5, LINE_MARGIN);
@@ -299,7 +317,7 @@ const MayhemGame = () => {
         drawPaddle(p5, true, paddleLeft);
         drawPaddle(p5, false, paddleRight);
         drawObstacles(p5, obstacles);
-        balls[0].draw(p5);
+        for (const ball of balls) ball.draw(p5);
         drawScore(p5, scoreLeft, scoreRight);
     };
 
