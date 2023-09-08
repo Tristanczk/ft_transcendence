@@ -38,6 +38,7 @@ const getObstaclePos = (x: number, y: number) => ({
 
 const drawPaddle = (p5: P5, left: boolean, y: number) => {
     p5.rectMode(p5.CENTER);
+    p5.fill(242, 34, 255);
     const paddleMargin = (PADDLE_MARGIN_X + PADDLE_WIDTH / 2) * p5.width;
     p5.rect(
         left ? paddleMargin : p5.width - paddleMargin,
@@ -49,7 +50,7 @@ const drawPaddle = (p5: P5, left: boolean, y: number) => {
 
 const drawBar = (p5: P5, y: number) => {
     p5.rectMode(p5.CORNER);
-    p5.fill(255);
+    p5.fill(242, 34, 255);
     p5.rect(
         PADDLE_MARGIN_X * p5.width,
         y * p5.height,
@@ -60,6 +61,7 @@ const drawBar = (p5: P5, y: number) => {
 
 const drawBall = (p5: P5, ballPos: P5.Vector) => {
     p5.rectMode(p5.CENTER);
+    p5.fill(242, 34, 255);
     p5.square(
         ballPos.x * p5.width,
         ballPos.y * p5.height,
@@ -83,8 +85,8 @@ const drawObstacle = (p5: P5, obstacle: MayhemCell, x: number, y: number) => {
                 if (ratio === 1 || Math.random() <= ratio) {
                     const pixelIdx =
                         4 * (screenX + i + (screenY + j) * p5.width);
-                    p5.pixels[pixelIdx] = 255;
-                    p5.pixels[pixelIdx + 1] = 255;
+                    p5.pixels[pixelIdx] = 242;
+                    p5.pixels[pixelIdx + 1] = 34;
                     p5.pixels[pixelIdx + 2] = 255;
                 }
             }
@@ -103,7 +105,7 @@ const drawObstacles = (p5: P5, obstacles: MayhemMap) => {
 };
 
 const drawScore = (p5: P5, scoreLeft: number, scoreRight: number) => {
-    p5.fill(255);
+    p5.fill(242, 34, 255);
     const textSize = 8 + p5.width / 30;
     p5.textSize(textSize);
     p5.textFont('monospace');
