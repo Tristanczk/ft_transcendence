@@ -30,7 +30,7 @@ import {
     MayhemMap,
     maps,
 } from '../mayhem_maps';
-import { clamp, randomChoice, randomFloat } from '../shared/functions';
+import { clamp, randomChoice, randomFloat, remap } from '../shared/functions';
 
 type ObstacleCollision = {
     surface: number;
@@ -48,18 +48,20 @@ const getObstaclePos = (x: number, y: number) => ({
 });
 
 class Ball {
+    private initialPosY: number;
     posX!: number;
     posY!: number;
     velX!: number;
     velY!: number;
 
-    constructor() {
+    constructor(initialPosY: number) {
+        this.initialPosY = initialPosY;
         this.reset();
     }
 
     private reset() {
         this.posX = 0.5;
-        this.posY = 0.5;
+        this.posY = this.initialPosY;
         this.velX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
         this.velY = randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
     }
@@ -176,13 +178,13 @@ class Ball {
         }
     };
 
-    private hitPaddle(p5: P5, left: boolean, paddle: number): number | null {
+    private hitPaddle(left: boolean, paddle: number): number | null {
         const x = left ? this.posX : 1 - this.posX;
         if (PADDLE_MARGIN_X <= x && x <= COLLISION_X) {
             const paddleDiff = this.posY - paddle;
             if (Math.abs(paddleDiff) <= COLLISION_Y) {
                 return (
-                    p5.map(paddleDiff, 0, COLLISION_Y, 0, MAX_Y_FACTOR) *
+                    remap(paddleDiff, 0, COLLISION_Y, 0, MAX_Y_FACTOR) *
                     Math.abs(this.velX)
                 );
             }
@@ -190,17 +192,17 @@ class Ball {
         return null;
     }
 
-    public hitPaddles(p5: P5, paddleLeft: number, paddleRight: number) {
+    public hitPaddles(paddleLeft: number, paddleRight: number) {
         const newVelY =
-            this.hitPaddle(p5, true, paddleLeft) ||
-            this.hitPaddle(p5, false, paddleRight);
+            this.hitPaddle(true, paddleLeft) ||
+            this.hitPaddle(false, paddleRight);
         if (newVelY !== null) {
             this.velX = -(
                 this.velX +
                 Math.sign(this.velX) * BALL_SPEED_INCREMENT
             );
             this.velY = newVelY;
-            this.posX = p5.constrain(this.posX, COLLISION_X, 1 - COLLISION_X);
+            this.posX = clamp(this.posX, COLLISION_X, 1 - COLLISION_X);
         }
     }
 }
@@ -291,7 +293,7 @@ const MayhemGame = () => {
     let paddleRight = 0.5;
 
     const obstacles = randomChoice(maps);
-    const balls = [new Ball(), new Ball(), new Ball()];
+    const balls = [new Ball(0.25), new Ball(0.5), new Ball(0.75)];
 
     const setup = (p5: P5, canvasParentRef: Element) => {
         p5.createCanvas(0, 0).parent(canvasParentRef);
@@ -307,7 +309,7 @@ const MayhemGame = () => {
             ball.move(p5);
             ball.hitBar();
             [scoreLeft, scoreRight] = ball.checkScore(scoreLeft, scoreRight);
-            ball.hitPaddles(p5, paddleLeft, paddleRight);
+            ball.hitPaddles(paddleLeft, paddleRight);
             ball.hitObstacles(obstacles);
         }
 
