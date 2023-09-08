@@ -10,8 +10,8 @@ export function MessageBox({ idSender, idChannel, message }: MessageProps) {
         <div
             className={
                 idSender === user?.id
-                    ? 'flex flex-col space-y-2 text-xs max-w-xs mx-2 order-2 items-start'
-                    : 'flex flex-col space-y-2 text-xs max-w-xs mx-2 order-1 items-end'
+                    ? 'flex flex-col space-y-2 max-w-xs mx-2 order-2 items-start'
+                    : 'flex flex-col space-y-2 max-w-xs mx-2 order-1 items-end'
             }
         >
             <article

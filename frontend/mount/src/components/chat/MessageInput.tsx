@@ -1,14 +1,23 @@
-import { ChangeEvent, useContext, useState } from 'react';
+import React, { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
 import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { WebsocketContext } from '../../context/WebsocketContext';
-import EmojiPicker from 'emoji-picker-react';
+import EmojiPicker, {
+    Categories,
+    EmojiClickData,
+    EmojiStyle,
+    SkinTonePickerLocation,
+    SkinTones,
+    SuggestionMode,
+    Theme,
+} from 'emoji-picker-react';
 
 export default function MessageInput({ idChannel }: { idChannel: number }) {
     const [input, setInput] = useState('');
     const socket = useContext(WebsocketContext);
     const { user } = useUserContext();
     const authAxios = useAuthAxios();
+    const [visiblePicker, setVisiblePicker] = useState(false);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         console.log('input: ', event.target.value);
@@ -40,6 +49,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
             if (!event.shiftKey) {
                 event.preventDefault();
                 handleSendMessage();
+                setVisiblePicker(false);
             } else {
                 setInput(input + '\n'); // TODO ne marche pas le newline. Enlever avant de push final si pas réso
             }
@@ -51,9 +61,48 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
         handleSendMessage();
     };
 
+    const handleEmojiSelect = (emojiData: EmojiClickData) => {
+        setInput((input) => input + emojiData.emoji);
+        refocusInput();
+    };
+
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const refocusInput = () => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+            const length = inputRef.current.value.length;
+            inputRef.current.setSelectionRange(length, length);
+        }
+    };
+
+    const pickerRef = useRef<HTMLDivElement | null>(null);
+    const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            // Check if the click was outside the picker and not on the button.
+            if (
+                pickerRef.current &&
+                !pickerRef.current.contains(event.target as Node) &&
+                buttonRef.current &&
+                !buttonRef.current.contains(event.target as Node)
+            ) {
+                setVisiblePicker(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [pickerRef, buttonRef]);
+
     return (
         <div className="px-4 pt-4 mb-2 sm:mb-0 flex items-center pb-4 rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-xl">
             <input
+                ref={inputRef}
                 onChange={onChange}
                 onKeyDown={onKeyPress}
                 value={input}
@@ -63,8 +112,15 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
             ></input>
             <div className="relative">
                 <button
+                    ref={buttonRef}
                     type="button"
                     className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none absolute right-2 top-1/2 transform -translate-y-1/2"
+                    onClick={() => {
+                        setVisiblePicker((prevVisible) => !prevVisible);
+                        if (!visiblePicker) {
+                            refocusInput();
+                        }
+                    }}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -74,13 +130,40 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                         className="h-6 w-6 text-gray-600"
                     >
                         <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
                             d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         ></path>
                     </svg>
                 </button>
+                {visiblePicker && (
+                    <div
+                        ref={pickerRef}
+                        style={{
+                            position: 'absolute',
+                            zIndex: 1,
+                            bottom: '48px',
+                            right: '0px',
+                            boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+                            borderRadius: '1.5rem',
+                        }}
+                    >
+                        <EmojiPicker
+                            height={370}
+                            width={282}
+                            onEmojiClick={handleEmojiSelect}
+                            emojiVersion="5.0"
+                            skinTonesDisabled={true}
+                            previewConfig={{
+                                defaultCaption: '',
+                                defaultEmoji: '',
+                            }}
+                            searchPlaceHolder="Choose your emoji"
+                            emojiStyle={EmojiStyle.APPLE}
+                        />
+                    </div>
+                )}
             </div>
             <button
                 onClick={(event) => onClick(event)}

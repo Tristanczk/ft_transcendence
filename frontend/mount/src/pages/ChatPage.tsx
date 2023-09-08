@@ -29,6 +29,12 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const [isVisible, setIsVisible] = useState(false);
     const socket = useContext(WebsocketContext);
 
+    const [animateOut, setAnimateOut] = useState(false);
+
+    const handleClose = () => {
+        setIsVisible(false); // Start the fade-out animation
+        setTimeout(() => setCurrentChat(null), 500); // Wait for the animation to complete before setting state
+    };
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
     );
@@ -103,7 +109,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
 
     return (
         <div
-            className={`fixed inset-y-0 right-0 w-100 text-white transform top-28 ${
+            className={`fixed z-10 inset-y-0 right-0 w-100 text-white transform top-28 ${
                 isChatVisible
                     ? 'translate-x-0 transition-transform duration-500'
                     : 'translate-x-full transition-transform duration-200'
@@ -113,7 +119,11 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                 className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex"
                 style={{ marginRight: '36px' }}
             >
-                <div className="flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl">
+                <div
+                    className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
+                        channel ? 'h-60 w-104' : 'w-60 h-96'
+                    }`}
+                >
                     <ChatListHeader />
                     <ChatFriendList
                         friends={friendsList}
@@ -121,15 +131,28 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                         currentChat={currentChat}
                         // notifications={notifications} int[] of channel ids
                     />
-                    {channel ? (
-                        <>
-                            <MessagesHeader currentChat={currentChat} setCurrentChat={setCurrentChat}/>
-                            <Messages messages={messages} />
-                            <MessageInput idChannel={channel} />
-                        </>
-                    ) : (
-                        ''
-                    )}
+                    <div
+                        className={`chat-content 
+                                ${
+                                    channel
+                                        ? 'opacity-100 delay-0'
+                                        : 'opacity-0 delay-500'
+                                } 
+                                ${
+                                    channel
+                                        ? 'visible delay-500'
+                                        : 'invisible delay-0'
+                                } 
+                                ${channel ? 'h-auto' : 'h-0'}
+                                transition-opacity transition-visibility transition-height duration-500`}
+                    >
+                        <MessagesHeader
+                            currentChat={currentChat}
+                            handleClose={handleClose}
+                        />
+                        <Messages messages={messages} />
+                        <MessageInput idChannel={channel} />
+                    </div>
                 </div>
             </div>
         </div>
