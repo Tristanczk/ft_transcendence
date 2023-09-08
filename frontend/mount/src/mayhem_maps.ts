@@ -314,12 +314,12 @@ const mapify = (map: string[], idx: number): MayhemMap => {
 };
 
 export const maps: MayhemMap[] = [
-    // map0,
-    // map1,
-    // map2,
-    // map3,
-    // map4,
-    // map5,
-    // map6,
+    map0,
+    map1,
+    map2,
+    map3,
+    map4,
+    map5,
+    map6,
     map7,
 ].map(mapify);
