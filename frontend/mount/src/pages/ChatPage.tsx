@@ -29,8 +29,6 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const [isVisible, setIsVisible] = useState(false);
     const socket = useContext(WebsocketContext);
 
-    const [animateOut, setAnimateOut] = useState(false);
-
     const handleClose = () => {
         setIsVisible(false); // Start the fade-out animation
         setTimeout(() => setCurrentChat(null), 500); // Wait for the animation to complete before setting state
@@ -121,7 +119,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
             >
                 <div
                     className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
-                        channel ? 'h-60 w-104' : 'w-60 h-96'
+                        channel ? 'w-104' : 'w-60'
                     }`}
                 >
                     <ChatListHeader />
