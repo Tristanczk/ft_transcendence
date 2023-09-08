@@ -32,6 +32,21 @@ import {
 } from '../mayhem_maps';
 import { randomChoice, randomFloat } from '../shared/functions';
 
+type ObstacleCollision = {
+    surface: number;
+    x: number;
+    y: number;
+    newPosX: number;
+    newPosY: number;
+    newVelX: number;
+    newVelY: number;
+};
+
+const getObstaclePos = (x: number, y: number) => ({
+    posX: 0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH),
+    posY: 0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT),
+});
+
 class Ball {
     posX: number;
     posY: number;
@@ -45,7 +60,7 @@ class Ball {
         this.velY = randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
     }
 
-    draw(p5: P5) {
+    public draw(p5: P5) {
         p5.rectMode(p5.CENTER);
         p5.fill(225, 29, 72);
         p5.square(
@@ -54,12 +69,114 @@ class Ball {
             BALL_WIDTH * p5.width,
         );
     }
-}
 
-const getObstaclePos = (x: number, y: number) => ({
-    posX: 0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH),
-    posY: 0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT),
-});
+    private hitObstacle(x: number, y: number): ObstacleCollision | null {
+        const { posX, posY } = getObstaclePos(x, y);
+        const left = posX - BALL_WIDTH;
+        const right = posX + BALL_WIDTH;
+        const top = posY - BALL_HEIGHT;
+        const bottom = posY + BALL_HEIGHT;
+        if (
+            this.posX <= left ||
+            this.posX >= right ||
+            this.posY <= top ||
+            this.posY >= bottom
+        )
+            return null;
+        const distances = [
+            this.velY <= 0
+                ? Infinity
+                : Math.abs(this.posY - top) / Math.abs(this.velY),
+            this.velX >= 0
+                ? Infinity
+                : Math.abs(this.posX - right) / Math.abs(this.velX),
+            this.velY >= 0
+                ? Infinity
+                : Math.abs(this.posY - bottom) / Math.abs(this.velY),
+            this.velX <= 0
+                ? Infinity
+                : Math.abs(this.posX - left) / Math.abs(this.velX),
+        ];
+        const collisionSide = distances.indexOf(Math.min(...distances));
+        let newPosX = this.posX;
+        let newPosY = this.posY;
+        let newVelX = this.velX;
+        let newVelY = this.velY;
+        if (collisionSide === 0) {
+            newVelY = -this.velY;
+            newPosY = top;
+        } else if (collisionSide === 1) {
+            newVelX = -this.velX;
+            newPosX = right;
+        } else if (collisionSide === 2) {
+            newVelY = -this.velY;
+            newPosY = bottom;
+        } else {
+            newVelX = -this.velX;
+            newPosX = left;
+        }
+        const surface =
+            collisionSide & 1
+                ? Math.min(distances[0], distances[2]) / BALL_HEIGHT
+                : Math.min(distances[1], distances[3]) / BALL_WIDTH;
+        return { surface, x, y, newPosX, newPosY, newVelX, newVelY };
+    }
+
+    public hitObstacles = (obstacles: MayhemMap) => {
+        let bestCollision: ObstacleCollision | null = null;
+        for (let y = 0; y < obstacles.length; ++y) {
+            const row = obstacles[y];
+            for (let x = 0; x < row.length; ++x) {
+                const obstacle = row[x];
+                if (obstacle.lives > 0) {
+                    const collision = this.hitObstacle(x, y);
+                    if (
+                        collision &&
+                        (!bestCollision ||
+                            collision.surface > bestCollision.surface)
+                    ) {
+                        bestCollision = collision;
+                    }
+                }
+            }
+        }
+        if (bestCollision) {
+            this.posX = bestCollision.newPosX;
+            this.posY = bestCollision.newPosY;
+            this.velX = bestCollision.newVelX;
+            this.velY = bestCollision.newVelY;
+            --obstacles[bestCollision.y][bestCollision.x].lives;
+        }
+    };
+
+    private hitPaddle(p5: P5, left: boolean, paddle: number): number | null {
+        const x = left ? this.posX : 1 - this.posX;
+        if (PADDLE_MARGIN_X <= x && x <= COLLISION_X) {
+            const paddleDiff = this.posY - paddle;
+            if (Math.abs(paddleDiff) <= COLLISION_Y) {
+                return (
+                    p5.map(paddleDiff, 0, COLLISION_Y, 0, MAX_Y_FACTOR) *
+                    Math.abs(this.velX)
+                );
+            }
+        }
+        return null;
+    }
+
+    public hitPaddles(p5: P5, paddleLeft: number, paddleRight: number) {
+        const newVelY =
+            this.hitPaddle(p5, true, paddleLeft) ||
+            this.hitPaddle(p5, false, paddleRight);
+        if (newVelY !== null) {
+            this.velX = -(
+                this.velX +
+                Math.sign(this.velX) * BALL_SPEED_INCREMENT
+            );
+            this.velY = newVelY;
+            this.posX = p5.constrain(this.posX, COLLISION_X, 1 - COLLISION_X);
+        }
+    }
+}
 
 const drawPaddle = (p5: P5, left: boolean, y: number) => {
     p5.rectMode(p5.CENTER);
@@ -139,134 +256,6 @@ const movePaddle = (p5: P5, paddle: number, downKey: number, upKey: number) => {
     return p5.constrain(paddle, PADDLE_LOW, PADDLE_HIGH);
 };
 
-const hitPaddle = (
-    p5: P5,
-    left: boolean,
-    paddle: number,
-    ball: Ball,
-): number | null => {
-    const x = left ? ball.posX : 1 - ball.posX;
-    if (PADDLE_MARGIN_X <= x && x <= COLLISION_X) {
-        const paddleDiff = ball.posY - paddle;
-        if (Math.abs(paddleDiff) <= COLLISION_Y) {
-            return (
-                p5.map(paddleDiff, 0, COLLISION_Y, 0, MAX_Y_FACTOR) *
-                Math.abs(ball.velX)
-            );
-        }
-    }
-    return null;
-};
-
-const hitPaddles = (
-    p5: P5,
-    paddleLeft: number,
-    paddleRight: number,
-    ball: Ball,
-) => {
-    const newVelY =
-        hitPaddle(p5, true, paddleLeft, ball) ||
-        hitPaddle(p5, false, paddleRight, ball);
-    if (newVelY !== null) {
-        ball.velX = -(ball.velX + Math.sign(ball.velX) * BALL_SPEED_INCREMENT);
-        ball.velY = newVelY;
-        ball.posX = p5.constrain(ball.posX, COLLISION_X, 1 - COLLISION_X);
-    }
-};
-
-type ObstacleCollision = {
-    surface: number;
-    x: number;
-    y: number;
-    newPosX: number;
-    newPosY: number;
-    newVelX: number;
-    newVelY: number;
-};
-
-const hitObstacle = (
-    x: number,
-    y: number,
-    ball: Ball,
-): ObstacleCollision | null => {
-    const { posX, posY } = getObstaclePos(x, y);
-    const left = posX - BALL_WIDTH;
-    const right = posX + BALL_WIDTH;
-    const top = posY - BALL_HEIGHT;
-    const bottom = posY + BALL_HEIGHT;
-    if (
-        ball.posX <= left ||
-        ball.posX >= right ||
-        ball.posY <= top ||
-        ball.posY >= bottom
-    )
-        return null;
-    const distances = [
-        ball.velY <= 0
-            ? Infinity
-            : Math.abs(ball.posY - top) / Math.abs(ball.velY),
-        ball.velX >= 0
-            ? Infinity
-            : Math.abs(ball.posX - right) / Math.abs(ball.velX),
-        ball.velY >= 0
-            ? Infinity
-            : Math.abs(ball.posY - bottom) / Math.abs(ball.velY),
-        ball.velX <= 0
-            ? Infinity
-            : Math.abs(ball.posX - left) / Math.abs(ball.velX),
-    ];
-    const collisionSide = distances.indexOf(Math.min(...distances));
-    let newPosX = ball.posX;
-    let newPosY = ball.posY;
-    let newVelX = ball.velX;
-    let newVelY = ball.velY;
-    if (collisionSide === 0) {
-        newVelY = -ball.velY;
-        newPosY = top;
-    } else if (collisionSide === 1) {
-        newVelX = -ball.velX;
-        newPosX = right;
-    } else if (collisionSide === 2) {
-        newVelY = -ball.velY;
-        newPosY = bottom;
-    } else {
-        newVelX = -ball.velX;
-        newPosX = left;
-    }
-    const surface =
-        collisionSide & 1
-            ? Math.min(distances[0], distances[2]) / BALL_HEIGHT
-            : Math.min(distances[1], distances[3]) / BALL_WIDTH;
-    return { surface, x, y, newPosX, newPosY, newVelX, newVelY };
-};
-
-const hitObstacles = (ball: Ball, obstacles: MayhemMap) => {
-    let bestCollision: ObstacleCollision | null = null;
-    for (let y = 0; y < obstacles.length; ++y) {
-        const row = obstacles[y];
-        for (let x = 0; x < row.length; ++x) {
-            const obstacle = row[x];
-            if (obstacle.lives > 0) {
-                const collision = hitObstacle(x, y, ball);
-                if (
-                    collision &&
-                    (!bestCollision ||
-                        collision.surface > bestCollision.surface)
-                ) {
-                    bestCollision = collision;
-                }
-            }
-        }
-    }
-    if (bestCollision) {
-        ball.posX = bestCollision.newPosX;
-        ball.posY = bestCollision.newPosY;
-        ball.velX = bestCollision.newVelX;
-        ball.velY = bestCollision.newVelY;
-        --obstacles[bestCollision.y][bestCollision.x].lives;
-    }
-};
-
 const MayhemGame = () => {
     let scoreLeft = 0;
     let scoreRight = 0;
@@ -301,8 +290,8 @@ const MayhemGame = () => {
             balls[0] = new Ball();
         }
 
-        hitPaddles(p5, paddleLeft, paddleRight, balls[0]);
-        hitObstacles(balls[0], obstacles);
+        balls[0].hitPaddles(p5, paddleLeft, paddleRight);
+        balls[0].hitObstacles(obstacles);
 
         p5.background(15);
         drawBar(p5, LINE_MARGIN);
