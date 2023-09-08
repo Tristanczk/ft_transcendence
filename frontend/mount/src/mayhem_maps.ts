@@ -244,6 +244,38 @@ const map6 = [
     '                         2                         ',
 ];
 
+const map7 = [
+    '           6                           6           ',
+    '                    7         7                    ',
+    '               1                   1               ',
+    '                                                   ',
+    '     5   8    4                     4    8   5     ',
+    '               2                   2               ',
+    ' 74     93        6             6        39     47 ',
+    '         17                             71         ',
+    '     5 8       3                   3       8 5     ',
+    '   9                                           9   ',
+    '         8  5 2                     2 5  8         ',
+    '                 1       4       1                 ',
+    ' 8         4                           4         8 ',
+    '                  6             6                  ',
+    '                                                   ',
+    '  74 486   4                           4   684 47  ',
+    '             1           1           1             ',
+    '   5  2                                     2  5   ',
+    '         8  8         7     7         8  8         ',
+    '          3                             3          ',
+    '  9                                             9  ',
+    '2    3      9                         9      3    2',
+    '                  4             4                  ',
+    '                    34 8   8 43                    ',
+    '  3           1   4             4   1           3  ',
+    ' 22                                             22 ',
+    '     8 6                                   6 8     ',
+    '   3   1                                   1   3   ',
+    '8       34                               43       8',
+];
+
 const mapify = (map: string[], idx: number): MayhemMap => {
     const MAYHEM_GRID_WIDTH = 2 * MAYHEM_GRID_HALF_WIDTH + 1;
     const MAYHEM_GRID_HEIGHT = 2 * MAYHEM_GRID_HALF_HEIGHT + 1;
@@ -281,6 +313,13 @@ const mapify = (map: string[], idx: number): MayhemMap => {
     return result;
 };
 
-export const maps: MayhemMap[] = [map0, map1, map2, map3, map4, map5, map6].map(
-    (map, idx) => mapify(map, idx),
-);
+export const maps: MayhemMap[] = [
+    map0,
+    map1,
+    map2,
+    map3,
+    map4,
+    map5,
+    map6,
+    map7,
+].map(mapify);
