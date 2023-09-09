@@ -21,9 +21,8 @@ import { GetChannelDto } from './dto/getchannel.dto';
 			}
 			
 			@Get('getChannels')
-			async getChannels(@Body() idUser: number) : Promise<ChannelDto[] | null>{
-				console.log("getChannels controller " + idUser);
-				return this.chatService.getChannels(idUser);
+			async getChannels() : Promise<ChannelDto[] | null>{
+				return this.chatService.getChannels();
 			}
 
 			@Get('getChannelByUsers')

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
+import { ChannelProps } from './Messages';
 
 export default function MessagesHeader({
     currentChat,
@@ -9,7 +10,7 @@ export default function MessagesHeader({
     currentChat: UserSimplified | null;
     handleClose: () => void;
 }) {
-    if (!currentChat) return <div></div>;
+    if (!currentChat) return <div ></div>;
     return (
         <div className="flex sm:items-center justify-between py-3 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
             <div className="relative flex items-center space-x-4">

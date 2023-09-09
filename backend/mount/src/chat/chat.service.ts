@@ -149,23 +149,14 @@ export class ChatService {
         return updatedChannelDto;
     }
 
-    async getChannels(idUser: number): Promise<ChannelDto[]> {
-        let user = null;
+    async getChannels(): Promise<ChannelDto[]> {
         let channels = null;
-
-        try {
-            user = await this.prisma.user.findUnique({
-                where: {
-                    id: idUser,
-                },
-            });
-        } catch (error) {}
 
         try {
             channels = await this.prisma.channels.findMany({
                 where: {
-                    idUsers: {
-                        has: idUser,
+                    isPublic: {
+                        equals: true,
                     },
                 },
             });
@@ -173,7 +164,7 @@ export class ChatService {
 
         let channelDtos: ChannelDto[] = [];
 
-        if (channels && user) {
+        if (channels) {
             channelDtos = channels.map((channel) => ({
                 name: channel.name,
                 idChannel: channel.id,

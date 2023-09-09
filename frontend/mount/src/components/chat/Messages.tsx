@@ -4,6 +4,12 @@ import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
 import ImageFriend from '../dashboard/friends/ImgFriend';
 
+export interface ChannelProps {
+    id: number;
+    name: string;
+    isPublic: boolean;
+}
+
 export interface MessageProps {
     id: number;
     idSender: number;

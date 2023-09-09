@@ -1,33 +1,29 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
-import ChatWindow, { ChatWindowProps } from '../components/chatpage/ChatWindow';
 import {
     WebsocketContext,
     socket as constSocket,
 } from '../context/WebsocketContext';
-import { Button } from 'flowbite-react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
-import ListGroupWithButton from '../components/chatpage/ListGroup';
 import { UserSimplified } from '../types';
-import { SelectChannel } from '../components/chatpage/SelectChannel';
 import { useUserContext } from '../context/UserContext';
-import { ChatSelector } from '../components/figma_chatpage/ChatSelector';
-import { Chat } from '../components/figma_chatpage/Chat';
-import Messages, { MessageProps } from '../components/chat/Messages';
+import Messages, { ChannelProps, MessageProps } from '../components/chat/Messages';
 import MessagesHeader from '../components/chat/MessagesHeader';
 import ChatFriendList from '../components/chat/ChatFriendList';
+import ChatChannelList from '../components/chat/ChatChannelList';
 import ChatListHeader from '../components/chat/ChatListHeader';
 import MessageInput from '../components/chat/MessageInput';
-import { AxiosResponse } from 'axios';
 
 function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
-    let [channel, setChannel] = useState<number>(0);
+    const [channel, setChannel] = useState<number>(0);
+    const [channels, setChannels] = useState<ChannelProps[]>([]);
     const [messages, setMessages] = useState<MessageProps[]>([]);
     const [currentChat, setCurrentChat] = useState<UserSimplified | null>(null); // or channel
     const [isVisible, setIsVisible] = useState(false);
     const socket = useContext(WebsocketContext);
+    const [channelListSelected, setChannelListSelected] = useState<number>(-1);
 
     const handleClose = () => {
         setIsVisible(false); // Start the fade-out animation
@@ -50,6 +46,21 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
             }
         };
         fetchFriends();
+
+        const fetchChannels = async () => {
+            try {
+                const response = await authAxios.get(
+                    'http://localhost:3333/chat/getChannels',
+                    {
+                        withCredentials: true,
+                    });
+                console.log('fetching channels', response);
+                setChannels((oldChannels) => [...oldChannels, ...response.data]);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        fetchChannels();
 
         const fetchChannel = async () => {
             console.log('fetching channels for', user?.id, currentChat?.id);
@@ -122,13 +133,24 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                         channel ? 'w-104' : 'w-60'
                     }`}
                 >
-                    <ChatListHeader />
-                    <ChatFriendList
-                        friends={friendsList}
-                        chatSelector={setCurrentChat}
-                        currentChat={currentChat}
-                        // notifications={notifications} int[] of channel ids
-                    />
+                    <ChatListHeader selector={setChannelListSelected} />
+                    {channelListSelected < 0 ? (
+                        <div className="flex flex-col h-full"></div>
+                    ) : channelListSelected ? (
+                        <ChatFriendList
+                            friends={friendsList}
+                            chatSelector={setCurrentChat}
+                            currentChat={currentChat}
+                            // notifications={notifications} int[] of channel ids
+                        />
+                    ) : (
+                        <ChatChannelList
+                            channels={channels}
+                            chatSelector={setCurrentChat}
+                            currentChat={currentChat}
+                            // notifications={notifications} int[] of channel ids
+                        />
+                    )}
                     <div
                         className={`chat-content 
                                 ${
