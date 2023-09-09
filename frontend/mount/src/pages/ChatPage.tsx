@@ -34,14 +34,14 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const [visibleSettings, setVisibleSettings] = useState(false);
     const socket = useContext(WebsocketContext);
     const [channelListSelected, setChannelListSelected] = useState<number>(-1);
+    const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
+        null,
+    );
 
     const handleClose = () => {
         setIsVisible(false); // Start the fade-out animation
         setTimeout(() => setChannel(0), 500); // Wait for the animation to complete before setting state
     };
-    const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
-        null,
-    );
 
     const fetchFriends = async () => {
         try {
@@ -178,7 +178,11 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                                 onClick={settingsEnabler}
                             />
                         )}
-                        <Messages messages={messages} />
+                        <Messages
+                            messages={messages}
+                            isSettingVisible={visibleSettings}
+                            currentChannel={currentChannel}
+                        />
                         <MessageInput idChannel={channel} />
                     </div>
                 </div>
