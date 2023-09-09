@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
     content: [
         './src/**/*.{js,jsx,ts,tsx}',
@@ -9,6 +10,9 @@ module.exports = {
             width: {
                 '104': '26rem',
                 '144': '36rem',
+            },
+            fontFamily: {
+                'sans': ['"Press Start 2P"', 'ui-sans-serif']
             },
         },
     },
