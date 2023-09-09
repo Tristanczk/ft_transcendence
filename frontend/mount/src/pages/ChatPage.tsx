@@ -27,8 +27,11 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const [currentFriend, setCurrentFriend] = useState<UserSimplified | null>(
         null,
     );
-    const [currentChannel , setCurrentChannel] = useState<ChannelProps | null>(null)
+    const [currentChannel, setCurrentChannel] = useState<ChannelProps | null>(
+        null,
+    );
     const [isVisible, setIsVisible] = useState(false);
+    const [visibleSettings, setVisibleSettings] = useState(false);
     const socket = useContext(WebsocketContext);
     const [channelListSelected, setChannelListSelected] = useState<number>(-1);
 
@@ -40,63 +43,67 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
         null,
     );
 
-    useEffect(() => {
-        const fetchFriends = async () => {
-            try {
-                const response = await authAxios.get(
-                    'http://localhost:3333/friends/me',
-                    { withCredentials: true },
-                );
-                setFriendsList(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchFriends();
-
-        const fetchChannels = async () => {
-            try {
-                const response = await authAxios.get(
-                    'http://localhost:3333/chat/getChannels',
-                    {
-                        withCredentials: true,
-                    },
-                );
-                setChannels(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchChannels();
-
-        const fetchMessages = async () => {
-            console.log('fetching messages for', channel);
+    const fetchFriends = async () => {
+        try {
             const response = await authAxios.get(
-                `http://localhost:3333/chat/getMessages/${channel}`,
+                'http://localhost:3333/friends/me',
+                { withCredentials: true },
+            );
+            setFriendsList(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const fetchChannels = async () => {
+        try {
+            const response = await authAxios.get(
+                'http://localhost:3333/chat/getChannels',
                 {
-                    params: { idUser: user?.id },
                     withCredentials: true,
                 },
             );
-            if (!response.data) setMessages([]);
-            setMessages(response.data);
-        };
+            setChannels(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const fetchMessages = async () => {
+        console.log('fetching messages for', channel);
+        const response = await authAxios.get(
+            `http://localhost:3333/chat/getMessages/${channel}`,
+            {
+                params: { idUser: user?.id },
+                withCredentials: true,
+            },
+        );
+        if (!response.data) setMessages([]);
+        setMessages(response.data);
+    };
+
+    const fetchChannel = async () => {
+        const response = await authAxios.get(
+            'http://localhost:3333/chat/getChannelById',
+            {
+                params: { idChannel: channel },
+                withCredentials: true,
+            },
+        );
+        console.log('miaooooo');
+        console.log(response);
+        setCurrentChannel(response.data);
+    };
+
+    const settingsEnabler = () => {
+        setVisibleSettings(!visibleSettings);
+    };
+
+    useEffect(() => {
+        fetchFriends();
+        fetchChannels();
         if (channel) fetchMessages();
-
-        const fetchChannel = async () => {
-            const response = await authAxios.get(
-                'http://localhost:3333/chat/getChannelById',
-                {
-                    params: { idChannel: channel },
-                    withCredentials: true,
-                }
-            );
-            console.log('miaooooo')
-            console.log(response)
-            setCurrentChannel(response.data)
-        };
         fetchChannel();
-
     }, [channel, socket, currentFriend]);
 
     socket.on('message', (message: MessageProps) => {
@@ -168,6 +175,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                                 channel={channel}
                                 currentChannel={currentChannel}
                                 handleClose={handleClose}
+                                onClick={settingsEnabler}
                             />
                         )}
                         <Messages messages={messages} />
