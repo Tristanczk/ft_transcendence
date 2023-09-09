@@ -13,6 +13,7 @@ import ChatListHeader from '../components/chat/ChatListHeader';
 import MessageInput from '../components/chat/MessageInput';
 import ChatFriendList from '../components/chat/ChatFriendList';
 import ChatChannelList from '../components/chat/ChatChannelList';
+import ChatContentSlide from '../components/chat/ChatContentSlide';
 
 function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const authAxios = useAuthAxios();
@@ -120,28 +121,14 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                             // notifications={notifications} int[] of channel ids
                         />
                     )}
-                    <div
-                        className={`chat-content 
-                                ${
-                                    channel
-                                        ? 'opacity-100 delay-0'
-                                        : 'opacity-0 delay-500'
-                                } 
-                                ${
-                                    channel
-                                        ? 'visible delay-500'
-                                        : 'invisible delay-0'
-                                } 
-                                ${channel ? 'h-auto' : 'h-0'}
-                                transition-opacity transition-visibility transition-height duration-500`}
-                    >
+                    <ChatContentSlide channel={channel}>
                         <MessagesHeader
                             currentChat={currentChat}
                             handleClose={handleClose}
                         />
                         <Messages messages={messages} />
                         <MessageInput idChannel={channel} />
-                    </div>
+                    </ChatContentSlide>
                 </div>
             </div>
         </div>
