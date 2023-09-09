@@ -74,7 +74,7 @@ export default function Messages({ messages }: { messages: MessageProps[] }) {
                             }`}
                         >
                             <div
-                                className={`flex flex-col space-y-2 text-xs max-w-xs mx-2 ${
+                                className={`flex flex-col space-y-2 text-sm max-w-xs mx-2 ${
                                     isCurrentUser
                                         ? 'order-1 items-end'
                                         : 'order-2 items-start'
@@ -98,14 +98,14 @@ export default function Messages({ messages }: { messages: MessageProps[] }) {
                             </div>
                             {isCurrentUser ? (
                                 <ImageFriend
-                                    customClassName={`w-6 h-6 rounded-full ${
+                                    customClassName={`w-8 h-8 rounded-full ${
                                         isCurrentUser ? 'order-2' : 'order-1'
                                     }`}
                                     userId={group.idSender}
                                 />
                             ) : (
                                 <ImageFriend
-                                    customClassName={`w-6 h-6 rounded-full ${
+                                    customClassName={`w-8 h-8 rounded-full ${
                                         isCurrentUser ? 'order-2' : 'order-1'
                                     }`}
                                     userId={group.idSender}

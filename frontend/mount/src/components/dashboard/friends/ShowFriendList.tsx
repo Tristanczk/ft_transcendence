@@ -29,12 +29,7 @@ function ShowFriendList({
 
     return friendsList.length > 0 ? (
         <>
-            <div className="mb-1"></div>
             <div className="bg-white">
-                <h1 className="text-xl font-bold dark:text-white">
-                    Friend{friendsList.length !== 1 && 's'} list
-                </h1>
-
                 <ul className="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
                     {friendsList.map((friend) => (
                         <li
@@ -42,8 +37,8 @@ function ShowFriendList({
                                 i === 0
                                     ? 'pb-3 sm:pb-4'
                                     : i === max
-                                    ? 'pt-3 pb-0 sm:pt-4'
-                                    : 'py-3 sm:py-4'
+                                        ? 'pt-3 pb-0 sm:pt-4'
+                                        : 'py-3 sm:py-4'
                             }
                             key={friend.id}
                         >
