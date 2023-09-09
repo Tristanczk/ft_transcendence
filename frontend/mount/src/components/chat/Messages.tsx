@@ -56,10 +56,18 @@ export default function Messages({ messages }: { messages: MessageProps[] }) {
     const groupedMessages = groupMessagesBySender(messages);
 
     return (
-        <div
-            id="messages"
-            className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip h-96"
-        >
+        <div className="flex"> {/* Parent container with relative positioning */}
+
+            {/* Sidebar content */}
+            <div className="relative flex-col items-center space-y-4 p-4 bg-gray-200 w-1/4 flex z-0 object-bottom object-fill right-24">
+                <button className="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white w-full rounded-md">Button 1</button>
+                <button className="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white w-full rounded-md">Button 2</button>
+                <button className="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white w-full rounded-md">Button 3</button>
+                <button className="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white w-full rounded-md">Button 4</button>
+                <button className="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white w-full rounded-md">Button 5</button>
+            </div>
+            <div id="messages" className="absolute ml-1/4 flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip h-96 w-104">
+
             {groupedMessages.map((group: MessageGroup, groupIndex: number) => {
                 const isCurrentUser = group.idSender === user?.id;
 
@@ -113,5 +121,6 @@ export default function Messages({ messages }: { messages: MessageProps[] }) {
                 );
             })}
         </div>
+</div>
     );
 }
