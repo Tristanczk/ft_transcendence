@@ -9,10 +9,10 @@ import { UserSimplified } from '../types';
 import { useUserContext } from '../context/UserContext';
 import Messages, { ChannelProps, MessageProps } from '../components/chat/Messages';
 import MessagesHeader from '../components/chat/MessagesHeader';
-import ChatFriendList from '../components/chat/ChatFriendList';
-import ChatChannelList from '../components/chat/ChatChannelList';
 import ChatListHeader from '../components/chat/ChatListHeader';
 import MessageInput from '../components/chat/MessageInput';
+import ChatFriendList from '../components/chat/ChatFriendList';
+import ChatChannelList from '../components/chat/ChatChannelList';
 
 function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const authAxios = useAuthAxios();
@@ -54,48 +54,17 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                     {
                         withCredentials: true,
                     });
-                console.log('fetching channels', response);
-                setChannels((oldChannels) => [...oldChannels, ...response.data]);
+                console.log(response.data);
+                setChannels(response.data);
             } catch (error) {
                 console.error(error);
             }
         };
         fetchChannels();
 
-        const fetchChannel = async () => {
-            console.log('fetching channels for', user?.id, currentChat?.id);
-            const response = await authAxios.get(
-                'http://localhost:3333/chat/getChannelByUsers',
-                {
-                    params: { idAdmin: user?.id, idUser: currentChat?.id },
-                    withCredentials: true,
-                },
-            );
-            console.log('fetching channel response', response);
-            if (response.data.length === 0) {
-                if (user && currentChat) {
-                    console.log('creating channel', user?.id, currentChat?.id);
-                    const response = await authAxios.post(
-                        '/chat/createChannel',
-                        {
-                            idUser: [user?.id, currentChat?.id],
-                            name: 'Private message',
-                            isPublic: false,
-                        },
-                        { withCredentials: true },
-                    );
-                }
-                setChannel(response.data.idChannel);
-            } else {
-                setChannel(response.data.idChannel);
-            }
-        };
-        console.log('channel: ', channel);
-        fetchChannel();
 
         const fetchMessages = async () => {
             console.log('fetching messages for', channel);
-            if (!currentChat) return;
             const response = await authAxios.get(
                 `http://localhost:3333/chat/getMessages/${channel}`,
                 {
@@ -108,7 +77,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
             setMessages(response.data);
         };
         if (channel) fetchMessages();
-    }, [currentChat, channel, socket]);
+    }, [channel, socket]);
 
     socket.on('message', (message: MessageProps) => {
         console.log('received message', message);
@@ -139,15 +108,15 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                     ) : channelListSelected ? (
                         <ChatFriendList
                             friends={friendsList}
-                            chatSelector={setCurrentChat}
-                            currentChat={currentChat}
+                            chatSelector={setChannel}
+                            channel={channel}
                             // notifications={notifications} int[] of channel ids
                         />
-                    ) : (
+                    ) : (   
                         <ChatChannelList
                             channels={channels}
-                            chatSelector={setCurrentChat}
-                            currentChat={currentChat}
+                            chatSelector={setChannel}
+                            channel={channel}
                             // notifications={notifications} int[] of channel ids
                         />
                     )}

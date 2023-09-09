@@ -1,14 +1,48 @@
 import { Link } from 'react-router-dom';
 import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
+import { useUserContext } from '../../context/UserContext';
+import { useAuthAxios } from '../../context/AuthAxiosContext';
 
 export default function ChatFriendListElement({
     friend,
     chatSelector,
 }: {
     friend: UserSimplified;
-    chatSelector: (friend: UserSimplified) => void;
+    chatSelector: (channel: number) => void;
 }) {
+    const { user } = useUserContext();
+    const authAxios = useAuthAxios();
+
+    const fetchChannel = async (IdFriend: number) => {
+        console.log('fetching channels for', user?.id, IdFriend);
+        const response = await authAxios.get(
+            'http://localhost:3333/chat/getChannelByUsers',
+            {
+                params: { idAdmin: user?.id, idUser: IdFriend },
+                withCredentials: true,
+            },
+        );
+        console.log('fetching channel response', response);
+        if (response.data.length === 0) {
+            if (user) {
+                console.log('creating channel', user?.id, IdFriend);
+                const response = await authAxios.post(
+                    '/chat/createChannel',
+                    {
+                        idUser: [user?.id, IdFriend],
+                        name: 'Private message',
+                        isPublic: false,
+                    },
+                    { withCredentials: true },
+                );
+            }
+            chatSelector(response.data.id);
+        } else {
+            chatSelector(response.data.id);
+        }
+    };
+
     return (
         <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
             <div className="flex items-center">
@@ -27,7 +61,7 @@ export default function ChatFriendListElement({
             </div>
             <button
                 onClick={() => {
-                    chatSelector(friend);
+                    fetchChannel(friend.id);
                 }}
             >
                 {' '}

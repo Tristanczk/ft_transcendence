@@ -3,12 +3,12 @@ import ImageFriend from '../dashboard/friends/ImgFriend';
 import { ChannelProps } from './Messages';
 import { UserSimplified } from '../../types';
 
-export default function ChatFriendListElement({
+export default function ChatChannelListElement({
     channel,
     chatSelector,
 }: {
     channel: ChannelProps;
-    chatSelector: (friend: UserSimplified) => void;
+    chatSelector: (channel: number) => void;
 }) {
     return (
         <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
@@ -21,7 +21,8 @@ export default function ChatFriendListElement({
             </div>
             <button
                 onClick={() => {
-                    //chatSelector(friend);
+                    console.log('clicked: ', channel.id)
+                    chatSelector(channel.id);
                 }}
             >
                 {' '}

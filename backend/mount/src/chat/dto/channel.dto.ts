@@ -1,4 +1,5 @@
 export interface ChannelDto {
+	id: number;
 	name: string;
-	idChannel: number;
+	isPublic: boolean;
 }

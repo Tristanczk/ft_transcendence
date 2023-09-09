@@ -59,8 +59,9 @@ export class ChatService {
             });
 
             const channelDto: ChannelDto = {
-                idChannel: channel.id,
+                id: channel.id,
                 name: channel.name,
+                isPublic: channel.isPublic,
             };
 
             return (channelDto);
@@ -167,7 +168,8 @@ export class ChatService {
         if (channels) {
             channelDtos = channels.map((channel) => ({
                 name: channel.name,
-                idChannel: channel.id,
+                id: channel.id,
+                isPublic: channel.isPublic,
             }));
         }
         return channelDtos;

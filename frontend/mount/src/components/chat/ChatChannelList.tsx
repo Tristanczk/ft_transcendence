@@ -1,17 +1,16 @@
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
-import { UserSimplified } from '../../types';
 import ChatChannelListElement from './ChatChannelListElement';
 import { ChannelProps } from './Messages';
 
-export default function ChatFriendList({
+export default function ChatChannelList({
     channels,
     chatSelector,
-    currentChat,
+    channel
 }: {
     channels: ChannelProps[] | null;
-    chatSelector: (friend: UserSimplified) => void;
-    currentChat: UserSimplified | null;
+    chatSelector: (channel: number) => void;
+    channel: number;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
@@ -42,11 +41,11 @@ export default function ChatFriendList({
         >
             <div
                 className={`flex flex-col overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip transition-all duration-500 ${
-                    currentChat ? 'h-36' : 'h-96'
+                    channel ? 'h-36' : 'h-96'
                 }`}
             >
                 {channels &&
-                    channels.map((channel, index) => (
+                    channels.map((channel) => (
                         <ChatChannelListElement
                             key={channel.id}
                             channel={channel}
