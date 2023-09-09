@@ -1,16 +1,21 @@
 import { Link } from 'react-router-dom';
 import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
-import { ChannelProps } from './Messages';
+import { useEffect, useState } from 'react';
+import { useUserContext } from '../../context/UserContext';
+import { useAuthAxios } from '../../context/AuthAxiosContext';
 
 export default function MessagesHeader({
-    currentChat,
+    channel,
+    currentFriend,
     handleClose,
 }: {
-    currentChat: UserSimplified | null;
+    channel: number;
+    currentFriend: UserSimplified | null;
     handleClose: () => void;
-}) {
-    if (!currentChat) return <div ></div>;
+}) {    
+    if (channel === 0 || !currentFriend) return <div></div>;
+
     return (
         <div className="flex sm:items-center justify-between py-3 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
             <div className="relative flex items-center space-x-4">
@@ -21,29 +26,33 @@ export default function MessagesHeader({
                                 cx="8"
                                 cy="8"
                                 r="8"
-                                fill={currentChat.isConnected ? '#4ade80' : '#f43f5e'}
+                                fill={
+                                    currentFriend.isConnected
+                                        ? '#4ade80'
+                                        : '#f43f5e'
+                                }
                             ></circle>
                         </svg>
                     </span>
                     <ImageFriend
-                        userId={currentChat.id}
-                        textImg={currentChat.nickname}
+                        userId={currentFriend.id}
+                        textImg={currentFriend.nickname}
                         customClassName="w-10 sm:w-16 h-10 sm:h-16 rounded-full"
                     />
                 </div>
                 <div className="flex flex-col leading-tight">
                     <div className="text-2xl mt-1 flex items-center">
                         <span className="text-gray-700 mr-3">
-                            {currentChat.nickname}
+                            {currentFriend.nickname}
                         </span>
                     </div>
                     <span className="text-lg text-gray-600">
-                        🏆 {currentChat.elo} ELO
+                        🏆 {currentFriend.elo} ELO
                     </span>
                 </div>
             </div>
             <div className="flex items-center space-x-2">
-                <Link to={'/dashboard/' + currentChat.id}>
+                <Link to={'/dashboard/' + currentFriend.id}>
                     <button
                         type="button"
                         className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500"

@@ -6,9 +6,11 @@ import { UserSimplified } from '../../types';
 export default function ChatChannelListElement({
     channel,
     chatSelector,
+    setCurrentFriend,
 }: {
     channel: ChannelProps;
     chatSelector: (channel: number) => void;
+    setCurrentFriend: (friend: UserSimplified | null) => void;
 }) {
     return (
         <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
@@ -21,7 +23,7 @@ export default function ChatChannelListElement({
             </div>
             <button
                 onClick={() => {
-                    console.log('clicked: ', channel.id)
+                    setCurrentFriend(null);
                     chatSelector(channel.id);
                 }}
             >

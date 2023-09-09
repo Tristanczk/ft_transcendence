@@ -170,7 +170,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                 type="button"
                 className="inline-flex items-center justify-center rounded-3xl px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-600 hover:bg-white hover:text-blue-600 focus:outline-none ml-2"
             >
-                <span className="font-bold">Send</span>
+                <span className="font-bold"></span>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"

@@ -1,15 +1,18 @@
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
+import { UserSimplified } from '../../types';
 import ChatChannelListElement from './ChatChannelListElement';
 import { ChannelProps } from './Messages';
 
 export default function ChatChannelList({
     channels,
     chatSelector,
+    setCurrentFriend,
     channel
 }: {
     channels: ChannelProps[] | null;
     chatSelector: (channel: number) => void;
+    setCurrentFriend: (friend: UserSimplified | null) => void;
     channel: number;
 }) {
     const authAxios = useAuthAxios();
@@ -50,6 +53,7 @@ export default function ChatChannelList({
                             key={channel.id}
                             channel={channel}
                             chatSelector={chatSelector}
+                            setCurrentFriend={setCurrentFriend}
                         />
                     ))}
                 <button className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">

@@ -7,13 +7,15 @@ import {
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { UserSimplified } from '../types';
 import { useUserContext } from '../context/UserContext';
-import Messages, { ChannelProps, MessageProps } from '../components/chat/Messages';
+import Messages, {
+    ChannelProps,
+    MessageProps,
+} from '../components/chat/Messages';
 import MessagesHeader from '../components/chat/MessagesHeader';
 import ChatListHeader from '../components/chat/ChatListHeader';
 import MessageInput from '../components/chat/MessageInput';
 import ChatFriendList from '../components/chat/ChatFriendList';
 import ChatChannelList from '../components/chat/ChatChannelList';
-import ChatContentSlide from '../components/chat/ChatContentSlide';
 
 function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const authAxios = useAuthAxios();
@@ -21,6 +23,9 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const [channel, setChannel] = useState<number>(0);
     const [channels, setChannels] = useState<ChannelProps[]>([]);
     const [messages, setMessages] = useState<MessageProps[]>([]);
+    const [currentFriend, setCurrentFriend] = useState<UserSimplified | null>(
+        null,
+    );
     const [currentChat, setCurrentChat] = useState<UserSimplified | null>(null); // or channel
     const [isVisible, setIsVisible] = useState(false);
     const socket = useContext(WebsocketContext);
@@ -54,7 +59,8 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                     'http://localhost:3333/chat/getChannels',
                     {
                         withCredentials: true,
-                    });
+                    },
+                );
                 console.log(response.data);
                 setChannels(response.data);
             } catch (error) {
@@ -62,7 +68,6 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
             }
         };
         fetchChannels();
-
 
         const fetchMessages = async () => {
             console.log('fetching messages for', channel);
@@ -78,7 +83,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
             setMessages(response.data);
         };
         if (channel) fetchMessages();
-    }, [channel, socket]);
+    }, [channel, socket, currentFriend]);
 
     socket.on('message', (message: MessageProps) => {
         console.log('received message', message);
@@ -109,26 +114,47 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                     ) : channelListSelected ? (
                         <ChatFriendList
                             friends={friendsList}
-                            chatSelector={setChannel}
                             channel={channel}
+                            chatSelector={setChannel}
+                            setCurrentFriend={setCurrentFriend}
                             // notifications={notifications} int[] of channel ids
                         />
-                    ) : (   
+                    ) : (
                         <ChatChannelList
                             channels={channels}
                             chatSelector={setChannel}
+                            setCurrentFriend={setCurrentFriend}
                             channel={channel}
                             // notifications={notifications} int[] of channel ids
                         />
                     )}
-                    <ChatContentSlide channel={channel}>
-                        <MessagesHeader
-                            currentChat={currentChat}
-                            handleClose={handleClose}
-                        />
+                    <div
+                        className={`chat-content 
+                              ${
+                                  channel
+                                      ? 'opacity-100 delay-0'
+                                      : 'opacity-0 delay-500'
+                              } 
+                                  ${
+                                      channel
+                                          ? 'visible delay-500'
+                                          : 'invisible delay-0'
+                                  } 
+                                ${channel ? 'h-auto' : 'h-0'}
+                                transition-opacity transition-visibility transition-height duration-500`}
+                    >
+                        {currentFriend ? (
+                            <MessagesHeader
+                                channel={channel}
+                                currentFriend={currentFriend}
+                                handleClose={handleClose}
+                            />
+                        ) : (
+                            <div></div>
+                        )}
                         <Messages messages={messages} />
                         <MessageInput idChannel={channel} />
-                    </ChatContentSlide>
+                    </div>
                 </div>
             </div>
         </div>
