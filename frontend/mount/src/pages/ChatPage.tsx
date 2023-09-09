@@ -16,6 +16,7 @@ import ChatListHeader from '../components/chat/ChatListHeader';
 import MessageInput from '../components/chat/MessageInput';
 import ChatFriendList from '../components/chat/ChatFriendList';
 import ChatChannelList from '../components/chat/ChatChannelList';
+import ChannelHeader from '../components/chat/ChannelHeader';
 
 function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const authAxios = useAuthAxios();
@@ -26,14 +27,14 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const [currentFriend, setCurrentFriend] = useState<UserSimplified | null>(
         null,
     );
-    const [currentChat, setCurrentChat] = useState<UserSimplified | null>(null); // or channel
+    const [currentChannel , setCurrentChannel] = useState<ChannelProps | null>(null)
     const [isVisible, setIsVisible] = useState(false);
     const socket = useContext(WebsocketContext);
     const [channelListSelected, setChannelListSelected] = useState<number>(-1);
 
     const handleClose = () => {
         setIsVisible(false); // Start the fade-out animation
-        setTimeout(() => setCurrentChat(null), 500); // Wait for the animation to complete before setting state
+        setTimeout(() => setChannel(0), 500); // Wait for the animation to complete before setting state
     };
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
@@ -61,7 +62,6 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                         withCredentials: true,
                     },
                 );
-                console.log(response.data);
                 setChannels(response.data);
             } catch (error) {
                 console.error(error);
@@ -79,10 +79,24 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                 },
             );
             if (!response.data) setMessages([]);
-            console.log(response.data);
             setMessages(response.data);
         };
         if (channel) fetchMessages();
+
+        const fetchChannel = async () => {
+            const response = await authAxios.get(
+                'http://localhost:3333/chat/getChannelById',
+                {
+                    params: { idChannel: channel },
+                    withCredentials: true,
+                }
+            );
+            console.log('miaooooo')
+            console.log(response)
+            setCurrentChannel(response.data)
+        };
+        fetchChannel();
+
     }, [channel, socket, currentFriend]);
 
     socket.on('message', (message: MessageProps) => {
@@ -150,7 +164,11 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                                 handleClose={handleClose}
                             />
                         ) : (
-                            <div></div>
+                            <ChannelHeader
+                                channel={channel}
+                                currentChannel={currentChannel}
+                                handleClose={handleClose}
+                            />
                         )}
                         <Messages messages={messages} />
                         <MessageInput idChannel={channel} />

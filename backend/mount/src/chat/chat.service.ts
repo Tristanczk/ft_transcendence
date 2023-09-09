@@ -11,6 +11,7 @@ import { JoinChannelDto } from './dto/joinchannel.dto';
 import { LeaveChannelDto } from './dto/leavechannel.dto';
 import { ChannelDto } from './dto/channel.dto';
 import { GetChannelDto } from './dto/getchannel.dto';
+import { channel } from 'diagnostics_channel';
 
 @Injectable()
 export class ChatService {
@@ -41,6 +42,30 @@ export class ChatService {
             isPublic: createChannelDto.isPublic,
         };
     }
+
+    async getChannel(idChannel: number): Promise<ChannelDto | null> {
+        try {
+            const channel = await this.prisma.channels.findUnique({
+                where: {
+                    id: Number(idChannel),
+                },
+            });
+
+            console.log("getChannel service " + channel);     
+
+            const channelDto: ChannelDto = {
+                id: channel.id,
+                name: channel.name,
+                isPublic: channel.isPublic,
+            };
+
+            console.log(channelDto);
+            return (channelDto);
+        } catch (error) {
+            console.log('ca a pas marche');
+        }
+        return null;
+    };
 
     async getChannelByUsers(
         getChannel: GetChannelDto,

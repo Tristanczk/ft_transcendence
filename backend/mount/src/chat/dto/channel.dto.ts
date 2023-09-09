@@ -3,3 +3,7 @@ export interface ChannelDto {
 	name: string;
 	isPublic: boolean;
 }
+
+export interface ChannelIdDto {
+	idChannel: number;
+}
