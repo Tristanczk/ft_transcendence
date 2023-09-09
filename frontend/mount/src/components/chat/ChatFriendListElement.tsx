@@ -7,9 +7,11 @@ import { useAuthAxios } from '../../context/AuthAxiosContext';
 export default function ChatFriendListElement({
     friend,
     chatSelector,
+    setCurrentFriend,
 }: {
     friend: UserSimplified;
     chatSelector: (channel: number) => void;
+    setCurrentFriend: (friend: UserSimplified) => void;
 }) {
     const { user } = useUserContext();
     const authAxios = useAuthAxios();
@@ -36,11 +38,12 @@ export default function ChatFriendListElement({
                     },
                     { withCredentials: true },
                 );
+                chatSelector(response.data.id);
             }
-            chatSelector(response.data.id);
         } else {
             chatSelector(response.data.id);
         }
+        setCurrentFriend(friend);
     };
 
     return (

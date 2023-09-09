@@ -5,7 +5,7 @@ import { EditChannelDto } from './dto/editchannel.dto';
 import { CreateMessageDto, DeleteMessageDto, MessageDto } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
 import { LeaveChannelDto } from './dto/leavechannel.dto';
-import { ChannelDto } from './dto/channel.dto';
+import { ChannelDto, ChannelIdDto } from './dto/channel.dto';
 import { query } from 'express';
 import { GetChannelDto } from './dto/getchannel.dto';
 
@@ -15,8 +15,6 @@ import { GetChannelDto } from './dto/getchannel.dto';
 			
 			@Post('createChannel')
 			async createChannel(@Body() createChannelDto: CreateChannelDto) : Promise<CreateChannelDto> {
-				console.log("createChannnel controller");
-				console.log(createChannelDto);
 				return this.chatService.createChannel(createChannelDto);
 			}
 			
@@ -25,10 +23,14 @@ import { GetChannelDto } from './dto/getchannel.dto';
 				return this.chatService.getChannels();
 			}
 
+			@Get('getChannelById')
+			async getChannel(@Query() channel: ChannelIdDto): Promise<ChannelDto | null> {
+				return this.chatService.getChannel(channel.idChannel);
+			}
+
 			@Get('getChannelByUsers')
 			async getChannelByUsers(@Query() getChannel: GetChannelDto): Promise<ChannelDto | null> {
 				console.log("getChannelByUsers controller");
-				console.log(getChannel);
 				return this.chatService.getChannelByUsers(getChannel);
 			}
 

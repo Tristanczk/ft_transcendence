@@ -22,9 +22,6 @@ export interface MessageGroup {
     idSender: number;
     messages: MessageProps[];
   }
-  interface Message {
-    messages: MessageProps[];
-  }
 
 export default function Messages({ messages }: { messages: MessageProps[] }) {
     const { user } = useUserContext();

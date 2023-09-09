@@ -3,12 +3,14 @@ import ChatFriendListElement from './ChatFriendListElement';
 
 export default function ChatFriendList({
     friends,
-    chatSelector,
     channel,
+    chatSelector,
+    setCurrentFriend,
 }: {
     friends: UserSimplified[] | null;
-    chatSelector: (channel: number) => void;
     channel: number;
+    chatSelector: (channel: number) => void;
+    setCurrentFriend: (friend: UserSimplified) => void;
 }) {
     return (
         <div
@@ -22,6 +24,7 @@ export default function ChatFriendList({
                             key={friend.id}
                             friend={friend}
                             chatSelector={chatSelector}
+                            setCurrentFriend={setCurrentFriend}
                         />
                     ))}
             </div>
