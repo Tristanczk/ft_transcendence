@@ -7,3 +7,8 @@ export interface ChannelDto {
 export interface ChannelIdDto {
 	idChannel: number;
 }
+
+export interface isChannelAdminDto {
+	idChannel: number;
+	idUser: number;
+}

@@ -5,12 +5,17 @@ export default function SettingBar({
 }: {
     currentChannel: ChannelProps | null;
 }) {
-    const editPassword = async () => {};
+    const editPassword = async () => {
+        
+    };
+
     const banUser = async () => {};
     const exitChannel = async () => {};
     const editName = async () => {};
     const makeAdmin = async () => {};
     const muteUser = async () => {};
+
+    if (!currentChannel) return null;
 
     return (
         <div className="relative flex-col items-center space-y-4 p-4 bg-gray-200 w-1/4 flex z-0 object-bottom object-fill right-24">

@@ -9,7 +9,7 @@ import {
 } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
 import { LeaveChannelDto } from './dto/leavechannel.dto';
-import { ChannelDto } from './dto/channel.dto';
+import { ChannelDto, isChannelAdminDto } from './dto/channel.dto';
 import { GetChannelDto } from './dto/getchannel.dto';
 import { channel } from 'diagnostics_channel';
 
@@ -95,6 +95,36 @@ export class ChatService {
         }
         return null;
     }
+
+    async isChannelOpen(idChannel: number): Promise<boolean> {
+        try {
+            const channel = await this.prisma.channels.findUnique({
+                where: {
+                    id: Number(idChannel),
+                },
+            });
+
+            if (channel.password) return true;
+        } catch (error) {
+        }
+        return false;
+    };
+
+    async isChannelAdmin(channelDto: isChannelAdminDto): Promise<boolean> {
+        try {
+            const channel = await this.prisma.channels.findUnique({
+                where: {
+                    id: channelDto.idChannel,
+                },
+            });
+    
+            if (channel && channel.idAdmin.includes(channelDto.idUser)) {
+                return true;
+            }
+        } catch (error) {
+        }
+        return false;
+    };
 
     async joinChannel(joinChannel: JoinChannelDto) {
         try {
