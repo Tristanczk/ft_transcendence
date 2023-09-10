@@ -124,7 +124,7 @@ function GlobalStats({ user }: PresentationUserProps) {
                                 {stats ? stats?.me.elo : 'N/A'}
                             </dt>
                             <dd className="text-gray-500 dark:text-gray-400">
-                                Your Elo
+                                Elo
                             </dd>
                         </div>
                         <div className="flex flex-col items-center justify-center">
