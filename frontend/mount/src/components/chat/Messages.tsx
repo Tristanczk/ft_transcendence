@@ -69,10 +69,10 @@ export default function Messages({
             {' '}
             {/* Parent container with relative positioning */}
             {/* Sidebar content */}
-            {isSettingVisible && <SettingBar currentChannel={currentChannel}/>}
+            <SettingBar currentChannel={currentChannel} isSettingVisible={isSettingVisible}/>
             <div
                 id="messages"
-                className="absolute ml-1/4 flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip h-96 w-104"
+                className="flex-grow absolute flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip w-104 h-1/2"
             >
                 {groupedMessages.map(
                     (group: MessageGroup, groupIndex: number) => {
