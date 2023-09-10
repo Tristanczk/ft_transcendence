@@ -2,8 +2,10 @@ import { ChannelProps } from './Messages';
 
 export default function SettingBar({
     currentChannel,
+    isSettingVisible,
 }: {
     currentChannel: ChannelProps | null;
+    isSettingVisible: boolean;
 }) {
     const editPassword = async () => {};
     const banUser = async () => {};
@@ -13,7 +15,12 @@ export default function SettingBar({
     const muteUser = async () => {};
 
     return (
-        <div className="relative flex-col items-center space-y-4 p-4 bg-gray-200 w-1/4 flex z-0 object-bottom object-fill right-24">
+        <div
+            className={`relative flex-col items-center space-y-4 bg-gray-200 w-1/6 flex z-0 object-bottom object-fill 
+    ${isSettingVisible ? 'right-20' : 'right-0'} 
+    transition-all duration-500 ease-in-out rounded-3xl py-4`}
+        >
+            {' '}
             <button
                 name="Password"
                 type="button"
@@ -39,7 +46,6 @@ export default function SettingBar({
                     <line x1="15" y1="8" x2="17" y2="10" />
                 </svg>
             </button>
-
             <button
                 name="Ban"
                 type="button"
@@ -64,7 +70,6 @@ export default function SettingBar({
                     <path d="M17 9l4 4m0 -4l-4 4" />
                 </svg>
             </button>
-
             <button
                 name="Exit"
                 type="button"
@@ -86,7 +91,6 @@ export default function SettingBar({
                     />
                 </svg>
             </button>
-
             <button
                 name="Name"
                 type="button"
@@ -108,7 +112,6 @@ export default function SettingBar({
                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                 </svg>
             </button>
-
             <button
                 name="Admin"
                 type="button"
@@ -126,7 +129,6 @@ export default function SettingBar({
                     <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
                 </svg>
             </button>
-
             <button
                 name="Mute"
                 type="button"
