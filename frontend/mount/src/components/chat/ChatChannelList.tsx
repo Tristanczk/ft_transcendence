@@ -7,12 +7,12 @@ import { UserSimplified } from '../../types';
 
 export default function ChatChannelList({
     channels,
-    chatSelector,
+    setChannel,
     setCurrentFriend,
     channel,
 }: {
     channels: ChannelProps[] | null;
-    chatSelector: (channel: number) => void;
+    setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
     channel: number;
 }) {
@@ -23,6 +23,7 @@ export default function ChatChannelList({
     const blurTimeout = useRef<any>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [barHidden, setBarHidden] = useState(false);
+    const [input, setInput] = useState('');
 
     const handleBlur = () => {
         blurTimeout.current = setTimeout(() => {
@@ -45,22 +46,42 @@ export default function ChatChannelList({
         setBarHidden(false); // resetting barHidden on channel change
     }, [channel]);
 
-    const createChannel = async () => {
+    useEffect(() => {
+        setBarHidden(false); // resetting barHidden on channel change
+    }, [channel]);
+
+    const createChannel = async (input: string) => {
         console.log('creating channel');
         try {
             const response = await authAxios.post(
                 'http://localhost:3333/chat/createChannel',
                 {
                     idUser: [user?.id],
-                    name: 'Les BG',
+                    name: input,
                     isPublic: true,
                     password: '',
                 },
                 { withCredentials: true },
             );
             console.log('Channel created', response);
+            setChannel(response.data.id);
         } catch (error) {
             console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        setPasswordPrompt(false);
+    }, [channel]);
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            createChannel(input);
+
+            // Clear the input field
+            setInput('');
+            setPasswordPrompt(false);
         }
     };
 
@@ -82,7 +103,7 @@ export default function ChatChannelList({
                             <ChatChannelListElement
                                 key={channel.id}
                                 channel={channel}
-                                chatSelector={chatSelector}
+                                setChannel={setChannel}
                                 setCurrentFriend={setCurrentFriend}
                                 setPasswordPrompt={setPasswordPrompt}
                             />
@@ -126,6 +147,9 @@ export default function ChatChannelList({
 
                 <input
                     ref={inputRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     type="text"
                     placeholder="Channel name..?"
                     className={`focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 bg-white rounded-3xl border-white transition-all transform ease-in-out duration-500 h-8 overflow-hidden ${

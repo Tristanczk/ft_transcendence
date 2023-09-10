@@ -7,12 +7,12 @@ import { useState } from 'react';
 
 export default function ChatChannelListElement({
     channel,
-    chatSelector,
+    setChannel,
     setCurrentFriend,
     setPasswordPrompt
 }: {
     channel: ChannelProps;
-    chatSelector: (channel: number) => void;
+    setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
     setPasswordPrompt: (passwordPrompt: boolean) => void;
 }) {
@@ -30,10 +30,10 @@ export default function ChatChannelListElement({
         );
         if (response.data === false) {
             setPasswordPrompt(true);
-            chatSelector(0);    
+            setChannel(0);    
         } else {
             setCurrentFriend(null);
-            chatSelector(channel.id);
+            setChannel(channel.id);
         }
     };
 

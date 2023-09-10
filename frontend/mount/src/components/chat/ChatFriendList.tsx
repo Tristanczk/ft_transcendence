@@ -4,12 +4,12 @@ import ChatFriendListElement from './ChatFriendListElement';
 export default function ChatFriendList({
     friends,
     channel,
-    chatSelector,
+    setChannel,
     setCurrentFriend,
 }: {
     friends: UserSimplified[] | null;
     channel: number;
-    chatSelector: (channel: number) => void;
+    setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified) => void;
 }) {
     return (
@@ -23,7 +23,7 @@ export default function ChatFriendList({
                         <ChatFriendListElement
                             key={friend.id}
                             friend={friend}
-                            chatSelector={chatSelector}
+                            setChannel={setChannel}
                             setCurrentFriend={setCurrentFriend}
                         />
                     ))}
