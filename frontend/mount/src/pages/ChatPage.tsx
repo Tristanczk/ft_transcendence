@@ -94,8 +94,6 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                 withCredentials: true,
             },
         );
-        console.log('miaooooo');
-        console.log(response);
         setCurrentChannel(response.data);
     };
 
@@ -141,14 +139,14 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                         <ChatFriendList
                             friends={friendsList}
                             channel={channel}
-                            chatSelector={setChannel}
+                            setChannel={setChannel}
                             setCurrentFriend={setCurrentFriend}
                             // notifications={notifications} int[] of channel ids
                         />
                     ) : (
                         <ChatChannelList
                             channels={channels}
-                            chatSelector={setChannel}
+                            setChannel={setChannel}
                             setCurrentFriend={setCurrentFriend}
                             channel={channel}
                             // notifications={notifications} int[] of channel ids

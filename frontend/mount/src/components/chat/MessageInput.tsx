@@ -20,7 +20,6 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
     const [visiblePicker, setVisiblePicker] = useState(false);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-        console.log('input: ', event.target.value);
         setInput(event.target.value);
     };
 

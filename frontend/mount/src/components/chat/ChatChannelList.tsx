@@ -7,12 +7,12 @@ import { ChannelProps } from './Messages';
 
 export default function ChatChannelList({
     channels,
-    chatSelector,
+    setChannel,
     setCurrentFriend,
     channel,
 }: {
     channels: ChannelProps[] | null;
-    chatSelector: (channel: number) => void;
+    setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
     channel: number;
 }) {
@@ -20,9 +20,9 @@ export default function ChatChannelList({
     const { user } = useUserContext();
     const [passwordPrompt, setPasswordPrompt] = useState(false);
     const [showInput, setShowInput] = useState(false);
+    const [input, setInput] = useState('');
     const blurTimeout = useRef<any>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    
 
     const handleBlur = () => {
         blurTimeout.current = setTimeout(() => {
@@ -40,20 +40,21 @@ export default function ChatChannelList({
         inputRef.current?.focus();
     };
 
-    const createChannel = async () => {
+    const createChannel = async (input: string) => {
         console.log('creating channel');
         try {
             const response = await authAxios.post(
                 'http://localhost:3333/chat/createChannel',
                 {
                     idUser: [user?.id],
-                    name: 'Les BG',
+                    name: input,
                     isPublic: true,
                     password: '',
                 },
                 { withCredentials: true },
             );
             console.log('Channel created', response);
+            setChannel(response.data.id);
         } catch (error) {
             console.error(error);
         }
@@ -63,12 +64,24 @@ export default function ChatChannelList({
         setPasswordPrompt(false);
     }, [channel]);
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            createChannel(input);
+
+            // Clear the input field
+            setInput('');
+            setPasswordPrompt(false);
+        }
+    };
+
     return (
         <>
             <div
                 id="list"
                 className={`flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip shadow-xl transition-all duration-500 ${
-                    channel ? 'rounded-b-3xl' : 'rounded-none'}`}
+                    channel ? 'rounded-b-3xl' : 'rounded-none'
+                }`}
             >
                 <div
                     className={`flex flex-col overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip transition-all duration-500 ${
@@ -80,7 +93,7 @@ export default function ChatChannelList({
                             <ChatChannelListElement
                                 key={channel.id}
                                 channel={channel}
-                                chatSelector={chatSelector}
+                                setChannel={setChannel}
                                 setCurrentFriend={setCurrentFriend}
                                 setPasswordPrompt={setPasswordPrompt}
                             />
@@ -88,7 +101,13 @@ export default function ChatChannelList({
                 </div>
             </div>
 
-            <div className={`px-4 py-2 mb-2 sm:mb-0 flex items-center justify-between rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md relative duration-500 ${!channel ? 'transform translate-y-0 opacity-100' : 'transform -translate-y-full opacity-0'}`}>
+            <div
+                className={`px-4 py-2 mb-2 sm:mb-0 flex items-center justify-between rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md relative duration-500 ${
+                    !channel
+                        ? 'transform translate-y-0 opacity-100'
+                        : 'transform -translate-y-full opacity-0'
+                }`}
+            >
                 <div
                     className={`flex items-center space-x-2 ${
                         showInput ? 'opacity-0 w-0' : 'opacity-100 w-auto'
@@ -118,6 +137,9 @@ export default function ChatChannelList({
 
                 <input
                     ref={inputRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     type="text"
                     placeholder="Channel name..?"
                     className={`focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 bg-white rounded-3xl border-white transition-all transform ease-in-out duration-500 h-8 overflow-hidden ${

@@ -6,11 +6,11 @@ import { useAuthAxios } from '../../context/AuthAxiosContext';
 
 export default function ChatFriendListElement({
     friend,
-    chatSelector,
+    setChannel,
     setCurrentFriend,
 }: {
     friend: UserSimplified;
-    chatSelector: (channel: number) => void;
+    setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified) => void;
 }) {
     const { user } = useUserContext();
@@ -26,7 +26,7 @@ export default function ChatFriendListElement({
             },
         );
         console.log('fetching channel response', response); 
-        chatSelector(response.data.id);
+        setChannel(response.data.id);
         setCurrentFriend(friend);
     };
 
