@@ -10,17 +10,23 @@ import {
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChannelDto } from './dto/createchannel.dto';
-import { EditChannelDto } from './dto/editchannel.dto';
+import {
+    EditChannelDto,
+    EditChannelLeaveDto,
+    EditChannelNameDto,
+    EditChannelUserDto,
+    EditPasswordDto,
+} from './dto/editchannel.dto';
 import {
     CreateMessageDto,
     DeleteMessageDto,
     MessageDto,
 } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
-import { LeaveChannelDto } from './dto/leavechannel.dto';
 import { ChannelDto, ChannelIdDto, isChannelAdminDto } from './dto/channel.dto';
 import { query } from 'express';
 import { GetChannelDto } from './dto/getchannel.dto';
+import { EditUserDto } from 'src/user/dto';
 
 @Controller('chat')
 export class ChatController {
@@ -53,32 +59,50 @@ export class ChatController {
         return this.chatService.getChannelByUsers(getChannel);
     }
 
-	@Get('isChannelOpen')
-	async isChannelOpen(@Query() getChannel: ChannelIdDto): Promise<boolean> {
-		return this.chatService.isChannelOpen(getChannel.idChannel);
-	}
+    @Get('isChannelOpen')
+    async isChannelOpen(@Query() getChannel: ChannelIdDto): Promise<boolean> {
+        return this.chatService.isChannelOpen(getChannel.idChannel);
+    }
 
-	@Get('isChannelAdmin')
-	async isChannelAdmin(@Body() channel: isChannelAdminDto): Promise<boolean> {
-		return this.chatService.isChannelAdmin(channel);
-	}
+    @Get('isChannelAdmin')
+    async isChannelAdmin(@Body() channel: isChannelAdminDto): Promise<boolean> {
+        return this.chatService.isChannelAdmin(channel);
+    }
 
     @Post('joinChannel')
     async joinChannel(@Body() joinChannel: JoinChannelDto) {
         return this.chatService.joinChannel(joinChannel);
     }
 
-    @Post('leaveChannel')
-    async leaveChannel(@Body() leaveChannel: LeaveChannelDto) {
+    @Patch('leaveChannel')
+    async leaveChannel(@Body() leaveChannel: EditChannelLeaveDto) {
+        console.log('leaveChannel controller');
+        console.log(leaveChannel);
         return this.chatService.leaveChannel(leaveChannel);
     }
 
-    @Patch('editChannel')
-    async editChannel(
-        @Body() idUser: number,
-        editChannel: EditChannelDto,
+    @Patch('editPassword')
+    async editPassword(
+        @Body() editChannel: EditPasswordDto,
     ): Promise<EditChannelDto> {
-        return this.chatService.editChannel(idUser, editChannel);
+        return this.chatService.editPassword(editChannel);
+    }
+
+    @Patch('banUser')
+    async banUser(
+        @Body() editChannel: EditChannelUserDto,
+    ): Promise<EditChannelDto> {
+        return this.chatService.banUser(editChannel);
+    }
+
+    @Patch('editName')
+    async editName(@Body() editChannel: EditChannelNameDto): Promise<EditChannelDto> {
+        return this.chatService.editName(editChannel);
+    }
+
+    @Patch('addAdmin')
+    async addAdmin(@Body() editChannel: EditChannelUserDto): Promise<EditChannelDto> {
+        return this.chatService.addAdmin(editChannel);
     }
 
     @Post('sendMessage')

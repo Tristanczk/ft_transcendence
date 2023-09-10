@@ -38,6 +38,10 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
         null,
     );
 
+    useEffect(() => {
+        setVisibleSettings(false);
+    }, [isChatVisible, currentFriend]);
+
     const handleClose = () => {
         setIsVisible(false); // Start the fade-out animation
         setTimeout(() => setChannel(0), 500); // Wait for the animation to complete before setting state
@@ -103,6 +107,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
         fetchFriends();
         fetchChannels();
         if (channel) fetchMessages();
+        else setMessages([]);
         fetchChannel();
     }, [channel, socket, currentFriend, channelListSelected]);
 
@@ -182,6 +187,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                             messages={messages}
                             isSettingVisible={visibleSettings}
                             currentChannel={currentChannel}
+                            handleClose={handleClose}
                         />
                         <MessageInput idChannel={channel} />
                     </div>

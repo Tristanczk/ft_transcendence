@@ -1,20 +1,81 @@
+import { useAuthAxios } from '../../context/AuthAxiosContext';
+import { useUserContext } from '../../context/UserContext';
 import { ChannelProps } from './Messages';
 
 export default function SettingBar({
     currentChannel,
+    handleClose,
     isSettingVisible,
 }: {
     currentChannel: ChannelProps | null;
+    handleClose: () => void;
     isSettingVisible: boolean;
 }) {
+    const authAxios = useAuthAxios();
+    const {user} = useUserContext();
+
     const editPassword = async () => {
-        
+        const response = await authAxios.patch(
+            '/chat/editPassword',
+            {
+                id: currentChannel?.id,
+                idRequester: user?.id,
+                password: '', //password input
+            },
+            { withCredentials: true },
+        );
+        console.log(response.data);
+
     };
 
-    const banUser = async () => {};
-    const exitChannel = async () => {};
-    const editName = async () => {};
-    const makeAdmin = async () => {};
+    const banUser = async () => {
+        const response = await authAxios.patch(
+            '/chat/banUser',
+            {
+                id: currentChannel?.id,
+                idRequester: user?.id,
+                idUser: 0, // user to ban id
+            },
+            { withCredentials: true },
+        );
+        console.log(response.data);
+    };
+
+    const leaveChannel = async () => {
+        const response = await authAxios.patch(
+            '/chat/leaveChannel',
+            {
+                id: currentChannel?.id,
+                idRequester: user?.id,
+            },
+            { withCredentials: true },
+        );
+        handleClose();
+    };
+    
+    const editName = async () => {
+        const response = await authAxios.patch(
+            '/chat/editName',
+            {
+                id: currentChannel?.id,
+                idRequester: user?.id,
+                name: 'Batards', // name input
+            },
+            { withCredentials: true },
+        );
+    };
+    const addAdmin = async () => {
+        const response = await authAxios.patch(
+            '/chat/addAdmin',
+            {
+                id: currentChannel?.id,
+                idRequester: user?.id,
+                idUser: 3, // user input
+            },
+            { withCredentials: true },
+        );
+    };
+
     const muteUser = async () => {};
 
     if (!currentChannel) return null;
@@ -28,6 +89,7 @@ export default function SettingBar({
             {' '}
             <button
                 name="Password"
+                onClick={() => {editPassword()}}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500"
             >
@@ -53,6 +115,7 @@ export default function SettingBar({
             </button>
             <button
                 name="Ban"
+                onClick={() => {banUser()}}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
             >
@@ -77,6 +140,7 @@ export default function SettingBar({
             </button>
             <button
                 name="Exit"
+                onClick={() => {leaveChannel()}}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
             >
@@ -98,6 +162,7 @@ export default function SettingBar({
             </button>
             <button
                 name="Name"
+                onClick={() => {editName()}}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
             >
@@ -119,6 +184,7 @@ export default function SettingBar({
             </button>
             <button
                 name="Admin"
+                onClick={() => {addAdmin()}}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
             >

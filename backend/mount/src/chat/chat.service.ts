@@ -1,17 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateChannelDto } from './dto/createchannel.dto';
-import { EditChannelDto } from './dto/editchannel.dto';
+import {
+    EditChannelDto,
+    EditChannelLeaveDto,
+    EditChannelNameDto,
+    EditChannelUserDto,
+    EditPasswordDto,
+} from './dto/editchannel.dto';
 import {
     CreateMessageDto,
     DeleteMessageDto,
     MessageDto,
 } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
-import { LeaveChannelDto } from './dto/leavechannel.dto';
 import { ChannelDto, isChannelAdminDto } from './dto/channel.dto';
 import { GetChannelDto } from './dto/getchannel.dto';
 import { channel } from 'diagnostics_channel';
+import { EditUserDto } from 'src/user/dto';
 
 @Injectable()
 export class ChatService {
@@ -53,27 +59,30 @@ export class ChatService {
 
             const channelDto: ChannelDto = {
                 id: channel.id,
+                idAdmin: channel.idAdmin,
+                idUser: channel.idUsers,
                 name: channel.name,
                 isPublic: channel.isPublic,
             };
 
-            return (channelDto);
-        } catch (error) {
-        }
+            return channelDto;
+        } catch (error) {}
         return null;
-    };
+    }
 
     async getChannelByUsers(
         getChannel: GetChannelDto,
     ): Promise<ChannelDto | null> {
-        console.log("getChannelByUsers service " + getChannel.idAdmin + " " + getChannel.idUser);
         if (getChannel.idAdmin === undefined || getChannel.idUser === undefined)
             return null;
         try {
             const channel = await this.prisma.channels.findFirst({
                 where: {
                     idUsers: {
-                        hasEvery: [Number(getChannel.idAdmin), Number(getChannel.idUser)],
+                        hasEvery: [
+                            Number(getChannel.idAdmin),
+                            Number(getChannel.idUser),
+                        ],
                     },
                     isPublic: false,
                 },
@@ -81,11 +90,13 @@ export class ChatService {
 
             const channelDto: ChannelDto = {
                 id: channel.id,
+                idAdmin: channel.idAdmin,
+                idUser: channel.idUsers,
                 name: channel.name,
                 isPublic: channel.isPublic,
             };
 
-            return (channelDto);
+            return channelDto;
         } catch (error) {
             console.log(error);
         }
@@ -93,7 +104,6 @@ export class ChatService {
     }
 
     async isChannelOpen(idChannel: number): Promise<boolean> {
-        console.log("isChannelOpen service " + idChannel);
         try {
             const channel = await this.prisma.channels.findUnique({
                 where: {
@@ -101,13 +111,10 @@ export class ChatService {
                 },
             });
 
-            console.log("isChannelOpen service ");
-            console.log(channel);
             if (channel.password.length < 2) return true;
-        } catch (error) {
-        }
+        } catch (error) {}
         return false;
-    };
+    }
 
     async isChannelAdmin(channelDto: isChannelAdminDto): Promise<boolean> {
         try {
@@ -116,14 +123,13 @@ export class ChatService {
                     id: channelDto.idChannel,
                 },
             });
-    
+
             if (channel && channel.idAdmin.includes(channelDto.idUser)) {
                 return true;
             }
-        } catch (error) {
-        }
+        } catch (error) {}
         return false;
-    };
+    }
 
     async joinChannel(joinChannel: JoinChannelDto) {
         try {
@@ -155,53 +161,214 @@ export class ChatService {
         }
     }
 
-    async leaveChannel(leaveChannel: LeaveChannelDto) {
+    async leaveChannel(leaveChannel: EditChannelLeaveDto) {
         try {
             const channel = await this.prisma.channels.findUnique({
                 where: {
-                    id: leaveChannel.idChannel,
+                    id: leaveChannel.id,
                 },
             });
+
+            if (channel.idUsers.length < 2) {
+                const updatedChannel = await this.prisma.channels.delete({
+                    where: {
+                        id: leaveChannel.id,
+                    },
+                });
+                return updatedChannel;
+            }
+
+            if (channel.idAdmin.length < 2) {
+                const updatedChannel = await this.prisma.channels.update({
+                    where: {
+                        id: leaveChannel.id,
+                    },
+                    data: {
+                        idAdmin: {
+                            push: channel.idUsers[0],
+                        },
+                    },
+                });
+            }
+
+            const updatedChannel = await this.prisma.channels.update({
+                where: {
+                    id: leaveChannel.id,
+                },
+                data: {
+                    idAdmin: {
+                        set: channel.idAdmin.filter(
+                            (id) => id !== leaveChannel.idRequester,
+                        ),
+                    },
+                    idUsers: {
+                        set: channel.idUsers.filter(
+                            (id) => id !== leaveChannel.idRequester,
+                        ),
+                    },
+                },
+            });
+
+            const updatedChannelDto: EditChannelDto = {
+                id: updatedChannel.id,
+                idAdmin: updatedChannel.idAdmin,
+                idUser: updatedChannel.idUsers,
+                isPublic: updatedChannel.isPublic,
+                name: updatedChannel.name,
+            };
+
+            return updatedChannelDto;
         } catch (error) {
             throw new NotFoundException('Channel not found');
         }
     }
 
-    async editChannel(idUser: number, editChannel: EditChannelDto) {
+    async editPassword(editPassword: EditPasswordDto) {
         try {
-            const channel = await this.prisma.channels.findUnique({
+            const channel = await this.prisma.channels.findFirst({
+                where: {
+                    id: editPassword.id,
+                },
+            });
+
+            console.log(channel.idAdmin);
+            if (!channel.idAdmin.includes(editPassword.idRequester))
+                throw new Error('Not authorized');
+
+            const updatedChannel = await this.prisma.channels.update({
+                where: {
+                    id: editPassword.id,
+                },
+                data: {
+                    password: editPassword.password,
+                },
+            });
+
+            const updatedChannelDto: EditChannelDto = {
+                id: updatedChannel.id,
+                idAdmin: updatedChannel.idAdmin,
+                idUser: updatedChannel.idUsers,
+                isPublic: updatedChannel.isPublic,
+                name: updatedChannel.name,
+            };
+            return updatedChannelDto;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async banUser(editChannel: EditChannelUserDto): Promise<EditChannelDto> {
+        try {
+            const channel = await this.prisma.channels.findFirst({
                 where: {
                     id: editChannel.id,
                 },
             });
+
+            if (!channel.idAdmin.includes(editChannel.idRequester))
+                throw new Error('Not authorized');
+
+            if (channel.idAdmin.includes(editChannel.idUser))
+                throw new Error('Not authorized');
+
+            const updatedChannel = await this.prisma.channels.update({
+                where: {
+                    id: editChannel.id,
+                },
+                data: {
+                    idUsers: {
+                        set: channel.idUsers.filter(
+                            (id) => id !== editChannel.idRequester,
+                        ),
+                    },
+                },
+            });
+
+            const updatedChannelDto: EditChannelDto = {
+                id: updatedChannel.id,
+                idAdmin: updatedChannel.idAdmin,
+                idUser: updatedChannel.idUsers,
+                isPublic: updatedChannel.isPublic,
+                name: updatedChannel.name,
+            };
+            return updatedChannelDto;
         } catch (error) {
-            throw new NotFoundException('Channel not found');
+            console.log(error);
         }
+    }
 
-        if (!editChannel.idAdmin.includes(idUser))
-            throw new Error('Not authorized');
+    async editName(editChannel: EditChannelNameDto): Promise<EditChannelDto> {
+        try {
+            const channel = await this.prisma.channels.findFirst({
+                where: {
+                    id: editChannel.id,
+                },
+            });
 
-        const updatedChannel = await this.prisma.channels.update({
-            where: {
-                id: editChannel.id,
-            },
-            data: {
-                idAdmin: editChannel.idAdmin,
-                idUsers: editChannel.idUser,
-                isPublic: editChannel.isPublic,
-                name: editChannel.name,
-                password: editChannel.password, //password is optional, dont know if it resets it
-            },
-        });
+            if (!channel.idAdmin.includes(editChannel.idRequester))
+                throw new Error('Not authorized');
 
-        const updatedChannelDto: EditChannelDto = {
-            id: updatedChannel.id,
-            idAdmin: updatedChannel.idAdmin,
-            idUser: updatedChannel.idUsers,
-            isPublic: updatedChannel.isPublic,
-            name: updatedChannel.name,
-        };
-        return updatedChannelDto;
+            const updatedChannel = await this.prisma.channels.update({
+                where: {
+                    id: editChannel.id,
+                },
+                data: {
+                    name: editChannel.name,
+                },
+            });
+
+            const updatedChannelDto: EditChannelDto = {
+                id: updatedChannel.id,
+                idAdmin: updatedChannel.idAdmin,
+                idUser: updatedChannel.idUsers,
+                isPublic: updatedChannel.isPublic,
+                name: updatedChannel.name,
+            };
+            return updatedChannelDto;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async addAdmin(editChannel: EditChannelUserDto): Promise<EditChannelDto> {
+        try {
+            const channel = await this.prisma.channels.findFirst({
+                where: {
+                    id: editChannel.id,
+                },
+            });
+
+            if (!channel.idAdmin.includes(editChannel.idRequester))
+                throw new Error('Not authorized');
+
+            if (channel.idAdmin.includes(editChannel.idUser))
+                throw new Error('Already admin');
+
+            const updatedChannel = await this.prisma.channels.update({
+                where: {
+                    id: editChannel.id,
+                },
+                data: {
+                    idAdmin: {
+                        push: editChannel.idUser,
+                    },
+                    idUsers: {
+                        push: editChannel.idUser,
+                    },
+                },
+            });
+
+            const updatedChannelDto: EditChannelDto = {
+                id: updatedChannel.id,
+                idAdmin: updatedChannel.idAdmin,
+                idUser: updatedChannel.idUsers,
+                isPublic: updatedChannel.isPublic,
+                name: updatedChannel.name,
+            };
+            return updatedChannelDto;
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async getChannels(): Promise<ChannelDto[]> {

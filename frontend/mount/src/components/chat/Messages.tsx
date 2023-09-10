@@ -7,6 +7,8 @@ import SettingBar from './SettingBar';
 
 export interface ChannelProps {
     id: number;
+    idAdmin: number[];
+    idUser: number[];
     name: string;
     isPublic: boolean;
 }
@@ -28,10 +30,12 @@ export default function Messages({
     messages,
     isSettingVisible,
     currentChannel,
+    handleClose,
 }: {
     messages: MessageProps[];
     isSettingVisible: boolean;
     currentChannel: ChannelProps | null;
+    handleClose: () => void;
 }) {
     const { user } = useUserContext();
 
@@ -69,7 +73,11 @@ export default function Messages({
             {' '}
             {/* Parent container with relative positioning */}
             {/* Sidebar content */}
-            <SettingBar currentChannel={currentChannel} isSettingVisible={isSettingVisible}/>
+            <SettingBar
+                currentChannel={currentChannel}
+                isSettingVisible={isSettingVisible}
+                handleClose={handleClose}
+            />
             <div
                 id="messages"
                 className="flex-grow absolute flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip w-104 h-1/2"

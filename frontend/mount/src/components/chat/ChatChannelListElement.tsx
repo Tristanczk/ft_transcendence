@@ -28,8 +28,6 @@ export default function ChatChannelListElement({
                 withCredentials: true,
             },
         );
-        console.log('miaoo');
-        console.log(response.data);
         if (response.data === false) {
             setPasswordPrompt(true);
             chatSelector(0);    
