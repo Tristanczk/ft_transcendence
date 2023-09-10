@@ -100,7 +100,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
     }, [pickerRef, buttonRef]);
 
     return (
-        <div className="px-4 pt-4 mb-2 sm:mb-0 flex items-center pb-4 rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-xl">
+        <div className="px-4 pt-4 mb-2 sm:mb-0 flex items-center pb-4 rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-2xl mt-1">
             <input
                 ref={inputRef}
                 onChange={onChange}
@@ -151,7 +151,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                     >
                         <EmojiPicker
                             height={370}
-                            width={282}
+                            width={320}
                             onEmojiClick={handleEmojiSelect}
                             emojiVersion="5.0"
                             skinTonesDisabled={true}

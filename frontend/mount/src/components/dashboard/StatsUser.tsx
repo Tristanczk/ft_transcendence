@@ -12,7 +12,7 @@ interface PresentationUserProps {
 function StatsUser({ user }: PresentationUserProps) {
     return (
         <>
-            <h1 className="text-5xl dark:text-white font-semibold p-5 text-center">Games</h1>
+            <h1 className="text-4xl dark:text-white font-semibold p-4 text-center">Games</h1>
             <GlobalStats user={user} />
             <ShowAchievements user={user} />
             <HistoryElo user={user} />

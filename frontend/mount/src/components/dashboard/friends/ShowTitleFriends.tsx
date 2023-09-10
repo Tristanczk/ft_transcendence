@@ -12,7 +12,7 @@ function ShowTitleFriends({ friendsList, idUser }: Props) {
     return (
         <>
             <div className='text-center'>
-                <h1 className="text-5xl dark:text-white font-semibold p-5">
+                <h1 className="text-4xl dark:text-white font-semibold p-4">
                     Friends
                 </h1>
                 <small className="ml-5 text-sm font-semibold text-gray-500 dark:text-gray-400">
