@@ -46,10 +46,6 @@ export default function ChatChannelList({
         setBarHidden(false); // resetting barHidden on channel change
     }, [channel]);
 
-    useEffect(() => {
-        setBarHidden(false); // resetting barHidden on channel change
-    }, [channel]);
-
     const createChannel = async (input: string) => {
         console.log('creating channel');
         try {
@@ -76,9 +72,11 @@ export default function ChatChannelList({
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
+            if (input.length < 2) return;
             e.preventDefault();
             createChannel(input);
             setShowInput(false);
+            setChannel(0);
             setInput('');
             setPasswordPrompt(false);
         }

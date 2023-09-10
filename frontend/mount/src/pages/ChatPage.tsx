@@ -97,7 +97,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
         setCurrentChannel(response.data);
     };
 
-    const settingsEnabler = () => {
+    const settingEnabler = () => {
         setVisibleSettings(!visibleSettings);
     };
 
@@ -178,7 +178,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                                 channel={channel}
                                 currentChannel={currentChannel}
                                 handleClose={handleClose}
-                                onClick={settingsEnabler}
+                                onClick={settingEnabler}
                             />
                         )}
                         <Messages
