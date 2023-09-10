@@ -12,7 +12,8 @@ module.exports = {
                 '144': '36rem',
             },
             fontFamily: {
-                'sans': ['"Press Start 2P"', 'ui-sans-serif']
+                'pressStart': ['"Press Start 2P"', 'ui-sans-serif'],
+                'josefin': ['"Josefin Sans"', 'ui-sans-serif']
             },
         },
     },
