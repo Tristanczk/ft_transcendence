@@ -59,6 +59,16 @@ function Friends({ currUser }: FriendsProps) {
                     { withCredentials: true },
                 );
                 // console.log(response.data);
+
+                await authAxios.post(
+                    '/chat/createChannel',
+                    {
+                        idUser: [user?.id, idSelected],
+                        name: 'Private message',
+                        isPublic: false,
+                    },
+                    { withCredentials: true },
+                );
             } catch (error) {
                 console.error(error);
             }

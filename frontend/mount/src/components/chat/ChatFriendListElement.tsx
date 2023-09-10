@@ -25,24 +25,8 @@ export default function ChatFriendListElement({
                 withCredentials: true,
             },
         );
-        console.log('fetching channel response', response);
-        if (response.data.length === 0) {
-            if (user) {
-                console.log('creating channel', user?.id, IdFriend);
-                const response = await authAxios.post(
-                    '/chat/createChannel',
-                    {
-                        idUser: [user?.id, IdFriend],
-                        name: 'Private message',
-                        isPublic: false,
-                    },
-                    { withCredentials: true },
-                );
-                chatSelector(response.data.id);
-            }
-        } else {
-            chatSelector(response.data.id);
-        }
+        console.log('fetching channel response', response); 
+        chatSelector(response.data.id);
         setCurrentFriend(friend);
     };
 

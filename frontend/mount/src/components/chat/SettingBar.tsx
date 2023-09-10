@@ -7,12 +7,17 @@ export default function SettingBar({
     currentChannel: ChannelProps | null;
     isSettingVisible: boolean;
 }) {
-    const editPassword = async () => {};
+    const editPassword = async () => {
+        
+    };
+
     const banUser = async () => {};
     const exitChannel = async () => {};
     const editName = async () => {};
     const makeAdmin = async () => {};
     const muteUser = async () => {};
+
+    if (!currentChannel) return null;
 
     return (
         <div

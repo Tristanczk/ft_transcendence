@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import ImageFriend from '../dashboard/friends/ImgFriend';
 import { ChannelProps } from './Messages';
 import { UserSimplified } from '../../types';
+import { useAuthAxios } from '../../context/AuthAxiosContext';
+import { useState } from 'react';
 
 export default function ChatChannelListElement({
     channel,
@@ -12,6 +14,30 @@ export default function ChatChannelListElement({
     chatSelector: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
 }) {
+    const authAxios = useAuthAxios();
+    const [passwordPrompt, setPasswordPrompt] = useState(false);
+
+    const isChannelProtected = async (channel: ChannelProps) => {
+        const response = await authAxios.get(
+            `http://localhost:3333/chat/isChannelOpen`,
+            {
+                params: {
+                    idChannel: channel.id,
+                },
+                withCredentials: true,
+            },
+        );
+        console.log('miaoo');
+        console.log(response.data);
+        if (response.data) {
+            setPasswordPrompt(true);
+            chatSelector(0);
+        } else {
+            setCurrentFriend(null);
+            chatSelector(channel.id);
+        }
+    };
+
     return (
         <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
             <div className="flex items-center">
@@ -21,10 +47,10 @@ export default function ChatChannelListElement({
                     </div>
                 </div>
             </div>
+            {passwordPrompt && <h1>Batard</h1>}
             <button
                 onClick={() => {
-                    setCurrentFriend(null);
-                    chatSelector(channel.id);
+                    isChannelProtected(channel);
                 }}
             >
                 {' '}

@@ -104,7 +104,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
         fetchChannels();
         if (channel) fetchMessages();
         fetchChannel();
-    }, [channel, socket, currentFriend]);
+    }, [channel, socket, currentFriend, channelListSelected]);
 
     socket.on('message', (message: MessageProps) => {
         console.log('received message', message);
