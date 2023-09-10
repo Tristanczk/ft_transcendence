@@ -51,18 +51,14 @@ export class ChatService {
                 },
             });
 
-            console.log("getChannel service " + channel);     
-
             const channelDto: ChannelDto = {
                 id: channel.id,
                 name: channel.name,
                 isPublic: channel.isPublic,
             };
 
-            console.log(channelDto);
             return (channelDto);
         } catch (error) {
-            console.log('ca a pas marche');
         }
         return null;
     };
@@ -97,6 +93,7 @@ export class ChatService {
     }
 
     async isChannelOpen(idChannel: number): Promise<boolean> {
+        console.log("isChannelOpen service " + idChannel);
         try {
             const channel = await this.prisma.channels.findUnique({
                 where: {
@@ -104,7 +101,9 @@ export class ChatService {
                 },
             });
 
-            if (channel.password) return true;
+            console.log("isChannelOpen service ");
+            console.log(channel);
+            if (channel.password.length < 2) return true;
         } catch (error) {
         }
         return false;

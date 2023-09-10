@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
 import { UserSimplified } from '../../types';
@@ -17,6 +18,7 @@ export default function ChatChannelList({
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
+    const [passwordPrompt, setPasswordPrompt] = useState(false);
 
     const createChannel = async () => {
         console.log('creating channel');
@@ -25,9 +27,9 @@ export default function ChatChannelList({
                 'http://localhost:3333/chat/createChannel',
                 {
                     idUser: [user?.id],
-                    name: 'Your Channel Name',
+                    name: 'Les BG',
                     isPublic: true,
-                    password: 'YourPassword',
+                    password: '',
                 },
                 { withCredentials: true },
             );
@@ -36,6 +38,10 @@ export default function ChatChannelList({
             console.error(error);
         }
     };
+
+    useEffect(() => {
+        setPasswordPrompt(false);
+    }, [channel]);
 
     return (
         <div
@@ -54,6 +60,7 @@ export default function ChatChannelList({
                             channel={channel}
                             chatSelector={chatSelector}
                             setCurrentFriend={setCurrentFriend}
+                            setPasswordPrompt={setPasswordPrompt}
                         />
                     ))}
                 <button className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
@@ -66,6 +73,7 @@ export default function ChatChannelList({
                                 >
                                     Create a channel
                                 </span>
+                                {passwordPrompt && <h1>Batard</h1>}
                             </div>
                         </div>
                     </div>

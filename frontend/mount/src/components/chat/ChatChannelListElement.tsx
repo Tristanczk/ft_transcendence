@@ -9,15 +9,16 @@ export default function ChatChannelListElement({
     channel,
     chatSelector,
     setCurrentFriend,
+    setPasswordPrompt
 }: {
     channel: ChannelProps;
     chatSelector: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
+    setPasswordPrompt: (passwordPrompt: boolean) => void;
 }) {
     const authAxios = useAuthAxios();
-    const [passwordPrompt, setPasswordPrompt] = useState(false);
 
-    const isChannelProtected = async (channel: ChannelProps) => {
+    const isChannelOpen = async (channel: ChannelProps) => {
         const response = await authAxios.get(
             `http://localhost:3333/chat/isChannelOpen`,
             {
@@ -29,9 +30,9 @@ export default function ChatChannelListElement({
         );
         console.log('miaoo');
         console.log(response.data);
-        if (response.data) {
+        if (response.data === false) {
             setPasswordPrompt(true);
-            chatSelector(0);
+            chatSelector(0);    
         } else {
             setCurrentFriend(null);
             chatSelector(channel.id);
@@ -47,10 +48,9 @@ export default function ChatChannelListElement({
                     </div>
                 </div>
             </div>
-            {passwordPrompt && <h1>Batard</h1>}
             <button
                 onClick={() => {
-                    isChannelProtected(channel);
+                    isChannelOpen(channel);
                 }}
             >
                 {' '}

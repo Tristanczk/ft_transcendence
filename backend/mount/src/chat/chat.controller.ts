@@ -54,7 +54,7 @@ export class ChatController {
     }
 
 	@Get('isChannelOpen')
-	async isChannelOpen(@Body() getChannel: ChannelIdDto): Promise<boolean> {
+	async isChannelOpen(@Query() getChannel: ChannelIdDto): Promise<boolean> {
 		return this.chatService.isChannelOpen(getChannel.idChannel);
 	}
 
