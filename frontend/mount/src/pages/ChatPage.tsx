@@ -40,7 +40,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
 
     useEffect(() => {
         setVisibleSettings(false);
-    }, [isChatVisible, currentFriend]);
+    }, [isChatVisible, currentFriend, currentChannel]);
 
     const handleClose = () => {
         setIsVisible(false); // Start the fade-out animation

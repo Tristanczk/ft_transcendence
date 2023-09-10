@@ -68,8 +68,7 @@ export default function ChatChannelList({
         if (e.key === 'Enter') {
             e.preventDefault();
             createChannel(input);
-
-            // Clear the input field
+            setShowInput(false);
             setInput('');
             setPasswordPrompt(false);
         }
