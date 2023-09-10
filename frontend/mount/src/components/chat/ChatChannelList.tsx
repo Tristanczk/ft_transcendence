@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
-import { UserSimplified } from '../../types';
 import ChatChannelListElement from './ChatChannelListElement';
 import { ChannelProps } from './Messages';
+import { UserSimplified } from '../../types';
 
 export default function ChatChannelList({
     channels,
@@ -18,11 +18,11 @@ export default function ChatChannelList({
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
-    const [passwordPrompt, setPasswordPrompt] = useState(false);
     const [showInput, setShowInput] = useState(false);
+    const [passwordPrompt, setPasswordPrompt] = useState(false);
     const blurTimeout = useRef<any>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    
+    const [barHidden, setBarHidden] = useState(false);
 
     const handleBlur = () => {
         blurTimeout.current = setTimeout(() => {
@@ -32,6 +32,7 @@ export default function ChatChannelList({
 
     const handleFocus = () => {
         if (blurTimeout.current !== null) clearTimeout(blurTimeout.current);
+        setBarHidden(false);
     };
 
     const handleButtonClick = (e: React.MouseEvent) => {
@@ -39,6 +40,10 @@ export default function ChatChannelList({
         setShowInput(true);
         inputRef.current?.focus();
     };
+
+    useEffect(() => {
+        setBarHidden(false); // resetting barHidden on channel change
+    }, [channel]);
 
     const createChannel = async () => {
         console.log('creating channel');
@@ -59,19 +64,16 @@ export default function ChatChannelList({
         }
     };
 
-    useEffect(() => {
-        setPasswordPrompt(false);
-    }, [channel]);
-
     return (
         <>
             <div
                 id="list"
                 className={`flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip shadow-xl transition-all duration-500 ${
-                    channel ? 'rounded-b-3xl' : 'rounded-none'}`}
+                    channel ? 'rounded-b-3xl' : 'rounded-none'
+                }`}
             >
                 <div
-                    className={`flex flex-col overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip transition-all duration-500 ${
+                    className={`flex flex-col z-10 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip transition-all duration-500 ${
                         channel ? 'h-36' : 'h-96'
                     }`}
                 >
@@ -88,7 +90,13 @@ export default function ChatChannelList({
                 </div>
             </div>
 
-            <div className={`px-4 py-2 mb-2 sm:mb-0 flex items-center justify-between rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md relative duration-500 ${!channel ? 'transform translate-y-0 opacity-100' : 'transform -translate-y-full opacity-0'}`}>
+            <div
+                className={`px-4 py-2 mb-2 sm:mb-0 flex items-center justify-between rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md relative duration-500 ${
+                    !channel && !barHidden
+                        ? 'transform translate-y-0 opacity-100'
+                        : 'transform -translate-y-full opacity-0'
+                }`}
+            >
                 <div
                     className={`flex items-center space-x-2 ${
                         showInput ? 'opacity-0 w-0' : 'opacity-100 w-auto'
