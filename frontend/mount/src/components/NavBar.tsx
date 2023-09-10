@@ -53,6 +53,8 @@ const NavLinks: React.FC<{
     current: string;
     toggleChatVisibility: () => void;
 }> = ({ current, toggleChatVisibility }) => {
+    const { user } = useUserContext();
+
     return (
         <div className="items-center justify-between flex w-auto">
             <ul className="text-xl sm:text-base flex font-medium p-0 rounded-lg flex-row space-x-2 sm:space-x-8 mt-0 border-0 bg-gray-900 border-gray-700">
@@ -74,12 +76,16 @@ const NavLinks: React.FC<{
                     link="/leaderboard"
                     icon="/pie-chart.svg"
                 />
-                <li>
-                    <button
-                        className="block py-2 pl-3 pr-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
-                        onClick={toggleChatVisibility}
-                    >Chat</button>
-                </li>
+                {user && (
+                    <li>
+                        <button
+                            className="block py-2 pl-3 pr-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
+                            onClick={toggleChatVisibility}
+                        >
+                            Chat
+                        </button>
+                    </li>
+                )}
             </ul>
         </div>
     );

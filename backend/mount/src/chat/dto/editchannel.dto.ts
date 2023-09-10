@@ -6,3 +6,26 @@ export interface EditChannelDto {
 	name: string;
 	password?: string;
 }
+
+export interface EditPasswordDto {
+	id: number;
+	idRequester: number;
+	password: string;
+}
+
+export interface EditChannelUserDto {
+	id: number;
+	idRequester: number;
+	idUser: number;
+}
+
+export interface EditChannelLeaveDto {
+	id: number;
+	idRequester: number;
+}
+
+export interface EditChannelNameDto {
+	id: number;
+	idRequester: number;
+	name: string;
+}
