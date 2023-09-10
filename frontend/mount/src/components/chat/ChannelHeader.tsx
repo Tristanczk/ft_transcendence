@@ -9,11 +9,13 @@ export default function ChannelHeader({
     channel,
     handleClose,
     currentChannel,
+    onClick,
 }: {
     channel: number;
     handleClose: () => void;
     currentChannel: ChannelProps | null;
-}) {    
+    onClick: () => void;
+}) {
     if (channel === 0 || !currentChannel) return <div></div>;
 
     return (
@@ -21,8 +23,7 @@ export default function ChannelHeader({
             <div className="relative flex items-center space-x-4">
                 <div className="relative">
                     <span className="absolute text-green-500 right-0 bottom-0">
-                        <svg width="20" height="20">
-                        </svg>
+                        <svg width="20" height="20"></svg>
                     </span>
                 </div>
                 <div className="flex flex-col leading-tight">
@@ -35,22 +36,20 @@ export default function ChannelHeader({
             </div>
             <div className="flex items-center space-x-2">
                 <button
+                onClick={onClick}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
                 >
                     <svg
+                        className="w-6 h-6 rotate-[90deg]"
                         xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        className="h-6 w-6 text-slate-500 hover:text-white"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
                     >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                        ></path>
+                        {' '}
+                        <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
                     </svg>
                 </button>
                 <button
