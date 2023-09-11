@@ -291,7 +291,17 @@ const drawScore = (p5: P5, scoreLeft: number, scoreRight: number) => {
     p5.textSize(textSize);
     p5.textFont('monospace');
     p5.textAlign(p5.CENTER, p5.CENTER);
-    p5.text(`${scoreLeft} - ${scoreRight}`, p5.width / 2, textSize * 1.25);
+    const scoreLength = Math.max(
+        scoreLeft.toString().length,
+        scoreRight.toString().length,
+    );
+    p5.text(
+        `${scoreLeft.toString().padStart(scoreLength, ' ')} - ${scoreRight
+            .toString()
+            .padEnd(scoreLength, ' ')}`,
+        p5.width / 2,
+        textSize * 1.25,
+    );
 };
 
 const movePaddle = (p5: P5, paddle: number, downKey: number, upKey: number) => {
@@ -306,11 +316,11 @@ const movePaddle = (p5: P5, paddle: number, downKey: number, upKey: number) => {
 };
 
 const ClassicMayhemGame = ({
-    obstacles,
+    mayhemMap,
     balls,
     hasNet,
 }: {
-    obstacles: MayhemMap;
+    mayhemMap: MayhemMap;
     balls: Ball[];
     hasNet: boolean;
 }) => {
@@ -335,7 +345,7 @@ const ClassicMayhemGame = ({
             ball.hitBar();
             [scoreLeft, scoreRight] = ball.checkScore(scoreLeft, scoreRight);
             ball.hitPaddles(paddleLeft, paddleRight);
-            ball.hitObstacles(obstacles);
+            ball.hitObstacles(mayhemMap);
         }
 
         p5.background(15);
@@ -343,7 +353,7 @@ const ClassicMayhemGame = ({
         drawBar(p5, 1 - LINE_MARGIN - LINE_WIDTH);
         drawPaddle(p5, true, paddleLeft);
         drawPaddle(p5, false, paddleRight);
-        drawObstacles(p5, obstacles);
+        drawObstacles(p5, mayhemMap);
         for (const ball of balls) ball.draw(p5);
         if (hasNet) drawNet(p5);
         drawScore(p5, scoreLeft, scoreRight);
@@ -387,7 +397,7 @@ const LocalClassicMayhem = ({
         }}
     >
         <ClassicMayhemGame
-            obstacles={mayhemMap}
+            mayhemMap={mayhemMap}
             balls={balls}
             hasNet={hasNet}
         />
