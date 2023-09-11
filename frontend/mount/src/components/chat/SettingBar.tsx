@@ -1,6 +1,7 @@
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
 import { ChannelProps } from './Messages';
+import { useState } from 'react';
 
 export default function SettingBar({
     currentChannel,
@@ -12,7 +13,19 @@ export default function SettingBar({
     isSettingVisible: boolean;
 }) {
     const authAxios = useAuthAxios();
-    const {user} = useUserContext();
+    const { user } = useUserContext();
+
+    const [activeInput, setActiveInput] = useState<'password' | 'name' | null>(
+        null,
+    );
+
+    const handlePasswordClick = () => {
+        setActiveInput('password');
+    };
+
+    const handleNameClick = () => {
+        setActiveInput('name');
+    };
 
     const editPassword = async () => {
         const response = await authAxios.patch(
@@ -25,7 +38,6 @@ export default function SettingBar({
             { withCredentials: true },
         );
         console.log(response.data);
-
     };
 
     const banUser = async () => {
@@ -52,7 +64,7 @@ export default function SettingBar({
         );
         handleClose();
     };
-    
+
     const editName = async () => {
         const response = await authAxios.patch(
             '/chat/editName',
@@ -84,12 +96,14 @@ export default function SettingBar({
         <div
             className={`relative flex-col items-center space-y-4 bg-gray-200 w-1/6 flex z-0 object-bottom object-fill 
     ${isSettingVisible ? 'right-20' : 'right-0'} 
-    transition-all duration-500 ease-in-out rounded-3xl py-4`}
+    transition-all duration-500 ease-in-out rounded-3xl py-5`}
         >
             {' '}
             <button
                 name="Password"
-                onClick={() => {editPassword()}}
+                onClick={() => {
+                    handlePasswordClick();
+                }}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500"
             >
@@ -113,9 +127,19 @@ export default function SettingBar({
                     <line x1="15" y1="8" x2="17" y2="10" />
                 </svg>
             </button>
+            {activeInput === 'password' && (
+                <input
+                    type="password"
+                    className="absolute top-5 transform text-slate-500 -translate-y-1/2 left-full ml-4 p-1 border border-gray-300 bg-white rounded-md z-40 transition-all ease-in-out duration-500"
+                    placeholder="Enter password"
+                    //... more properties or event listeners
+                />
+            )}
             <button
                 name="Ban"
-                onClick={() => {banUser()}}
+                onClick={() => {
+                    banUser();
+                }}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
             >
@@ -140,7 +164,9 @@ export default function SettingBar({
             </button>
             <button
                 name="Exit"
-                onClick={() => {leaveChannel()}}
+                onClick={() => {
+                    leaveChannel();
+                }}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
             >
@@ -162,7 +188,9 @@ export default function SettingBar({
             </button>
             <button
                 name="Name"
-                onClick={() => {editName()}}
+                onClick={() => {
+                    handleNameClick();
+                }}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
             >
@@ -182,9 +210,19 @@ export default function SettingBar({
                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                 </svg>
             </button>
+            {activeInput === 'name' && (
+                <input
+                    type="text"
+                    className="absolute top-48 transform text-slate-500 -translate-y-1/2 left-full ml-4 p-1 border border-gray-300 bg-white rounded-md z-40 transition-all ease-in-out duration-500"
+                    placeholder="Edit channel name"
+                    //... more properties or event listeners
+                />
+            )}
             <button
                 name="Admin"
-                onClick={() => {addAdmin()}}
+                onClick={() => {
+                    addAdmin();
+                }}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
             >

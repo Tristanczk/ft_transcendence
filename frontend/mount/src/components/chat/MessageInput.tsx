@@ -99,7 +99,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
     }, [pickerRef, buttonRef]);
 
     return (
-        <div className="px-4 pt-4 mb-2 sm:mb-0 flex items-center pb-4 rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md mt-1">
+        <div className="px-4 pt-4 mb-2 sm:mb-0 flex items-center pb-4 rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md">
             <input
                 ref={inputRef}
                 onChange={onChange}

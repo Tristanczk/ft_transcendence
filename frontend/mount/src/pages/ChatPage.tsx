@@ -34,6 +34,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const [visibleSettings, setVisibleSettings] = useState(false);
     const socket = useContext(WebsocketContext);
     const [channelListSelected, setChannelListSelected] = useState<number>(-1);
+    const [zIndexClass, setZIndexClass] = useState('z-0');
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
     );
@@ -46,6 +47,21 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
         setIsVisible(false); // Start the fade-out animation
         setTimeout(() => setChannel(0), 500); // Wait for the animation to complete before setting state
     };
+
+
+    useEffect(() => {
+        if (visibleSettings) {
+            // If settings are becoming visible, we delay the change of z-index.
+            const timer = setTimeout(() => {
+                setZIndexClass('z-auto');
+            }, 500);
+            
+            return () => clearTimeout(timer); // Cleanup the timer if the component unmounts or if visibleSettings changes again before the timer fires.
+        } else {
+            // If settings are hiding, immediately reset z-index.
+            setZIndexClass('z-0');
+        }
+    }, [visibleSettings]);
 
     const fetchFriends = async () => {
         try {
@@ -184,6 +200,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                         <Messages
                             messages={messages}
                             isSettingVisible={visibleSettings}
+                            zIndexClass={zIndexClass}
                             currentChannel={currentChannel}
                             handleClose={handleClose}
                         />

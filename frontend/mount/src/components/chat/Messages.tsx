@@ -30,11 +30,13 @@ export default function Messages({
     messages,
     isSettingVisible,
     currentChannel,
+    zIndexClass,
     handleClose,
 }: {
     messages: MessageProps[];
     isSettingVisible: boolean;
     currentChannel: ChannelProps | null;
+    zIndexClass: string;
     handleClose: () => void;
 }) {
     const { user } = useUserContext();
@@ -67,7 +69,7 @@ export default function Messages({
     }
 
     const groupedMessages = groupMessagesBySender(messages);
-
+    
     return (
         <div className="flex">
             {' '}
@@ -80,7 +82,8 @@ export default function Messages({
             />
             <div
                 id="messages"
-                className="flex-grow absolute flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip w-104 h-1/2"
+                className={`flex-grow flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip w-104 ${zIndexClass}`}
+                style={{ height: '420px', marginLeft: '-69px' }}
             >
                 {groupedMessages.map(
                     (group: MessageGroup, groupIndex: number) => {
