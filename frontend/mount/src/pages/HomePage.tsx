@@ -16,6 +16,9 @@ const joinGame = (
     setGameId: (gameId: string | undefined) => void,
     setMatchmaking: (matchmaking: boolean) => void,
 ) => {
+	// const { user } = useUserContext();
+	// let userId: number = -1;
+	// if (user) userId = user.id;
     socket.emit('joinGame', mode, (response: any) => {
         if (response.error) {
             setError(response.error);
