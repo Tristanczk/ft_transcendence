@@ -23,10 +23,10 @@ import {
 } from 'src/shared/functions';
 import {
     GameInfo,
+    DEFAULT_BATTLE_OBJECTS,
+    ClassicMayhemGameObjects,
     DEFAULT_CLASSIC_OBJECTS,
     DEFAULT_MAYHEM_OBJECTS,
-    DEFAULT_BATTLE_OBJECTS,
-    ClassicGameObjects,
 } from 'src/shared/game_info';
 import { GameMode, MAX_PLAYERS } from 'src/shared/misc';
 
@@ -52,7 +52,7 @@ class Game {
         this.addPlayer(firstPlayer);
     }
 
-    private resetClassic(objects: ClassicGameObjects) {
+    private resetClassicMayhem(objects: ClassicMayhemGameObjects) {
         objects.ballPosX = 0.5;
         objects.ballPosY = 0.5;
         objects.ballVelX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
@@ -91,7 +91,11 @@ class Game {
             this.info.state = 'playing';
             switch (this.info.mode) {
                 case 'classic':
-                    this.resetClassic(this.info.objects);
+                case 'mayhem':
+                    this.resetClassicMayhem(this.info.objects);
+                    break;
+                case 'battle':
+                    // this.resetBattle(this.info.objects);
                     break;
             }
         }
@@ -99,7 +103,7 @@ class Game {
     }
 
     private hitPaddle(
-        objects: ClassicGameObjects,
+        objects: ClassicMayhemGameObjects,
         playerIdx: 0 | 1,
     ): number | null {
         const x = playerIdx === 0 ? objects.ballPosX : 1 - objects.ballPosX;
@@ -116,7 +120,10 @@ class Game {
         return null;
     }
 
-    private updateClassic(objects: ClassicGameObjects, deltaTime: number) {
+    private updateClassicMayhem(
+        objects: ClassicMayhemGameObjects,
+        deltaTime: number,
+    ) {
         for (const player of this.info.players) {
             if (player) {
                 const paddleSpeed = PADDLE_SPEED * deltaTime;
@@ -138,10 +145,10 @@ class Game {
         }
         if (objects.ballPosX >= 1 + BALL_RADIUS) {
             ++this.info.players[0].score;
-            this.resetClassic(objects);
+            this.resetClassicMayhem(objects);
         } else if (objects.ballPosX <= -BALL_RADIUS) {
             ++this.info.players[1].score;
-            this.resetClassic(objects);
+            this.resetClassicMayhem(objects);
         }
         if (
             (this.info.players[0].score >= WINNING_SCORE ||
@@ -176,7 +183,11 @@ class Game {
         if (this.info.timeRemaining > 0) return;
         switch (this.info.mode) {
             case 'classic':
-                this.updateClassic(this.info.objects, deltaTime);
+            case 'mayhem':
+                this.updateClassicMayhem(this.info.objects, deltaTime);
+                break;
+            case 'battle':
+                // this.updateBattle(this.info.objects, deltaTime);
                 break;
         }
     }

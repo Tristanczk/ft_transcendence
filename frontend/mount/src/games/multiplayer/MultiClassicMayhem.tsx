@@ -129,7 +129,7 @@ const drawTimeRemaining = (
     );
 };
 
-const MultiClassic = ({
+const MultiClassicMayhem = ({
     gameObjects,
     windowWidth,
     windowHeight,
@@ -180,4 +180,4 @@ const MultiClassic = ({
     );
 };
 
-export default MultiClassic;
+export default MultiClassicMayhem;

@@ -5,7 +5,7 @@ import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode } from '../shared/misc';
 
-const activateMatchmaking = true;
+const activateMatchmaking = false;
 
 const joinGame = (
     mode: GameMode,
@@ -219,6 +219,7 @@ const HomePage: React.FC<{
         if (socket) {
             const startGame = (gameId: string) => {
                 navigate(`/game/${gameId}`);
+                console.log(gameId);
             };
 
             socket.on('startGame', startGame);
@@ -234,7 +235,7 @@ const HomePage: React.FC<{
             className="flex flex-col justify-center items-center bg-rose-600 space-y-4"
             style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
         >
-            {matchmaking ? (
+            {false ? ( // TODO matchmaking ?
                 <LoadingPage socket={socket} setMatchmaking={setMatchmaking} />
             ) : (
                 <GameModePage
