@@ -19,7 +19,9 @@ import { AuthAxiosProvider } from './context/AuthAxiosContext';
 import AchievementPage from './pages/AchievementsPage';
 import GameHistoryPage from './pages/GameHistoryPage';
 import GamePage from './pages/GamePage';
-import MayhemPage from './pages/MayhemPage';
+import LocalBattleRoyale from './games/local/LocalBattleRoyale';
+import LocalClassic from './games/local/LocalClassic';
+import LocalMayhem from './games/local/LocalMayhem';
 
 const App: React.FC = () => {
     const [gameId, setGameId] = useState<string | undefined>(undefined);
@@ -41,7 +43,18 @@ const App: React.FC = () => {
                                     />
                                 }
                             />
-                            <Route path="/mayhem" Component={MayhemPage} />
+                            <Route
+                                path="/local/battle"
+                                Component={LocalBattleRoyale}
+                            />
+                            <Route
+                                path="/local/classic"
+                                Component={LocalClassic}
+                            />
+                            <Route
+                                path="/local/mayhem"
+                                Component={LocalMayhem}
+                            />
                             <Route path="/game/:gameId" Component={GamePage} />
                             <Route
                                 path="/dashboard"

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../constants';
-import { BattleGameObjects, Players } from '../shared/game_info';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
+import { BattleGameObjects, Players } from '../../shared/game_info';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
@@ -19,7 +19,7 @@ const drawText = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
     ctx.fillText('COMING SOON', canvas.width / 2, canvas.height / 2);
 };
 
-const BattleGame = ({
+const MultiBattleRoyale = ({
     gameObjects,
     windowWidth,
     windowHeight,
@@ -55,4 +55,4 @@ const BattleGame = ({
     );
 };
 
-export default BattleGame;
+export default MultiBattleRoyale;

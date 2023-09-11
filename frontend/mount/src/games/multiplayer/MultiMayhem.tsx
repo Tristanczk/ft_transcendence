@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../constants';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
 import {
     ASPECT_RATIO,
     BALL_SIZE,
@@ -8,8 +8,8 @@ import {
     PADDLE_HEIGHT,
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
-} from '../shared/classic_mayhem';
-import { MayhemGameObjects, Players } from '../shared/game_info';
+} from '../../shared/classic_mayhem';
+import { MayhemGameObjects, Players } from '../../shared/game_info';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
@@ -101,7 +101,7 @@ const drawScore = (
     );
 };
 
-const MayhemGame = ({
+const MultiMayhem = ({
     gameObjects,
     windowWidth,
     windowHeight,
@@ -146,4 +146,4 @@ const MayhemGame = ({
     );
 };
 
-export default MayhemGame;
+export default MultiMayhem;

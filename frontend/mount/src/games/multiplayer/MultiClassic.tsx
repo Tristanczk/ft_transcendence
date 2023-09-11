@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../constants';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
 import {
     ASPECT_RATIO,
     BALL_SIZE,
@@ -8,8 +8,8 @@ import {
     PADDLE_HEIGHT,
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
-} from '../shared/classic_mayhem';
-import { ClassicGameObjects, Players } from '../shared/game_info';
+} from '../../shared/classic_mayhem';
+import { ClassicGameObjects, Players } from '../../shared/game_info';
 
 const BACKGROUND_COLOR = '#0f0f0f';
 
@@ -129,7 +129,7 @@ const drawTimeRemaining = (
     );
 };
 
-const ClassicGame = ({
+const MultiClassic = ({
     gameObjects,
     windowWidth,
     windowHeight,
@@ -180,4 +180,4 @@ const ClassicGame = ({
     );
 };
 
-export default ClassicGame;
+export default MultiClassic;
