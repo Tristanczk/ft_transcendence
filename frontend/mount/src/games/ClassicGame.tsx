@@ -142,7 +142,6 @@ const ClassicGame = ({
     players: Players;
     timeRemaining: number;
 }) => {
-    console.log(timeRemaining);
     const { ballPosX, ballPosY } = gameObjects;
     const arenaHeight = Math.min(
         (windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
