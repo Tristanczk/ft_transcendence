@@ -39,6 +39,7 @@ import {
     DEFAULT_MAYHEM_OBJECTS,
     GameInfo,
 } from 'src/shared/game_info';
+import { clamp, remap } from 'src/shared/functions';
 
 const ID_SIZE = 7;
 const ID_BASE = 36;
@@ -280,17 +281,6 @@ export class GatewayService implements OnModuleInit {
     }
 }
 
-const clamp = (x: number, min: number, max: number) =>
-    x < min ? min : x > max ? max : x;
-
-const remap = (
-    x: number,
-    inMin: number,
-    inMax: number,
-    outMin: number,
-    outMax: number,
-) => ((x - inMin) / (inMax - inMin)) * (outMax - outMin) + outMin;
-
 class Game {
     id: string;
     timeStarted: number;
@@ -438,9 +428,7 @@ class Game {
         const deltaTime = now - this.lastUpdate;
         this.lastUpdate = now;
         this.info.timeRemaining = Math.max(0, 3000 - (now - this.timeStarted));
-        if (this.info.timeRemaining > 0) {
-            return;
-        }
+        if (this.info.timeRemaining > 0) return;
         switch (this.info.mode) {
             case 'classic':
                 this.updateClassic(this.info.objects, deltaTime);
