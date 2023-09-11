@@ -166,7 +166,6 @@ export class GatewayService implements OnModuleInit {
                 this.server
                     .to(game.info.players[0].id)
                     .emit('startGame', game.id);
-                game.timeStarted = performance.now();
                 return { gameId: game.id, status: 'joined' };
             }
         }

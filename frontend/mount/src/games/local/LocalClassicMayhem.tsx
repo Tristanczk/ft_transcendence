@@ -28,7 +28,7 @@ import {
     MAYHEM_GRID_HALF_WIDTH,
     MayhemCell,
     MayhemMap,
-} from './mayhem_maps';
+} from '../../shared/mayhem_maps';
 import {
     clamp,
     randomChoice,

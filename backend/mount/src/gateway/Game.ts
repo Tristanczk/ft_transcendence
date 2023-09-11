@@ -28,6 +28,7 @@ import {
     DEFAULT_CLASSIC_OBJECTS,
     DEFAULT_MAYHEM_OBJECTS,
 } from 'src/shared/game_info';
+import { maps } from 'src/shared/mayhem_maps';
 import { GameMode, MAX_PLAYERS } from 'src/shared/misc';
 
 class Game {
@@ -53,11 +54,16 @@ class Game {
     }
 
     private resetClassicMayhem(objects: ClassicMayhemGameObjects) {
-        objects.ballPosX = 0.5;
-        objects.ballPosY = 0.5;
-        objects.ballVelX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
-        objects.ballVelY =
-            randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
+        for (const ball of objects.balls) {
+            ball.posX = 0.5;
+            ball.posY = 0.5;
+            ball.velX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
+            ball.velY =
+                randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
+        }
+        if (this.info.mode === 'mayhem') {
+            objects.mayhemMap = randomChoice(maps);
+        }
     }
 
     addPlayer(playerId: string) {
@@ -89,14 +95,11 @@ class Game {
         }
         if (emptyIdxs.length === 1) {
             this.info.state = 'playing';
-            switch (this.info.mode) {
-                case 'classic':
-                case 'mayhem':
-                    this.resetClassicMayhem(this.info.objects);
-                    break;
-                case 'battle':
-                    // this.resetBattle(this.info.objects);
-                    break;
+            this.timeStarted = performance.now();
+            if (this.info.mode === 'battle') {
+                // this.resetBattle(this.info.objects);
+            } else {
+                this.resetClassicMayhem(this.info.objects);
             }
         }
         this.update();
@@ -106,14 +109,15 @@ class Game {
         objects: ClassicMayhemGameObjects,
         playerIdx: 0 | 1,
     ): number | null {
-        const x = playerIdx === 0 ? objects.ballPosX : 1 - objects.ballPosX;
+        const x =
+            playerIdx === 0 ? objects.balls[0].posX : 1 - objects.balls[0].posX;
         if (PADDLE_MARGIN_X + PADDLE_WIDTH / 2 <= x && x <= COLLISION_X) {
             const paddleDiff =
-                objects.ballPosY - this.info.players[playerIdx].pos;
+                objects.balls[0].posY - this.info.players[playerIdx].pos;
             if (Math.abs(paddleDiff) <= COLLISION_Y) {
                 return (
                     remap(paddleDiff, 0, COLLISION_Y, 0, MAX_Y_FACTOR) *
-                    Math.abs(objects.ballVelX)
+                    Math.abs(objects.balls[0].velX)
                 );
             }
         }
@@ -137,16 +141,23 @@ class Game {
             }
         }
         if (this.info.state !== 'playing') return;
-        objects.ballPosX += objects.ballVelX * deltaTime;
-        objects.ballPosY += objects.ballVelY * deltaTime;
-        if (objects.ballPosY <= BALL_LOW || objects.ballPosY >= BALL_HIGH) {
-            objects.ballPosY = clamp(objects.ballPosY, BALL_LOW, BALL_HIGH);
-            objects.ballVelY = -objects.ballVelY;
+        objects.balls[0].posX += objects.balls[0].velX * deltaTime;
+        objects.balls[0].posY += objects.balls[0].velY * deltaTime;
+        if (
+            objects.balls[0].posY <= BALL_LOW ||
+            objects.balls[0].posY >= BALL_HIGH
+        ) {
+            objects.balls[0].posY = clamp(
+                objects.balls[0].posY,
+                BALL_LOW,
+                BALL_HIGH,
+            );
+            objects.balls[0].velY = -objects.balls[0].velY;
         }
-        if (objects.ballPosX >= 1 + BALL_RADIUS) {
+        if (objects.balls[0].posX >= 1 + BALL_RADIUS) {
             ++this.info.players[0].score;
             this.resetClassicMayhem(objects);
-        } else if (objects.ballPosX <= -BALL_RADIUS) {
+        } else if (objects.balls[0].posX <= -BALL_RADIUS) {
             ++this.info.players[1].score;
             this.resetClassicMayhem(objects);
         }
@@ -162,13 +173,13 @@ class Game {
         const newVelY =
             this.hitPaddle(objects, 0) || this.hitPaddle(objects, 1);
         if (newVelY !== null) {
-            objects.ballVelX = -(
-                objects.ballVelX +
-                Math.sign(objects.ballVelX) * BALL_SPEED_INCREMENT
+            objects.balls[0].velX = -(
+                objects.balls[0].velX +
+                Math.sign(objects.balls[0].velX) * BALL_SPEED_INCREMENT
             );
-            objects.ballVelY = newVelY;
-            objects.ballPosX = clamp(
-                objects.ballPosX,
+            objects.balls[0].velY = newVelY;
+            objects.balls[0].posX = clamp(
+                objects.balls[0].posX,
                 COLLISION_X,
                 1 - COLLISION_X,
             );
@@ -181,14 +192,10 @@ class Game {
         this.lastUpdate = now;
         this.info.timeRemaining = Math.max(0, 3000 - (now - this.timeStarted));
         if (this.info.timeRemaining > 0) return;
-        switch (this.info.mode) {
-            case 'classic':
-            case 'mayhem':
-                this.updateClassicMayhem(this.info.objects, deltaTime);
-                break;
-            case 'battle':
-                // this.updateBattle(this.info.objects, deltaTime);
-                break;
+        if (this.info.mode === 'battle') {
+            // this.updateBattle(this.info.objects, deltaTime);
+        } else {
+            this.updateClassicMayhem(this.info.objects, deltaTime);
         }
     }
 }

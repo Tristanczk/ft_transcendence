@@ -19,9 +19,9 @@ import { AuthAxiosProvider } from './context/AuthAxiosContext';
 import AchievementPage from './pages/AchievementsPage';
 import GameHistoryPage from './pages/GameHistoryPage';
 import GamePage from './pages/GamePage';
-import LocalBattleRoyale from './games/local/LocalBattleRoyale';
 import LocalClassic from './games/local/LocalClassic';
 import LocalMayhem from './games/local/LocalMayhem';
+import LocalBattleRoyale from './games/local/LocalBattleRoyale';
 
 const App: React.FC = () => {
     const [gameId, setGameId] = useState<string | undefined>(undefined);

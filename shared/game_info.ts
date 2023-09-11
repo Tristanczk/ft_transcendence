@@ -2,29 +2,34 @@ import { EMPTY_MAP, MayhemMap } from './mayhem_maps';
 
 export type GameState = 'waiting' | 'playing' | 'finished';
 
+export type MultiBall = {
+    posX: number;
+    posY: number;
+    velX: number;
+    velY: number;
+};
+
+const DEFAULT_MULTIBALL: MultiBall = {
+    posX: 0.5,
+    posY: 0.5,
+    velX: 0,
+    velY: 0,
+};
+
 export type ClassicMayhemGameObjects = {
-    ballPosX: number;
-    ballPosY: number;
-    ballVelX: number;
-    ballVelY: number;
+    balls: MultiBall[];
     mayhemMap: MayhemMap;
     hasNet: boolean;
 };
 
 export const DEFAULT_CLASSIC_OBJECTS: ClassicMayhemGameObjects = {
-    ballPosX: 0.5,
-    ballPosY: 0.5,
-    ballVelX: 0,
-    ballVelY: 0,
+    balls: [DEFAULT_MULTIBALL],
     mayhemMap: EMPTY_MAP,
     hasNet: true,
 };
 
 export const DEFAULT_MAYHEM_OBJECTS: ClassicMayhemGameObjects = {
-    ballPosX: 0.5,
-    ballPosY: 0.5,
-    ballVelX: 0,
-    ballVelY: 0,
+    balls: [DEFAULT_MULTIBALL, DEFAULT_MULTIBALL, DEFAULT_MULTIBALL],
     mayhemMap: EMPTY_MAP,
     hasNet: false,
 };

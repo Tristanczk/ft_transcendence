@@ -142,7 +142,7 @@ const MultiClassicMayhem = ({
     players: Players;
     timeRemaining: number;
 }) => {
-    const { ballPosX, ballPosY } = gameObjects;
+    const { posX: ballPosX, posY: ballPosY } = gameObjects.balls[0];
     const arenaHeight = Math.min(
         (windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
         windowHeight - NAVBAR_HEIGHT - CANVAS_MARGIN,
