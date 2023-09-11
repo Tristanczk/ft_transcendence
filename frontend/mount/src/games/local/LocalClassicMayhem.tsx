@@ -28,7 +28,6 @@ import {
     MAYHEM_GRID_HALF_WIDTH,
     MayhemCell,
     MayhemMap,
-    maps,
 } from './mayhem_maps';
 import {
     clamp,
@@ -52,21 +51,19 @@ const getMayhemCellPos = (x: number, y: number) => ({
     posY: 0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT),
 });
 
-export class Ball {
-    private initialPosY: number;
+class Ball {
     posX!: number;
     posY!: number;
     velX!: number;
     velY!: number;
 
-    constructor(initialPosY: number) {
-        this.initialPosY = initialPosY;
+    constructor() {
         this.reset();
     }
 
     private reset() {
         this.posX = 0.5;
-        this.posY = this.initialPosY;
+        this.posY = 0.5;
         this.velX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
         this.velY = randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
     }
@@ -322,13 +319,15 @@ const movePaddle = (p5: P5, paddle: number, downKey: number, upKey: number) => {
 
 const ClassicMayhemGame = ({
     mayhemMap,
-    balls,
+    numBalls,
     hasNet,
 }: {
     mayhemMap: MayhemMap;
-    balls: Ball[];
+    numBalls: number;
     hasNet: boolean;
 }) => {
+    const balls = Array.from({ length: numBalls }, () => new Ball());
+
     let scoreLeft = 0;
     let scoreRight = 0;
 
@@ -380,11 +379,11 @@ const ClassicMayhemGame = ({
 
 const LocalClassicMayhem = ({
     mayhemMap,
-    balls,
+    numBalls,
     hasNet,
 }: {
     mayhemMap: MayhemMap;
-    balls: Ball[];
+    numBalls: number;
     hasNet: boolean;
 }) => (
     <div
@@ -401,7 +400,7 @@ const LocalClassicMayhem = ({
     >
         <ClassicMayhemGame
             mayhemMap={mayhemMap}
-            balls={balls}
+            numBalls={numBalls}
             hasNet={hasNet}
         />
     </div>
