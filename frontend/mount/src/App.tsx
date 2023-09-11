@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
@@ -12,7 +12,7 @@ import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import { WebsocketProvider, socket } from './context/WebsocketContext';
 import TrackingOnline from './components/TrackingOnline';
-import { UserProvider } from './context/UserContext';
+import { UserProvider, useUserContext } from './context/UserContext';
 import UserPage from './pages/UserPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import { AuthAxiosProvider } from './context/AuthAxiosContext';
@@ -24,7 +24,12 @@ import LocalClassic from './games/local/LocalClassic';
 import LocalMayhem from './games/local/LocalMayhem';
 
 const App: React.FC = () => {
+    const { user } = useUserContext();
     const [gameId, setGameId] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        setGameId(undefined);
+    }, [user]);
 
     return (
         <WebsocketProvider value={socket}>
@@ -32,7 +37,7 @@ const App: React.FC = () => {
                 <AuthAxiosProvider>
                     <TrackingOnline />
                     <BrowserRouter>
-                        <NavBar gameId={gameId} setGameId={setGameId} />
+                        <NavBar gameId={gameId} />
                         <Routes>
                             <Route
                                 path="/"

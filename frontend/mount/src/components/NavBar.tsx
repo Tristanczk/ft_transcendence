@@ -178,22 +178,10 @@ function UserMenu() {
     );
 }
 
-const NavBar: React.FC<{
-    gameId: string | undefined;
-    setGameId: (gameId: string | undefined) => void;
-}> = ({ gameId, setGameId }) => {
+const NavBar = ({ gameId }: { gameId: string | undefined }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useUserContext();
-
-    useEffect(() => {
-        console.log(location.pathname);
-    });
-
-    useEffect(() => {
-        setGameId(undefined);
-    }, [user]);
-    //TO DO: add useeffect to get gameId if necessary
 
     const handleRejoin = () => {
         //TO DO: check if game is still available, if yes redirect, if no error message
