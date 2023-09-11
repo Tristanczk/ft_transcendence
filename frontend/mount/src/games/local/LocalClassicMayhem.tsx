@@ -24,10 +24,9 @@ import {
     PADDLE_WIDTH,
 } from '../../shared/classic_mayhem';
 import {
-    MAYHEM_GRID_HALF_HEIGHT,
-    MAYHEM_GRID_HALF_WIDTH,
     MayhemCell,
     MayhemMap,
+    getMayhemCellPos,
 } from '../../shared/mayhem_maps';
 import {
     clamp,
@@ -45,11 +44,6 @@ type MayhemMapCollision = {
     newVelX: number;
     newVelY: number;
 };
-
-const getMayhemCellPos = (x: number, y: number) => ({
-    posX: 0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH),
-    posY: 0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT),
-});
 
 class Ball {
     posX!: number;

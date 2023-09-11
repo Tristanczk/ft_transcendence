@@ -2,7 +2,9 @@ import { useEffect, useRef } from 'react';
 import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
 import {
     ASPECT_RATIO,
+    BALL_HEIGHT,
     BALL_SIZE,
+    BALL_WIDTH,
     LINE_MARGIN,
     LINE_WIDTH,
     PADDLE_HEIGHT,
@@ -10,6 +12,11 @@ import {
     PADDLE_WIDTH,
 } from '../../shared/classic_mayhem';
 import { ClassicMayhemGameObjects, Players } from '../../shared/game_info';
+import {
+    MayhemCell,
+    MayhemMap,
+    getMayhemCellPos,
+} from '../../shared/mayhem_maps';
 
 const BACKGROUND_COLOR = '#0f0f0f';
 
@@ -82,6 +89,55 @@ const drawBall = (
         ballSize,
         ballSize,
     );
+};
+
+const drawMayhemCell = (
+    ctx: CanvasRenderingContext2D,
+    imageData: ImageData,
+    mayhemCell: MayhemCell,
+    x: number,
+    y: number,
+) => {
+    if (mayhemCell.lives > 0) {
+        const cellSize = Math.ceil(BALL_WIDTH * ctx.canvas.width);
+        const { posX, posY } = getMayhemCellPos(x, y);
+        const screenX = Math.round(ctx.canvas.width * (posX - BALL_WIDTH / 2));
+        const screenY = Math.round(
+            ctx.canvas.height * (posY - BALL_HEIGHT / 2),
+        );
+        const ratio =
+            mayhemCell.lives === Infinity ||
+            mayhemCell.lives === mayhemCell.startingLives
+                ? 1
+                : mayhemCell.lives / mayhemCell.startingLives;
+
+        for (let i = 0; i < cellSize; i++) {
+            for (let j = 0; j < cellSize; j++) {
+                if (ratio === 1 || Math.random() <= ratio) {
+                    const pixelIdx =
+                        4 * (screenX + i + (screenY + j) * ctx.canvas.width);
+                    imageData.data[pixelIdx] = 255;
+                    imageData.data[pixelIdx + 1] = 255;
+                    imageData.data[pixelIdx + 2] = 255;
+                    imageData.data[pixelIdx + 3] = 255;
+                }
+            }
+        }
+    }
+};
+
+const drawMayhemMap = (
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    mayhemMap: MayhemMap,
+) => {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    mayhemMap.forEach((row, y) => {
+        row.forEach((mayhemCell, x) => {
+            drawMayhemCell(ctx, imageData, mayhemCell, x, y);
+        });
+    });
+    ctx.putImageData(imageData, 0, 0);
 };
 
 const drawScore = (
@@ -165,8 +221,10 @@ const MultiClassicMayhem = ({
         drawBar(canvas, ctx, LINE_MARGIN);
         drawBar(canvas, ctx, 1 - LINE_MARGIN - LINE_WIDTH);
         drawNet(canvas, ctx);
+        // TODO if (players[i]) is useless
         if (players[0]) drawPaddle(canvas, ctx, true, players[0].pos);
         if (players[1]) drawPaddle(canvas, ctx, false, players[1].pos);
+        drawMayhemMap(canvas, ctx, gameObjects.mayhemMap);
         drawScore(canvas, ctx, players);
         if (timeRemaining === 0) {
             drawBall(canvas, ctx, ballPosX, ballPosY);

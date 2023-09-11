@@ -7,15 +7,20 @@ import {
     PADDLE_WIDTH,
 } from './classic_mayhem';
 
-export const MAYHEM_GRID_HALF_WIDTH =
+const MAYHEM_GRID_HALF_WIDTH =
     Math.floor(
         (0.5 - BALL_WIDTH / 2 - PADDLE_MARGIN_X - PADDLE_WIDTH) / BALL_WIDTH,
     ) - 1;
 
-export const MAYHEM_GRID_HALF_HEIGHT =
+const MAYHEM_GRID_HALF_HEIGHT =
     Math.floor(
         (0.5 - BALL_HEIGHT / 2 - LINE_MARGIN * 2 - LINE_WIDTH) / BALL_HEIGHT,
     ) - 1;
+
+export const getMayhemCellPos = (x: number, y: number) => ({
+    posX: 0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH),
+    posY: 0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT),
+});
 
 export type MayhemCell = { lives: number; startingLives: number };
 export type MayhemMap = MayhemCell[][];
