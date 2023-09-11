@@ -11,7 +11,8 @@ import {
     BALL_LOW,
     BALL_HIGH,
     BALL_RADIUS,
-    WINNING_SCORE,
+    WINNING_SCORE_CLASSIC,
+    WINNING_SCORE_MAYHEM,
     BALL_SPEED_INCREMENT,
 } from 'src/shared/classic_mayhem';
 import {
@@ -27,8 +28,8 @@ import {
     ClassicMayhemGameObjects,
     DEFAULT_CLASSIC_OBJECTS,
     DEFAULT_MAYHEM_OBJECTS,
+    MultiBall,
 } from 'src/shared/game_info';
-import { maps } from 'src/shared/mayhem_maps';
 import { GameMode, MAX_PLAYERS } from 'src/shared/misc';
 
 class Game {
@@ -50,20 +51,18 @@ class Game {
                 ? { mode: gameMode, objects: DEFAULT_MAYHEM_OBJECTS }
                 : { mode: gameMode, objects: DEFAULT_BATTLE_OBJECTS }),
         };
-        if (this.info.mode === 'mayhem') {
-            this.info.objects.mayhemMap = randomChoice(maps);
-        }
+        // TODO uncomment
+        // if (this.info.mode === 'mayhem') {
+        //     this.info.objects.mayhemMap = randomChoice(maps);
+        // }
         this.addPlayer(firstPlayer);
     }
 
-    private resetClassicMayhem(objects: ClassicMayhemGameObjects) {
-        for (const ball of objects.balls) {
-            ball.posX = 0.5;
-            ball.posY = 0.5;
-            ball.velX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
-            ball.velY =
-                randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
-        }
+    private resetBall(ball: MultiBall) {
+        ball.posX = 0.5;
+        ball.posY = 0.5;
+        ball.velX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
+        ball.velY = randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
     }
 
     addPlayer(playerId: string) {
@@ -99,25 +98,22 @@ class Game {
             if (this.info.mode === 'battle') {
                 // this.resetBattle(this.info.objects);
             } else {
-                this.resetClassicMayhem(this.info.objects);
+                for (const ball of this.info.objects.balls) {
+                    this.resetBall(ball);
+                }
             }
         }
         this.update();
     }
 
-    private hitPaddle(
-        objects: ClassicMayhemGameObjects,
-        playerIdx: 0 | 1,
-    ): number | null {
-        const x =
-            playerIdx === 0 ? objects.balls[0].posX : 1 - objects.balls[0].posX;
+    private hitPaddle(ball: MultiBall, playerIdx: 0 | 1): number | null {
+        const x = playerIdx === 0 ? ball.posX : 1 - ball.posX;
         if (PADDLE_MARGIN_X + PADDLE_WIDTH / 2 <= x && x <= COLLISION_X) {
-            const paddleDiff =
-                objects.balls[0].posY - this.info.players[playerIdx].pos;
+            const paddleDiff = ball.posY - this.info.players[playerIdx].pos;
             if (Math.abs(paddleDiff) <= COLLISION_Y) {
                 return (
                     remap(paddleDiff, 0, COLLISION_Y, 0, MAX_Y_FACTOR) *
-                    Math.abs(objects.balls[0].velX)
+                    Math.abs(ball.velX)
                 );
             }
         }
@@ -141,48 +137,43 @@ class Game {
             }
         }
         if (this.info.state !== 'playing') return;
-        objects.balls[0].posX += objects.balls[0].velX * deltaTime;
-        objects.balls[0].posY += objects.balls[0].velY * deltaTime;
-        if (
-            objects.balls[0].posY <= BALL_LOW ||
-            objects.balls[0].posY >= BALL_HIGH
-        ) {
-            objects.balls[0].posY = clamp(
-                objects.balls[0].posY,
-                BALL_LOW,
-                BALL_HIGH,
-            );
-            objects.balls[0].velY = -objects.balls[0].velY;
-        }
-        if (objects.balls[0].posX >= 1 + BALL_RADIUS) {
-            ++this.info.players[0].score;
-            this.resetClassicMayhem(objects);
-        } else if (objects.balls[0].posX <= -BALL_RADIUS) {
-            ++this.info.players[1].score;
-            this.resetClassicMayhem(objects);
-        }
-        if (
-            (this.info.players[0].score >= WINNING_SCORE ||
-                this.info.players[1].score >= WINNING_SCORE) &&
-            Math.abs(this.info.players[0].score - this.info.players[1].score) >=
-                2
-        ) {
-            this.info.state = 'finished';
-            return;
-        }
-        const newVelY =
-            this.hitPaddle(objects, 0) || this.hitPaddle(objects, 1);
-        if (newVelY !== null) {
-            objects.balls[0].velX = -(
-                objects.balls[0].velX +
-                Math.sign(objects.balls[0].velX) * BALL_SPEED_INCREMENT
-            );
-            objects.balls[0].velY = newVelY;
-            objects.balls[0].posX = clamp(
-                objects.balls[0].posX,
-                COLLISION_X,
-                1 - COLLISION_X,
-            );
+        for (const ball of objects.balls) {
+            ball.posX += ball.velX * deltaTime;
+            ball.posY += ball.velY * deltaTime;
+            if (ball.posY <= BALL_LOW || ball.posY >= BALL_HIGH) {
+                ball.posY = clamp(ball.posY, BALL_LOW, BALL_HIGH);
+                ball.velY = -ball.velY;
+            }
+            if (ball.posX >= 1 + BALL_RADIUS) {
+                ++this.info.players[0].score;
+                this.resetBall(ball);
+            } else if (ball.posX <= -BALL_RADIUS) {
+                ++this.info.players[1].score;
+                this.resetBall(ball);
+            }
+            const winningScore =
+                this.info.mode === 'classic'
+                    ? WINNING_SCORE_CLASSIC
+                    : WINNING_SCORE_MAYHEM;
+            if (
+                (this.info.players[0].score >= winningScore ||
+                    this.info.players[1].score >= winningScore) &&
+                Math.abs(
+                    this.info.players[0].score - this.info.players[1].score,
+                ) >= 2
+            ) {
+                this.info.state = 'finished';
+                return;
+            }
+            const newVelY = this.hitPaddle(ball, 0) || this.hitPaddle(ball, 1);
+            if (newVelY !== null) {
+                ball.velX = -(
+                    ball.velX +
+                    Math.sign(ball.velX) * BALL_SPEED_INCREMENT
+                );
+                ball.velY = newVelY;
+                ball.posX = clamp(ball.posX, COLLISION_X, 1 - COLLISION_X);
+            }
         }
     }
 

@@ -206,7 +206,6 @@ const MultiClassicMayhem = ({
     players: Players;
     timeRemaining: number;
 }) => {
-    const { posX: ballPosX, posY: ballPosY } = gameObjects.balls[0];
     const arenaHeight = Math.min(
         (windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
         windowHeight - NAVBAR_HEIGHT - CANVAS_MARGIN,
@@ -234,7 +233,9 @@ const MultiClassicMayhem = ({
         drawMayhemMap(canvas, ctx, gameObjects.mayhemMap);
         drawScore(canvas, ctx, players);
         if (timeRemaining === 0) {
-            drawBall(canvas, ctx, ballPosX, ballPosY);
+            for (const ball of gameObjects.balls) {
+                drawBall(canvas, ctx, ball.posX, ball.posY);
+            }
         } else if (players[0] && players[1]) {
             drawTimeRemaining(canvas, ctx, timeRemaining);
         }

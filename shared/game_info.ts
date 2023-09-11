@@ -23,13 +23,17 @@ export type ClassicMayhemGameObjects = {
 };
 
 export const DEFAULT_CLASSIC_OBJECTS: ClassicMayhemGameObjects = {
-    balls: [DEFAULT_MULTIBALL],
+    balls: [{ ...DEFAULT_MULTIBALL }],
     mayhemMap: EMPTY_MAP,
     hasNet: true,
 };
 
 export const DEFAULT_MAYHEM_OBJECTS: ClassicMayhemGameObjects = {
-    balls: [DEFAULT_MULTIBALL, DEFAULT_MULTIBALL, DEFAULT_MULTIBALL],
+    balls: [
+        { ...DEFAULT_MULTIBALL },
+        { ...DEFAULT_MULTIBALL },
+        { ...DEFAULT_MULTIBALL },
+    ],
     mayhemMap: EMPTY_MAP,
     hasNet: false,
 };
