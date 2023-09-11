@@ -49,8 +49,6 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                 event.preventDefault();
                 handleSendMessage();
                 setVisiblePicker(false);
-            } else {
-                setInput(input + '\n'); // TODO ne marche pas le newline. Enlever avant de push final si pas réso
             }
         }
     };

@@ -65,12 +65,21 @@ export class ChatController {
     }
 
     @Get('isChannelAdmin')
-    async isChannelAdmin(@Body() channel: isChannelAdminDto): Promise<boolean> {
+    async isChannelAdmin(@Query() channel: isChannelAdminDto): Promise<boolean> {
+        console.log('isChannelAdmin controller');
+        console.log(channel);
         return this.chatService.isChannelAdmin(channel);
     }
 
+    @Get('isUserInChannel')
+    async isUserInChannel(@Query() channel: isChannelAdminDto): Promise<boolean> {
+        console.log('isUserInChannel controller');
+        console.log(channel);
+        return this.chatService.isUserInChannel(channel);
+    }
+
     @Post('joinChannel')
-    async joinChannel(@Body() joinChannel: JoinChannelDto) {
+    async joinChannel(@Body() joinChannel: JoinChannelDto): Promise<boolean> {
         return this.chatService.joinChannel(joinChannel);
     }
 

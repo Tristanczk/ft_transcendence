@@ -120,7 +120,7 @@ export class ChatService {
         try {
             const channel = await this.prisma.channels.findUnique({
                 where: {
-                    id: channelDto.idChannel,
+                    id: Number(channelDto.idChannel),
                 },
             });
 
@@ -131,7 +131,26 @@ export class ChatService {
         return false;
     }
 
-    async joinChannel(joinChannel: JoinChannelDto) {
+    async isUserInChannel(channelDto: isChannelAdminDto): Promise<boolean> {
+        try {
+            const channel = await this.prisma.channels.findUnique({
+                where: {
+                    id: Number(channelDto.idChannel),
+                },
+            });
+
+            console.log(channelDto);
+            console.log(channel);
+            if (channel && channel.idUsers.includes(Number(channelDto.idUser))) {
+                return true;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        return false;
+    }
+
+    async joinChannel(joinChannel: JoinChannelDto): Promise<boolean> {
         try {
             const channel = await this.prisma.channels.findUnique({
                 where: {
@@ -139,12 +158,10 @@ export class ChatService {
                 },
             });
 
-            if (!channel.isPublic) throw new Error('Channel is private');
-
             if (channel.password && channel.password !== joinChannel.password)
                 throw new Error('Wrong password');
 
-            const updatedChannel = await this.prisma.channels.update({
+            await this.prisma.channels.update({
                 where: {
                     id: joinChannel.idChannel,
                 },
@@ -155,10 +172,11 @@ export class ChatService {
                 },
             });
 
-            return updatedChannel;
+            return true;
         } catch (error) {
-            throw new NotFoundException('Channel not found');
+            console.log(error);
         }
+        return false;
     }
 
     async leaveChannel(leaveChannel: EditChannelLeaveDto) {
@@ -169,7 +187,7 @@ export class ChatService {
                 },
             });
 
-            if (channel.idUsers.length < 2) {
+            if (channel.idUsers.length === 1) {
                 const updatedChannel = await this.prisma.channels.delete({
                     where: {
                         id: leaveChannel.id,
@@ -178,7 +196,7 @@ export class ChatService {
                 return updatedChannel;
             }
 
-            if (channel.idAdmin.length < 2) {
+            if (channel.idAdmin.length === 1) {
                 const updatedChannel = await this.prisma.channels.update({
                     where: {
                         id: leaveChannel.id,

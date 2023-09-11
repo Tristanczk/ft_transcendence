@@ -4,12 +4,14 @@ import { ChannelProps } from './Messages';
 import { UserSimplified } from '../../types';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useState } from 'react';
+import { useUserContext } from '../../context/UserContext';
+import { set } from 'date-fns';
 
 export default function ChatChannelListElement({
     channel,
     setChannel,
     setCurrentFriend,
-    setPasswordPrompt
+    setPasswordPrompt,
 }: {
     channel: ChannelProps;
     setChannel: (channel: number) => void;
@@ -17,24 +19,68 @@ export default function ChatChannelListElement({
     setPasswordPrompt: (passwordPrompt: boolean) => void;
 }) {
     const authAxios = useAuthAxios();
+    const { user } = useUserContext();
+    const [activeInput, setActiveInput] = useState<boolean>(false);
+    const [input, setInput] = useState<string>('');
 
     const isChannelOpen = async (channel: ChannelProps) => {
-        const response = await authAxios.get(
-            `http://localhost:3333/chat/isChannelOpen`,
+        const isUserInChannel = await authAxios.get(
+            `http://localhost:3333/chat/isUserInChannel`,
             {
                 params: {
                     idChannel: channel.id,
+                    idUser: user?.id,
                 },
                 withCredentials: true,
             },
         );
-        if (response.data === false) {
-            setPasswordPrompt(true);
-            setChannel(0);    
-        } else {
+
+        console.log(isUserInChannel.data);
+        if (isUserInChannel.data === true) {
             setCurrentFriend(null);
             setChannel(channel.id);
+        } else {
+            const response = await authAxios.get(
+                `http://localhost:3333/chat/isChannelOpen`,
+                {
+                    params: {
+                        idChannel: channel.id,
+                    },
+                    withCredentials: true,
+                },
+            );
+            if (response.data === false) {
+                setActiveInput(true);
+                console.log('input on');
+            } else {
+                setCurrentFriend(null);
+                setChannel(channel.id);
+            }
         }
+    };
+
+    const onKeyPress = async () => {
+        const response = await authAxios.post(
+            `http://localhost:3333/chat/joinChannel`,
+            {
+                idUser: user?.id,
+                idChannel: channel.id,
+                password: input,
+            },
+            {
+                withCredentials: true,
+            },
+        );
+
+        if (response.data === false) {
+            setPasswordPrompt(true);
+            setChannel(0);
+        } else {
+            setActiveInput(false);
+            setChannel(channel.id);
+        }
+        setInput('');
+        setActiveInput(false);
     };
 
     return (
@@ -42,6 +88,20 @@ export default function ChatChannelListElement({
             <div className="flex items-center">
                 <div className="ml-2 flex flex-col">
                     <div className="leading-snug text-sm text-gray-900 font-medium">
+                        {activeInput && (
+                            <input
+                                type="password"
+                                className="relative transform text-slate-500 -translate-y left-full z-50 border border-gray-300 bg-white rounded-md transition-all ease-in-out duration-500 left-0 top-0 right-0"
+                                placeholder="Enter password"
+                                value={input}
+                                onChange={(e) => {
+                                    setInput(e.target.value);
+                                }}
+                                onKeyDown={(event) =>
+                                    event.key === 'Enter' && onKeyPress()
+                                }
+                            />
+                        )}
                         <span>{channel.name}</span>
                     </div>
                 </div>
@@ -62,7 +122,6 @@ export default function ChatChannelListElement({
                     stroke-linecap="round"
                     stroke-linejoin="round"
                 >
-                    {' '}
                     <path stroke="none" d="M0 0h24v24H0z" />{' '}
                     <path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1" />{' '}
                     <line x1="12" y1="12" x2="12" y2="12.01" />{' '}

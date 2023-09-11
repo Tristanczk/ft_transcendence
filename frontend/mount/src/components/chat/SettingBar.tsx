@@ -14,17 +14,31 @@ export default function SettingBar({
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
+    const [input, setInput] = useState<string>('');
 
     const [activeInput, setActiveInput] = useState<'password' | 'name' | null>(
         null,
     );
 
+    const removeInput = () => {
+        if (activeInput) {
+            setActiveInput(null);
+            setInput('');
+        }
+    };
+
     const handlePasswordClick = () => {
-        setActiveInput('password');
+        if (activeInput === 'password') {
+            setActiveInput(null);
+            setInput('');
+        } else setActiveInput('password');
     };
 
     const handleNameClick = () => {
-        setActiveInput('name');
+        if (activeInput === 'name') {
+            setActiveInput(null);
+            setInput('');
+        } else setActiveInput('name');
     };
 
     const editPassword = async () => {
@@ -33,7 +47,7 @@ export default function SettingBar({
             {
                 id: currentChannel?.id,
                 idRequester: user?.id,
-                password: '', //password input
+                password: input,
             },
             { withCredentials: true },
         );
@@ -71,7 +85,7 @@ export default function SettingBar({
             {
                 id: currentChannel?.id,
                 idRequester: user?.id,
-                name: 'Batards', // name input
+                name: input,
             },
             { withCredentials: true },
         );
@@ -89,6 +103,23 @@ export default function SettingBar({
     };
 
     const muteUser = async () => {};
+
+    const onKeyPress = ({
+        event,
+        exec,
+    }: {
+        event: React.KeyboardEvent<HTMLInputElement>;
+        exec: () => void;
+    }) => {
+        if (event.key === 'Enter' && input.length > 2) {
+            if (!event.shiftKey) {
+                event.preventDefault();
+                exec();
+                setInput('');
+                setActiveInput(null);
+            }
+        }
+    };
 
     if (!currentChannel) return null;
 
@@ -132,12 +163,19 @@ export default function SettingBar({
                     type="password"
                     className="absolute top-5 transform text-slate-500 -translate-y-1/2 left-full ml-4 p-1 border border-gray-300 bg-white rounded-md z-40 transition-all ease-in-out duration-500"
                     placeholder="Enter password"
-                    //... more properties or event listeners
+                    value={input}
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                    }}
+                    onKeyDown={(event) =>
+                        onKeyPress({ event, exec: editPassword })
+                    }
                 />
             )}
             <button
                 name="Ban"
                 onClick={() => {
+                    removeInput();
                     banUser();
                 }}
                 type="button"
@@ -165,6 +203,7 @@ export default function SettingBar({
             <button
                 name="Exit"
                 onClick={() => {
+                    removeInput();
                     leaveChannel();
                 }}
                 type="button"
@@ -215,12 +254,17 @@ export default function SettingBar({
                     type="text"
                     className="absolute top-48 transform text-slate-500 -translate-y-1/2 left-full ml-4 p-1 border border-gray-300 bg-white rounded-md z-40 transition-all ease-in-out duration-500"
                     placeholder="Edit channel name"
-                    //... more properties or event listeners
+                    value={input}
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                    }}
+                    onKeyDown={(event) => onKeyPress({ event, exec: editName })}
                 />
             )}
             <button
                 name="Admin"
                 onClick={() => {
+                    removeInput();
                     addAdmin();
                 }}
                 type="button"
@@ -270,6 +314,9 @@ export default function SettingBar({
             <button
                 name="Praise"
                 type="button"
+                onClick={() => {
+                    removeInput();
+                }}
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500"
             >
                 <svg
