@@ -42,6 +42,7 @@ import {
     GameInfo,
 } from 'src/shared/game_info';
 import { ResponseCheckConnexion, Users } from './gateway.users';
+import { clamp, remap } from 'src/shared/functions';
 
 const ID_SIZE = 7;
 const ID_BASE = 36;
@@ -162,6 +163,10 @@ export class GatewayService
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
                 game.addPlayer(client.id);
                 this.clients[client.id] = game.id;
+                this.server
+                    .to(game.info.players[0].id)
+                    .emit('startGame', game.id);
+                game.timeStarted = performance.now();
                 return { gameId: game.id, status: 'joined' };
             }
         }
@@ -244,19 +249,9 @@ export class GatewayService
     }
 }
 
-const clamp = (x: number, min: number, max: number) =>
-    x < min ? min : x > max ? max : x;
-
-const remap = (
-    x: number,
-    inMin: number,
-    inMax: number,
-    outMin: number,
-    outMax: number,
-) => ((x - inMin) / (inMax - inMin)) * (outMax - outMin) + outMin;
-
 class Game {
     id: string;
+    timeStarted: number;
     info: GameInfo;
     private lastUpdate: number;
 
@@ -266,6 +261,7 @@ class Game {
         this.info = {
             state: 'waiting',
             players: new Array(MAX_PLAYERS[gameMode]).fill(null),
+            timeRemaining: 0,
             ...(gameMode === 'classic'
                 ? { mode: gameMode, objects: DEFAULT_CLASSIC_OBJECTS }
                 : gameMode === 'mayhem'
@@ -399,6 +395,8 @@ class Game {
         const now = performance.now();
         const deltaTime = now - this.lastUpdate;
         this.lastUpdate = now;
+        this.info.timeRemaining = Math.max(0, 3000 - (now - this.timeStarted));
+        if (this.info.timeRemaining > 0) return;
         switch (this.info.mode) {
             case 'classic':
                 this.updateClassic(this.info.objects, deltaTime);

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../constants';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
 import {
     ASPECT_RATIO,
     BALL_SIZE,
@@ -8,14 +8,16 @@ import {
     PADDLE_HEIGHT,
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
-} from '../shared/classic_mayhem';
-import { ClassicGameObjects, Players } from '../shared/game_info';
+} from '../../shared/classic_mayhem';
+import { ClassicGameObjects, Players } from '../../shared/game_info';
+
+const BACKGROUND_COLOR = '#0f0f0f';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
 ) => {
-    ctx.fillStyle = '#0f0f0f';
+    ctx.fillStyle = BACKGROUND_COLOR;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 };
 
@@ -101,16 +103,44 @@ const drawScore = (
     );
 };
 
-const ClassicGame = ({
+const drawTimeRemaining = (
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    timeRemaining: number,
+) => {
+    ctx.fillStyle = BACKGROUND_COLOR;
+    const squareWidth = canvas.width * 0.4;
+    const squareHeight = canvas.height * 0.4;
+    ctx.fillRect(
+        (canvas.width - squareWidth) / 2,
+        (canvas.height - squareHeight) / 2,
+        squareWidth,
+        squareHeight,
+    );
+    ctx.fillStyle = 'white';
+    const textSize = 24 + canvas.width / 10;
+    ctx.font = `${textSize}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(
+        `${Math.ceil(timeRemaining / 1000)}`,
+        canvas.width / 2,
+        canvas.height / 2,
+    );
+};
+
+const MultiClassic = ({
     gameObjects,
     windowWidth,
     windowHeight,
     players,
+    timeRemaining,
 }: {
     gameObjects: ClassicGameObjects;
     windowWidth: number;
     windowHeight: number;
     players: Players;
+    timeRemaining: number;
 }) => {
     const { ballPosX, ballPosY } = gameObjects;
     const arenaHeight = Math.min(
@@ -137,8 +167,12 @@ const ClassicGame = ({
         drawNet(canvas, ctx);
         if (players[0]) drawPaddle(canvas, ctx, true, players[0].pos);
         if (players[1]) drawPaddle(canvas, ctx, false, players[1].pos);
-        drawBall(canvas, ctx, ballPosX, ballPosY);
         drawScore(canvas, ctx, players);
+        if (timeRemaining === 0) {
+            drawBall(canvas, ctx, ballPosX, ballPosY);
+        } else {
+            drawTimeRemaining(canvas, ctx, timeRemaining);
+        }
     });
 
     return (
@@ -146,4 +180,4 @@ const ClassicGame = ({
     );
 };
 
-export default ClassicGame;
+export default MultiClassic;

@@ -1,11 +1,13 @@
 export const WINNING_SCORE = 7;
 export const ASPECT_RATIO = 286 / 175;
-export const BALL_SIZE = 0.018;
+export const BALL_SIZE = 0.018; // TODO remove
+export const BALL_WIDTH = BALL_SIZE;
+export const BALL_HEIGHT = BALL_SIZE * ASPECT_RATIO;
 export const LINE_MARGIN = 0.01;
 export const PADDLE_MARGIN_X = LINE_MARGIN / ASPECT_RATIO;
 export const PADDLE_WIDTH = 0.015;
 export const PADDLE_HEIGHT = 0.16;
-export const PADDLE_SPEED = 0.001;
+export const PADDLE_SPEED = 0.0013;
 export const LINE_WIDTH = PADDLE_WIDTH;
 export const BALL_SPEED_START = 0.0005;
 export const BALL_SPEED_INCREMENT = 0.00005;
