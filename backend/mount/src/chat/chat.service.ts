@@ -26,16 +26,11 @@ export class ChatService {
     async createChannel(
         createChannelDto: CreateChannelDto,
     ): Promise<CreateChannelDto> {
-        // const channel = this.prisma.channels.findUnique({
-        //     where: {
-        //         name: createChannelDto.name,
-        //     },
-        // });
 
         await this.prisma.channels.create({
             data: {
-                idAdmin: [createChannelDto.idUser[0]],
-                idUsers: [...createChannelDto.idUser],
+                idAdmin: [createChannelDto.idUser],
+                idUsers: [createChannelDto.idUser],
                 isPublic: createChannelDto.isPublic,
                 password: createChannelDto.password,
                 name: createChannelDto.name,

@@ -1,5 +1,5 @@
 export interface CreateChannelDto {
-	idUser: number[];
+	idUser: number;
 	name: string;
 	isPublic: boolean;
 	password?: string;

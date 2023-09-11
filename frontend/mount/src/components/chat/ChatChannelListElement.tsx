@@ -37,6 +37,18 @@ export default function ChatChannelListElement({
 
         console.log(isUserInChannel.data);
         if (isUserInChannel.data === true) {
+            const response = await authAxios.post(
+                `http://localhost:3333/chat/joinChannel`,
+                {
+                    idUser: user?.id,
+                    idChannel: channel.id,
+                    password: input,
+                },
+                {
+                    withCredentials: true,
+                },
+            );
+            
             setCurrentFriend(null);
             setChannel(channel.id);
         } else {

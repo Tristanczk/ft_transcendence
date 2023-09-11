@@ -52,7 +52,7 @@ export default function ChatChannelList({
             const response = await authAxios.post(
                 'http://localhost:3333/chat/createChannel',
                 {
-                    idUser: [user?.id],
+                    idUser: user?.id,
                     name: input,
                     isPublic: true,
                     password: '',
