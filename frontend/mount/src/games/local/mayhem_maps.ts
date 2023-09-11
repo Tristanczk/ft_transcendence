@@ -5,7 +5,7 @@ import {
     LINE_WIDTH,
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
-} from './shared/classic_mayhem';
+} from '../../shared/classic_mayhem';
 
 export const MAYHEM_GRID_HALF_WIDTH =
     Math.floor(
@@ -323,3 +323,5 @@ export const maps: MayhemMap[] = [
     map6,
     map7,
 ].map(mapify);
+
+export const EMPTY_MAP = mapify(map0, 0);
