@@ -33,6 +33,7 @@ export type Players = (Player | null)[];
 export type GameInfo = {
     state: GameState;
     players: Players;
+    timeRemaining: number;
 } & (
     | {
           mode: 'classic';

@@ -20,6 +20,7 @@ const Game = ({
 }) => {
     const gameParams = {
         players: gameInfo.players,
+        timeRemaining: gameInfo.timeRemaining,
         windowWidth: width,
         windowHeight: height,
     };
