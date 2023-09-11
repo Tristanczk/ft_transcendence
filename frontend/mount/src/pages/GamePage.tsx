@@ -3,9 +3,9 @@ import { NAVBAR_HEIGHT } from '../constants';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
-import ClassicGame from '../games/ClassicGame';
-import MayhemGame from '../games/MayhemGame';
-import BattleGame from '../games/BattleGame';
+import ClassicGame from '../games/multiplayer/MultiClassic';
+import MayhemGame from '../games/multiplayer/MultiMayhem';
+import BattleGame from '../games/multiplayer/MultiBattleRoyale';
 import { GameInfo } from '../shared/game_info';
 import { ApiResult, KeyEventType } from '../shared/misc';
 

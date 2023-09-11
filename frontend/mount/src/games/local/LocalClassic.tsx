@@ -1,10 +1,9 @@
 import React from 'react';
 import type P5 from 'p5';
 import Sketch from 'react-p5';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../constants';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
 import {
     ASPECT_RATIO,
-    BALL_HEIGHT,
     BALL_HIGH,
     BALL_LOW,
     BALL_RADIUS,
@@ -22,30 +21,13 @@ import {
     PADDLE_MARGIN_X,
     PADDLE_SPEED,
     PADDLE_WIDTH,
-} from '../shared/classic_mayhem';
+} from '../../shared/classic_mayhem';
 import {
-    MAYHEM_GRID_HALF_HEIGHT,
-    MAYHEM_GRID_HALF_WIDTH,
-    MayhemCell,
-    MayhemMap,
-    maps,
-} from '../mayhem_maps';
-import { clamp, randomChoice, randomFloat, remap } from '../shared/functions';
-
-type ObstacleCollision = {
-    surface: number;
-    x: number;
-    y: number;
-    newPosX: number;
-    newPosY: number;
-    newVelX: number;
-    newVelY: number;
-};
-
-const getObstaclePos = (x: number, y: number) => ({
-    posX: 0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH),
-    posY: 0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT),
-});
+    clamp,
+    randomChoice,
+    randomFloat,
+    remap,
+} from '../../shared/functions';
 
 class Ball {
     private initialPosY: number;
@@ -99,85 +81,6 @@ class Ball {
         }
     }
 
-    private hitObstacle(x: number, y: number): ObstacleCollision | null {
-        const { posX, posY } = getObstaclePos(x, y);
-        const left = posX - BALL_WIDTH;
-        const right = posX + BALL_WIDTH;
-        const top = posY - BALL_HEIGHT;
-        const bottom = posY + BALL_HEIGHT;
-        if (
-            this.posX <= left ||
-            this.posX >= right ||
-            this.posY <= top ||
-            this.posY >= bottom
-        )
-            return null;
-        const distances = [
-            this.velY <= 0
-                ? Infinity
-                : Math.abs(this.posY - top) / Math.abs(this.velY),
-            this.velX >= 0
-                ? Infinity
-                : Math.abs(this.posX - right) / Math.abs(this.velX),
-            this.velY >= 0
-                ? Infinity
-                : Math.abs(this.posY - bottom) / Math.abs(this.velY),
-            this.velX <= 0
-                ? Infinity
-                : Math.abs(this.posX - left) / Math.abs(this.velX),
-        ];
-        const collisionSide = distances.indexOf(Math.min(...distances));
-        let newPosX = this.posX;
-        let newPosY = this.posY;
-        let newVelX = this.velX;
-        let newVelY = this.velY;
-        if (collisionSide === 0) {
-            newVelY = -this.velY;
-            newPosY = top;
-        } else if (collisionSide === 1) {
-            newVelX = -this.velX;
-            newPosX = right;
-        } else if (collisionSide === 2) {
-            newVelY = -this.velY;
-            newPosY = bottom;
-        } else {
-            newVelX = -this.velX;
-            newPosX = left;
-        }
-        const surface =
-            collisionSide & 1
-                ? Math.min(distances[0], distances[2]) / BALL_HEIGHT
-                : Math.min(distances[1], distances[3]) / BALL_WIDTH;
-        return { surface, x, y, newPosX, newPosY, newVelX, newVelY };
-    }
-
-    public hitObstacles = (obstacles: MayhemMap) => {
-        let bestCollision: ObstacleCollision | null = null;
-        for (let y = 0; y < obstacles.length; ++y) {
-            const row = obstacles[y];
-            for (let x = 0; x < row.length; ++x) {
-                const obstacle = row[x];
-                if (obstacle.lives > 0) {
-                    const collision = this.hitObstacle(x, y);
-                    if (
-                        collision &&
-                        (!bestCollision ||
-                            collision.surface > bestCollision.surface)
-                    ) {
-                        bestCollision = collision;
-                    }
-                }
-            }
-        }
-        if (bestCollision) {
-            this.posX = bestCollision.newPosX;
-            this.posY = bestCollision.newPosY;
-            this.velX = bestCollision.newVelX;
-            this.velY = bestCollision.newVelY;
-            --obstacles[bestCollision.y][bestCollision.x].lives;
-        }
-    };
-
     private hitPaddle(left: boolean, paddle: number): number | null {
         const x = left ? this.posX : 1 - this.posX;
         if (PADDLE_MARGIN_X <= x && x <= COLLISION_X) {
@@ -230,39 +133,19 @@ const drawBar = (p5: P5, y: number) => {
     );
 };
 
-const drawObstacle = (p5: P5, obstacle: MayhemCell, x: number, y: number) => {
-    if (obstacle.lives > 0) {
-        const obstacleSize = Math.ceil(BALL_WIDTH * p5.width);
-        const { posX, posY } = getObstaclePos(x, y);
-        const screenX = Math.round(p5.width * (posX - BALL_WIDTH / 2));
-        const screenY = Math.round(p5.height * (posY - BALL_HEIGHT / 2));
-        const ratio =
-            obstacle.lives === Infinity ||
-            obstacle.lives === obstacle.startingLives
-                ? 1
-                : obstacle.lives / obstacle.startingLives;
-        for (let i = 0; i < obstacleSize; i++) {
-            for (let j = 0; j < obstacleSize; j++) {
-                if (ratio === 1 || Math.random() <= ratio) {
-                    const pixelIdx =
-                        4 * (screenX + i + (screenY + j) * p5.width);
-                    p5.pixels[pixelIdx] = 255;
-                    p5.pixels[pixelIdx + 1] = 255;
-                    p5.pixels[pixelIdx + 2] = 255;
-                }
-            }
-        }
+const drawNet = (p5: P5) => {
+    p5.rectMode(p5.CENTER);
+    p5.fill(255);
+    const midX = 0.5 * p5.width;
+    const midY = 0.5 * p5.height;
+    for (
+        let y = midY;
+        y >= (LINE_MARGIN + LINE_WIDTH) * p5.height;
+        y -= 2 * BALL_WIDTH * p5.width
+    ) {
+        p5.square(midX, y, BALL_WIDTH * p5.width);
+        p5.square(midX, p5.height - y, BALL_WIDTH * p5.width);
     }
-};
-
-const drawObstacles = (p5: P5, obstacles: MayhemMap) => {
-    p5.loadPixels();
-    obstacles.forEach((row, y) => {
-        row.forEach((obstacle, x) => {
-            drawObstacle(p5, obstacle, x, y);
-        });
-    });
-    p5.updatePixels();
 };
 
 const drawScore = (p5: P5, scoreLeft: number, scoreRight: number) => {
@@ -285,15 +168,14 @@ const movePaddle = (p5: P5, paddle: number, downKey: number, upKey: number) => {
     return p5.constrain(paddle, PADDLE_LOW, PADDLE_HIGH);
 };
 
-const MayhemGame = () => {
+const ClassicGame = () => {
     let scoreLeft = 0;
     let scoreRight = 0;
 
     let paddleLeft = 0.5;
     let paddleRight = 0.5;
 
-    const obstacles = randomChoice(maps);
-    const balls = [new Ball(0.25), new Ball(0.5), new Ball(0.75)];
+    const balls = [new Ball(0.5)];
 
     const setup = (p5: P5, canvasParentRef: Element) => {
         p5.createCanvas(0, 0).parent(canvasParentRef);
@@ -310,15 +192,14 @@ const MayhemGame = () => {
             ball.hitBar();
             [scoreLeft, scoreRight] = ball.checkScore(scoreLeft, scoreRight);
             ball.hitPaddles(paddleLeft, paddleRight);
-            ball.hitObstacles(obstacles);
         }
 
         p5.background(15);
+        drawNet(p5);
         drawBar(p5, LINE_MARGIN);
         drawBar(p5, 1 - LINE_MARGIN - LINE_WIDTH);
         drawPaddle(p5, true, paddleLeft);
         drawPaddle(p5, false, paddleRight);
-        drawObstacles(p5, obstacles);
         for (const ball of balls) ball.draw(p5);
         drawScore(p5, scoreLeft, scoreRight);
     };
@@ -337,7 +218,7 @@ const MayhemGame = () => {
     return <Sketch setup={setup} draw={draw} windowResized={windowResized} />;
 };
 
-const MayhemPage: React.FC = () => (
+const LocalClassic: React.FC = () => (
     <div
         className="w-full flex items-center justify-center"
         style={{
@@ -350,7 +231,7 @@ const MayhemPage: React.FC = () => (
             backgroundPosition: 'center',
         }}
     >
-        <MayhemGame />
+        <ClassicGame />
     </div>
 );
-export default MayhemPage;
+export default LocalClassic;
