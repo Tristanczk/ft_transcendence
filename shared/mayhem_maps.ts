@@ -6,6 +6,7 @@ import {
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
 } from './classic_mayhem';
+import { randomChoice } from './functions';
 
 const MAYHEM_GRID_HALF_WIDTH =
     Math.floor(
@@ -330,3 +331,16 @@ export const maps: MayhemMap[] = [
 ].map(mapify);
 
 export const EMPTY_MAP = mapify(map0, 0);
+
+export type MayhemMapCollision = {
+    surface: number;
+    gridX: number;
+    gridY: number;
+    newPosX: number;
+    newPosY: number;
+    newVelX: number;
+    newVelY: number;
+};
+
+export const randomMap = (): MayhemMap =>
+    randomChoice(maps).map((row) => row.map((cell) => ({ ...cell })));

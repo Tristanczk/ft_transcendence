@@ -14,6 +14,8 @@ import {
     WINNING_SCORE_CLASSIC,
     WINNING_SCORE_MAYHEM,
     BALL_SPEED_INCREMENT,
+    BALL_HEIGHT,
+    BALL_WIDTH,
 } from 'src/shared/classic_mayhem';
 import {
     remap,
@@ -30,6 +32,13 @@ import {
     DEFAULT_MAYHEM_OBJECTS,
     MultiBall,
 } from 'src/shared/game_info';
+import {
+    MayhemMap,
+    MayhemMapCollision,
+    getMayhemCellPos,
+    maps,
+    randomMap,
+} from 'src/shared/mayhem_maps';
 import { GameMode, MAX_PLAYERS } from 'src/shared/misc';
 
 class Game {
@@ -51,10 +60,9 @@ class Game {
                 ? { mode: gameMode, objects: DEFAULT_MAYHEM_OBJECTS }
                 : { mode: gameMode, objects: DEFAULT_BATTLE_OBJECTS }),
         };
-        // TODO uncomment
-        // if (this.info.mode === 'mayhem') {
-        //     this.info.objects.mayhemMap = randomChoice(maps);
-        // }
+        if (this.info.mode === 'mayhem') {
+            this.info.objects.mayhemMap = randomMap();
+        }
         this.addPlayer(firstPlayer);
     }
 
@@ -120,6 +128,89 @@ class Game {
         return null;
     }
 
+    private hitMayhemCell(
+        ball: MultiBall,
+        gridX: number,
+        gridY: number,
+    ): MayhemMapCollision | null {
+        const { posX, posY } = getMayhemCellPos(gridX, gridY);
+        const left = posX - BALL_WIDTH;
+        const right = posX + BALL_WIDTH;
+        const top = posY - BALL_HEIGHT;
+        const bottom = posY + BALL_HEIGHT;
+        if (
+            ball.posX <= left ||
+            ball.posX >= right ||
+            ball.posY <= top ||
+            ball.posY >= bottom
+        )
+            return null;
+        const distances = [
+            ball.velY <= 0
+                ? Infinity
+                : Math.abs(ball.posY - top) / Math.abs(ball.velY),
+            ball.velX >= 0
+                ? Infinity
+                : Math.abs(ball.posX - right) / Math.abs(ball.velX),
+            ball.velY >= 0
+                ? Infinity
+                : Math.abs(ball.posY - bottom) / Math.abs(ball.velY),
+            ball.velX <= 0
+                ? Infinity
+                : Math.abs(ball.posX - left) / Math.abs(ball.velX),
+        ];
+        const collisionSide = distances.indexOf(Math.min(...distances));
+        let newPosX = ball.posX;
+        let newPosY = ball.posY;
+        let newVelX = ball.velX;
+        let newVelY = ball.velY;
+        if (collisionSide === 0) {
+            newVelY = -ball.velY;
+            newPosY = top;
+        } else if (collisionSide === 1) {
+            newVelX = -ball.velX;
+            newPosX = right;
+        } else if (collisionSide === 2) {
+            newVelY = -ball.velY;
+            newPosY = bottom;
+        } else {
+            newVelX = -ball.velX;
+            newPosX = left;
+        }
+        const surface =
+            collisionSide & 1
+                ? Math.min(distances[0], distances[2]) / BALL_HEIGHT
+                : Math.min(distances[1], distances[3]) / BALL_WIDTH;
+        return { surface, gridX, gridY, newPosX, newPosY, newVelX, newVelY };
+    }
+
+    private hitMayhemMap = (ball: MultiBall, mayhemMap: MayhemMap) => {
+        let bestCollision: MayhemMapCollision | null = null;
+        for (let y = 0; y < mayhemMap.length; ++y) {
+            const row = mayhemMap[y];
+            for (let x = 0; x < row.length; ++x) {
+                const mayhemCell = row[x];
+                if (mayhemCell.lives > 0) {
+                    const collision = this.hitMayhemCell(ball, x, y);
+                    if (
+                        collision &&
+                        (!bestCollision ||
+                            collision.surface > bestCollision.surface)
+                    ) {
+                        bestCollision = collision;
+                    }
+                }
+            }
+        }
+        if (bestCollision) {
+            ball.posX = bestCollision.newPosX;
+            ball.posY = bestCollision.newPosY;
+            ball.velX = bestCollision.newVelX;
+            ball.velY = bestCollision.newVelY;
+            --mayhemMap[bestCollision.gridY][bestCollision.gridX].lives;
+        }
+    };
+
     private updateClassicMayhem(
         objects: ClassicMayhemGameObjects,
         deltaTime: number,
@@ -174,6 +265,7 @@ class Game {
                 ball.velY = newVelY;
                 ball.posX = clamp(ball.posX, COLLISION_X, 1 - COLLISION_X);
             }
+            this.hitMayhemMap(ball, objects.mayhemMap);
         }
     }
 
