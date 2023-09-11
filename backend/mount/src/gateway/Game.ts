@@ -50,6 +50,9 @@ class Game {
                 ? { mode: gameMode, objects: DEFAULT_MAYHEM_OBJECTS }
                 : { mode: gameMode, objects: DEFAULT_BATTLE_OBJECTS }),
         };
+        if (this.info.mode === 'mayhem') {
+            this.info.objects.mayhemMap = randomChoice(maps);
+        }
         this.addPlayer(firstPlayer);
     }
 
@@ -60,9 +63,6 @@ class Game {
             ball.velX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
             ball.velY =
                 randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
-        }
-        if (this.info.mode === 'mayhem') {
-            objects.mayhemMap = randomChoice(maps);
         }
     }
 
