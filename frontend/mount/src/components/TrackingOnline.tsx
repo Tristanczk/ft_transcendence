@@ -1,18 +1,34 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useUserContext } from '../context/UserContext';
+
+type TypeTracking = {
+    id: number;
+    idConnection: string;
+};
 
 function TrackingOnline() {
     const socket = useContext(WebsocketContext);
     const { user } = useUserContext();
+    const [userObj, setUserObj] = useState<TypeTracking>();
 
-    let userId = -1;
-    if (user) userId = user.id;
+    useEffect(() => {
+        socket.on('connect', () => {
+            setUserObj({
+                id: user ? user.id : -1,
+                idConnection: socket.id,
+            });
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [socket]);
 
-    const userObj = {
-        id: userId,
-        idConnection: socket.id,
-    };
+    useEffect(() => {
+        setUserObj({
+            id: user ? user.id : -1,
+            idConnection: socket.id,
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -24,7 +40,7 @@ function TrackingOnline() {
             clearInterval(interval);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userId]);
+    }, [userObj]);
 
     return <></>;
 }
