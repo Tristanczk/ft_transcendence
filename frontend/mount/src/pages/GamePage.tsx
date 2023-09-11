@@ -3,11 +3,10 @@ import { NAVBAR_HEIGHT } from '../constants';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
-import ClassicGame from '../games/multiplayer/MultiClassic';
-import MayhemGame from '../games/multiplayer/MultiMayhem';
-import BattleGame from '../games/multiplayer/MultiBattleRoyale';
 import { GameInfo } from '../shared/game_info';
 import { ApiResult, KeyEventType } from '../shared/misc';
+import MultiClassicMayhem from '../games/multiplayer/MultiClassicMayhem';
+import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
 
 const Game = ({
     gameInfo,
@@ -24,12 +23,10 @@ const Game = ({
         windowWidth: width,
         windowHeight: height,
     };
-    return gameInfo.mode === 'classic' ? (
-        <ClassicGame gameObjects={gameInfo.objects} {...gameParams} />
-    ) : gameInfo.mode === 'mayhem' ? (
-        <MayhemGame gameObjects={gameInfo.objects} {...gameParams} />
+    return gameInfo.mode === 'battle' ? (
+        <MultiBattleRoyale gameObjects={gameInfo.objects} {...gameParams} />
     ) : (
-        <BattleGame gameObjects={gameInfo.objects} {...gameParams} />
+        <MultiClassicMayhem gameObjects={gameInfo.objects} {...gameParams} />
     );
 };
 
