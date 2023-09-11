@@ -5,6 +5,8 @@ import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode } from '../shared/misc';
 
+const activateMatchmaking = true;
+
 const joinGame = (
     mode: GameMode,
     socket: Socket,
@@ -24,7 +26,8 @@ const joinGame = (
         } else {
             setGameId(response.gameId);
             if (response.status === 'waiting') {
-                setMatchmaking(true);
+                if (activateMatchmaking) setMatchmaking(true);
+                else navigate(`/game/${response.gameId}`);
             } else {
                 navigate(`/game/${response.gameId}`);
             }
@@ -69,6 +72,7 @@ const GameButton = ({
     </button>
 );
 
+//TO DO link with backend to actually cancel matchmaking and the game currently activated
 const CancelButton = ({
     text,
     socket,
