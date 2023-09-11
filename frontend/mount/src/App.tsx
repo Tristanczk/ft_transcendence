@@ -19,6 +19,7 @@ import { AuthAxiosProvider } from './context/AuthAxiosContext';
 import AchievementPage from './pages/AchievementsPage';
 import GameHistoryPage from './pages/GameHistoryPage';
 import GamePage from './pages/GamePage';
+import MayhemPage from './pages/MayhemPage';
 
 const App: React.FC = () => {
     const [gameId, setGameId] = useState<string | undefined>(undefined);
@@ -40,6 +41,7 @@ const App: React.FC = () => {
                                     />
                                 }
                             />
+                            <Route path="/mayhem" Component={MayhemPage} />
                             <Route path="/game/:gameId" Component={GamePage} />
                             <Route
                                 path="/dashboard"
