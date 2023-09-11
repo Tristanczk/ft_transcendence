@@ -197,6 +197,7 @@ export class GatewayService implements OnModuleInit {
                 this.server
                     .to(game.info.players[0].id)
                     .emit('startGame', game.id);
+                game.timeStarted = performance.now();
                 return { gameId: game.id, status: 'joined' };
             }
         }
@@ -292,6 +293,7 @@ const remap = (
 
 class Game {
     id: string;
+    timeStarted: number;
     info: GameInfo;
     private lastUpdate: number;
 
@@ -301,6 +303,7 @@ class Game {
         this.info = {
             state: 'waiting',
             players: new Array(MAX_PLAYERS[gameMode]).fill(null),
+            timeRemaining: 0,
             ...(gameMode === 'classic'
                 ? { mode: gameMode, objects: DEFAULT_CLASSIC_OBJECTS }
                 : gameMode === 'mayhem'
@@ -434,6 +437,10 @@ class Game {
         const now = performance.now();
         const deltaTime = now - this.lastUpdate;
         this.lastUpdate = now;
+        this.info.timeRemaining = Math.max(0, 3000 - (now - this.timeStarted));
+        if (this.info.timeRemaining > 0) {
+            return;
+        }
         switch (this.info.mode) {
             case 'classic':
                 this.updateClassic(this.info.objects, deltaTime);
