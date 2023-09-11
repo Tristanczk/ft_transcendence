@@ -345,7 +345,7 @@ const ClassicMayhemGame = ({
         drawPaddle(p5, false, paddleRight);
         drawObstacles(p5, obstacles);
         for (const ball of balls) ball.draw(p5);
-        if (drawNet) drawNet(p5);
+        if (hasNet) drawNet(p5);
         drawScore(p5, scoreLeft, scoreRight);
     };
 
