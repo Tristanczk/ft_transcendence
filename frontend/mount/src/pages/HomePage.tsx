@@ -5,15 +5,6 @@ import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode } from '../shared/misc';
 
-type ButtonParams = {
-    socket: Socket;
-    navigate: NavigateFunction;
-    setError: React.Dispatch<React.SetStateAction<string>>;
-    setErrorCode: React.Dispatch<React.SetStateAction<string | undefined>>;
-    setGameId: (gameId: string | undefined) => void;
-    setMatchmaking: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
 const joinGame = (
     mode: GameMode,
     socket: Socket,
@@ -117,13 +108,32 @@ const GameModePage = ({
     error,
     errorCode,
     gameId,
-    buttonParams,
+    socket,
+    navigate,
+    setError,
+    setErrorCode,
+    setGameId,
+    setMatchmaking,
 }: {
     error: string;
     errorCode: string | undefined;
     gameId: string | undefined;
-    buttonParams: ButtonParams;
+    socket: Socket;
+    navigate: NavigateFunction;
+    setError: React.Dispatch<React.SetStateAction<string>>;
+    setErrorCode: React.Dispatch<React.SetStateAction<string | undefined>>;
+    setGameId: (gameId: string | undefined) => void;
+    setMatchmaking: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+    const buttonParams = {
+        socket,
+        navigate,
+        setError,
+        setErrorCode,
+        setGameId,
+        setMatchmaking,
+    };
+
     return (
         <>
             <GameButton
@@ -201,14 +211,6 @@ const HomePage: React.FC<{
     const [error, setError] = useState<string>('');
     const [errorCode, setErrorCode] = useState<string | undefined>();
     const [matchmaking, setMatchmaking] = useState<boolean>(false);
-    const buttonParams: ButtonParams = {
-        socket,
-        navigate,
-        setError,
-        setErrorCode,
-        setGameId,
-        setMatchmaking,
-    };
     useEffect(() => {
         if (socket) {
             const startGame = (gameId: string) => {
@@ -235,7 +237,12 @@ const HomePage: React.FC<{
                     error={error}
                     errorCode={errorCode}
                     gameId={gameId}
-                    buttonParams={buttonParams}
+                    socket={socket}
+                    navigate={navigate}
+                    setError={setError}
+                    setErrorCode={setErrorCode}
+                    setGameId={setGameId}
+                    setMatchmaking={setMatchmaking}
                 />
             )}
         </div>
