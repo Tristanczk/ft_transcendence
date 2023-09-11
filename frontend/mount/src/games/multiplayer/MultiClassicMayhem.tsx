@@ -164,14 +164,22 @@ const drawTimeRemaining = (
     ctx: CanvasRenderingContext2D,
     timeRemaining: number,
 ) => {
-    ctx.fillStyle = BACKGROUND_COLOR;
-    const squareWidth = canvas.width * 0.4;
-    const squareHeight = canvas.height * 0.4;
+    const borderSize = canvas.width / 200;
+    const innerSquareSize = canvas.height * 0.3;
+    const outerSquareSize = innerSquareSize + 2 * borderSize;
+    ctx.fillStyle = 'white';
     ctx.fillRect(
-        (canvas.width - squareWidth) / 2,
-        (canvas.height - squareHeight) / 2,
-        squareWidth,
-        squareHeight,
+        (canvas.width - outerSquareSize) / 2,
+        (canvas.height - outerSquareSize) / 2,
+        outerSquareSize,
+        outerSquareSize,
+    );
+    ctx.fillStyle = BACKGROUND_COLOR;
+    ctx.fillRect(
+        (canvas.width - innerSquareSize) / 2,
+        (canvas.height - innerSquareSize) / 2,
+        innerSquareSize,
+        innerSquareSize,
     );
     ctx.fillStyle = 'white';
     const textSize = 24 + canvas.width / 10;
@@ -181,7 +189,7 @@ const drawTimeRemaining = (
     ctx.fillText(
         `${Math.ceil(timeRemaining / 1000)}`,
         canvas.width / 2,
-        canvas.height / 2,
+        canvas.height / 2 + textSize * 0.1,
     );
 };
 
@@ -220,15 +228,14 @@ const MultiClassicMayhem = ({
         drawBackground(canvas, ctx);
         drawBar(canvas, ctx, LINE_MARGIN);
         drawBar(canvas, ctx, 1 - LINE_MARGIN - LINE_WIDTH);
-        drawNet(canvas, ctx);
-        // TODO if (players[i]) is useless
+        if (gameObjects.hasNet) drawNet(canvas, ctx);
         if (players[0]) drawPaddle(canvas, ctx, true, players[0].pos);
         if (players[1]) drawPaddle(canvas, ctx, false, players[1].pos);
         drawMayhemMap(canvas, ctx, gameObjects.mayhemMap);
         drawScore(canvas, ctx, players);
         if (timeRemaining === 0) {
             drawBall(canvas, ctx, ballPosX, ballPosY);
-        } else {
+        } else if (players[0] && players[1]) {
             drawTimeRemaining(canvas, ctx, timeRemaining);
         }
     });
