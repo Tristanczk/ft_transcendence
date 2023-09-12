@@ -19,16 +19,14 @@ import {
     MayhemMap,
     getMayhemCellPos,
 } from '../../shared/mayhem_maps';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT, NEARLY_BLACK } from '../../shared/misc';
 import { getCanvasCtx } from './getCanvasCtx';
-
-const BACKGROUND_COLOR = '#0f0f0f';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
 ) => {
-    ctx.fillStyle = BACKGROUND_COLOR;
+    ctx.fillStyle = NEARLY_BLACK;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 };
 
@@ -178,7 +176,7 @@ const drawTimeRemaining = (
         outerSquareSize,
         outerSquareSize,
     );
-    ctx.fillStyle = BACKGROUND_COLOR;
+    ctx.fillStyle = NEARLY_BLACK;
     ctx.fillRect(
         (canvas.width - innerSquareSize) / 2,
         (canvas.height - innerSquareSize) / 2,

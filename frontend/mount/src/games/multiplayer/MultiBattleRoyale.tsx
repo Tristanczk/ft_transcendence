@@ -1,10 +1,17 @@
 import { useEffect, useRef } from 'react';
-import { BattleGameObjects, BattlePlayers } from '../../shared/game_info';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
+import {
+    BattleGameObjects,
+    BattlePlayer,
+    BattlePlayers,
+} from '../../shared/game_info';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT, NEARLY_BLACK } from '../../shared/misc';
 import { getCanvasCtx } from './getCanvasCtx';
 import {
     BATTLE_ARC_VERTICES,
     BATTLE_DEFAULT_PADDLE_SIZE,
+    BATTLE_MAX_HEIGHT,
+    BATTLE_PADDLE_MARGIN,
+    BATTLE_PADDLE_WIDTH,
 } from '../../shared/battle';
 
 const drawText = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
@@ -40,7 +47,7 @@ const drawPaddle = (
     innerRadius: number,
     outerRadius: number,
 ) => {
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = NEARLY_BLACK;
 
     const angles: number[] = Array.from(
         { length: BATTLE_ARC_VERTICES + 1 },
@@ -66,6 +73,19 @@ const drawPaddle = (
     ctx.fill();
 };
 
+const drawPlayer = (
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    player: BattlePlayer,
+    arenaSize: number,
+) => {
+    const innerRadius =
+        (arenaSize * (1 - BATTLE_PADDLE_MARGIN - BATTLE_PADDLE_WIDTH)) / 2;
+    const outerRadius = (arenaSize * (1 - BATTLE_PADDLE_MARGIN)) / 2;
+    const middleRadius = (innerRadius + outerRadius) / 2;
+    drawPaddle(canvas, ctx, player.angle, innerRadius, outerRadius);
+};
+
 const MultiBattleRoyale = ({
     gameObjects,
     windowWidth,
@@ -81,6 +101,7 @@ const MultiBattleRoyale = ({
     const arenaSize = Math.min(
         windowWidth - CANVAS_MARGIN,
         windowHeight - NAVBAR_HEIGHT - CANVAS_MARGIN,
+        BATTLE_MAX_HEIGHT,
     );
 
     const ref = useRef<HTMLCanvasElement | null>(null);
@@ -95,7 +116,7 @@ const MultiBattleRoyale = ({
         );
         for (const player of players) {
             if (player) {
-                drawPaddle(canvas, ctx, player.angle, 100, 200);
+                drawPlayer(canvas, ctx, player, arenaSize);
             }
         }
         drawText(canvas, ctx);

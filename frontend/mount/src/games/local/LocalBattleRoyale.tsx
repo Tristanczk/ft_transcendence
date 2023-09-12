@@ -2,7 +2,12 @@ import React from 'react';
 import p5Types from 'p5';
 import Sketch from 'react-p5';
 import { trueMod } from '../../shared/functions';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT, TAU } from '../../shared/misc';
+import {
+    CANVAS_MARGIN,
+    NAVBAR_HEIGHT,
+    NEARLY_BLACK,
+    TAU,
+} from '../../shared/misc';
 import {
     BATTLE_DEFAULT_PADDLE_SIZE,
     BATTLE_HIT_LEEWAY,
@@ -66,7 +71,7 @@ class Player {
         innerRadius: number,
         outerRadius: number,
     ): void {
-        p5.fill('black');
+        p5.fill(NEARLY_BLACK);
         p5.beginShape();
         const angles: number[] = Array.from(
             { length: BATTLE_ARC_VERTICES + 1 },
@@ -160,7 +165,7 @@ class Ball {
     }
 
     draw(p5: p5Types, arenaSize: number): void {
-        p5.fill('black');
+        p5.fill(NEARLY_BLACK);
         p5.circle(
             this.pos.x * arenaSize * 0.5,
             this.pos.y * arenaSize * 0.5,
@@ -196,7 +201,7 @@ const gameOver = (p5: p5Types, arenaSize: number) => {
     p5.textFont('monospace');
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.textSize(8 + arenaSize / 30);
-    p5.fill('black');
+    p5.fill(NEARLY_BLACK);
     p5.text('Game Over!', 0, 0);
     p5.noLoop();
 };
