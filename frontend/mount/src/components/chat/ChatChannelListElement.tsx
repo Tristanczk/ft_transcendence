@@ -25,7 +25,7 @@ export default function ChatChannelListElement({
 
     const isChannelOpen = async (channel: ChannelProps) => {
         const isUserInChannel = await authAxios.get(
-            `http://localhost:3333/chat/isUserInChannel`,
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/isUserInChannel`,
             {
                 params: {
                     idChannel: channel.id,
@@ -38,7 +38,7 @@ export default function ChatChannelListElement({
         console.log(isUserInChannel.data);
         if (isUserInChannel.data === true) {
             const response = await authAxios.post(
-                `http://localhost:3333/chat/joinChannel`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/joinChannel`,
                 {
                     idUser: user?.id,
                     idChannel: channel.id,
@@ -53,7 +53,7 @@ export default function ChatChannelListElement({
             setChannel(channel.id);
         } else {
             const response = await authAxios.get(
-                `http://localhost:3333/chat/isChannelOpen`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/isChannelOpen`,
                 {
                     params: {
                         idChannel: channel.id,
@@ -73,7 +73,7 @@ export default function ChatChannelListElement({
 
     const onKeyPress = async () => {
         const response = await authAxios.post(
-            `http://localhost:3333/chat/joinChannel`,
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/joinChannel`,
             {
                 idUser: user?.id,
                 idChannel: channel.id,

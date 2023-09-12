@@ -50,7 +50,7 @@ export default function ChatChannelList({
         console.log('creating channel');
         try {
             const response = await authAxios.post(
-                'http://localhost:3333/chat/createChannel',
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/createChannel`,
                 {
                     idUser: user?.id,
                     name: input,

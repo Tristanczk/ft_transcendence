@@ -66,7 +66,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const fetchFriends = async () => {
         try {
             const response = await authAxios.get(
-                'http://localhost:3333/friends/me',
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/friends/me`,
                 { withCredentials: true },
             );
             setFriendsList(response.data);
@@ -78,7 +78,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const fetchChannels = async () => {
         try {
             const response = await authAxios.get(
-                'http://localhost:3333/chat/getChannels',
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannels`,
                 {
                     withCredentials: true,
                 },
@@ -92,7 +92,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
     const fetchMessages = async () => {
         console.log('fetching messages for', channel);
         const response = await authAxios.get(
-            `http://localhost:3333/chat/getMessages/${channel}`,
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getMessages/${channel}`,
             {
                 params: { idUser: user?.id },
                 withCredentials: true,
@@ -104,7 +104,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
 
     const fetchChannel = async () => {
         const response = await authAxios.get(
-            'http://localhost:3333/chat/getChannelById',
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelById`,
             {
                 params: { idChannel: channel },
                 withCredentials: true,

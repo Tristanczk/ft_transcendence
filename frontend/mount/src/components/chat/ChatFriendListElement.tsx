@@ -19,7 +19,7 @@ export default function ChatFriendListElement({
     const fetchChannel = async (IdFriend: number) => {
         console.log('fetching channels for', user?.id, IdFriend);
         const response = await authAxios.get(
-            'http://localhost:3333/chat/getChannelByUsers',
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelByUsers`,
             {
                 params: { idAdmin: user?.id, idUser: IdFriend },
                 withCredentials: true,
