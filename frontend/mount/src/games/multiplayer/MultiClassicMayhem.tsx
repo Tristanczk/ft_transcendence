@@ -10,7 +10,10 @@ import {
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
 } from '../../shared/classic_mayhem';
-import { ClassicMayhemGameObjects, Players } from '../../shared/game_info';
+import {
+    ClassicMayhemGameObjects,
+    ClassicMayhemPlayers,
+} from '../../shared/game_info';
 import {
     MayhemCell,
     MayhemMap,
@@ -143,7 +146,7 @@ const drawMayhemMap = (
 const drawScore = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
-    players: Players,
+    players: ClassicMayhemPlayers,
 ) => {
     ctx.fillStyle = 'white';
     const textSize = 8 + canvas.width / 30;
@@ -203,7 +206,7 @@ const MultiClassicMayhem = ({
     gameObjects: ClassicMayhemGameObjects;
     windowWidth: number;
     windowHeight: number;
-    players: Players;
+    players: ClassicMayhemPlayers;
     timeRemaining: number;
 }) => {
     const arenaHeight = Math.min(

@@ -39,14 +39,6 @@ export type Paddle = {
 
 export type BattleGameObjects = {
     ball: MultiBall;
-    paddles: [
-        Paddle | null,
-        Paddle | null,
-        Paddle | null,
-        Paddle | null,
-        Paddle | null,
-        Paddle | null,
-    ];
 };
 
 export const getDefaultClassicObjects = (): ClassicMayhemGameObjects => ({
@@ -67,33 +59,38 @@ export const getDefaultMayhemObjects = (): ClassicMayhemGameObjects => ({
 
 export const getDefaultBattleObjects = (): BattleGameObjects => ({
     ball: { ...DEFAULT_BATTLE_BALL },
-    paddles: [null, null, null, null, null, null],
 });
 
-export type Player = {
+export type ClassicMayhemPlayer = {
     id: string;
     pos: number;
     score: number;
     activeKeys: Set<string>;
 };
 
-export type Players = (Player | null)[];
+export type ClassicMayhemPlayers = (ClassicMayhemPlayer | null)[];
+
+export type BattlePlayer = {
+    id: string;
+    pos: number;
+    score: number;
+    activeKeys: Set<string>;
+};
+
+export type BattlePlayers = (BattlePlayer | null)[];
 
 export type GameInfo = {
     state: GameState;
-    players: Players;
     timeRemaining: number;
 } & (
     | {
-          mode: 'classic';
-          objects: ClassicMayhemGameObjects;
-      }
-    | {
-          mode: 'mayhem';
+          mode: 'classic' | 'mayhem';
+          players: ClassicMayhemPlayers;
           objects: ClassicMayhemGameObjects;
       }
     | {
           mode: 'battle';
+          players: BattlePlayers;
           objects: BattleGameObjects;
       }
 );

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { BattleGameObjects, Players } from '../../shared/game_info';
+import { BattleGameObjects, BattlePlayers } from '../../shared/game_info';
 import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
 
 const drawBackground = (
@@ -28,7 +28,7 @@ const MultiBattleRoyale = ({
     gameObjects: BattleGameObjects;
     windowWidth: number;
     windowHeight: number;
-    players: Players;
+    players: BattlePlayers;
 }) => {
     console.log(gameObjects);
     const arenaSize = Math.min(
