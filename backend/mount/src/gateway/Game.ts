@@ -31,6 +31,7 @@ import {
     getDefaultClassicObjects,
     getDefaultMayhemObjects,
     getDefaultBattleObjects,
+    BattleGameObjects,
 } from 'src/shared/game_info';
 import {
     MayhemMap,
@@ -77,8 +78,8 @@ class Game {
             (i) => !this.info.players[i],
         );
         const idx = emptyIdxs[randomInt(0, emptyIdxs.length - 1)];
+        const numPlayers = MAX_PLAYERS[this.info.mode] - emptyIdxs.length + 1;
         if (this.info.mode === 'battle') {
-            const numPlayers = MAX_PLAYERS['battle'] - emptyIdxs.length + 1;
             const score = Math.max(2, Math.ceil(10 / numPlayers));
             this.info.players[idx] = {
                 id: playerId,
@@ -99,12 +100,10 @@ class Game {
                 activeKeys: new Set(),
             };
         }
-        if (emptyIdxs.length === 1) {
+        if (numPlayers === 2) {
             this.info.state = 'playing';
             this.timeStarted = performance.now();
-            if (this.info.mode === 'battle') {
-                // this.resetBattle(this.info.objects);
-            } else {
+            if (this.info.mode !== 'battle') {
                 for (const ball of this.info.objects.balls) {
                     this.resetBall(ball);
                 }
@@ -268,6 +267,61 @@ class Game {
         }
     }
 
+    private updateBattle(objects: BattleGameObjects, deltaTime: number) {
+        // for (const player of this.info.players) {
+        //     if (player) {
+        //         const paddleSpeed = PADDLE_SPEED * deltaTime;
+        //         if (player.activeKeys.has('ArrowUp')) {
+        //             player.pos -= paddleSpeed;
+        //         }
+        //         if (player.activeKeys.has('ArrowDown')) {
+        //             player.pos += paddleSpeed;
+        //         }
+        //         player.pos = clamp(player.pos, PADDLE_LOW, PADDLE_HIGH);
+        //     }
+        // }
+        if (this.info.state !== 'playing') return;
+        // for (const ball of objects.balls) {
+        //     ball.posX += ball.velX * deltaTime;
+        //     ball.posY += ball.velY * deltaTime;
+        //     if (ball.posY <= BALL_LOW || ball.posY >= BALL_HIGH) {
+        //         ball.posY = clamp(ball.posY, BALL_LOW, BALL_HIGH);
+        //         ball.velY = -ball.velY;
+        //     }
+        //     if (ball.posX >= 1 + BALL_RADIUS) {
+        //         ++this.info.players[0].score;
+        //         this.resetBall(ball);
+        //     } else if (ball.posX <= -BALL_RADIUS) {
+        //         ++this.info.players[1].score;
+        //         this.resetBall(ball);
+        //     }
+        //     const winningScore =
+        //         this.info.mode === 'classic'
+        //             ? WINNING_SCORE_CLASSIC
+        //             : WINNING_SCORE_MAYHEM;
+        //     if (
+        //         (this.info.players[0].score >= winningScore ||
+        //             this.info.players[1].score >= winningScore) &&
+        //         Math.abs(
+        //             this.info.players[0].score - this.info.players[1].score,
+        //         ) >= 2
+        //     ) {
+        //         this.info.state = 'finished';
+        //         return;
+        //     }
+        //     const newVelY = this.hitPaddle(ball, 0) || this.hitPaddle(ball, 1);
+        //     if (newVelY !== null) {
+        //         ball.velX = -(
+        //             ball.velX +
+        //             Math.sign(ball.velX) * BALL_SPEED_INCREMENT
+        //         );
+        //         ball.velY = newVelY;
+        //         ball.posX = clamp(ball.posX, COLLISION_X, 1 - COLLISION_X);
+        //     }
+        //     this.hitMayhemMap(ball, objects.mayhemMap);
+        // }
+    }
+
     update() {
         const now = performance.now();
         const deltaTime = now - this.lastUpdate;
@@ -275,7 +329,7 @@ class Game {
         this.info.timeRemaining = Math.max(0, 3000 - (now - this.timeStarted));
         if (this.info.timeRemaining > 0) return;
         if (this.info.mode === 'battle') {
-            // this.updateBattle(this.info.objects, deltaTime);
+            this.updateBattle(this.info.objects, deltaTime);
         } else {
             this.updateClassicMayhem(this.info.objects, deltaTime);
         }
