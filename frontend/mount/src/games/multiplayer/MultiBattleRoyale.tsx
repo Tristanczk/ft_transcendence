@@ -30,29 +30,27 @@ const MultiBattleRoyale = ({
     windowHeight: number;
     players: Players;
 }) => {
-    const arenaHeight = Math.min(
+    console.log(gameObjects);
+    const arenaSize = Math.min(
         windowWidth - CANVAS_MARGIN,
         windowHeight - NAVBAR_HEIGHT - CANVAS_MARGIN,
     );
-    const arenaWidth = arenaHeight;
 
     const ref = useRef<HTMLCanvasElement | null>(null);
 
     useEffect(() => {
         const canvas = ref.current!;
         const ctx = canvas.getContext('2d')!;
-        canvas.width = arenaWidth;
-        canvas.height = arenaHeight;
-        canvas.style.width = `${arenaWidth}px`;
-        canvas.style.height = `${arenaHeight}px`;
+        canvas.width = arenaSize;
+        canvas.height = arenaSize;
+        canvas.style.width = `${arenaSize}px`;
+        canvas.style.height = `${arenaSize}px`;
 
         drawBackground(canvas, ctx);
         drawText(canvas, ctx);
     });
 
-    return (
-        <canvas ref={ref} style={{ width: arenaWidth, height: arenaHeight }} />
-    );
+    return <canvas ref={ref} style={{ width: arenaSize, height: arenaSize }} />;
 };
 
 export default MultiBattleRoyale;
