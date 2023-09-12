@@ -22,13 +22,15 @@ export type ClassicMayhemGameObjects = {
     hasNet: boolean;
 };
 
-export const DEFAULT_CLASSIC_OBJECTS: ClassicMayhemGameObjects = {
+export type BattleGameObjects = {};
+
+export const getDefaultClassicObjects = (): ClassicMayhemGameObjects => ({
     balls: [{ ...DEFAULT_MULTIBALL }],
     mayhemMap: EMPTY_MAP,
     hasNet: true,
-};
+});
 
-export const DEFAULT_MAYHEM_OBJECTS: ClassicMayhemGameObjects = {
+export const getDefaultMayhemObjects = (): ClassicMayhemGameObjects => ({
     balls: [
         { ...DEFAULT_MULTIBALL },
         { ...DEFAULT_MULTIBALL },
@@ -36,10 +38,13 @@ export const DEFAULT_MAYHEM_OBJECTS: ClassicMayhemGameObjects = {
     ],
     mayhemMap: EMPTY_MAP,
     hasNet: false,
-};
+});
 
-export type BattleGameObjects = {};
-export const DEFAULT_BATTLE_OBJECTS: BattleGameObjects = {};
+export const getDefaultBattleObjects = (): BattleGameObjects => ({
+    balls: [],
+    mayhemMap: EMPTY_MAP,
+    hasNet: false,
+});
 
 export type Player = {
     id: string;

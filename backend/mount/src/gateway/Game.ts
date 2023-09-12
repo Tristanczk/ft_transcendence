@@ -26,11 +26,11 @@ import {
 } from 'src/shared/functions';
 import {
     GameInfo,
-    DEFAULT_BATTLE_OBJECTS,
     ClassicMayhemGameObjects,
-    DEFAULT_CLASSIC_OBJECTS,
-    DEFAULT_MAYHEM_OBJECTS,
     MultiBall,
+    getDefaultClassicObjects,
+    getDefaultMayhemObjects,
+    getDefaultBattleObjects,
 } from 'src/shared/game_info';
 import {
     MayhemMap,
@@ -54,10 +54,10 @@ class Game {
             players: new Array(MAX_PLAYERS[gameMode]).fill(null),
             timeRemaining: 0,
             ...(gameMode === 'classic'
-                ? { mode: gameMode, objects: DEFAULT_CLASSIC_OBJECTS }
+                ? { mode: gameMode, objects: getDefaultClassicObjects() }
                 : gameMode === 'mayhem'
-                ? { mode: gameMode, objects: DEFAULT_MAYHEM_OBJECTS }
-                : { mode: gameMode, objects: DEFAULT_BATTLE_OBJECTS }),
+                ? { mode: gameMode, objects: getDefaultMayhemObjects() }
+                : { mode: gameMode, objects: getDefaultBattleObjects() }),
         };
         if (this.info.mode === 'mayhem') {
             this.info.objects.mayhemMap = randomMap();

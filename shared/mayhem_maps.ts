@@ -343,4 +343,4 @@ export type MayhemMapCollision = {
 };
 
 export const randomMap = (): MayhemMap =>
-    randomChoice(maps).map((row) => row.map((cell) => ({ ...cell })));
+    JSON.parse(JSON.stringify(randomChoice(maps)));
