@@ -24,32 +24,17 @@ import {
     PADDLE_WIDTH,
 } from '../../shared/classic_mayhem';
 import {
-    MAYHEM_GRID_HALF_HEIGHT,
-    MAYHEM_GRID_HALF_WIDTH,
     MayhemCell,
     MayhemMap,
-} from './mayhem_maps';
+    MayhemMapCollision,
+    getMayhemCellPos,
+} from '../../shared/mayhem_maps';
 import {
     clamp,
     randomChoice,
     randomFloat,
     remap,
 } from '../../shared/functions';
-
-type MayhemMapCollision = {
-    surface: number;
-    x: number;
-    y: number;
-    newPosX: number;
-    newPosY: number;
-    newVelX: number;
-    newVelY: number;
-};
-
-const getMayhemCellPos = (x: number, y: number) => ({
-    posX: 0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH),
-    posY: 0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT),
-});
 
 class Ball {
     posX!: number;
@@ -101,8 +86,11 @@ class Ball {
         }
     }
 
-    private hitMayhemCell(x: number, y: number): MayhemMapCollision | null {
-        const { posX, posY } = getMayhemCellPos(x, y);
+    private hitMayhemCell(
+        gridX: number,
+        gridY: number,
+    ): MayhemMapCollision | null {
+        const { posX, posY } = getMayhemCellPos(gridX, gridY);
         const left = posX - BALL_WIDTH;
         const right = posX + BALL_WIDTH;
         const top = posY - BALL_HEIGHT;
@@ -150,17 +138,17 @@ class Ball {
             collisionSide & 1
                 ? Math.min(distances[0], distances[2]) / BALL_HEIGHT
                 : Math.min(distances[1], distances[3]) / BALL_WIDTH;
-        return { surface, x, y, newPosX, newPosY, newVelX, newVelY };
+        return { surface, gridX, gridY, newPosX, newPosY, newVelX, newVelY };
     }
 
     public hitMayhemMap = (mayhemMap: MayhemMap) => {
         let bestCollision: MayhemMapCollision | null = null;
-        for (let y = 0; y < mayhemMap.length; ++y) {
-            const row = mayhemMap[y];
-            for (let x = 0; x < row.length; ++x) {
-                const mayhemCell = row[x];
+        for (let gridY = 0; gridY < mayhemMap.length; ++gridY) {
+            const row = mayhemMap[gridY];
+            for (let gridX = 0; gridX < row.length; ++gridX) {
+                const mayhemCell = row[gridX];
                 if (mayhemCell.lives > 0) {
-                    const collision = this.hitMayhemCell(x, y);
+                    const collision = this.hitMayhemCell(gridX, gridY);
                     if (
                         collision &&
                         (!bestCollision ||
@@ -176,7 +164,7 @@ class Ball {
             this.posY = bestCollision.newPosY;
             this.velX = bestCollision.newVelX;
             this.velY = bestCollision.newVelY;
-            --mayhemMap[bestCollision.y][bestCollision.x].lives;
+            --mayhemMap[bestCollision.gridY][bestCollision.gridX].lives;
         }
     };
 

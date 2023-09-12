@@ -1,22 +1,42 @@
+import { EMPTY_MAP, MayhemMap } from './mayhem_maps';
+
 export type GameState = 'waiting' | 'playing' | 'finished';
 
-export type ClassicGameObjects = {
-    ballPosX: number;
-    ballPosY: number;
-    ballVelX: number;
-    ballVelY: number;
+export type MultiBall = {
+    posX: number;
+    posY: number;
+    velX: number;
+    velY: number;
 };
 
-export const DEFAULT_CLASSIC_OBJECTS: ClassicGameObjects = {
-    ballPosX: 0.5,
-    ballPosY: 0.5,
-    ballVelX: 0,
-    ballVelY: 0,
+const DEFAULT_MULTIBALL: MultiBall = {
+    posX: 0.5,
+    posY: 0.5,
+    velX: 0,
+    velY: 0,
 };
 
-export type MayhemGameObjects = ClassicGameObjects; // TODO
-export const DEFAULT_MAYHEM_OBJECTS: MayhemGameObjects =
-    DEFAULT_CLASSIC_OBJECTS; // TODO
+export type ClassicMayhemGameObjects = {
+    balls: MultiBall[];
+    mayhemMap: MayhemMap;
+    hasNet: boolean;
+};
+
+export const DEFAULT_CLASSIC_OBJECTS: ClassicMayhemGameObjects = {
+    balls: [{ ...DEFAULT_MULTIBALL }],
+    mayhemMap: EMPTY_MAP,
+    hasNet: true,
+};
+
+export const DEFAULT_MAYHEM_OBJECTS: ClassicMayhemGameObjects = {
+    balls: [
+        { ...DEFAULT_MULTIBALL },
+        { ...DEFAULT_MULTIBALL },
+        { ...DEFAULT_MULTIBALL },
+    ],
+    mayhemMap: EMPTY_MAP,
+    hasNet: false,
+};
 
 export type BattleGameObjects = {};
 export const DEFAULT_BATTLE_OBJECTS: BattleGameObjects = {};
@@ -37,11 +57,11 @@ export type GameInfo = {
 } & (
     | {
           mode: 'classic';
-          objects: ClassicGameObjects;
+          objects: ClassicMayhemGameObjects;
       }
     | {
           mode: 'mayhem';
-          objects: MayhemGameObjects;
+          objects: ClassicMayhemGameObjects;
       }
     | {
           mode: 'battle';

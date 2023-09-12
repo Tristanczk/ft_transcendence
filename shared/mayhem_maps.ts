@@ -5,17 +5,23 @@ import {
     LINE_WIDTH,
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
-} from '../../shared/classic_mayhem';
+} from './classic_mayhem';
+import { randomChoice } from './functions';
 
-export const MAYHEM_GRID_HALF_WIDTH =
+const MAYHEM_GRID_HALF_WIDTH =
     Math.floor(
         (0.5 - BALL_WIDTH / 2 - PADDLE_MARGIN_X - PADDLE_WIDTH) / BALL_WIDTH,
     ) - 1;
 
-export const MAYHEM_GRID_HALF_HEIGHT =
+const MAYHEM_GRID_HALF_HEIGHT =
     Math.floor(
         (0.5 - BALL_HEIGHT / 2 - LINE_MARGIN * 2 - LINE_WIDTH) / BALL_HEIGHT,
     ) - 1;
+
+export const getMayhemCellPos = (x: number, y: number) => ({
+    posX: 0.5 + BALL_WIDTH * (x - MAYHEM_GRID_HALF_WIDTH),
+    posY: 0.5 + BALL_HEIGHT * (y - MAYHEM_GRID_HALF_HEIGHT),
+});
 
 export type MayhemCell = { lives: number; startingLives: number };
 export type MayhemMap = MayhemCell[][];
@@ -325,3 +331,16 @@ export const maps: MayhemMap[] = [
 ].map(mapify);
 
 export const EMPTY_MAP = mapify(map0, 0);
+
+export type MayhemMapCollision = {
+    surface: number;
+    gridX: number;
+    gridY: number;
+    newPosX: number;
+    newPosY: number;
+    newVelX: number;
+    newVelY: number;
+};
+
+export const randomMap = (): MayhemMap =>
+    randomChoice(maps).map((row) => row.map((cell) => ({ ...cell })));
