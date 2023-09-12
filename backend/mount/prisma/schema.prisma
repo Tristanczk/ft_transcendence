@@ -58,7 +58,7 @@ model Channels {
     idUsers   Int[]
     name      String
     isPublic  Boolean  @default(true)
-    password  String?   
+    password  String?
     createdAt DateTime @default(now())
 }
 
@@ -66,6 +66,6 @@ model Message {
     id        Int      @id @default(autoincrement())
     idChannel Int
     idSender  Int
-    message    String
+    message   String
     createdAt DateTime @default(now())
 }

@@ -3,6 +3,8 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode, NAVBAR_HEIGHT } from '../shared/misc';
+import { Action } from '@remix-run/router';
+import { set } from 'date-fns';
 
 const joinGame = (
     mode: GameMode,
@@ -12,10 +14,9 @@ const joinGame = (
     setErrorCode: (errorCode: string | undefined) => void,
     setGameId: (gameId: string | undefined) => void,
     setMatchmaking: (matchmaking: boolean) => void,
+    setErrorMatchmaking: (error: string) => void,
 ) => {
-    // const { user } = useUserContext();
-    // let userId: number = -1;
-    // if (user) userId = user.id;
+    setErrorMatchmaking('');
     socket.emit('joinGame', mode, (response: any) => {
         if (response.error) {
             setError(response.error);
@@ -43,6 +44,7 @@ const GameButton = ({
     setErrorCode,
     setGameId,
     setMatchmaking,
+    setErrorMatchmaking,
 }: {
     externalMode: string;
     internalMode: GameMode;
@@ -52,6 +54,7 @@ const GameButton = ({
     setErrorCode: (errorCode: string | undefined) => void;
     setGameId: (gameId: string | undefined) => void;
     setMatchmaking: (matchmaking: boolean) => void;
+    setErrorMatchmaking: (error: string) => void;
 }) => (
     <button
         className="flex justify-center items-center py-4 px-8 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm"
@@ -64,6 +67,7 @@ const GameButton = ({
                 setErrorCode,
                 setGameId,
                 setMatchmaking,
+                setErrorMatchmaking,
             )
         }
     >
@@ -151,6 +155,7 @@ const GameModePage = ({
     setErrorCode,
     setGameId,
     setMatchmaking,
+    setErrorMatchmaking,
 }: {
     error: string;
     errorCode: string | undefined;
@@ -161,6 +166,7 @@ const GameModePage = ({
     setErrorCode: React.Dispatch<React.SetStateAction<string | undefined>>;
     setGameId: (gameId: string | undefined) => void;
     setMatchmaking: React.Dispatch<React.SetStateAction<boolean>>;
+    setErrorMatchmaking: React.Dispatch<React.SetStateAction<string>>;
 }) => {
     const buttonParams = {
         socket,
@@ -169,6 +175,7 @@ const GameModePage = ({
         setErrorCode,
         setGameId,
         setMatchmaking,
+        setErrorMatchmaking,
     };
 
     return (
@@ -275,6 +282,21 @@ const HomePage: React.FC<{
         }
     }, [socket, navigate]);
 
+    useEffect(() => {
+        return () => {
+            if (matchmaking && gameId) {
+                console.log('leaving matchmaking once again');
+                leaveMatchmaking(
+                    socket,
+                    setErrorMatchmaking,
+                    gameId,
+                    setGameId,
+                    setMatchmaking,
+                );
+            }
+        };
+    });
+
     return (
         <div
             className="flex flex-col justify-center items-center bg-rose-600 space-y-4"
@@ -300,6 +322,7 @@ const HomePage: React.FC<{
                     setErrorCode={setErrorCode}
                     setGameId={setGameId}
                     setMatchmaking={setMatchmaking}
+                    setErrorMatchmaking={setErrorMatchmaking}
                 />
             )}
         </div>
