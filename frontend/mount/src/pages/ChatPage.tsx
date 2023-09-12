@@ -125,12 +125,19 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
         fetchChannel();
     }, [channel, currentFriend, channelListSelected]);
 
-
-    socket.on('message', (message: MessageProps) => {
-        console.log('received message', message);
-        //if current channel, else notification => channelid
-        setMessages((oldMessages) => [...oldMessages, message]);
-    });
+    useEffect(() => {
+        const messageListener = (message: MessageProps) => {
+            console.log('received message', message);
+            setMessages((oldMessages) => [...oldMessages, message]);
+        };
+    
+        socket.on('message', messageListener);
+    
+        return () => {
+            socket.off('message', messageListener);
+        };
+    }, [socket]);
+    
 
     return (
         <div
