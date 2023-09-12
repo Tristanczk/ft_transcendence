@@ -40,11 +40,15 @@ import {
     randomMap,
 } from 'src/shared/mayhem_maps';
 import { GameMode, MAX_PLAYERS } from 'src/shared/misc';
+import { IndivUser } from './gateway.users';
 
 class Game {
     id: string;
     timeStarted: number;
     info: GameInfo;
+	idGameStat: number;
+	playerA: IndivUser | null;
+	playerB: IndivUser | null;
     private lastUpdate: number;
 
     constructor(gameId: string, gameMode: GameMode, firstPlayer: string) {
@@ -64,6 +68,9 @@ class Game {
             this.info.objects.mayhemMap = randomMap();
         }
         this.addPlayer(firstPlayer);
+		this.idGameStat = -1;
+		this.playerA = null;
+		this.playerB = null;
     }
 
     private resetBall(ball: MultiBall) {

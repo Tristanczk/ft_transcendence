@@ -84,6 +84,12 @@ export class Users {
         return null;
     }
 
+	getIndivUserBySocketId(socketId: string): IndivUser | null {
+		if (this.socketIds[socketId])
+			return this.socketIds[socketId].indivUser;
+        return null;
+    }
+
     async checkUserAlreadyHere(
         userId: number,
         socketId: string,
@@ -157,6 +163,7 @@ export class IndivUser {
     isSignedIn: boolean;
     isConnected: boolean;
     isPlaying: boolean;
+	idGamePlaying: string;
     sockets: string[];
     lastPingTime: number;
 
@@ -169,6 +176,7 @@ export class IndivUser {
         this.isConnected = false;
         this.isSignedIn = userId === -1 ? false : true;
         this.isPlaying = false;
+		this.idGamePlaying = null;
         this.sockets = [socketId];
         this.lastPingTime = Date.now();
     }
@@ -229,4 +237,9 @@ export class IndivUser {
         }
         return false;
     }
+
+	setIsPlaying(gameId: string) {
+		this.isPlaying = true;
+		this.idGamePlaying = gameId;
+	}
 }

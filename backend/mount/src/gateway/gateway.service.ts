@@ -14,7 +14,8 @@ import Game from './Game';
 import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
 import { GameInfo } from 'src/shared/game_info';
-import { ResponseCheckConnexion, Users } from './gateway.users';
+import { IndivUser, ResponseCheckConnexion, Users } from './gateway.users';
+import { GamesService } from 'src/games/games.service';
 
 const ID_SIZE = 6;
 const ID_BASE = 36;
@@ -46,6 +47,11 @@ export type HandlePingProp = {
     type: 'in' | 'out';
 };
 
+export type JoinGameType = {
+    mode: string;
+    userId: number;
+};
+
 @Injectable()
 @WebSocketGateway({
     cors: {
@@ -55,7 +61,10 @@ export type HandlePingProp = {
 export class GatewayService
     implements OnModuleInit, OnGatewayDisconnect, OnGatewayConnection
 {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private gamesService: GamesService,
+    ) {}
 
     socketArray: SocketProps[] = [];
 
@@ -108,17 +117,20 @@ export class GatewayService
     /*********** Axel WIP ***********/
 
     private games: Record<string, Game> = {};
-    private clients: Record<string, string> = {};
+    private clients: Record<string, IndivUser | null> = {}; //<socketId, client>
     private spectators: Record<string, Set<string>> = {};
     private spectating: Record<string, string> = {};
 
     @SubscribeMessage('joinGame')
-    async handleJoinGame(client: Socket, gameMode: string) {
+    async handleJoinGame(client: Socket, data: JoinGameType) {
+        const gameMode: string = data.mode;
+        const playerId: number = data.userId;
+        console.log('player ' + playerId + ' want to play');
         if (this.clients[client.id]) {
             return {
-                error: `You are already in game ${this.clients[client.id]}`,
+                error: `You are already in game ${this.clients[client.id].idGamePlaying}`,
                 errorCode: 'alreadyInGame',
-                gameId: this.clients[client.id],
+                gameId: this.clients[client.id].idGamePlaying,
             };
         }
         if (!isGameMode(gameMode)) {
@@ -130,18 +142,52 @@ export class GatewayService
         for (const game of Object.values(this.games)) {
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
                 game.addPlayer(client.id);
-                this.clients[client.id] = game.id;
+				this.liaiseGameToPlayer(client.id, game, 'B');
                 this.server
                     .to(game.info.players[0].id)
                     .emit('startGame', game.id);
+                await this.startGameStat(game);
+
                 return { gameId: game.id, status: 'joined' };
             }
         }
         const game = new Game(generateId(this.games), gameMode, client.id);
         this.games[game.id] = game;
-        this.clients[client.id] = game.id;
+		this.liaiseGameToPlayer(client.id, game, 'A');
+        // this.clients[client.id] = game.id;
         return { gameId: game.id, status: 'waiting' };
     }
+
+	//on ne prend pas en compte le mode multiplayer (battle)
+	async startGameStat(game: Game) {
+		const idPlayerA: number = game.playerA.userId;
+		const idPlayerB: number = game.playerB.userId;
+		let mode: number = -1;
+		if (game.info.mode === 'classic') mode = 0;
+		else if (game.info.mode === 'mayhem') mode = 1;
+
+		if (mode !== -1)
+			game.idGameStat = await this.gamesService.initGame(idPlayerA, idPlayerB, 0);
+		console.log('for stats:' + game.idGameStat);
+	}
+
+	liaiseGameToPlayer(socketId: string, game: Game, playerPos: 'A' | 'B'): boolean {
+		const player: IndivUser | null = this.users.getIndivUserBySocketId(socketId);
+        if (player) {
+            player.setIsPlaying(game.id);
+            this.clients[socketId] = player;
+			if (playerPos === 'A') game.playerA = player;
+			else game.playerB = player;
+
+			console.log(playerPos + '(' + player.userId + '/' + socketId + ') came, play=' + player.idGamePlaying);
+
+			return true;
+        } else {
+            console.log('error to handle');
+            //TODO and TO TEST (si quelqu'un arrive sur la page et clique instantannement sur le bouton jouer.)
+			return false;
+        }
+	}
 
     @SubscribeMessage('quitGame')
     async handleQuitGame(client: Socket, data: string) {

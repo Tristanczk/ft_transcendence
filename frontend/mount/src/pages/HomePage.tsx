@@ -3,22 +3,27 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode, NAVBAR_HEIGHT } from '../shared/misc';
+import { useUserContext } from '../context/UserContext';
 
 const activateMatchmaking = false;
+
+type JoinGameType = {
+    mode: GameMode;
+    userId: number;
+};
 
 const joinGame = (
     mode: GameMode,
     socket: Socket,
+    userId: number,
     navigate: NavigateFunction,
     setError: (error: string) => void,
     setErrorCode: (errorCode: string | undefined) => void,
     setGameId: (gameId: string | undefined) => void,
     setMatchmaking: (matchmaking: boolean) => void,
 ) => {
-    // const { user } = useUserContext();
-    // let userId: number = -1;
-    // if (user) userId = user.id;
-    socket.emit('joinGame', mode, (response: any) => {
+    const joinGame: JoinGameType = { mode: mode, userId: userId };
+    socket.emit('joinGame', joinGame, (response: any) => {
         if (response.error) {
             setError(response.error);
             setErrorCode(response.errorCode);
@@ -41,6 +46,7 @@ const GameButton = ({
     externalMode,
     internalMode,
     socket,
+    userId,
     navigate,
     setError,
     setErrorCode,
@@ -50,6 +56,7 @@ const GameButton = ({
     externalMode: string;
     internalMode: GameMode;
     socket: Socket;
+    userId: number;
     navigate: NavigateFunction;
     setError: (error: string) => void;
     setErrorCode: (errorCode: string | undefined) => void;
@@ -62,6 +69,7 @@ const GameButton = ({
             joinGame(
                 internalMode,
                 socket,
+                userId,
                 navigate,
                 setError,
                 setErrorCode,
@@ -131,8 +139,13 @@ const GameModePage = ({
     setGameId: (gameId: string | undefined) => void;
     setMatchmaking: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+    const { user } = useUserContext();
+    let userId: number = -1;
+    if (user) userId = user.id;
+
     const buttonParams = {
         socket,
+        userId,
         navigate,
         setError,
         setErrorCode,

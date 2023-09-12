@@ -34,37 +34,106 @@ export class GamesService {
 
     dataGamesPlaying: CurrentGame[] = [];
 
-    async initGame(playerA: any, idPlayerB: number, mode: number) {
-        //verif playerB exist
-        const playerB = await this.prisma.user.findUnique({
-            where: { id: idPlayerB },
-        });
-        if (!playerB) throw new NotFoundException();
+    async initGame(idPlayerA: number, idPlayerB: number, mode: number) {
+        //verif players
+		let verifiedIdPlayerA: number = -1;
+		let playerA: User | null = null;
+		let verifiedIdPlayerB: number = -1;
+		let playerB: User | null = null;
+
+		try {
+			playerA = await this.prisma.user.findUnique({
+				where: { id: idPlayerA },
+			});
+			verifiedIdPlayerA = idPlayerA;
+		}
+		catch (error) {
+			console.log('A not found')
+			verifiedIdPlayerA = -1;
+		}
+
+		try {
+			playerB = await this.prisma.user.findUnique({
+				where: { id: idPlayerB },
+			});
+			verifiedIdPlayerB = idPlayerB;
+		}
+		catch (error) {
+			console.log('B not found')
+			verifiedIdPlayerB = -1;
+		}
+        
+
+		//verif playerB exist
+        // const playerB: User = await this.prisma.user.findUnique({
+        //     where: { id: idPlayerB },
+        // });
+
+        // if (!playerB) throw new NotFoundException();
 
         //creating game
         try {
-            const newGame = await this.prisma.games.create({
-                data: {
-                    finished: false,
-                    finishedAt: new Date(),
-                    won: true,
-                    scoreA: 0,
-                    scoreB: 0,
-                    varEloA: 0,
-                    varEloB: 0,
-                    initEloA: playerA.elo,
-                    initEloB: playerB.elo,
-                    mode: mode,
-                    UserA: { connect: { id: playerA.id } },
-                    UserB: { connect: { id: idPlayerB } },
-                },
-            });
+			let newGame: Games = null;
+			if (playerA && playerB) {
+				newGame = await this.prisma.games.create({
+					data: {
+						finished: false,
+						finishedAt: new Date(),
+						won: true,
+						scoreA: 0,
+						scoreB: 0,
+						varEloA: 0,
+						varEloB: 0,
+						initEloA: playerA ? playerA.elo : 1000,
+						initEloB: playerB ? playerB.elo : 1000,
+						mode: mode,
+						UserA: { connect: { id: playerA.id } },
+						UserB: { connect: { id: playerB.id } },
+					},
+				});
+			}
+			else if (playerA) {
+				newGame = await this.prisma.games.create({
+					data: {
+						finished: false,
+						finishedAt: new Date(),
+						won: true,
+						scoreA: 0,
+						scoreB: 0,
+						varEloA: 0,
+						varEloB: 0,
+						initEloA: playerA ? playerA.elo : 1000,
+						initEloB: playerB ? playerB.elo : 1000,
+						mode: mode,
+						UserA: { connect: { id: playerA.id } },
+					},
+				});
+			}
+			else if (playerB) {
+				newGame = await this.prisma.games.create({
+					data: {
+						finished: false,
+						finishedAt: new Date(),
+						won: true,
+						scoreA: 0,
+						scoreB: 0,
+						varEloA: 0,
+						varEloB: 0,
+						initEloA: playerA ? playerA.elo : 1000,
+						initEloB: playerB ? playerB.elo : 1000,
+						mode: mode,
+						UserB: { connect: { id: playerB.id } },
+					},
+				});
+			}
+            
+
             const thisGame: CurrentGame = {
                 idGame: newGame.id,
-                idPlayerA: playerA.id,
-                eloPlayerA: playerA.elo,
-                idPlayerB: idPlayerB,
-                eloPlayerB: playerB.elo,
+                idPlayerA: playerA ? playerA.id : -1,
+                eloPlayerA: playerA ? playerA.elo : 1000,
+                idPlayerB: playerB ? playerB.id : -1,
+                eloPlayerB: playerB ? playerB.elo : 1000,
             };
             this.dataGamesPlaying.push(thisGame);
             return newGame.id;

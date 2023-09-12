@@ -20,8 +20,8 @@ export class GamesController {
 
     @UseGuards(JwtGuard)
     @Post('init')
-    async initGame(@GetUser() user: any, @Body() body: InitGameDto) {
-        return this.gamesService.initGame(user, body.idPlayerB, body.mode);
+    async initGame(@GetUser('id') idUser: number, @Body() body: InitGameDto) {
+        return this.gamesService.initGame(idUser, body.idPlayerB, body.mode);
     }
 
     @UseGuards(JwtGuard)
