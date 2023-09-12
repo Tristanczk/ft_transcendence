@@ -3,6 +3,7 @@ import p5Types from 'p5';
 import Sketch from 'react-p5';
 import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
 import { trueMod } from '../../shared/functions';
+import { TAU } from '../../shared/misc';
 import {
     DEFAULT_PADDLE_SIZE,
     HIT_LEEWAY,
@@ -11,7 +12,6 @@ import {
     PADDLE_MARGIN,
     HIT_PADDLE,
     HIT_ANGLE_FACTOR,
-    TAU,
     BETWEEN_PADDLES,
     MAX_HEIGHT,
     BATTLE_BALL_SIZE,

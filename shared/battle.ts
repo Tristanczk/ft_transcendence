@@ -1,4 +1,3 @@
-export const TAU = 2 * Math.PI; // TODO misc.ts
 export const BATTLE_MIN_PLAYERS = 2;
 export const BATTLE_MAX_PLAYERS = 6;
 export const MAX_HEIGHT = 720;

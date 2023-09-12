@@ -15,3 +15,5 @@ export type ApiResult<T> =
 
 export type KeyEventType = 'down' | 'up';
 export type KeyEvent = { key: string; type: KeyEventType; gameId: string };
+
+export const TAU = 2 * Math.PI;
