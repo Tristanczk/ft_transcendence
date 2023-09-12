@@ -1,7 +1,6 @@
 import React from 'react';
 import type P5 from 'p5';
 import Sketch from 'react-p5';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
 import {
     ASPECT_RATIO,
     BALL_HEIGHT,
@@ -35,6 +34,7 @@ import {
     randomFloat,
     remap,
 } from '../../shared/functions';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
 
 class Ball {
     posX!: number;

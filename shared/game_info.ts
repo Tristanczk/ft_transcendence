@@ -22,7 +22,25 @@ export type ClassicMayhemGameObjects = {
     hasNet: boolean;
 };
 
-export type BattleGameObjects = {};
+export type Paddle = {
+    keys: { clockwise: number; antiClockwise: number };
+    color: string;
+    paddleSize: number;
+    angle: number;
+    lives: number;
+};
+
+export type BattleGameObjects = {
+    ball: MultiBall;
+    paddles: [
+        Paddle | null,
+        Paddle | null,
+        Paddle | null,
+        Paddle | null,
+        Paddle | null,
+        Paddle | null,
+    ];
+};
 
 export const getDefaultClassicObjects = (): ClassicMayhemGameObjects => ({
     balls: [{ ...DEFAULT_MULTIBALL }],
@@ -41,9 +59,8 @@ export const getDefaultMayhemObjects = (): ClassicMayhemGameObjects => ({
 });
 
 export const getDefaultBattleObjects = (): BattleGameObjects => ({
-    balls: [],
-    mayhemMap: EMPTY_MAP,
-    hasNet: false,
+    ball: { ...DEFAULT_MULTIBALL },
+    paddles: [null, null, null, null, null, null],
 });
 
 export type Player = {

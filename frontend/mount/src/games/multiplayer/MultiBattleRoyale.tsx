@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
 import { BattleGameObjects, Players } from '../../shared/game_info';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
