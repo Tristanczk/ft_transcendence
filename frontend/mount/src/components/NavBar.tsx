@@ -49,7 +49,12 @@ const NavLink: React.FC<{
     );
 };
 
-const NavLinks: React.FC<{ current: string }> = ({ current }) => {
+const NavLinks: React.FC<{
+    current: string;
+    toggleChatVisibility: () => void;
+}> = ({ current, toggleChatVisibility }) => {
+    const { user } = useUserContext();
+
     return (
         <div className="items-center justify-between flex w-auto">
             <ul className="text-xl md:text-base flex font-medium p-0 rounded-lg flex-row space-x-2 md:space-x-8 mt-0 border-0 bg-gray-900 border-gray-700">
@@ -68,15 +73,19 @@ const NavLinks: React.FC<{ current: string }> = ({ current }) => {
                 <NavLink
                     current={current}
                     title="Leaderboard"
-                    link="/leaderboad"
-                    icon="/navlinks/podium.png"
+                    link="/leaderboard"
+                    icon="/pie-chart.svg"
                 />
-                <NavLink
-                    current={current}
-                    title="Chat"
-                    link="/chat"
-                    icon="/navlinks/postcard.svg"
-                />
+                {user && (
+                    <li>
+                        <button
+                            className="block py-2 pl-3 pr-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
+                            onClick={toggleChatVisibility}
+                        >
+                            Chat
+                        </button>
+                    </li>
+                )}
             </ul>
         </div>
     );
@@ -178,7 +187,13 @@ function UserMenu() {
     );
 }
 
-const NavBar = ({ gameId }: { gameId: string | undefined }) => {
+const NavBar = ({
+    gameId,
+    toggleChatVisibility,
+}: {
+    gameId: string | undefined;
+    toggleChatVisibility: () => void;
+}) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useUserContext();
@@ -204,7 +219,10 @@ const NavBar = ({ gameId }: { gameId: string | undefined }) => {
                         lipong.org
                     </span>
                 </Link>
-                <NavLinks current={location.pathname} />
+                <NavLinks
+                    current={location.pathname}
+                    toggleChatVisibility={toggleChatVisibility}
+                />
                 <div className="flex items-center">
                     {gameId && location.pathname !== `/game/${gameId}` && (
                         <Button text="Rejoin game" onClick={handleRejoin} />

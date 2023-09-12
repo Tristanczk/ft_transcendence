@@ -42,12 +42,13 @@ function GlobalStats({ user }: PresentationUserProps) {
     return (
         <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
             <ul
-                className="text-sm font-medium text-center text-gray-500 divide-x divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400"
+                className="text-sm font-medium text-center text-gray-500 divide-y sm:divide-x sm:divide-y-0 divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400"
                 id="fullWidthTab"
                 data-tabs-toggle="#fullWidthTabContent"
                 role="tablist"
             >
-                <li className="w-full">
+
+                <li className="-full py-2 sm:py-0">
                     <button
                         id="stats-tab"
                         data-tabs-target="#stats"
@@ -61,7 +62,7 @@ function GlobalStats({ user }: PresentationUserProps) {
                         Your statistics
                     </button>
                 </li>
-                <li className="w-full">
+                <li className="-full py-2 sm:py-0">
                     <button
                         id="about-tab"
                         data-tabs-target="#about"
@@ -86,7 +87,7 @@ function GlobalStats({ user }: PresentationUserProps) {
                     role="tabpanel"
                     aria-labelledby="stats-tab"
                 >
-                    <dl className="grid max-w-screen-xl grid-cols-2 gap-8 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-6 dark:text-white sm:p-8">
+<dl className="grid max-w-screen-xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8 p-4 mx-auto text-gray-900 dark:text-white sm:p-8">
                         <div className="flex flex-col items-center justify-center">
                             <dt className="mb-2 text-3xl font-extrabold">
                                 {stats ? stats?.me.nbGames : 'N/A'}
@@ -107,10 +108,10 @@ function GlobalStats({ user }: PresentationUserProps) {
                             <dt className="mb-2 text-3xl font-extrabold">
                                 {stats?.me.nbGames
                                     ? Math.round(
-                                          (stats?.me.nbWins /
-                                              stats?.me.nbGames) *
-                                              100,
-                                      )
+                                        (stats?.me.nbWins /
+                                            stats?.me.nbGames) *
+                                        100,
+                                    )
                                     : 0}
                                 %
                             </dt>
@@ -123,7 +124,7 @@ function GlobalStats({ user }: PresentationUserProps) {
                                 {stats ? stats?.me.elo : 'N/A'}
                             </dt>
                             <dd className="text-gray-500 dark:text-gray-400">
-                                Your Elo
+                                Elo
                             </dd>
                         </div>
                         <div className="flex flex-col items-center justify-center">
@@ -131,11 +132,11 @@ function GlobalStats({ user }: PresentationUserProps) {
                                 {stats && stats.me.averageDuration
                                     ? stats?.me.averageDuration > 60
                                         ? Math.trunc(
-                                              stats?.me.averageDuration / 60,
-                                          ) +
-                                          'm' +
-                                          (stats?.me.averageDuration % 60) +
-                                          's'
+                                            stats?.me.averageDuration / 60,
+                                        ) +
+                                        'm' +
+                                        (stats?.me.averageDuration % 60) +
+                                        's'
                                         : stats?.me.averageDuration + 's'
                                     : 'N/A'}
                             </dt>
@@ -164,9 +165,9 @@ function GlobalStats({ user }: PresentationUserProps) {
                     On our site
                 </h2>
                 <ul className="space-y-4 text-gray-500 dark:text-gray-400">
-                    <li className="flex space-x-2 items-center">
+                    <li className="-full py-2 sm:py-0">
                         <svg
-                            className="flex-shrink-0 w-3.5 h-3.5 text-blue-600 dark:text-blue-500"
+                            className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-blue-600 dark:text-blue-500"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="currentColor"
@@ -179,9 +180,9 @@ function GlobalStats({ user }: PresentationUserProps) {
                             games
                         </span>
                     </li>
-                    <li className="flex space-x-2 items-center">
+                    <li className="-full py-2 sm:py-0">
                         <svg
-                            className="flex-shrink-0 w-3.5 h-3.5 text-blue-600 dark:text-blue-500"
+                            className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-blue-600 dark:text-blue-500"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="currentColor"
@@ -194,9 +195,9 @@ function GlobalStats({ user }: PresentationUserProps) {
                             users
                         </span>
                     </li>
-                    <li className="flex space-x-2 items-center">
+                    <li className="-full py-2 sm:py-0">
                         <svg
-                            className="flex-shrink-0 w-3.5 h-3.5 text-blue-600 dark:text-blue-500"
+                            className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-blue-600 dark:text-blue-500"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="currentColor"
@@ -209,9 +210,9 @@ function GlobalStats({ user }: PresentationUserProps) {
                             {stats ? stats?.global.averageElo : 'N/A'}
                         </span>
                     </li>
-                    <li className="flex space-x-2 items-center">
+                    <li className="-full py-2 sm:py-0">
                         <svg
-                            className="flex-shrink-0 w-3.5 h-3.5 text-blue-600 dark:text-blue-500"
+                            className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-blue-600 dark:text-blue-500"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="currentColor"

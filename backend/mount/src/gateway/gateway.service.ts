@@ -10,6 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { PrismaService } from '../prisma/prisma.service';
 import { Interval } from '@nestjs/schedule';
+import { CreateMessageDto } from 'src/chat/dto/message.dto';
 import Game from './Game';
 import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
@@ -240,5 +241,17 @@ export class GatewayService
                 }
             }
         }
+    }
+
+    @SubscribeMessage('message')
+    handleMessage(@MessageBody() messageBody: CreateMessageDto) {
+
+        /*
+        get all user of messageBody.idChannel
+        for each user
+            for socket in user
+                this.socket.to(userid).emit('message', messageBody)
+        */
+        console.log(messageBody);
     }
 }

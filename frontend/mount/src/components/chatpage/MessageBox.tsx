@@ -1,32 +1,30 @@
-import React from "react";
-import Message, { MessageProps} from "./Message";
+import React from 'react';
+import { useUserContext } from '../../context/UserContext';
+import { MessageProps } from '../chat/Messages';
 
-export function MessageBox({
-  idSender,
-  idChannel,
-  message,
-}: MessageProps) {
-  // user
-  const user = 1;
+export function MessageBox({ idSender, idChannel, message }: MessageProps) {
+    // user
+    const { user } = useUserContext();
 
-  return (
-    <div className="chat-message">
-      <article
-        className={
-          idSender === user
-            ? "msg-container msg-self"
-            : "msg-container msg-remote"
-        }
-        id="msg-0"
-      >
-          <div className="flr">
-            <Message
-             idSender={idSender}
-              idChannel={idChannel}
-              message={message}
-            />
+    return (
+        <div
+            className={
+                idSender === user?.id
+                    ? 'flex flex-col space-y-2 max-w-xs mx-2 order-2 items-start'
+                    : 'flex flex-col space-y-2 max-w-xs mx-2 order-1 items-end'
+            }
+        >
+            <article
+                className={
+                    idSender === user?.id
+                        ? 'px-4 py-2 rounded-lg inline-block bg-gray-300 text-gray-600'
+                        : 'px-4 py-2 rounded-lg inline-block rounded-br-none bg-blue-600 text-white '
+                }
+                id="msg-0"
+            >
+                <div className="flr">
+                </div>
+            </article>
         </div>
-      </article>
-    </div>
-  );
+    );
 }
