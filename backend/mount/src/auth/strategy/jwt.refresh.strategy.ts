@@ -34,6 +34,9 @@ export class JwtRefreshStrategy extends PassportStrategy(
                 id: payload.sub,
             },
         });
+        if (!user) {
+            throw new ForbiddenException('User does not exist');
+        }
         const valid = await argon.verify(
             user.currentHashedRefreshToken,
             refreshToken,

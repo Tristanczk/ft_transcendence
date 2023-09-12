@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { NAVBAR_HEIGHT } from '../constants';
 import TwoFactorForm from '../components/TwoFactorForm';
 import { useUserContext } from '../context/UserContext';
+import { NAVBAR_HEIGHT } from '../shared/misc';
 
 const SignInPage42: React.FC = () => {
     const location = useLocation();
@@ -23,10 +23,9 @@ const SignInPage42: React.FC = () => {
         const fetchUser = async () => {
             try {
                 const response = await axios.get(
-                    'http://localhost:3333/auth/signin/42',
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/auth/signin/42`,
                     { params: { code }, withCredentials: true },
                 );
-                console.log('response', response.data);
                 if (response.data.user.twoFactorAuthentication) {
                     setUsername(response.data.user.nickname);
                     setTwoFactor(true);

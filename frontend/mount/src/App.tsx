@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import Page404 from './pages/Page404';
 import DashboardPage from './pages/DashboardPage';
-
 import SignOutPage from './pages/SignOutPage';
 import ChatPage from './pages/ChatPage';
 import SettingsPage from './pages/SettingsPage';
@@ -13,12 +12,16 @@ import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import { WebsocketProvider, socket } from './context/WebsocketContext';
 import TrackingOnline from './components/TrackingOnline';
-import BattlePage from './pages/BattlePage';
-import ClassicPage from './pages/ClassicPage';
-import { UserProvider } from './context/UserContext';
+import { UserProvider, useUserContext } from './context/UserContext';
 import UserPage from './pages/UserPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import { AuthAxiosProvider } from './context/AuthAxiosContext';
+import AchievementPage from './pages/AchievementsPage';
+import GameHistoryPage from './pages/GameHistoryPage';
+import GamePage from './pages/GamePage';
+import LocalClassic from './games/local/LocalClassic';
+import LocalMayhem from './games/local/LocalMayhem';
+import LocalBattleRoyale from './games/local/LocalBattleRoyale';
 
 const App: React.FC = () => {
     const [isChatVisible, setIsChatVisible] = useState(false);
@@ -27,6 +30,12 @@ const App: React.FC = () => {
         console.log('toggleChatVisibility');
         setIsChatVisible((prev) => !prev);
     };
+    const { user } = useUserContext();
+    const [gameId, setGameId] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        setGameId(undefined);
+    }, [user]);
 
     return (
         <WebsocketProvider value={socket}>
@@ -34,15 +43,42 @@ const App: React.FC = () => {
                 <AuthAxiosProvider>
                     <TrackingOnline />
                     <BrowserRouter>
-                        <NavBar toggleChatVisibility={toggleChatVisibility} />
+                        <NavBar toggleChatVisibility={toggleChatVisibility} gameId={gameId} />
                         {<ChatPage isChatVisible={isChatVisible}/>}
                         <Routes>
-                            <Route path="/" Component={HomePage} />
-                            <Route path="/battle" Component={BattlePage} />
-                            <Route path="/classic" Component={ClassicPage} />
+                            <Route
+                                path="/"
+                                element={
+                                    <HomePage
+                                        gameId={gameId}
+                                        setGameId={setGameId}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/local/battle"
+                                Component={LocalBattleRoyale}
+                            />
+                            <Route
+                                path="/local/classic"
+                                Component={LocalClassic}
+                            />
+                            <Route
+                                path="/local/mayhem"
+                                Component={LocalMayhem}
+                            />
+                            <Route path="/game/:gameId" Component={GamePage} />
                             <Route
                                 path="/dashboard"
                                 Component={DashboardPage}
+                            />
+                            <Route
+                                path="/achievements"
+                                Component={AchievementPage}
+                            />
+                            <Route
+                                path="/games/:idUserToView"
+                                Component={GameHistoryPage}
                             />
                             <Route
                                 path="/dashboard/:idUserToView"

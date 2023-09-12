@@ -24,7 +24,7 @@ function HistoryElo({ user }: PresentationUserProps) {
     async function getStats() {
         try {
             const response = await axios.get(
-                `http://localhost:3333/stats/graph/${user?.id}`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/stats/graph/${user?.id}`,
                 {
                     withCredentials: true,
                 },
@@ -33,7 +33,8 @@ function HistoryElo({ user }: PresentationUserProps) {
             if (response.data) setnbGames(response.data[0].data.length);
             return response.data;
         } catch (error) {
-            console.error(error);
+            setGraph(null);
+            // console.error(error);
         }
     }
 
@@ -41,7 +42,7 @@ function HistoryElo({ user }: PresentationUserProps) {
         <div className="w-full  p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
                 <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
-                    Graph History
+                    Elo History
                 </h5>
             </div>
             <div className="parent-container">
@@ -64,7 +65,7 @@ function HistoryElo({ user }: PresentationUserProps) {
                             tickSize: 5,
                             tickPadding: 5,
                             tickRotation: 0,
-                            legend: `Last ${nbGame} games`,
+                            legend: `Last ${nbGame - 1} games`,
                             legendOffset: 36,
                             legendPosition: 'middle',
                         }}

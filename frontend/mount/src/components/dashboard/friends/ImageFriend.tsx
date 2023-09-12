@@ -11,13 +11,13 @@ interface Props {
 function ImageFriend({ userId, textImg, size }: Props) {
     const [imgY, setImgY] = useState<any>();
     const authAxios = useAuthAxios();
-	const inputClassName = `w-${size} h-${size} rounded-full`;
+    const inputClassName = `w-${size} h-${size} rounded-full`;
 
     useEffect(() => {
         const fetchImg = async () => {
             try {
                 const response = await authAxios.get(
-                    `http://localhost:3333/users/img/${userId}`,
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/users/img/${userId}`,
                     {
                         params: { id: userId },
                         responseType: 'arraybuffer',
@@ -42,10 +42,10 @@ function ImageFriend({ userId, textImg, size }: Props) {
 
     return imgY ? (
         <img
-                className={inputClassName}
-                src={`data:image/png;base64,${imgY}`}
-                alt={textImg}
-            />
+            className={inputClassName}
+            src={`data:image/png;base64,${imgY}`}
+            alt={textImg}
+        />
     ) : (
         <>vide</>
     );

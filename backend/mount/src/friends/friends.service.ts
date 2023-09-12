@@ -6,7 +6,6 @@ import {
 import { GetAllUsersResponseDto } from '../friends/dto/get-all-users.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { FriendsJson } from './friends.type';
-import { ErrorsService } from 'src/errors/errors.service';
 
 @Injectable()
 export class FriendsService {
@@ -23,7 +22,6 @@ export class FriendsService {
         const friendsAdapted = list.flatMap((friend) => [
             friend.idFriend !== userId ? friend.idFriend : null,
         ]);
-        console.log(friendsAdapted);
         return users
             .filter((user) => user.id !== userId)
             .filter((user) => friendsAdapted.includes(user.id))
@@ -57,7 +55,7 @@ export class FriendsService {
                 throw new BadRequestException(`Error updating database`);
             }
         } catch (error) {
-            throw error;
+            return ;
         }
     }
 

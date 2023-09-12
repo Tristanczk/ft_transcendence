@@ -10,7 +10,7 @@ function GetUser() {
             try {
                 // console.log('try');
                 const response = await axios.get(
-                    'http://localhost:3333/users/me',
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/users/me`,
                     {
                         withCredentials: true,
                     },

@@ -150,10 +150,18 @@ export class StatsService {
             true,
         );
         let i: number = data.length;
+		if (data.length === 0) return dataSerie;
+		if (data.length < 30) {
+			const newDataElem: ArrayDataGraph = {
+                x: 'Init',
+                y: 1000,
+            };
+            dataSerie.push(newDataElem);
+		}
         data.forEach((game: GameExtractedDB) => {
             const newDataElem: ArrayDataGraph = {
                 x: i,
-                y: idUser === game.playerA ? game.initEloA : game.initEloB,
+                y: idUser === game.playerA ? (game.initEloA + game.varEloA) : (game.initEloB + game.varEloB),
             };
             dataSerie.push(newDataElem);
             i--;

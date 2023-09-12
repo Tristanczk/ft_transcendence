@@ -1,11 +1,11 @@
 import React, { ReactNode, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
-import { useWidth } from '../hooks';
 import { useUserContext } from '../context/UserContext';
-import { NAVBAR_HEIGHT } from '../constants';
 import ImageFriend from './dashboard/friends/ImgFriend';
 import OutsideClickHandler from 'react-outside-click-handler';
+import { useWindowSize } from 'usehooks-ts';
+import { NAVBAR_HEIGHT } from '../shared/misc';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -15,8 +15,8 @@ const NavLink: React.FC<{
 }> = ({ title, current, link, icon }) => {
     const innerDivStyle = 'block py-2 pl-3 pr-4 rounded';
     const isActive = current === link;
-    const width = useWidth();
-    const showText = width && width >= 640;
+    const { width } = useWindowSize();
+    const showText = width && width >= 768;
 
     return (
         <li>
@@ -57,7 +57,7 @@ const NavLinks: React.FC<{
 
     return (
         <div className="items-center justify-between flex w-auto">
-            <ul className="text-xl sm:text-base flex font-medium p-0 rounded-lg flex-row space-x-2 sm:space-x-8 mt-0 border-0 bg-gray-900 border-gray-700">
+            <ul className="text-xl md:text-base flex font-medium p-0 rounded-lg flex-row space-x-2 md:space-x-8 mt-0 border-0 bg-gray-900 border-gray-700">
                 <NavLink
                     current={current}
                     title="Home"
@@ -67,8 +67,8 @@ const NavLinks: React.FC<{
                 <NavLink
                     current={current}
                     title="Dashboard"
-                    link="/dashboard" // TODO /dashboard/:login
-                    icon="/pie-chart.svg"
+                    link="/dashboard"
+                    icon="/navlinks/pie-chart.svg"
                 />
                 <NavLink
                     current={current}
@@ -134,7 +134,7 @@ function UserMenu() {
                 >
                     <button
                         type="button"
-                        className="flex mr-3 text-sm bg-gray-800 rounded-full sm:mr-0 active:ring-4 active:ring-gray-600"
+                        className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 active:ring-4 active:ring-gray-600"
                         onClick={() => setUserMenuOpen(!userMenuOpen)}
                     >
                         {user && (
@@ -159,9 +159,9 @@ function UserMenu() {
                                 <span className="block text-sm text-white">
                                     {user?.nickname}
                                 </span>
-                                <span className="block text-sm truncate text-gray-400">
+                                {/* <span className="block text-sm truncate text-gray-400">
                                     login if different
-                                </span>
+                                </span> */}
                             </div>
                             <ul className="py-2">
                                 <MenuLink
@@ -187,12 +187,21 @@ function UserMenu() {
     );
 }
 
-const NavBar: React.FC<{ toggleChatVisibility: () => void }> = ({
+const NavBar = ({
+    gameId,
     toggleChatVisibility,
+}: {
+    gameId: string | undefined;
+    toggleChatVisibility: () => void;
 }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useUserContext();
+
+    const handleRejoin = () => {
+        //TO DO: check if game is still available, if yes redirect, if no error message
+        navigate(`/game/${gameId}`);
+    };
 
     return (
         <nav
@@ -200,7 +209,7 @@ const NavBar: React.FC<{ toggleChatVisibility: () => void }> = ({
             style={{ height: NAVBAR_HEIGHT }}
         >
             <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
-                <Link to="/" className="hidden sm:flex items-center">
+                <Link to="/" className="hidden md:flex items-center">
                     <img
                         src="/logo192.png"
                         className="w-8 h-8 mr-3"
@@ -214,16 +223,21 @@ const NavBar: React.FC<{ toggleChatVisibility: () => void }> = ({
                     current={location.pathname}
                     toggleChatVisibility={toggleChatVisibility}
                 />
-                {user ? (
-                    <UserMenu />
-                ) : (
-                    <Button
-                        text="Sign in"
-                        onClick={() => {
-                            navigate('/signin');
-                        }}
-                    />
-                )}
+                <div className="flex items-center">
+                    {gameId && location.pathname !== `/game/${gameId}` && (
+                        <Button text="Rejoin game" onClick={handleRejoin} />
+                    )}
+                    {user ? (
+                        <UserMenu />
+                    ) : (
+                        <Button
+                            text="Sign in"
+                            onClick={() => {
+                                navigate('/signin');
+                            }}
+                        />
+                    )}
+                </div>
             </div>
         </nav>
     );

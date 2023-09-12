@@ -38,23 +38,23 @@ function Friends({ currUser }: FriendsProps) {
         // import user friends list
         try {
             const response = await authAxios.get(
-                `http://localhost:3333/friends/${currUser.id}`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/friends/${currUser.id}`,
                 { withCredentials: true },
             );
             setFriendsList(response.data);
         } catch (error) {
-            console.error(error);
+            setFriendsList(null);
+            // console.error(error);
         }
     };
 
     const handleClickAddFriend = async (event: any, idSelected: number) => {
         event.preventDefault();
-        // console.log('button clicked to add=' + idSelected);
         if (idSelected === -1) return;
         if (idSelected !== currUser.id) {
             try {
                 await authAxios.post(
-                    `http://localhost:3333/friends/${idSelected}`,
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/friends/${idSelected}`,
                     { id: idSelected },
                     { withCredentials: true },
                 );
@@ -83,7 +83,7 @@ function Friends({ currUser }: FriendsProps) {
         // console.log('try to delete')
         try {
             await authAxios.delete(
-                `http://localhost:3333/friends/${idToDelete}`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/friends/${idToDelete}`,
                 {
                     withCredentials: true,
                 },

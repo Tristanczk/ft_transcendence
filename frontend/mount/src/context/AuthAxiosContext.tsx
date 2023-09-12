@@ -9,10 +9,10 @@ interface Props {
 
 const AuthAxiosContext = React.createContext<Props>({
     authAxios: axios.create({
-        baseURL: 'http://localhost:3333',
-        // headers: {
-        //     'Content-Type': 'application/json',
-        // },
+        baseURL: `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333`,
+        headers: {
+            'Content-Type': 'application/json',
+        },
     }),
 });
 
@@ -24,31 +24,32 @@ const AuthAxiosProvider: React.FC<AuthAxiosProviderProps> = ({ children }) => {
     const { logoutUser } = useUserContext();
 
     const authAxios = axios.create({
-        baseURL: 'http://localhost:3333',
-        // headers: {
-        //     'Content-Type': 'application/json',
-        // },
+        baseURL: `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333`,
+        headers: {
+            'Content-Type': 'application/json',
+        },
     });
 
     authAxios.interceptors.response.use(
         (response) => response,
         async (error: any) => {
-            console.log('interceptor error', error);
+            console.log('Interceptor activated');
             const originalRequest = error.config;
             if (
                 error.response &&
                 error.response.status === 401 &&
                 !originalRequest!._retry
             ) {
-                console.log('Interceptor activated');
                 originalRequest!._retry = true;
                 try {
-                    await axios.get('http://localhost:3333/auth/refresh', {
-                        withCredentials: true,
-                    });
+                    await axios.get(
+                        `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/auth/refresh`,
+                        {
+                            withCredentials: true,
+                        },
+                    );
                     return axios.request(originalRequest);
                 } catch (refreshError) {
-                    console.log('user logout');
                     logoutUser();
                     throw refreshError;
                 }

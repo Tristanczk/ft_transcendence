@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import ToggleButton from '../components/ToggleButton';
 import Button from '../components/Button';
-import { NAVBAR_HEIGHT } from '../constants';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
 import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
 import AvatarUploader from '../components/user/AvatarUpload';
+import NotConnected from '../components/NotConnected';
+import { NAVBAR_HEIGHT } from '../shared/misc';
 
 interface Inputs {
     username: string;
@@ -28,11 +29,9 @@ const SettingsPage: React.FC = () => {
     const [twoFactor, setTwoFactor] = useState<string | undefined>();
     const authAxios = useAuthAxios();
 
-    console.log('user1', user);
     const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(
         user ? user.twoFactorAuthentication : false,
     );
-    console.log('isTwoFactorEnabled', isTwoFactorEnabled);
 
     const {
         handleSubmit,
@@ -88,7 +87,6 @@ const SettingsPage: React.FC = () => {
             setError(undefined);
             updateUser({ twoFactorAuthentication: true });
         } catch (error: any) {
-            console.log('error', error.response);
             setError(error.response.data);
         }
     };
@@ -107,13 +105,11 @@ const SettingsPage: React.FC = () => {
             setError(undefined);
             updateUser({ twoFactorAuthentication: false });
         } catch (error: any) {
-            console.log('error', error.response);
             setError(error.response.data);
         }
     };
 
     const onSubmit = async (data: Inputs) => {
-        console.log('data', data);
         try {
             await authAxios.patch(
                 '/users',
@@ -145,11 +141,10 @@ const SettingsPage: React.FC = () => {
             setUpdate(true);
         } catch (error: any) {
             setErrorEdit(error.response.data);
-            console.error(error);
         }
     };
 
-    return (
+    return user ? (
         <section className="bg-gray-50 dark:bg-gray-900">
             <div
                 className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
@@ -176,7 +171,7 @@ const SettingsPage: React.FC = () => {
                                 Failed to update information: {errorEdit}
                             </p>
                         )}
-                        {/* <AvatarUploader /> */}
+                        <AvatarUploader />
                         <form
                             className="space-y-4 md:space-y-6"
                             onSubmit={handleSubmit(onSubmit)}
@@ -258,6 +253,8 @@ const SettingsPage: React.FC = () => {
                 </div>
             </div>
         </section>
+    ) : (
+        <NotConnected message="Please signup or log in to access your settings" />
     );
 };
 

@@ -82,7 +82,7 @@ export class AuthService {
             accessToken.JWTToken,
             {
                 httpOnly: true,
-                secure: true,
+                secure: false,
                 sameSite: 'strict',
             },
         );
@@ -92,7 +92,7 @@ export class AuthService {
             refreshToken.JWTToken,
             {
                 httpOnly: true,
-                secure: true,
+                secure: false,
                 sameSite: 'strict',
             },
         );
@@ -112,7 +112,7 @@ export class AuthService {
                     client_id: this.config.get('REACT_APP_API42_UID'),
                     client_secret: this.config.get('API42_SECRET'),
                     code: code,
-                    redirect_uri: 'http://localhost:3000/signin42',
+                    redirect_uri: `http://${process.env.REACT_APP_SERVER_ADDRESS}:3000/signin42`,
                 },
                 { headers: { 'Content-Type': 'application/json' } },
             );
@@ -137,7 +137,6 @@ export class AuthService {
             await this.generateTokens(user, res);
             return user;
         } catch (error) {
-            console.log('signin42', error);
             throw error;
         }
     }
@@ -159,7 +158,6 @@ export class AuthService {
             await this.generateTokens(user, res);
             return user;
         } catch (error) {
-            console.log('signup', error);
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') {
                     if (error.meta.target[0] === 'login')
@@ -208,12 +206,12 @@ export class AuthService {
         try {
             res.clearCookie(this.config.get('JWT_ACCESS_TOKEN_COOKIE'), {
                 httpOnly: true,
-                secure: true,
+                secure: false,
                 sameSite: 'strict',
             });
             res.clearCookie(this.config.get('JWT_REFRESH_TOKEN_COOKIE'), {
                 httpOnly: true,
-                secure: true,
+                secure: false,
                 sameSite: 'strict',
             });
             await this.prisma.user.update({
@@ -221,7 +219,7 @@ export class AuthService {
                 data: { currentHashedRefreshToken: null },
             });
         } catch (error) {
-            console.log('signout', error);
+            throw error;
         }
     }
 
@@ -257,7 +255,7 @@ export class AuthService {
             accessToken.JWTToken,
             {
                 httpOnly: true,
-                secure: true,
+                secure: false,
                 sameSite: 'strict',
             },
         );

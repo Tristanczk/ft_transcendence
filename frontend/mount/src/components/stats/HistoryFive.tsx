@@ -25,7 +25,7 @@ function HistoryFive({ user }: PresentationUserProps) {
     async function getGamesList() {
         try {
             const response = await axios.get(
-                `http://localhost:3333/games/short/${user?.id}`,
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/games/short/${user?.id}`,
                 {
                     withCredentials: true,
                 },
@@ -44,12 +44,10 @@ function HistoryFive({ user }: PresentationUserProps) {
                 <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
                     Last Games
                 </h5>
-                {/* <a
-                    href="#"
-                    className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
-                >
-                    View all
-                </a> */}
+                <div className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
+                    {games && games.length > 0 && <Link to={'/games/' + user.id}>View all</Link>}
+                </div>
+
             </div>
             <div className="flow-root">
                 <ul className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -182,6 +180,7 @@ function HistoryFive({ user }: PresentationUserProps) {
                                 </div>
                             </li>
                         ))}
+						{games.length === 0 && 'No games played yet'}
                 </ul>
             </div>
         </div>

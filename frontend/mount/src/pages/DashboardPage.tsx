@@ -3,10 +3,10 @@ import PresentationUser from '../components/dashboard/PresentationUser';
 import StatsUser from '../components/dashboard/StatsUser';
 import Friends from '../components/dashboard/friends/Friends';
 import { useUserContext } from '../context/UserContext';
+import NotConnected from '../components/NotConnected';
 
 const DashboardPage: React.FC = () => {
     const { user } = useUserContext();
-    console.log('user', user);
 
     return user ? (
         <>
@@ -14,7 +14,6 @@ const DashboardPage: React.FC = () => {
                 <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
                     <article className="mx-auto w-full max-w-5xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                         <PresentationUser user={user} />
-                        {/* <AvatarUploader /> */}
                         <Friends currUser={user} />
                         <StatsUser user={user} />
                     </article>
@@ -22,7 +21,7 @@ const DashboardPage: React.FC = () => {
             </main>
         </>
     ) : (
-        <div>You are not logged in.</div>
+        <NotConnected message="Please signup or log in to access your dashboard" />
     );
 };
 
