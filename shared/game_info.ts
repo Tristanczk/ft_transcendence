@@ -9,9 +9,16 @@ export type MultiBall = {
     velY: number;
 };
 
-const DEFAULT_MULTIBALL: MultiBall = {
+const DEFAULT_CLASSIC_MAYHEM_BALL: MultiBall = {
     posX: 0.5,
     posY: 0.5,
+    velX: 0,
+    velY: 0,
+};
+
+const DEFAULT_BATTLE_BALL: MultiBall = {
+    posX: 0,
+    posY: 0,
     velX: 0,
     velY: 0,
 };
@@ -43,23 +50,23 @@ export type BattleGameObjects = {
 };
 
 export const getDefaultClassicObjects = (): ClassicMayhemGameObjects => ({
-    balls: [{ ...DEFAULT_MULTIBALL }],
+    balls: [{ ...DEFAULT_CLASSIC_MAYHEM_BALL }],
     mayhemMap: EMPTY_MAP,
     hasNet: true,
 });
 
 export const getDefaultMayhemObjects = (): ClassicMayhemGameObjects => ({
     balls: [
-        { ...DEFAULT_MULTIBALL },
-        { ...DEFAULT_MULTIBALL },
-        { ...DEFAULT_MULTIBALL },
+        { ...DEFAULT_CLASSIC_MAYHEM_BALL },
+        { ...DEFAULT_CLASSIC_MAYHEM_BALL },
+        { ...DEFAULT_CLASSIC_MAYHEM_BALL },
     ],
     mayhemMap: EMPTY_MAP,
     hasNet: false,
 });
 
 export const getDefaultBattleObjects = (): BattleGameObjects => ({
-    ball: { ...DEFAULT_MULTIBALL },
+    ball: { ...DEFAULT_BATTLE_BALL },
     paddles: [null, null, null, null, null, null],
 });
 
