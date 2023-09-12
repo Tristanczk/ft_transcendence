@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { BattleGameObjects, BattlePlayers } from '../../shared/game_info';
 import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
-import { BATTLE_COLORS } from '../../shared/battle';
 import { getCanvasCtx } from './getCanvasCtx';
+import {
+    BATTLE_ARC_VERTICES,
+    BATTLE_DEFAULT_PADDLE_SIZE,
+} from '../../shared/battle';
 
 const drawText = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
     ctx.fillStyle = 'white';
@@ -28,6 +31,39 @@ const drawArena = (
     ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();
+};
+
+const drawPaddle = (
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    angle: number,
+    innerRadius: number,
+    outerRadius: number,
+) => {
+    ctx.fillStyle = 'black';
+
+    const angles: number[] = Array.from(
+        { length: BATTLE_ARC_VERTICES + 1 },
+        (_, i) =>
+            angle +
+            (i / BATTLE_ARC_VERTICES - 0.5) * BATTLE_DEFAULT_PADDLE_SIZE * 2,
+    );
+
+    ctx.beginPath();
+    for (const angle of angles) {
+        const x = Math.cos(angle) * innerRadius + canvas.width / 2;
+        const y = Math.sin(angle) * innerRadius + canvas.height / 2;
+        ctx.lineTo(x, y);
+    }
+
+    for (const angle of angles.reverse()) {
+        const x = Math.cos(angle) * outerRadius + canvas.width / 2;
+        const y = Math.sin(angle) * outerRadius + canvas.height / 2;
+        ctx.lineTo(x, y);
+    }
+
+    ctx.closePath();
+    ctx.fill();
 };
 
 const MultiBattleRoyale = ({
@@ -57,6 +93,11 @@ const MultiBattleRoyale = ({
             arenaSize,
             players[gameObjects.currentPlayer]?.color ?? '#50C878',
         );
+        for (const player of players) {
+            if (player) {
+                drawPaddle(canvas, ctx, player.angle, 100, 200);
+            }
+        }
         drawText(canvas, ctx);
     });
 
