@@ -36,7 +36,6 @@ import {
     MayhemMap,
     MayhemMapCollision,
     getMayhemCellPos,
-    maps,
     randomMap,
 } from 'src/shared/mayhem_maps';
 import { GameMode, MAX_PLAYERS } from 'src/shared/misc';
