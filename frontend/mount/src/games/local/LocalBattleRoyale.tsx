@@ -24,7 +24,6 @@ import {
 class Player {
     private keys: { clockwise: number; antiClockwise: number };
     readonly color: string;
-    paddleSize: number;
     angle: number;
     lives: number;
 
@@ -37,7 +36,6 @@ class Player {
     ) {
         this.lives = startLives;
         this.angle = startAngle;
-        this.paddleSize = BATTLE_DEFAULT_PADDLE_SIZE;
         this.color = color;
         this.keys = {
             clockwise: keyClockwise,
@@ -57,7 +55,8 @@ class Player {
 
     hit(ballPos: p5Types.Vector): number | null {
         const angleDiff = angleDist(this.angle, ballPos.heading());
-        const limit = this.paddleSize + BATTLE_BALL_SIZE * BATTLE_HIT_LEEWAY;
+        const limit =
+            BATTLE_DEFAULT_PADDLE_SIZE + BATTLE_BALL_SIZE * BATTLE_HIT_LEEWAY;
         return Math.abs(angleDiff) <= limit ? angleDiff / limit : null;
     }
 
@@ -72,7 +71,9 @@ class Player {
             { length: BATTLE_ARC_VERTICES + 1 },
             (_, i) =>
                 this.angle +
-                (i / BATTLE_ARC_VERTICES - 0.5) * this.paddleSize * 2,
+                (i / BATTLE_ARC_VERTICES - 0.5) *
+                    BATTLE_DEFAULT_PADDLE_SIZE *
+                    2,
         );
         for (const angle of angles) {
             p5.vertex(p5.cos(angle) * innerRadius, p5.sin(angle) * innerRadius);
@@ -105,9 +106,11 @@ class Player {
         if (this.lives === 1) {
             this.drawLife(p5, middleRadius, this.angle, arenaSize);
         } else {
-            const startDot = this.angle - BATTLE_DOT_SHIFT * this.paddleSize;
+            const startDot =
+                this.angle - BATTLE_DOT_SHIFT * BATTLE_DEFAULT_PADDLE_SIZE;
             const angleInc =
-                (2 * BATTLE_DOT_SHIFT * this.paddleSize) / (this.lives - 1);
+                (2 * BATTLE_DOT_SHIFT * BATTLE_DEFAULT_PADDLE_SIZE) /
+                (this.lives - 1);
             for (let i = 0; i < this.lives; ++i) {
                 this.drawLife(
                     p5,
@@ -203,8 +206,7 @@ const avoidCollision = (
     step: number,
 ): boolean => {
     const angleDiff = angleDist(player1.angle, player2.angle);
-    const limit =
-        player1.paddleSize + player2.paddleSize + BATTLE_BETWEEN_PADDLES;
+    const limit = 2 * BATTLE_DEFAULT_PADDLE_SIZE + BATTLE_BETWEEN_PADDLES;
     if (Math.abs(angleDiff) >= limit) return false;
     const toMove = Math.min((limit - Math.abs(angleDiff)) / 2 + 1e-5, step);
     if (angleDiff > 0) {
