@@ -4,11 +4,18 @@ import {
     BattlePlayer,
     BattlePlayers,
 } from '../../shared/game_info';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT, NEARLY_BLACK } from '../../shared/misc';
+import {
+    CANVAS_MARGIN,
+    NAVBAR_HEIGHT,
+    NEARLY_BLACK,
+    TAU,
+} from '../../shared/misc';
 import { getCanvasCtx } from './getCanvasCtx';
 import {
     BATTLE_ARC_VERTICES,
     BATTLE_DEFAULT_PADDLE_SIZE,
+    BATTLE_DOT_RADIUS,
+    BATTLE_DOT_SHIFT,
     BATTLE_MAX_HEIGHT,
     BATTLE_PADDLE_MARGIN,
     BATTLE_PADDLE_WIDTH,
@@ -34,7 +41,7 @@ const drawArena = (
     const radius = arenaSize / 2;
 
     ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.arc(centerX, centerY, radius, 0, TAU);
     ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();
@@ -73,6 +80,51 @@ const drawPaddle = (
     ctx.fill();
 };
 
+const drawLife = (
+    ctx: CanvasRenderingContext2D,
+    middleRadius: number,
+    angle: number,
+    arenaSize: number,
+    color: string,
+) => {
+    ctx.fillStyle = color;
+
+    const x = Math.cos(angle) * middleRadius + ctx.canvas.width / 2;
+    const y = Math.sin(angle) * middleRadius + ctx.canvas.height / 2;
+    const radius = BATTLE_PADDLE_WIDTH * arenaSize * BATTLE_DOT_RADIUS * 0.5;
+
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, TAU);
+    ctx.fill();
+};
+
+const drawLives = (
+    ctx: CanvasRenderingContext2D,
+    middleRadius: number,
+    arenaSize: number,
+    player: BattlePlayer,
+) => {
+    if (player.lives === 1) {
+        drawLife(ctx, middleRadius, player.angle, arenaSize, player.color);
+    } else {
+        const startDot =
+            player.angle - BATTLE_DOT_SHIFT * BATTLE_DEFAULT_PADDLE_SIZE;
+        const angleInc =
+            (2 * BATTLE_DOT_SHIFT * BATTLE_DEFAULT_PADDLE_SIZE) /
+            (player.lives - 1);
+
+        for (let i = 0; i < player.lives; ++i) {
+            drawLife(
+                ctx,
+                middleRadius,
+                startDot + i * angleInc,
+                arenaSize,
+                player.color,
+            );
+        }
+    }
+};
+
 const drawPlayer = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
@@ -84,6 +136,7 @@ const drawPlayer = (
     const outerRadius = (arenaSize * (1 - BATTLE_PADDLE_MARGIN)) / 2;
     const middleRadius = (innerRadius + outerRadius) / 2;
     drawPaddle(canvas, ctx, player.angle, innerRadius, outerRadius);
+    drawLives(ctx, middleRadius, arenaSize, player);
 };
 
 const MultiBattleRoyale = ({
@@ -121,8 +174,6 @@ const MultiBattleRoyale = ({
         }
         drawText(canvas, ctx);
     });
-
-    console.log('wtf', arenaSize);
 
     return <canvas ref={ref} style={{ width: arenaSize, height: arenaSize }} />;
 };

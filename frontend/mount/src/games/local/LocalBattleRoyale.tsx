@@ -25,6 +25,7 @@ import {
     BATTLE_MAX_PLAYERS,
     BATTLE_MIN_PLAYERS,
     BATTLE_COLORS,
+    BATTLE_DOT_RADIUS,
 } from '../../shared/battle';
 
 class Player {
@@ -100,15 +101,11 @@ class Player {
         p5.circle(
             p5.cos(angle) * middleRadius,
             p5.sin(angle) * middleRadius,
-            BATTLE_PADDLE_WIDTH * arenaSize * 0.32,
+            BATTLE_PADDLE_WIDTH * arenaSize * BATTLE_DOT_RADIUS,
         );
     }
 
-    private drawLives(
-        p5: p5Types,
-        middleRadius: number,
-        arenaSize: number,
-    ): void {
+    private drawLives(p5: p5Types, middleRadius: number, arenaSize: number) {
         if (this.lives === 1) {
             this.drawLife(p5, middleRadius, this.angle, arenaSize);
         } else {
