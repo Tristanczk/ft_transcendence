@@ -72,8 +72,8 @@ export type ClassicMayhemPlayers = (ClassicMayhemPlayer | null)[];
 
 export type BattlePlayer = {
     id: string;
-    pos: number;
-    score: number;
+    angle: number;
+    lives: number;
     activeKeys: Set<string>;
 };
 
