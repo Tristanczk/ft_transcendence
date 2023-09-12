@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+    ChangeEvent,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { WebsocketContext } from '../../context/WebsocketContext';
@@ -11,6 +17,12 @@ import EmojiPicker, {
     SuggestionMode,
     Theme,
 } from 'emoji-picker-react';
+
+export interface MessageInputProps {
+    idSender: number;
+    idChannel: number;
+    message: string;
+}
 
 export default function MessageInput({ idChannel }: { idChannel: number }) {
     const [input, setInput] = useState('');
@@ -36,11 +48,6 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
             },
             { withCredentials: true },
         );
-        socket?.emit('message', {
-            idSender: user?.id,
-            idChannel: idChannel,
-            message: input,
-        });
     };
 
     const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {

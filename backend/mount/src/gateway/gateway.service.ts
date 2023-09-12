@@ -15,7 +15,7 @@ import Game from './Game';
 import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
 import { GameInfo } from 'src/shared/game_info';
-import { ResponseCheckConnexion, Users } from './gateway.users';
+import { IndivUser, ResponseCheckConnexion, Users } from './gateway.users';
 
 const ID_SIZE = 6;
 const ID_BASE = 36;
@@ -217,14 +217,7 @@ export class GatewayService
     }
 
     @SubscribeMessage('message')
-    handleMessage(@MessageBody() messageBody: CreateMessageDto) {
-
-        /*
-        get all user of messageBody.idChannel
-        for each user
-            for socket in user
-                this.socket.to(userid).emit('message', messageBody)
-        */
-        console.log(messageBody);
+    async handleMessage(@MessageBody() messageBody: CreateMessageDto) {
+        
     }
 }

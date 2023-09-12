@@ -36,7 +36,7 @@ export default function ChatChannelListElement({
         );
 
         console.log(isUserInChannel.data);
-        if (isUserInChannel.data === true) {
+        if (isUserInChannel.data === false) {
             const response = await authAxios.post(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/joinChannel`,
                 {

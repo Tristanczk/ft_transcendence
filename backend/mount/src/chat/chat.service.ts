@@ -18,10 +18,11 @@ import { ChannelDto, isChannelAdminDto } from './dto/channel.dto';
 import { GetChannelDto } from './dto/getchannel.dto';
 import { channel } from 'diagnostics_channel';
 import { EditUserDto } from 'src/user/dto';
+import { GatewayService } from 'src/gateway/gateway.service';
 
 @Injectable()
 export class ChatService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService, private gateway: GatewayService) {}
 
     async createChannel(
         createChannelDto: CreateChannelDto,
@@ -437,6 +438,25 @@ export class ChatService {
                 message: message.message,
             },
         });
+
+        try {
+            const channel = await this.prisma.channels.findUnique({
+                where: { id: message.idChannel },
+            });
+
+            channel.idUsers.forEach((id) => {
+                console.log('userid: ' + id);
+                const user = this.gateway.users.getIndivUserById(id);
+                if (user) {
+                    user.sockets.forEach((socket) => {
+                        console.log('socket: ' + socket);
+                        this.gateway.server.to(socket).emit('message', message);
+                    });
+                }
+            });
+        } catch (error) {
+            console.log(error);
+        }
 
         return newMessage;
     }

@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react';
-import { UserSimplified } from '../../types';
-import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
 import ImageFriend from '../dashboard/friends/ImgFriend';
 import SettingBar from './SettingBar';
