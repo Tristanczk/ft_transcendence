@@ -1,7 +1,6 @@
 export const BATTLE_MIN_PLAYERS = 2;
 export const BATTLE_MAX_PLAYERS = 6;
 export const MAX_HEIGHT = 720;
-export const CANVAS_MARGIN = 20;
 export const BATTLE_BALL_SIZE = 0.03;
 export const ARC_VERTICES = 12;
 export const DOT_SHIFT = 0.8;

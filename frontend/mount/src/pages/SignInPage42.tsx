@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { NAVBAR_HEIGHT } from '../constants';
 import TwoFactorForm from '../components/TwoFactorForm';
 import { useUserContext } from '../context/UserContext';
+import { NAVBAR_HEIGHT } from '../shared/misc';
 
 const SignInPage42: React.FC = () => {
     const location = useLocation();

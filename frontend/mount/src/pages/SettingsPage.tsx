@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ToggleButton from '../components/ToggleButton';
 import Button from '../components/Button';
-import { NAVBAR_HEIGHT } from '../constants';
 import { useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
 import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
@@ -9,6 +8,7 @@ import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
 import AvatarUploader from '../components/user/AvatarUpload';
 import NotConnected from '../components/NotConnected';
+import { NAVBAR_HEIGHT } from '../shared/misc';
 
 interface Inputs {
     username: string;

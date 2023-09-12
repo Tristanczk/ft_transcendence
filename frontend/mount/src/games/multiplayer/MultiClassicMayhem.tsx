@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
 import {
     ASPECT_RATIO,
     BALL_HEIGHT,
@@ -17,6 +16,7 @@ import {
     MayhemMap,
     getMayhemCellPos,
 } from '../../shared/mayhem_maps';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
 
 const BACKGROUND_COLOR = '#0f0f0f';
 

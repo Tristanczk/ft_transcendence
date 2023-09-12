@@ -2,10 +2,10 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
-import { NAVBAR_HEIGHT } from '../constants';
 import { useForm } from 'react-hook-form';
 import ErrorsFormField from '../components/ErrorsFormField';
 import { useUserContext } from '../context/UserContext';
+import { NAVBAR_HEIGHT } from '../shared/misc';
 
 interface Inputs {
     username: string;

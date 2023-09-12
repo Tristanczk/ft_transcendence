@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { NAVBAR_HEIGHT } from '../constants';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
-import { GameMode } from '../shared/misc';
+import { GameMode, NAVBAR_HEIGHT } from '../shared/misc';
 
 const activateMatchmaking = false;
 
@@ -16,9 +15,9 @@ const joinGame = (
     setGameId: (gameId: string | undefined) => void,
     setMatchmaking: (matchmaking: boolean) => void,
 ) => {
-	// const { user } = useUserContext();
-	// let userId: number = -1;
-	// if (user) userId = user.id;
+    // const { user } = useUserContext();
+    // let userId: number = -1;
+    // if (user) userId = user.id;
     socket.emit('joinGame', mode, (response: any) => {
         if (response.error) {
             setError(response.error);

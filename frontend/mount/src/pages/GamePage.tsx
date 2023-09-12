@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { NAVBAR_HEIGHT } from '../constants';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
 import { GameInfo } from '../shared/game_info';
-import { ApiResult, KeyEventType } from '../shared/misc';
+import { ApiResult, KeyEventType, NAVBAR_HEIGHT } from '../shared/misc';
 import MultiClassicMayhem from '../games/multiplayer/MultiClassicMayhem';
 import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
 

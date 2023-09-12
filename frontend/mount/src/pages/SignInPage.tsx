@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { NAVBAR_HEIGHT } from '../constants';
 import TwoFactorForm from '../components/TwoFactorForm';
 import LoginForm from '../components/LoginForm';
+import { NAVBAR_HEIGHT } from '../shared/misc';
 
 const SignInPage: React.FC = () => {
     const [twoFactor, setTwoFactor] = useState<boolean>(false);

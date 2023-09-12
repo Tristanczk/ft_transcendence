@@ -1,9 +1,8 @@
 import React from 'react';
 import p5Types from 'p5';
 import Sketch from 'react-p5';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../constants';
 import { trueMod } from '../../shared/functions';
-import { TAU } from '../../shared/misc';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT, TAU } from '../../shared/misc';
 import {
     DEFAULT_PADDLE_SIZE,
     HIT_LEEWAY,
