@@ -14,3 +14,12 @@ export const BATTLE_HIT_ANGLE_FACTOR = Math.PI * 0.3;
 export const BATTLE_HIT_LEEWAY = 0.6;
 export const BATTLE_PADDLE_SPEED = 0.005;
 export const BATTLE_BALL_SPEED_INCREMENT = 0.00007;
+
+export const BATTLE_COLORS = [
+    '#E51654',
+    '#16A7E5',
+    '#E5D016',
+    '#7E16E5',
+    '#16E52B',
+    '#DDEEFF',
+];

@@ -39,6 +39,7 @@ export type Paddle = {
 
 export type BattleGameObjects = {
     ball: MultiBall;
+    currentPlayer: number;
 };
 
 export const getDefaultClassicObjects = (): ClassicMayhemGameObjects => ({
@@ -59,6 +60,7 @@ export const getDefaultMayhemObjects = (): ClassicMayhemGameObjects => ({
 
 export const getDefaultBattleObjects = (): BattleGameObjects => ({
     ball: { ...DEFAULT_BATTLE_BALL },
+    currentPlayer: 0,
 });
 
 export type ClassicMayhemPlayer = {
@@ -74,6 +76,7 @@ export type BattlePlayer = {
     id: string;
     angle: number;
     lives: number;
+    color: string;
     activeKeys: Set<string>;
 };
 

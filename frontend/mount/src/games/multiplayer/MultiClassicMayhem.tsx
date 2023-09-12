@@ -20,6 +20,7 @@ import {
     getMayhemCellPos,
 } from '../../shared/mayhem_maps';
 import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
+import { getCanvasCtx } from './getCanvasCtx';
 
 const BACKGROUND_COLOR = '#0f0f0f';
 
@@ -218,15 +219,7 @@ const MultiClassicMayhem = ({
     const ref = useRef<HTMLCanvasElement | null>(null);
 
     useEffect(() => {
-        const canvas = ref.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        canvas.width = arenaWidth;
-        canvas.height = arenaHeight;
-        canvas.style.width = `${arenaWidth}px`;
-        canvas.style.height = `${arenaHeight}px`;
-
+        const [canvas, ctx] = getCanvasCtx(ref, arenaWidth, arenaHeight, true);
         drawBackground(canvas, ctx);
         drawBar(canvas, ctx, LINE_MARGIN);
         drawBar(canvas, ctx, 1 - LINE_MARGIN - LINE_WIDTH);

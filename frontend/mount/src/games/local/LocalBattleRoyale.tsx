@@ -19,6 +19,7 @@ import {
     BATTLE_PADDLE_WIDTH,
     BATTLE_MAX_PLAYERS,
     BATTLE_MIN_PLAYERS,
+    BATTLE_COLORS,
 } from '../../shared/battle';
 
 class Player {
@@ -257,12 +258,12 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     const angleIncrement = TAU / numPlayers;
     const ballSpeedStart = 0.0005 + 0.0001 * numPlayers;
     let players = [
-        new Player('#E51654', 37, 39, 0 * angleIncrement, startLives),
-        new Player('#16A7E5', 81, 69, 1 * angleIncrement, startLives),
-        new Player('#E5D016', 73, 80, 2 * angleIncrement, startLives),
-        new Player('#7E16E5', 90, 67, 3 * angleIncrement, startLives),
-        new Player('#16E52B', 66, 77, 4 * angleIncrement, startLives),
-        new Player('#DDEEFF', 70, 72, 5 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[0], 37, 39, 0 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[1], 81, 69, 1 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[2], 73, 80, 2 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[3], 90, 67, 3 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[4], 66, 77, 4 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[5], 70, 72, 5 * angleIncrement, startLives),
     ].slice(0, numPlayers);
     let currentPlayer = getRandomPlayer(numPlayers);
     let arenaSize = 0;

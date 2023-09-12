@@ -1,3 +1,4 @@
+import { BATTLE_COLORS } from 'src/shared/battle';
 import {
     BALL_SPEED_START,
     MAX_Y_FACTOR,
@@ -86,6 +87,7 @@ class Game {
                 id: playerId,
                 angle: 0,
                 lives: lives,
+                color: BATTLE_COLORS[idx],
                 activeKeys: new Set(),
             };
             for (const player of this.info.players) {
