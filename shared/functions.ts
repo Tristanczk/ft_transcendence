@@ -17,3 +17,8 @@ export const remap = (
     min2: number,
     max2: number,
 ) => ((num - min1) * (max2 - min2)) / (max1 - min1) + min2;
+
+export const trueMod = (x: number, y: number) => {
+    let res = x % y;
+    return res >= 0 ? res : res + y;
+};

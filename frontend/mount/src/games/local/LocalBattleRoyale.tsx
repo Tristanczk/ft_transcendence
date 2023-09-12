@@ -2,6 +2,7 @@ import React from 'react';
 import p5Types from 'p5';
 import Sketch from 'react-p5';
 import { NAVBAR_HEIGHT } from '../../constants';
+import { trueMod } from '../../shared/functions';
 
 const TAU = 2 * Math.PI;
 const MIN_PLAYERS = 2;
@@ -163,11 +164,6 @@ class Ball {
         );
     }
 }
-
-const trueMod = (x: number, y: number) => {
-    let res = x % y;
-    return res >= 0 ? res : res + y;
-};
 
 const angleDist = (angle1: number, angle2: number) => {
     angle1 = trueMod(angle1, TAU);
