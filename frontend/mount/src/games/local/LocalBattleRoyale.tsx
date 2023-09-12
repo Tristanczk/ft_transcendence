@@ -4,15 +4,15 @@ import Sketch from 'react-p5';
 import { trueMod } from '../../shared/functions';
 import { CANVAS_MARGIN, NAVBAR_HEIGHT, TAU } from '../../shared/misc';
 import {
-    DEFAULT_PADDLE_SIZE,
-    HIT_LEEWAY,
-    ARC_VERTICES,
-    DOT_SHIFT,
-    PADDLE_MARGIN,
-    HIT_PADDLE,
-    HIT_ANGLE_FACTOR,
-    BETWEEN_PADDLES,
-    MAX_HEIGHT,
+    BATTLE_DEFAULT_PADDLE_SIZE,
+    BATTLE_HIT_LEEWAY,
+    BATTLE_ARC_VERTICES,
+    BATTLE_DOT_SHIFT,
+    BATTLE_PADDLE_MARGIN,
+    BATTLE_HIT_PADDLE,
+    BATTLE_HIT_ANGLE_FACTOR,
+    BATTLE_BETWEEN_PADDLES,
+    BATTLE_MAX_HEIGHT,
     BATTLE_BALL_SIZE,
     BATTLE_BALL_SPEED_INCREMENT,
     BATTLE_PADDLE_SPEED,
@@ -37,7 +37,7 @@ class Player {
     ) {
         this.lives = startLives;
         this.angle = startAngle;
-        this.paddleSize = DEFAULT_PADDLE_SIZE;
+        this.paddleSize = BATTLE_DEFAULT_PADDLE_SIZE;
         this.color = color;
         this.keys = {
             clockwise: keyClockwise,
@@ -57,7 +57,7 @@ class Player {
 
     hit(ballPos: p5Types.Vector): number | null {
         const angleDiff = angleDist(this.angle, ballPos.heading());
-        const limit = this.paddleSize + BATTLE_BALL_SIZE * HIT_LEEWAY;
+        const limit = this.paddleSize + BATTLE_BALL_SIZE * BATTLE_HIT_LEEWAY;
         return Math.abs(angleDiff) <= limit ? angleDiff / limit : null;
     }
 
@@ -69,9 +69,10 @@ class Player {
         p5.fill('black');
         p5.beginShape();
         const angles: number[] = Array.from(
-            { length: ARC_VERTICES + 1 },
+            { length: BATTLE_ARC_VERTICES + 1 },
             (_, i) =>
-                this.angle + (i / ARC_VERTICES - 0.5) * this.paddleSize * 2,
+                this.angle +
+                (i / BATTLE_ARC_VERTICES - 0.5) * this.paddleSize * 2,
         );
         for (const angle of angles) {
             p5.vertex(p5.cos(angle) * innerRadius, p5.sin(angle) * innerRadius);
@@ -104,9 +105,9 @@ class Player {
         if (this.lives === 1) {
             this.drawLife(p5, middleRadius, this.angle, arenaSize);
         } else {
-            const startDot = this.angle - DOT_SHIFT * this.paddleSize;
+            const startDot = this.angle - BATTLE_DOT_SHIFT * this.paddleSize;
             const angleInc =
-                (2 * DOT_SHIFT * this.paddleSize) / (this.lives - 1);
+                (2 * BATTLE_DOT_SHIFT * this.paddleSize) / (this.lives - 1);
             for (let i = 0; i < this.lives; ++i) {
                 this.drawLife(
                     p5,
@@ -120,8 +121,8 @@ class Player {
 
     draw(p5: p5Types, arenaSize: number): void {
         const innerRadius =
-            (arenaSize * (1 - PADDLE_MARGIN - BATTLE_PADDLE_WIDTH)) / 2;
-        const outerRadius = (arenaSize * (1 - PADDLE_MARGIN)) / 2;
+            (arenaSize * (1 - BATTLE_PADDLE_MARGIN - BATTLE_PADDLE_WIDTH)) / 2;
+        const outerRadius = (arenaSize * (1 - BATTLE_PADDLE_MARGIN)) / 2;
         const middleRadius = (innerRadius + outerRadius) / 2;
         this.drawPaddle(p5, innerRadius, outerRadius);
         this.drawLives(p5, middleRadius, arenaSize);
@@ -142,10 +143,10 @@ class Ball {
     }
 
     bounce(hit: number): void {
-        this.pos.mult(HIT_PADDLE / this.pos.mag());
+        this.pos.mult(BATTLE_HIT_PADDLE / this.pos.mag());
         this.vel = this.pos
             .copy()
-            .rotate(Math.PI - hit * HIT_ANGLE_FACTOR)
+            .rotate(Math.PI - hit * BATTLE_HIT_ANGLE_FACTOR)
             .normalize()
             .mult(this.vel.mag() + BATTLE_BALL_SPEED_INCREMENT);
     }
@@ -202,7 +203,8 @@ const avoidCollision = (
     step: number,
 ): boolean => {
     const angleDiff = angleDist(player1.angle, player2.angle);
-    const limit = player1.paddleSize + player2.paddleSize + BETWEEN_PADDLES;
+    const limit =
+        player1.paddleSize + player2.paddleSize + BATTLE_BETWEEN_PADDLES;
     if (Math.abs(angleDiff) >= limit) return false;
     const toMove = Math.min((limit - Math.abs(angleDiff)) / 2 + 1e-5, step);
     if (angleDiff > 0) {
@@ -270,7 +272,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
         arenaSize = Math.min(
             p5.width - CANVAS_MARGIN,
             p5.height - CANVAS_MARGIN,
-            MAX_HEIGHT,
+            BATTLE_MAX_HEIGHT,
         );
     };
 
@@ -305,8 +307,8 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
             }
             ball = new Ball(p5, ballSpeedStart);
         } else if (
-            centerDist >= HIT_PADDLE &&
-            centerDist <= 1 - PADDLE_MARGIN - BATTLE_PADDLE_WIDTH / 2
+            centerDist >= BATTLE_HIT_PADDLE &&
+            centerDist <= 1 - BATTLE_PADDLE_MARGIN - BATTLE_PADDLE_WIDTH / 2
         ) {
             let closestHit: number | null = null;
             for (const player of players) {
