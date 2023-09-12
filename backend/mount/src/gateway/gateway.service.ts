@@ -131,9 +131,16 @@ export class GatewayService
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
                 game.addPlayer(client.id);
                 this.clients[client.id] = game.id;
-                this.server
-                    .to(game.info.players[0].id)
-                    .emit('startGame', game.id);
+                //TODO : might need to adapt for battle royale as there are more than 2 players
+                if (game.info.players[0].id === client.id) {
+                    this.server
+                        .to(game.info.players[1].id)
+                        .emit('startGame', game.id);
+                } else {
+                    this.server
+                        .to(game.info.players[0].id)
+                        .emit('startGame', game.id);
+                }
                 return { gameId: game.id, status: 'joined' };
             }
         }
@@ -141,6 +148,26 @@ export class GatewayService
         this.games[game.id] = game;
         this.clients[client.id] = game.id;
         return { gameId: game.id, status: 'waiting' };
+    }
+
+    //TODO: adapt for userId rather than socketId
+    @SubscribeMessage('abortMatchmaking')
+    async handleAbortMatchmaking(client: Socket, gameId: string) {
+        if (!this.games[gameId]) {
+            return {
+                error: `Invalid game: ${gameId}`,
+                errorCode: 'invalidGame',
+            };
+        }
+        if (this.games[gameId].info.state !== 'waiting') {
+            return {
+                error: `Game ${gameId} has already started`,
+                errorCode: 'gameStarted',
+            };
+        }
+        delete this.games[gameId];
+        delete this.clients[client.id];
+        return { status: 'matchmaking cancelled' };
     }
 
     @SubscribeMessage('quitGame')

@@ -4,8 +4,6 @@ import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode, NAVBAR_HEIGHT } from '../shared/misc';
 
-const activateMatchmaking = false;
-
 const joinGame = (
     mode: GameMode,
     socket: Socket,
@@ -28,8 +26,7 @@ const joinGame = (
         } else {
             setGameId(response.gameId);
             if (response.status === 'waiting') {
-                if (activateMatchmaking) setMatchmaking(true);
-                else navigate(`/game/${response.gameId}`);
+                setMatchmaking(true);
             } else {
                 navigate(`/game/${response.gameId}`);
             }
@@ -74,20 +71,54 @@ const GameButton = ({
     </button>
 );
 
+const leaveMatchmaking = (
+    socket: Socket,
+    setError: (error: string) => void,
+    gameId: string | undefined,
+    setGameId: (gameId: string | undefined) => void,
+    setMatchmaking: (matchmaking: boolean) => void,
+) => {
+    // const { user } = useUserContext();
+    // let userId: number = -1;
+    // if (user) userId = user.id;
+    socket.emit('abortMatchmaking', gameId, (response: any) => {
+        if (response.error) {
+            setError(response.error);
+        } else {
+            setMatchmaking(false);
+            setGameId(undefined);
+        }
+    });
+};
+
 //TO DO link with backend to actually cancel matchmaking and the game currently activated
 const CancelButton = ({
     text,
     socket,
     setMatchmaking,
+    setError,
+    gameId,
+    setGameId,
 }: {
     text: string;
     socket: Socket;
     setMatchmaking: (matchmaking: boolean) => void;
+    setError: React.Dispatch<React.SetStateAction<string>>;
+    gameId: string | undefined;
+    setGameId: (gameId: string | undefined) => void;
 }) => (
     <button
         type="button"
         className=" rounded-md p-2 "
-        onClick={() => setMatchmaking(false)}
+        onClick={() =>
+            leaveMatchmaking(
+                socket,
+                setError,
+                gameId,
+                setGameId,
+                setMatchmaking,
+            )
+        }
     >
         <span className="text-sm font-medium inline-flex items-center justify-center text-white hover:text-gray-500 focus:outline-none mt-2">
             <svg
@@ -99,13 +130,13 @@ const CancelButton = ({
                 aria-hidden="true"
             >
                 <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     d="M6 18L18 6M6 6l12 12"
                 />
             </svg>
-            Cancel matchmaking
+            {text}
         </span>
     </button>
 );
@@ -173,9 +204,17 @@ const GameModePage = ({
 const LoadingPage = ({
     socket,
     setMatchmaking,
+    error,
+    setError,
+    gameId,
+    setGameId,
 }: {
     socket: Socket;
     setMatchmaking: React.Dispatch<React.SetStateAction<boolean>>;
+    error: string;
+    setError: React.Dispatch<React.SetStateAction<string>>;
+    gameId: string | undefined;
+    setGameId: (gameId: string | undefined) => void;
 }) => {
     return (
         <div role="status" className="flex flex-col items-center">
@@ -195,15 +234,18 @@ const LoadingPage = ({
                     fill="currentFill"
                 />
             </svg>
-            <span className="sr-only">Loading...</span>
-            <label className="text-white text-lg font-bold mt-2">
+            <span className="text-white text-lg font-bold mt-2">
                 Waiting for a worthy opponent...
-            </label>
+            </span>
             <CancelButton
                 text="Cancel matchmaking"
                 socket={socket}
                 setMatchmaking={setMatchmaking}
+                setError={setError}
+                gameId={gameId}
+                setGameId={setGameId}
             />
+            {error && <div className="text-white">{error}</div>}
         </div>
     );
 };
@@ -215,13 +257,14 @@ const HomePage: React.FC<{
     const navigate = useNavigate();
     const socket = useContext(WebsocketContext);
     const [error, setError] = useState<string>('');
+    const [errorMatchmaking, setErrorMatchmaking] = useState<string>('');
     const [errorCode, setErrorCode] = useState<string | undefined>();
     const [matchmaking, setMatchmaking] = useState<boolean>(false);
     useEffect(() => {
         if (socket) {
             const startGame = (gameId: string) => {
+                console.log('starting game', gameId);
                 navigate(`/game/${gameId}`);
-                console.log(gameId);
             };
 
             socket.on('startGame', startGame);
@@ -237,8 +280,15 @@ const HomePage: React.FC<{
             className="flex flex-col justify-center items-center bg-rose-600 space-y-4"
             style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
         >
-            {false ? ( // TODO matchmaking ?
-                <LoadingPage socket={socket} setMatchmaking={setMatchmaking} />
+            {matchmaking ? ( // TODO matchmaking ?
+                <LoadingPage
+                    socket={socket}
+                    setMatchmaking={setMatchmaking}
+                    error={errorMatchmaking}
+                    setError={setErrorMatchmaking}
+                    gameId={gameId}
+                    setGameId={setGameId}
+                />
             ) : (
                 <GameModePage
                     error={error}
