@@ -172,7 +172,7 @@ export class GatewayService
             game.idGameStat = await this.gamesService.initGame(
                 idPlayerA,
                 idPlayerB,
-                0,
+                mode,
             );
         console.log('for stats:' + game.idGameStat);
     }
@@ -210,6 +210,7 @@ export class GatewayService
 
     @SubscribeMessage('quitGame')
     async handleQuitGame(client: Socket, data: string) {
+        console.log('end');
         // TODO only player
         // TODO not in game
         // TODO waiting
@@ -266,9 +267,13 @@ export class GatewayService
 
     @Interval(1000 / 60)
     async notifyUsers() {
+        let retourUpdate: string = null;
         for (const game of Object.values(this.games)) {
             if (game.info.state !== 'finished') {
-                game.update();
+                retourUpdate = game.update();
+                if (retourUpdate === 'finished') {
+                    this.handleEndGame(game);
+                }
                 for (const player of game.info.players) {
                     if (player) {
                         this.server
@@ -278,5 +283,17 @@ export class GatewayService
                 }
             }
         }
+    }
+
+    async handleEndGame(game: Game) {
+		
+        this.gamesService.updateGame(game.idGameStat, {
+            scoreA: game.info.players[0].score,
+            scoreB: game.info.players[1].score,
+            won:
+                game.info.players[0].score > game.info.players[1].score
+                    ? true
+                    : false,
+        });
     }
 }

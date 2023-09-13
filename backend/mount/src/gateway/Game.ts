@@ -329,7 +329,7 @@ class Game {
         // }
     }
 
-    update() {
+    update(): string {
         const now = performance.now();
         const deltaTime = now - this.lastUpdate;
         this.lastUpdate = now;
@@ -339,7 +339,11 @@ class Game {
             this.updateBattle(this.info.objects, deltaTime);
         } else {
             this.updateClassicMayhem(this.info.objects, deltaTime);
+			if (this.info.state === 'finished') {
+				return 'finished';
+			}
         }
+		return 'playing';
     }
 }
 
