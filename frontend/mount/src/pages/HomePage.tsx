@@ -3,6 +3,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode, NAVBAR_HEIGHT } from '../shared/misc';
+import { set } from 'date-fns';
 
 const joinGame = (
     mode: GameMode,
@@ -25,6 +26,7 @@ const joinGame = (
         } else {
             setGameId(response.gameId);
             if (response.status === 'waiting') {
+                setGameId('waiting_' + response.gameId);
                 setMatchmaking(true);
             } else {
                 navigate(`/game/${response.gameId}`);
@@ -80,10 +82,10 @@ const leaveMatchmaking = (
     setGameId: (gameId: string | undefined) => void,
     setMatchmaking: (matchmaking: boolean) => void,
 ) => {
-    // const { user } = useUserContext();
-    // let userId: number = -1;
-    // if (user) userId = user.id;
-    socket.emit('abortMatchmaking', gameId, (response: any) => {
+    const gameIdToLeave = gameId?.startsWith('waiting_')
+        ? gameId.slice(8)
+        : gameId;
+    socket.emit('abortMatchmaking', gameIdToLeave, (response: any) => {
         if (response.error) {
             setError(response.error);
         } else {
@@ -270,6 +272,7 @@ const HomePage: React.FC<{
         if (socket) {
             const startGame = (gameId: string) => {
                 console.log('starting game', gameId);
+                if (gameId.startsWith('waiting_')) setGameId(gameId.slice(8));
                 navigate(`/game/${gameId}`);
             };
 
@@ -282,9 +285,8 @@ const HomePage: React.FC<{
     }, [socket, navigate]);
 
     useEffect(() => {
-        return () => {
-            if (matchmaking && gameId) {
-                console.log('leaving matchmaking once again');
+        const handlePageRefresh = (event: BeforeUnloadEvent) => {
+            if (matchmaking)
                 leaveMatchmaking(
                     socket,
                     setErrorMatchmaking,
@@ -292,7 +294,20 @@ const HomePage: React.FC<{
                     setGameId,
                     setMatchmaking,
                 );
-            }
+        };
+
+        window.addEventListener('beforeunload', handlePageRefresh);
+
+        return () => {
+            window.removeEventListener('beforeunload', handlePageRefresh);
+            if (matchmaking)
+                leaveMatchmaking(
+                    socket,
+                    setErrorMatchmaking,
+                    gameId,
+                    setGameId,
+                    setMatchmaking,
+                );
         };
     });
 
