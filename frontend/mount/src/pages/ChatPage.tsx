@@ -18,7 +18,7 @@ import ChatFriendList from '../components/chat/ChatFriendList';
 import ChatChannelList from '../components/chat/ChatChannelList';
 import ChannelHeader from '../components/chat/ChannelHeader';
 
-function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
+function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: boolean, toggleChatVisibility: () => void }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     const [channel, setChannel] = useState<number>(0);
@@ -47,6 +47,13 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
         setIsVisible(false); // Start the fade-out animation
         setTimeout(() => setChannel(0), 500); // Wait for the animation to complete before setting state
     };
+
+    const closeChat = () => {
+        setIsVisible(false);
+        setChannelListSelected(-1);
+        setTimeout(() => setChannel(0), 500);
+        toggleChatVisibility();
+    };  
 
 
     useEffect(() => {
@@ -156,7 +163,7 @@ function ChatPage({ isChatVisible }: { isChatVisible: boolean }) {
                         channel ? 'w-104' : 'w-60'
                     }`}
                 >
-                    <ChatListHeader selector={setChannelListSelected} />
+                    <ChatListHeader selector={setChannelListSelected} handleClose={closeChat}/>
                     {channelListSelected < 0 ? (
                         <div className="flex flex-col h-full"></div>
                     ) : channelListSelected ? (

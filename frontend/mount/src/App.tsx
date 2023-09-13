@@ -44,7 +44,7 @@ const App: React.FC = () => {
                     <TrackingOnline />
                     <BrowserRouter>
                         <NavBar toggleChatVisibility={toggleChatVisibility} gameId={gameId} />
-                        {<ChatPage isChatVisible={isChatVisible}/>}
+                        {<ChatPage isChatVisible={isChatVisible} toggleChatVisibility={toggleChatVisibility}/>}
                         <Routes>
                             <Route
                                 path="/"
