@@ -46,10 +46,10 @@ model Games {
     initEloA   Int
     initEloB   Int
 
-    playerA Int
-    UserA   User @relation("PlayerAGames", fields: [playerA], references: [id])
-    playerB Int
-    UserB   User @relation("PlayerBGames", fields: [playerB], references: [id])
+    playerA Int?
+    UserA   User? @relation("PlayerAGames", fields: [playerA], references: [id])
+    playerB Int?
+    UserB   User? @relation("PlayerBGames", fields: [playerB], references: [id])
 }
 
 model Channels {
