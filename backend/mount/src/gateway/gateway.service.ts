@@ -179,6 +179,7 @@ export class GatewayService
         if (game.info.mode === 'classic') mode = 0;
         else if (game.info.mode === 'mayhem') mode = 1;
 
+		console.log('new game: playerA=' + idPlayerA + ', playerB=' + idPlayerB + ', mode=' + mode);
         if (mode !== -1)
             game.idGameStat = await this.gamesService.initGame(
                 idPlayerA,
@@ -338,14 +339,14 @@ export class GatewayService
 				scoreB = players[0].score;
 			}
 			result = scoreA > scoreB ? true : false;
-			
-			console.log('player[0]=' + players[0].id + ' vs player[1]=' + players[1].id)
 
-			console.log('playerA=' + game.playerA.userId + ', score=' + scoreA + ', won=' + result)
-			console.log(game.playerA.sockets)
+			// console.log('player[0]=' + players[0].id + ' vs player[1]=' + players[1].id)
 
-			console.log('playerB=' + game.playerB.userId + ', score=' + scoreB)
-			console.log(game.playerB.sockets)
+			// console.log('playerA=' + game.playerA.userId + ', score=' + scoreA + ', won=' + result)
+			// console.log(game.playerA.sockets)
+
+			// console.log('playerB=' + game.playerB.userId + ', score=' + scoreB)
+			// console.log(game.playerB.sockets)
 
             try {
                 await this.gamesService.updateGame(game.idGameStat, {
@@ -378,4 +379,4 @@ export class GatewayService
         */
         console.log(messageBody);
     }
-}
+} 
