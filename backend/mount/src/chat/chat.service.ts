@@ -19,6 +19,7 @@ import { GetChannelDto } from './dto/getchannel.dto';
 import { channel } from 'diagnostics_channel';
 import { EditUserDto } from 'src/user/dto';
 import { GatewayService } from 'src/gateway/gateway.service';
+import { UserSimplifiedDto } from './dto/usersimplifieddto';
 
 @Injectable()
 export class ChatService {
@@ -281,10 +282,10 @@ export class ChatService {
             });
 
             if (!channel.idAdmin.includes(editChannel.idRequester))
-                throw new Error('Not authorized');
+                throw new Error('Not authorized, Not admin');
 
             if (channel.idAdmin.includes(editChannel.idUser))
-                throw new Error('Not authorized');
+                throw new Error('Not authorized, User is admin');
 
             const updatedChannel = await this.prisma.channels.update({
                 where: {
@@ -411,6 +412,48 @@ export class ChatService {
         return channelDtos;
     }
 
+    async getChannelUsers(idChannel: number): Promise<UserSimplifiedDto[]> {
+        let users: UserSimplifiedDto[] = [];
+
+        try {
+            const channel = await this.prisma.channels.findUnique({
+                where: {
+                    id: Number(idChannel),
+                },
+            });
+
+            console.log('channel');
+            console.log(channel);
+            for (const id of channel.idUsers) {
+                const user = await this.prisma.user.findUnique({
+                    where: {
+                        id: Number(id),
+                    },
+                });
+            
+                console.log('user');
+                console.log(user);
+            
+                const userDto: UserSimplifiedDto = {
+                    id: user.id,
+                    nickname: user.nickname,
+                    avatarPath: user.avatarPath,
+                };
+            
+                console.log('userDto');
+                console.log(userDto);
+            
+                users.push(userDto);
+            }
+
+            console.log('users');
+            console.log(users);
+        } catch (error) {
+            console.log(error);
+        }
+        return users;
+    }
+
     async sendMessage(message: CreateMessageDto): Promise<CreateMessageDto> {
         try {
             const channel = await this.prisma.channels.findUnique({
@@ -445,6 +488,7 @@ export class ChatService {
                 where: { id: message.idChannel },
             });
 
+            console.log(message);
             channel.idUsers.forEach((id) => {
                 console.log('userid: ' + id);
                 const user = this.gateway.users.getIndivUserById(id);

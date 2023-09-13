@@ -1,5 +1,7 @@
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
+import { UserSimplified } from '../../types';
+import ChannelUserForm from './ChannelUserForm';
 import { ChannelProps } from './Messages';
 import { useState } from 'react';
 
@@ -7,10 +9,14 @@ export default function SettingBar({
     currentChannel,
     handleClose,
     isSettingVisible,
+    channelUsers,
+    fetchUsers,
 }: {
     currentChannel: ChannelProps | null;
     handleClose: () => void;
     isSettingVisible: boolean;
+    channelUsers: UserSimplified[];
+    fetchUsers: () => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
@@ -55,16 +61,7 @@ export default function SettingBar({
     };
 
     const banUser = async () => {
-        const response = await authAxios.patch(
-            '/chat/banUser',
-            {
-                id: currentChannel?.id,
-                idRequester: user?.id,
-                idUser: 0, // user to ban id
-            },
-            { withCredentials: true },
-        );
-        console.log(response.data);
+        fetchUsers();
     };
 
     const leaveChannel = async () => {
@@ -121,6 +118,19 @@ export default function SettingBar({
         }
     };
 
+    const handleBanUser = async (idUser: number) => {
+        const response = await authAxios.patch(
+            '/chat/banUser',
+            {
+                id: currentChannel?.id,
+                idRequester: user?.id,
+                idUser: idUser,
+            },
+            { withCredentials: true },
+        );
+        console.log(response.data);
+    };
+
     if (!currentChannel) return null;
 
     return (
@@ -129,6 +139,7 @@ export default function SettingBar({
     ${isSettingVisible ? 'right-20' : 'right-0'} 
     transition-all duration-500 ease-in-out rounded-3xl py-5`}
         >
+            <ChannelUserForm currentChannel={currentChannel} channelUsers={channelUsers} handleClick={handleBanUser}/>
             {' '}
             <button
                 name="Password"

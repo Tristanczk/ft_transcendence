@@ -1,4 +1,5 @@
 import { useUserContext } from '../../context/UserContext';
+import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
 import SettingBar from './SettingBar';
 
@@ -29,12 +30,16 @@ export default function Messages({
     currentChannel,
     zIndexClass,
     handleClose,
+    channelUsers,
+    fetchUsers,
 }: {
     messages: MessageProps[];
     isSettingVisible: boolean;
     currentChannel: ChannelProps | null;
     zIndexClass: string;
     handleClose: () => void;
+    channelUsers: UserSimplified[];
+    fetchUsers: () => void;
 }) {
     const { user } = useUserContext();
 
@@ -76,6 +81,8 @@ export default function Messages({
                 currentChannel={currentChannel}
                 isSettingVisible={isSettingVisible}
                 handleClose={handleClose}
+                channelUsers={channelUsers}
+                fetchUsers={fetchUsers}
             />
             <div
                 id="messages"

@@ -38,6 +38,8 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
     );
+    const [channelUsers, setChannelUsers] = useState<UserSimplified[]>([]);
+
 
     useEffect(() => {
         setVisibleSettings(false);
@@ -130,6 +132,7 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
         if (channel) fetchMessages();
         else setMessages([]);
         fetchChannel();
+        setChannelUsers([]);
     }, [channel, currentFriend, channelListSelected]);
 
     useEffect(() => {
@@ -145,6 +148,18 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
         };
     }, [socket]);
     
+    const fetchUsers = async () => {
+        const response = await authAxios.get(
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelUsers`,
+            {
+                params: { idChannel: currentChannel?.id },
+                withCredentials: true,
+            },
+        );
+		console.log("fetchUsers");
+        console.log(response.data);
+        setChannelUsers(response.data);
+    };
 
     return (
         <div
@@ -218,6 +233,8 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
                             zIndexClass={zIndexClass}
                             currentChannel={currentChannel}
                             handleClose={handleClose}
+                            channelUsers={channelUsers}
+                            fetchUsers={fetchUsers}
                         />
                         <MessageInput idChannel={channel} />
                     </div>

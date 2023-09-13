@@ -27,6 +27,7 @@ import { ChannelDto, ChannelIdDto, isChannelAdminDto } from './dto/channel.dto';
 import { query } from 'express';
 import { GetChannelDto } from './dto/getchannel.dto';
 import { EditUserDto } from 'src/user/dto';
+import { UserSimplifiedDto } from './dto/usersimplifieddto';
 
 @Controller('chat')
 export class ChatController {
@@ -57,6 +58,14 @@ export class ChatController {
     ): Promise<ChannelDto | null> {
         console.log('getChannelByUsers controller');
         return this.chatService.getChannelByUsers(getChannel);
+    }
+
+    @Get('getChannelUsers')
+    async getChannelUsers(
+        @Query() getChannel: ChannelIdDto): Promise<UserSimplifiedDto[] | null> {
+            console.log('getChannelUsers controller');
+            console.log(getChannel);
+        return this.chatService.getChannelUsers(getChannel.idChannel);
     }
 
     @Get('isChannelOpen')
