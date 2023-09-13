@@ -21,8 +21,10 @@ const joinGame = (
     setErrorCode: (errorCode: string | undefined) => void,
     setGameId: (gameId: string | undefined) => void,
     setMatchmaking: (matchmaking: boolean) => void,
+    setErrorMatchmaking: (error: string) => void,
 ) => {
     const joinGame: JoinGameType = { mode: mode, userId: userId };
+    setErrorMatchmaking('');
     socket.emit('joinGame', joinGame, (response: any) => {
         if (response.error) {
             setError(response.error);
@@ -33,8 +35,8 @@ const joinGame = (
         } else {
             setGameId(response.gameId);
             if (response.status === 'waiting') {
-                if (activateMatchmaking) setMatchmaking(true);
-                else navigate(`/game/${response.gameId}`);
+                setGameId('waiting_' + response.gameId);
+                setMatchmaking(true);
             } else {
                 navigate(`/game/${response.gameId}`);
             }
@@ -52,6 +54,7 @@ const GameButton = ({
     setErrorCode,
     setGameId,
     setMatchmaking,
+    setErrorMatchmaking,
 }: {
     externalMode: string;
     internalMode: GameMode;
@@ -62,6 +65,7 @@ const GameButton = ({
     setErrorCode: (errorCode: string | undefined) => void;
     setGameId: (gameId: string | undefined) => void;
     setMatchmaking: (matchmaking: boolean) => void;
+    setErrorMatchmaking: (error: string) => void;
 }) => (
     <button
         className="flex justify-center items-center py-4 px-8 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm"
@@ -75,6 +79,7 @@ const GameButton = ({
                 setErrorCode,
                 setGameId,
                 setMatchmaking,
+                setErrorMatchmaking,
             )
         }
     >
@@ -82,20 +87,53 @@ const GameButton = ({
     </button>
 );
 
-//TO DO link with backend to actually cancel matchmaking and the game currently activated
+const leaveMatchmaking = (
+    socket: Socket,
+    setError: (error: string) => void,
+    gameId: string | undefined,
+    setGameId: (gameId: string | undefined) => void,
+    setMatchmaking: (matchmaking: boolean) => void,
+) => {
+    const gameIdToLeave = gameId?.startsWith('waiting_')
+        ? gameId.slice(8)
+        : gameId;
+    socket.emit('abortMatchmaking', gameIdToLeave, (response: any) => {
+        if (response.error) {
+            setError(response.error);
+        } else {
+            setMatchmaking(false);
+            setGameId(undefined);
+        }
+    });
+};
+
 const CancelButton = ({
     text,
     socket,
     setMatchmaking,
+    setError,
+    gameId,
+    setGameId,
 }: {
     text: string;
     socket: Socket;
     setMatchmaking: (matchmaking: boolean) => void;
+    setError: React.Dispatch<React.SetStateAction<string>>;
+    gameId: string | undefined;
+    setGameId: (gameId: string | undefined) => void;
 }) => (
     <button
         type="button"
         className=" rounded-md p-2 "
-        onClick={() => setMatchmaking(false)}
+        onClick={() =>
+            leaveMatchmaking(
+                socket,
+                setError,
+                gameId,
+                setGameId,
+                setMatchmaking,
+            )
+        }
     >
         <span className="text-sm font-medium inline-flex items-center justify-center text-white hover:text-gray-500 focus:outline-none mt-2">
             <svg
@@ -107,13 +145,13 @@ const CancelButton = ({
                 aria-hidden="true"
             >
                 <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     d="M6 18L18 6M6 6l12 12"
                 />
             </svg>
-            Cancel matchmaking
+            {text}
         </span>
     </button>
 );
@@ -128,6 +166,7 @@ const GameModePage = ({
     setErrorCode,
     setGameId,
     setMatchmaking,
+    setErrorMatchmaking,
 }: {
     error: string;
     errorCode: string | undefined;
@@ -138,6 +177,7 @@ const GameModePage = ({
     setErrorCode: React.Dispatch<React.SetStateAction<string | undefined>>;
     setGameId: (gameId: string | undefined) => void;
     setMatchmaking: React.Dispatch<React.SetStateAction<boolean>>;
+    setErrorMatchmaking: React.Dispatch<React.SetStateAction<string>>;
 }) => {
     const { user } = useUserContext();
     let userId: number = -1;
@@ -151,6 +191,7 @@ const GameModePage = ({
         setErrorCode,
         setGameId,
         setMatchmaking,
+        setErrorMatchmaking,
     };
 
     return (
@@ -186,9 +227,17 @@ const GameModePage = ({
 const LoadingPage = ({
     socket,
     setMatchmaking,
+    error,
+    setError,
+    gameId,
+    setGameId,
 }: {
     socket: Socket;
     setMatchmaking: React.Dispatch<React.SetStateAction<boolean>>;
+    error: string;
+    setError: React.Dispatch<React.SetStateAction<string>>;
+    gameId: string | undefined;
+    setGameId: (gameId: string | undefined) => void;
 }) => {
     return (
         <div role="status" className="flex flex-col items-center">
@@ -208,15 +257,18 @@ const LoadingPage = ({
                     fill="currentFill"
                 />
             </svg>
-            <span className="sr-only">Loading...</span>
-            <label className="text-white text-lg font-bold mt-2">
+            <span className="text-white text-lg font-bold mt-2">
                 Waiting for a worthy opponent...
-            </label>
+            </span>
             <CancelButton
                 text="Cancel matchmaking"
                 socket={socket}
                 setMatchmaking={setMatchmaking}
+                setError={setError}
+                gameId={gameId}
+                setGameId={setGameId}
             />
+            {error && <div className="text-white">{error}</div>}
         </div>
     );
 };
@@ -228,13 +280,16 @@ const HomePage: React.FC<{
     const navigate = useNavigate();
     const socket = useContext(WebsocketContext);
     const [error, setError] = useState<string>('');
+    const [errorMatchmaking, setErrorMatchmaking] = useState<string>('');
     const [errorCode, setErrorCode] = useState<string | undefined>();
     const [matchmaking, setMatchmaking] = useState<boolean>(false);
+
     useEffect(() => {
         if (socket) {
             const startGame = (gameId: string) => {
+                console.log('starting game', gameId);
+                if (gameId.startsWith('waiting_')) setGameId(gameId.slice(8));
                 navigate(`/game/${gameId}`);
-                console.log(gameId);
             };
 
             socket.on('startGame', startGame);
@@ -245,13 +300,47 @@ const HomePage: React.FC<{
         }
     }, [socket, navigate]);
 
+    useEffect(() => {
+        const handlePageRefresh = (event: BeforeUnloadEvent) => {
+            if (matchmaking)
+                leaveMatchmaking(
+                    socket,
+                    setErrorMatchmaking,
+                    gameId,
+                    setGameId,
+                    setMatchmaking,
+                );
+        };
+
+        window.addEventListener('beforeunload', handlePageRefresh);
+
+        return () => {
+            window.removeEventListener('beforeunload', handlePageRefresh);
+            if (matchmaking)
+                leaveMatchmaking(
+                    socket,
+                    setErrorMatchmaking,
+                    gameId,
+                    setGameId,
+                    setMatchmaking,
+                );
+        };
+    });
+
     return (
         <div
             className="flex flex-col justify-center items-center bg-rose-600 space-y-4"
             style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
         >
-            {false ? ( // TODO matchmaking ?
-                <LoadingPage socket={socket} setMatchmaking={setMatchmaking} />
+            {matchmaking ? (
+                <LoadingPage
+                    socket={socket}
+                    setMatchmaking={setMatchmaking}
+                    error={errorMatchmaking}
+                    setError={setErrorMatchmaking}
+                    gameId={gameId}
+                    setGameId={setGameId}
+                />
             ) : (
                 <GameModePage
                     error={error}
@@ -263,6 +352,7 @@ const HomePage: React.FC<{
                     setErrorCode={setErrorCode}
                     setGameId={setGameId}
                     setMatchmaking={setMatchmaking}
+                    setErrorMatchmaking={setErrorMatchmaking}
                 />
             )}
         </div>

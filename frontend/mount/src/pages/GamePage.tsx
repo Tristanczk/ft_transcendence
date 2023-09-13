@@ -15,19 +15,23 @@ const Game = ({
     gameInfo: GameInfo;
     width: number;
     height: number;
-}) => {
-    const gameParams = {
-        players: gameInfo.players,
-        timeRemaining: gameInfo.timeRemaining,
-        windowWidth: width,
-        windowHeight: height,
-    };
-    return gameInfo.mode === 'battle' ? (
-        <MultiBattleRoyale gameObjects={gameInfo.objects} {...gameParams} />
+}) =>
+    gameInfo.mode === 'battle' ? (
+        <MultiBattleRoyale
+            gameObjects={gameInfo.objects}
+            players={gameInfo.players}
+            windowWidth={width}
+            windowHeight={height}
+        />
     ) : (
-        <MultiClassicMayhem gameObjects={gameInfo.objects} {...gameParams} />
+        <MultiClassicMayhem
+            gameObjects={gameInfo.objects}
+            players={gameInfo.players}
+            timeRemaining={gameInfo.timeRemaining}
+            windowWidth={width}
+            windowHeight={height}
+        />
     );
-};
 
 const GamePage: React.FC = () => {
     const navigate = useNavigate();

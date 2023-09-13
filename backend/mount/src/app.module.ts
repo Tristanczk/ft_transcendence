@@ -10,6 +10,8 @@ import { StatsModule } from './stats/stats.module';
 import { GamesModule } from './games/games.module';
 import { CreateModule } from './create/create.module';
 import { ErrorsModule } from './errors/errors.module';
+import { ChatModule } from './chat/chat.module';
+
 
 @Module({
     imports: [
@@ -19,6 +21,7 @@ import { ErrorsModule } from './errors/errors.module';
         PrismaModule,
         FriendsModule,
         GatewayModule,
+        ChatModule,
         StatsModule,
         GamesModule,
         CreateModule,

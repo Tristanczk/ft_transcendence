@@ -10,6 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { PrismaService } from '../prisma/prisma.service';
 import { Interval } from '@nestjs/schedule';
+import { CreateMessageDto } from 'src/chat/dto/message.dto';
 import Game from './Game';
 import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
@@ -125,11 +126,11 @@ export class GatewayService
     async handleJoinGame(client: Socket, data: JoinGameType) {
         const gameMode: string = data.mode;
         const playerId: number = data.userId;
-		const currentClient = this.users.getIndivUserBySocketId(client.id);
-		if (!currentClient) {
-			console.log('to handle');
-			return ;
-		}
+        const currentClient = this.users.getIndivUserBySocketId(client.id);
+        if (!currentClient) {
+            console.log('to handle');
+            return;
+        }
         console.log('player ' + playerId + ' want to play');
         if (currentClient.isPlaying) {
             return {
@@ -150,11 +151,14 @@ export class GatewayService
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
                 game.addPlayer(client.id);
                 this.liaiseGameToPlayer(client.id, game, 'B');
-                this.server
-                    .to(game.info.players[0].id)
-                    .emit('startGame', game.id);
-                await this.startGameStat(game);
 
+                for (const player of game.info.players) {
+                    if (player && player.id !== client.id) {
+                        this.server.to(player.id).emit('startGame', game.id);
+                    }
+                }
+
+                await this.startGameStat(game);
                 return { gameId: game.id, status: 'joined' };
             }
         }
@@ -211,6 +215,26 @@ export class GatewayService
             //TODO and TO TEST (si quelqu'un arrive sur la page et clique instantannement sur le bouton jouer.)
             return false;
         }
+    }
+
+    //TODO: adapt for userId rather than socketId
+    @SubscribeMessage('abortMatchmaking')
+    async handleAbortMatchmaking(client: Socket, gameId: string) {
+        if (!this.games[gameId]) {
+            return {
+                error: `Invalid game: ${gameId}`,
+                errorCode: 'invalidGame',
+            };
+        }
+        if (this.games[gameId].info.state !== 'waiting') {
+            return {
+                error: `Game ${gameId} has already started`,
+                errorCode: 'gameStarted',
+            };
+        }
+        delete this.games[gameId];
+        delete this.clients[client.id];
+        return { status: 'matchmaking cancelled' };
     }
 
     @SubscribeMessage('quitGame')
@@ -291,7 +315,6 @@ export class GatewayService
     }
 
     async handleEndGame(game: Game) {
-
         await this.gamesService.updateGame(game.idGameStat, {
             scoreA: game.info.players[0].score,
             scoreB: game.info.players[1].score,
@@ -301,11 +324,22 @@ export class GatewayService
                     : false,
         });
 
-		game.playerA.isPlaying = false;
-		game.playerA.idGamePlaying = null;
-		game.playerB.isPlaying = false;
-		game.playerB.idGamePlaying = null;
+        game.playerA.isPlaying = false;
+        game.playerA.idGamePlaying = null;
+        game.playerB.isPlaying = false;
+        game.playerB.idGamePlaying = null;
 
-		delete this.games[game.id];
+        delete this.games[game.id];
+    }
+
+    @SubscribeMessage('message')
+    handleMessage(@MessageBody() messageBody: CreateMessageDto) {
+        /*
+        get all user of messageBody.idChannel
+        for each user
+            for socket in user
+                this.socket.to(userid).emit('message', messageBody)
+        */
+        console.log(messageBody);
     }
 }

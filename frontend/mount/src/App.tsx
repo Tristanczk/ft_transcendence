@@ -24,6 +24,12 @@ import LocalMayhem from './games/local/LocalMayhem';
 import LocalBattleRoyale from './games/local/LocalBattleRoyale';
 
 const App: React.FC = () => {
+    const [isChatVisible, setIsChatVisible] = useState(false);
+
+    const toggleChatVisibility = () => {
+        console.log('toggleChatVisibility');
+        setIsChatVisible((prev) => !prev);
+    };
     const { user } = useUserContext();
     const [gameId, setGameId] = useState<string | undefined>(undefined);
 
@@ -37,7 +43,8 @@ const App: React.FC = () => {
                 <AuthAxiosProvider>
                     <TrackingOnline />
                     <BrowserRouter>
-                        <NavBar gameId={gameId} />
+                        <NavBar toggleChatVisibility={toggleChatVisibility} gameId={gameId} />
+                        {<ChatPage isChatVisible={isChatVisible}/>}
                         <Routes>
                             <Route
                                 path="/"
@@ -78,13 +85,15 @@ const App: React.FC = () => {
                                 Component={UserPage}
                             />
                             <Route
-                                path="/leaderboad"
+                                path="/leaderboard"
                                 Component={LeaderboardPage}
                             />
-                            <Route path="/chat" Component={ChatPage} />
                             <Route path="/signin" Component={SignInPage} />
                             <Route path="/signup" Component={SignUpPage} />
-                            <Route path="/signin42" Component={SignInPage42} />
+                            <Route
+                                path="/signin42"
+                                Component={SignInPage42}
+                            />
                             <Route path="/signout" Component={SignOutPage} />
                             <Route path="/settings" Component={SettingsPage} />
                             <Route path="*" Component={Page404} />

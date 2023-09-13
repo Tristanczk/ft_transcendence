@@ -10,21 +10,23 @@ import {
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
 } from '../../shared/classic_mayhem';
-import { ClassicMayhemGameObjects, Players } from '../../shared/game_info';
+import {
+    ClassicMayhemGameObjects,
+    ClassicMayhemPlayers,
+} from '../../shared/game_info';
 import {
     MayhemCell,
     MayhemMap,
     getMayhemCellPos,
 } from '../../shared/mayhem_maps';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
-
-const BACKGROUND_COLOR = '#0f0f0f';
+import { CANVAS_MARGIN, NAVBAR_HEIGHT, NEARLY_BLACK } from '../../shared/misc';
+import { getCanvasCtx } from './getCanvasCtx';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
 ) => {
-    ctx.fillStyle = BACKGROUND_COLOR;
+    ctx.fillStyle = NEARLY_BLACK;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 };
 
@@ -143,7 +145,7 @@ const drawMayhemMap = (
 const drawScore = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
-    players: Players,
+    players: ClassicMayhemPlayers,
 ) => {
     ctx.fillStyle = 'white';
     const textSize = 8 + canvas.width / 30;
@@ -174,7 +176,7 @@ const drawTimeRemaining = (
         outerSquareSize,
         outerSquareSize,
     );
-    ctx.fillStyle = BACKGROUND_COLOR;
+    ctx.fillStyle = NEARLY_BLACK;
     ctx.fillRect(
         (canvas.width - innerSquareSize) / 2,
         (canvas.height - innerSquareSize) / 2,
@@ -203,7 +205,7 @@ const MultiClassicMayhem = ({
     gameObjects: ClassicMayhemGameObjects;
     windowWidth: number;
     windowHeight: number;
-    players: Players;
+    players: ClassicMayhemPlayers;
     timeRemaining: number;
 }) => {
     const arenaHeight = Math.min(
@@ -215,15 +217,7 @@ const MultiClassicMayhem = ({
     const ref = useRef<HTMLCanvasElement | null>(null);
 
     useEffect(() => {
-        const canvas = ref.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        canvas.width = arenaWidth;
-        canvas.height = arenaHeight;
-        canvas.style.width = `${arenaWidth}px`;
-        canvas.style.height = `${arenaHeight}px`;
-
+        const [canvas, ctx] = getCanvasCtx(ref, arenaWidth, arenaHeight, true);
         drawBackground(canvas, ctx);
         drawBar(canvas, ctx, LINE_MARGIN);
         drawBar(canvas, ctx, 1 - LINE_MARGIN - LINE_WIDTH);

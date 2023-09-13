@@ -1,6 +1,8 @@
 #!/bin/sh
 
-export DB_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dev-db:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
+#export DATABASE_URL="postgresql://postgres:n2J5dJGelC0W4UEtiHkMZRrdrSHsLKr7@dev-db:5434/nest?schema=public"
+
+export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dev-db:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
 
 npm install
 npx prisma generate

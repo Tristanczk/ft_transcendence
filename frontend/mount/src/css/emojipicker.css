@@ -1,0 +1,11 @@
+.EmojiPickerReact {
+    --epr-emoji-size: 24px;
+    --epr-preview-height: -1px;
+    --epr-picker-border-radius: 1.5rem;
+    --epr-search-input-border-radius: 1.5rem;
+    --epr-picker-border-color: #ffffff00;
+    --epr-bg-color: #f1f5f9;
+    --epr-search-input-bg-color : #ffffff;
+    --epr-category-label-bg-color: var(--epr-bg-color)
+
+}
