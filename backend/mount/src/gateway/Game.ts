@@ -42,11 +42,15 @@ import {
     randomMap,
 } from 'src/shared/mayhem_maps';
 import { GameMode, MAX_PLAYERS } from 'src/shared/misc';
+import { IndivUser } from './gateway.users';
 
 class Game {
     id: string;
     timeStarted: number;
     info: GameInfo;
+	idGameStat: number;
+	playerA: IndivUser | null;
+	playerB: IndivUser | null;
     private lastUpdate: number;
 
     constructor(gameId: string, gameMode: GameMode, firstPlayer: string) {
@@ -66,6 +70,9 @@ class Game {
             this.info.objects.mayhemMap = randomMap();
         }
         this.addPlayer(firstPlayer);
+		this.idGameStat = -1;
+		this.playerA = null;
+		this.playerB = null;
     }
 
     private resetBall(ball: MultiBall) {
@@ -330,7 +337,7 @@ class Game {
         // }
     }
 
-    update() {
+    update(): string {
         const now = performance.now();
         const deltaTime = now - this.lastUpdate;
         this.lastUpdate = now;
@@ -339,13 +346,17 @@ class Game {
         if (this.info.mode === 'battle') {
             this.updateBattle(this.info.objects, deltaTime); // TODO this.info.players
         } else {
-            this.updateClassicMayhem(
-                this.info.players,
-                this.info.objects,
-                deltaTime,
-            );
+            this.updateClassicMayhem(this.info.players, this.info.objects, deltaTime);
+			if (this.info.state === 'finished') {
+				return 'finished';
+			}
         }
+		return 'playing';
     }
+
+	handleEndGame() {
+		
+	}
 }
 
 export default Game;
