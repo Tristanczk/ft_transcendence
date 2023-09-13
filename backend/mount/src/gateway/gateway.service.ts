@@ -236,7 +236,7 @@ export class GatewayService
             };
         }
 		const gameToAbort: Game = this.games[gameId];
-		this.handleEndGame(gameToAbort, true);
+		this.handleEndGame(gameToAbort, false);
         // delete this.games[gameId];
         // delete this.clients[client.id];
         return { status: 'matchmaking cancelled' };
