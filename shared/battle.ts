@@ -1,4 +1,5 @@
 export const BATTLE_MIN_PLAYERS = 2;
+export const BATTLE_DEFAULT_PLAYERS = 3;
 export const BATTLE_MAX_PLAYERS = 6;
 export const BATTLE_MAX_HEIGHT = 720;
 export const BATTLE_BALL_SIZE = 0.03;

@@ -1,7 +1,7 @@
 import React from 'react';
 import p5Types from 'p5';
 import Sketch from 'react-p5';
-import { trueMod } from '../../shared/functions';
+import { clamp, trueMod } from '../../shared/functions';
 import {
     CANVAS_MARGIN,
     NAVBAR_HEIGHT,
@@ -26,7 +26,9 @@ import {
     BATTLE_MIN_PLAYERS,
     BATTLE_COLORS,
     BATTLE_DOT_RADIUS,
+    BATTLE_DEFAULT_PLAYERS,
 } from '../../shared/battle';
+import { useSearchParams } from 'react-router-dom';
 
 class Player {
     private keys: { clockwise: number; antiClockwise: number };
@@ -359,15 +361,28 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     );
 };
 
-const LocalBattleRoyale: React.FC = () => (
-    <div
-        className="w-full flex items-center justify-center"
-        style={{
-            height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
-        }}
-    >
-        <BattleGame numPlayers={3} />
-    </div>
-);
+const LocalBattleRoyale: React.FC = () => {
+    const [params] = useSearchParams();
+    const numPlayersString = params.get('numPlayers');
+    const numPlayers =
+        numPlayersString && /^\d+$/.test(numPlayersString)
+            ? clamp(
+                  parseInt(numPlayersString),
+                  BATTLE_MIN_PLAYERS,
+                  BATTLE_MAX_PLAYERS,
+              )
+            : BATTLE_DEFAULT_PLAYERS;
+
+    return (
+        <div
+            className="w-full flex items-center justify-center"
+            style={{
+                height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+            }}
+        >
+            <BattleGame numPlayers={numPlayers} />
+        </div>
+    );
+};
 
 export default LocalBattleRoyale;
