@@ -267,6 +267,7 @@ const HomePage: React.FC<{
     const [errorMatchmaking, setErrorMatchmaking] = useState<string>('');
     const [errorCode, setErrorCode] = useState<string | undefined>();
     const [matchmaking, setMatchmaking] = useState<boolean>(false);
+
     useEffect(() => {
         if (socket) {
             const startGame = (gameId: string) => {
@@ -315,7 +316,7 @@ const HomePage: React.FC<{
             className="flex flex-col justify-center items-center bg-rose-600 space-y-4"
             style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
         >
-            {matchmaking ? ( // TODO matchmaking ?
+            {matchmaking ? (
                 <LoadingPage
                     socket={socket}
                     setMatchmaking={setMatchmaking}

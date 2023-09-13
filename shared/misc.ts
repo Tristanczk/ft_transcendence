@@ -19,3 +19,4 @@ export type KeyEvent = { key: string; type: KeyEventType; gameId: string };
 export const TAU = 2 * Math.PI;
 export const NAVBAR_HEIGHT = 72;
 export const CANVAS_MARGIN = 20;
+export const NEARLY_BLACK = '#0f0f0f';
