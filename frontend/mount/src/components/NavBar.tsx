@@ -224,9 +224,11 @@ const NavBar = ({
                     toggleChatVisibility={toggleChatVisibility}
                 />
                 <div className="flex items-center">
-                    {gameId && location.pathname !== `/game/${gameId}` && (
-                        <Button text="Rejoin game" onClick={handleRejoin} />
-                    )}
+                    {gameId &&
+                        !gameId.startsWith('waiting_') &&
+                        location.pathname !== `/game/${gameId}` && (
+                            <Button text="Rejoin game" onClick={handleRejoin} />
+                        )}
                     {user ? (
                         <UserMenu />
                     ) : (
