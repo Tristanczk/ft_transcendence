@@ -132,15 +132,10 @@ export class GatewayService
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
                 game.addPlayer(client.id);
                 this.clients[client.id] = game.id;
-                //TODO : might need to adapt for battle royale as there are more than 2 players
-                if (game.info.players[0].id === client.id) {
-                    this.server
-                        .to(game.info.players[1].id)
-                        .emit('startGame', game.id);
-                } else {
-                    this.server
-                        .to(game.info.players[0].id)
-                        .emit('startGame', game.id);
+                for (const player of game.info.players) {
+                    if (player && player.id !== client.id) {
+                        this.server.to(player.id).emit('startGame', game.id);
+                    }
                 }
                 return { gameId: game.id, status: 'joined' };
             }
@@ -245,7 +240,6 @@ export class GatewayService
 
     @SubscribeMessage('message')
     handleMessage(@MessageBody() messageBody: CreateMessageDto) {
-
         /*
         get all user of messageBody.idChannel
         for each user
