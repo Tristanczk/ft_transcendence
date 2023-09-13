@@ -14,7 +14,7 @@ import { CreateMessageDto } from 'src/chat/dto/message.dto';
 import Game from './Game';
 import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
-import { GameInfo } from 'src/shared/game_info';
+import { BattlePlayers, ClassicMayhemPlayers, GameInfo } from 'src/shared/game_info';
 import { IndivUser, ResponseCheckConnexion, Users } from './gateway.users';
 import { GamesService } from 'src/games/games.service';
 
@@ -315,11 +315,13 @@ export class GatewayService
     }
 
     async handleEndGame(game: Game) {
+		if (!(game.info.mode === 'classic' || game.info.mode === 'mayhem')) return ;
+		const players: ClassicMayhemPlayers = game.info.players;
         await this.gamesService.updateGame(game.idGameStat, {
-            scoreA: game.info.players[0].score,
-            scoreB: game.info.players[1].score,
+            scoreA: players[0].score,
+            scoreB: players[1].score,
             won:
-                game.info.players[0].score > game.info.players[1].score
+                players[0].score > players[1].score
                     ? true
                     : false,
         });
