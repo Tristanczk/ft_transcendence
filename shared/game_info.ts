@@ -9,9 +9,16 @@ export type MultiBall = {
     velY: number;
 };
 
-const DEFAULT_MULTIBALL: MultiBall = {
+const DEFAULT_CLASSIC_MAYHEM_BALL: MultiBall = {
     posX: 0.5,
     posY: 0.5,
+    velX: 0,
+    velY: 0,
+};
+
+const DEFAULT_BATTLE_BALL: MultiBall = {
+    posX: 0,
+    posY: 0,
     velX: 0,
     velY: 0,
 };
@@ -32,61 +39,61 @@ export type Paddle = {
 
 export type BattleGameObjects = {
     ball: MultiBall;
-    paddles: [
-        Paddle | null,
-        Paddle | null,
-        Paddle | null,
-        Paddle | null,
-        Paddle | null,
-        Paddle | null,
-    ];
+    currentPlayer: number;
 };
 
 export const getDefaultClassicObjects = (): ClassicMayhemGameObjects => ({
-    balls: [{ ...DEFAULT_MULTIBALL }],
+    balls: [{ ...DEFAULT_CLASSIC_MAYHEM_BALL }],
     mayhemMap: EMPTY_MAP,
     hasNet: true,
 });
 
 export const getDefaultMayhemObjects = (): ClassicMayhemGameObjects => ({
     balls: [
-        { ...DEFAULT_MULTIBALL },
-        { ...DEFAULT_MULTIBALL },
-        { ...DEFAULT_MULTIBALL },
+        { ...DEFAULT_CLASSIC_MAYHEM_BALL },
+        { ...DEFAULT_CLASSIC_MAYHEM_BALL },
+        { ...DEFAULT_CLASSIC_MAYHEM_BALL },
     ],
     mayhemMap: EMPTY_MAP,
     hasNet: false,
 });
 
 export const getDefaultBattleObjects = (): BattleGameObjects => ({
-    ball: { ...DEFAULT_MULTIBALL },
-    paddles: [null, null, null, null, null, null],
+    ball: { ...DEFAULT_BATTLE_BALL },
+    currentPlayer: 0,
 });
 
-export type Player = {
+export type ClassicMayhemPlayer = {
     id: string;
     pos: number;
     score: number;
     activeKeys: Set<string>;
 };
 
-export type Players = (Player | null)[];
+export type ClassicMayhemPlayers = (ClassicMayhemPlayer | null)[];
+
+export type BattlePlayer = {
+    id: string;
+    angle: number;
+    lives: number;
+    color: string;
+    activeKeys: Set<string>;
+};
+
+export type BattlePlayers = (BattlePlayer | null)[];
 
 export type GameInfo = {
     state: GameState;
-    players: Players;
     timeRemaining: number;
 } & (
     | {
-          mode: 'classic';
-          objects: ClassicMayhemGameObjects;
-      }
-    | {
-          mode: 'mayhem';
+          mode: 'classic' | 'mayhem';
+          players: ClassicMayhemPlayers;
           objects: ClassicMayhemGameObjects;
       }
     | {
           mode: 'battle';
+          players: BattlePlayers;
           objects: BattleGameObjects;
       }
 );
