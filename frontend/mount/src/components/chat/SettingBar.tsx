@@ -11,16 +11,19 @@ export default function SettingBar({
     isSettingVisible,
     channelUsers,
     fetchUsers,
+    setChannelUsers,
 }: {
     currentChannel: ChannelProps | null;
     handleClose: () => void;
     isSettingVisible: boolean;
     channelUsers: UserSimplified[];
     fetchUsers: () => void;
+    setChannelUsers: (users: UserSimplified[]) => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     const [input, setInput] = useState<string>('');
+    const [formState, setFormState] = useState<'ban' | 'admin' | 'mute' | null>(null);
 
     const [activeInput, setActiveInput] = useState<'password' | 'name' | null>(
         null,
@@ -49,7 +52,7 @@ export default function SettingBar({
 
     const editPassword = async () => {
         const response = await authAxios.patch(
-            '/chat/editPassword',
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/editPassword`,
             {
                 id: currentChannel?.id,
                 idRequester: user?.id,
@@ -60,13 +63,9 @@ export default function SettingBar({
         console.log(response.data);
     };
 
-    const banUser = async () => {
-        fetchUsers();
-    };
-
     const leaveChannel = async () => {
         const response = await authAxios.patch(
-            '/chat/leaveChannel',
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/leaveChannel`,
             {
                 id: currentChannel?.id,
                 idRequester: user?.id,
@@ -78,22 +77,11 @@ export default function SettingBar({
 
     const editName = async () => {
         const response = await authAxios.patch(
-            '/chat/editName',
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/editName`,
             {
                 id: currentChannel?.id,
                 idRequester: user?.id,
                 name: input,
-            },
-            { withCredentials: true },
-        );
-    };
-    const addAdmin = async () => {
-        const response = await authAxios.patch(
-            '/chat/addAdmin',
-            {
-                id: currentChannel?.id,
-                idRequester: user?.id,
-                idUser: 3, // user input
             },
             { withCredentials: true },
         );
@@ -120,7 +108,7 @@ export default function SettingBar({
 
     const handleBanUser = async (idUser: number) => {
         const response = await authAxios.patch(
-            '/chat/banUser',
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/banUser`,
             {
                 id: currentChannel?.id,
                 idRequester: user?.id,
@@ -131,6 +119,45 @@ export default function SettingBar({
         console.log(response.data);
     };
 
+    const handleAddAdmin = async (idUser: number) => {
+        const response = await authAxios.patch(
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/addAdmin`,
+            {
+                id: currentChannel?.id,
+                idRequester: user?.id,
+                idUser: idUser,
+            },
+            { withCredentials: true },
+        );
+        console.log(response.data);
+    };
+
+    const handleMuteUser = async (idUser: number) => {
+        const response = await authAxios.patch(
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/muteUser`,
+            {
+                id: currentChannel?.id,
+                idRequester: user?.id,
+                idUser: idUser,
+            },
+            { withCredentials: true },
+        );
+        console.log(response.data);
+    };
+
+    const getClickHandler = () => {
+        switch (formState) {
+          case 'ban':
+            return handleBanUser;
+          case 'admin':
+            return handleAddAdmin;
+          case 'mute':
+            return handleMuteUser;
+            default:
+                return () => {};
+        }
+      };
+      
     if (!currentChannel) return null;
 
     return (
@@ -139,7 +166,12 @@ export default function SettingBar({
     ${isSettingVisible ? 'right-20' : 'right-0'} 
     transition-all duration-500 ease-in-out rounded-3xl py-5`}
         >
-            <ChannelUserForm currentChannel={currentChannel} channelUsers={channelUsers} handleClick={handleBanUser}/>
+                        <ChannelUserForm
+                currentChannel={currentChannel}
+                channelUsers={channelUsers}
+                handleClick={getClickHandler()}
+                setChannelUsers={setChannelUsers}
+            />
             {' '}
             <button
                 name="Password"
@@ -183,11 +215,13 @@ export default function SettingBar({
                     }
                 />
             )}
+
             <button
                 name="Ban"
                 onClick={() => {
                     removeInput();
-                    banUser();
+                    setFormState('ban');
+                    fetchUsers();
                 }}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
@@ -276,7 +310,8 @@ export default function SettingBar({
                 name="Admin"
                 onClick={() => {
                     removeInput();
-                    addAdmin();
+                    setFormState('admin');
+                    fetchUsers();
                 }}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
@@ -296,6 +331,11 @@ export default function SettingBar({
             <button
                 name="Mute"
                 type="button"
+                onClick={() => {
+                    removeInput();
+                    setFormState('mute');
+                    fetchUsers();
+                }}
                 className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500"
             >
                 <svg

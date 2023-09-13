@@ -18,7 +18,13 @@ import ChatFriendList from '../components/chat/ChatFriendList';
 import ChatChannelList from '../components/chat/ChatChannelList';
 import ChannelHeader from '../components/chat/ChannelHeader';
 
-function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: boolean, toggleChatVisibility: () => void }) {
+function ChatPage({
+    isChatVisible,
+    toggleChatVisibility,
+}: {
+    isChatVisible: boolean;
+    toggleChatVisibility: () => void;
+}) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     const [channel, setChannel] = useState<number>(0);
@@ -39,7 +45,7 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
         null,
     );
     const [channelUsers, setChannelUsers] = useState<UserSimplified[]>([]);
-
+    const [blockedUsers, setBlockedUsers] = useState<number[]>([]);
 
     useEffect(() => {
         setVisibleSettings(false);
@@ -55,8 +61,7 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
         setChannelListSelected(-1);
         setTimeout(() => setChannel(0), 500);
         toggleChatVisibility();
-    };  
-
+    };
 
     useEffect(() => {
         if (visibleSettings) {
@@ -64,7 +69,7 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
             const timer = setTimeout(() => {
                 setZIndexClass('z-auto');
             }, 500);
-            
+
             return () => clearTimeout(timer); // Cleanup the timer if the component unmounts or if visibleSettings changes again before the timer fires.
         } else {
             // If settings are hiding, immediately reset z-index.
@@ -140,14 +145,14 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
             console.log('received message', message);
             setMessages((oldMessages) => [...oldMessages, message]);
         };
-    
+
         socket.on('message', messageListener);
-    
+
         return () => {
             socket.off('message', messageListener);
         };
     }, [socket]);
-    
+
     const fetchUsers = async () => {
         const response = await authAxios.get(
             `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelUsers`,
@@ -156,9 +161,23 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
                 withCredentials: true,
             },
         );
-		console.log("fetchUsers");
+        console.log('fetchUsers');
         console.log(response.data);
         setChannelUsers(response.data);
+    };
+
+    const handleBlock = async () => {
+        if (!currentFriend) return;
+        if (blockedUsers.includes(currentFriend?.id)) {
+            setBlockedUsers((oldBlockedUsers) =>
+                oldBlockedUsers.filter((id) => id !== currentFriend?.id),
+            );
+        } else {
+            setBlockedUsers((oldBlockedUsers) => [
+                ...oldBlockedUsers,
+                currentFriend?.id,
+            ]);
+        }
     };
 
     return (
@@ -178,7 +197,10 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
                         channel ? 'w-104' : 'w-60'
                     }`}
                 >
-                    <ChatListHeader selector={setChannelListSelected} handleClose={closeChat}/>
+                    <ChatListHeader
+                        selector={setChannelListSelected}
+                        handleClose={closeChat}
+                    />
                     {channelListSelected < 0 ? (
                         <div className="flex flex-col h-full"></div>
                     ) : channelListSelected ? (
@@ -218,6 +240,7 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
                                 channel={channel}
                                 currentFriend={currentFriend}
                                 handleClose={handleClose}
+                                handleBlock={handleBlock}
                             />
                         ) : (
                             <ChannelHeader
@@ -235,6 +258,8 @@ function ChatPage({ isChatVisible, toggleChatVisibility }: { isChatVisible: bool
                             handleClose={handleClose}
                             channelUsers={channelUsers}
                             fetchUsers={fetchUsers}
+                            blockedUsers={blockedUsers}
+                            setChannelUsers={setChannelUsers}
                         />
                         <MessageInput idChannel={channel} />
                     </div>

@@ -32,6 +32,8 @@ export default function Messages({
     handleClose,
     channelUsers,
     fetchUsers,
+    blockedUsers,
+    setChannelUsers,
 }: {
     messages: MessageProps[];
     isSettingVisible: boolean;
@@ -40,6 +42,8 @@ export default function Messages({
     handleClose: () => void;
     channelUsers: UserSimplified[];
     fetchUsers: () => void;
+    blockedUsers: number[];
+    setChannelUsers: (users: UserSimplified[]) => void;
 }) {
     const { user } = useUserContext();
 
@@ -50,6 +54,8 @@ export default function Messages({
         let currentGroup: MessageGroup | null = null;
 
         messages.forEach((message) => {
+            if (blockedUsers.includes(message.idSender)) return;
+
             if (currentGroup && currentGroup.idSender === message.idSender) {
                 currentGroup.messages.push(message);
             } else {
@@ -83,6 +89,7 @@ export default function Messages({
                 handleClose={handleClose}
                 channelUsers={channelUsers}
                 fetchUsers={fetchUsers}
+                setChannelUsers={setChannelUsers}
             />
             <div
                 id="messages"

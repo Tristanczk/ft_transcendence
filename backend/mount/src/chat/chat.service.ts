@@ -387,6 +387,49 @@ export class ChatService {
         }
     }
 
+    async muteUser(editChannel: EditChannelUserDto): Promise<EditChannelDto> {
+        try {
+            const channel = await this.prisma.channels.findFirst({
+                where: {
+                    id: editChannel.id,
+                },
+            });
+
+            if (!channel.idAdmin.includes(editChannel.idRequester)) 
+                throw new Error('Not authorized');
+
+            if (channel.idAdmin.includes(editChannel.idUser))
+                throw new Error('Not authorized, User is admin');
+
+            const updatedChannel = await this.prisma.channels.update({
+                where: {
+                    id: editChannel.id,
+                },
+                data: {
+                    idUsers: {
+                        set: channel.idUsers.filter(
+                            (id) => id !== editChannel.idRequester, // How to mute user? 
+                        ),
+                    },
+                },
+            });
+
+
+
+            const updatedChannelDto: EditChannelDto = {
+                id: updatedChannel.id,
+                idAdmin: updatedChannel.idAdmin,
+                idUser: updatedChannel.idUsers,
+                isPublic: updatedChannel.isPublic,
+                name: updatedChannel.name,
+            };
+            return updatedChannelDto;
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     async getChannels(): Promise<ChannelDto[]> {
         let channels = null;
 

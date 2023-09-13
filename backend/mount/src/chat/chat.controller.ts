@@ -123,6 +123,12 @@ export class ChatController {
         return this.chatService.addAdmin(editChannel);
     }
 
+    @Patch('muteUser')
+    async muteUser(@Body() editChannel: EditChannelUserDto): Promise<EditChannelDto> {
+        return this.chatService.muteUser(editChannel);
+    }
+    
+
     @Post('sendMessage')
     async sendMessage(
         @Body() message: CreateMessageDto,
