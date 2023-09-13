@@ -345,6 +345,10 @@ class Game {
         }
 		return 'playing';
     }
+
+	handleEndGame() {
+		
+	}
 }
 
 export default Game;

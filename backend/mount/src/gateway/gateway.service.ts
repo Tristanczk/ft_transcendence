@@ -125,8 +125,13 @@ export class GatewayService
     async handleJoinGame(client: Socket, data: JoinGameType) {
         const gameMode: string = data.mode;
         const playerId: number = data.userId;
+		const currentClient = this.users.getIndivUserBySocketId(client.id);
+		if (!currentClient) {
+			console.log('to handle');
+			return ;
+		}
         console.log('player ' + playerId + ' want to play');
-        if (this.clients[client.id]) {
+        if (currentClient.isPlaying) {
             return {
                 error: `You are already in game ${
                     this.clients[client.id].idGamePlaying
@@ -286,8 +291,8 @@ export class GatewayService
     }
 
     async handleEndGame(game: Game) {
-		
-        this.gamesService.updateGame(game.idGameStat, {
+
+        await this.gamesService.updateGame(game.idGameStat, {
             scoreA: game.info.players[0].score,
             scoreB: game.info.players[1].score,
             won:
@@ -295,5 +300,12 @@ export class GatewayService
                     ? true
                     : false,
         });
+
+		game.playerA.isPlaying = false;
+		game.playerA.idGamePlaying = null;
+		game.playerB.isPlaying = false;
+		game.playerB.idGamePlaying = null;
+
+		delete this.games[game.id];
     }
 }
