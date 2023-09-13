@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { useUserContext } from '../context/UserContext';
@@ -64,17 +64,19 @@ const NavLinks: React.FC<{
                     link="/"
                     icon="/favicon.ico"
                 />
-                <NavLink
-                    current={current}
-                    title="Dashboard"
-                    link="/dashboard"
-                    icon="/navlinks/pie-chart.svg"
-                />
+                {user && (
+                    <NavLink
+                        current={current}
+                        title="Dashboard"
+                        link="/dashboard"
+                        icon="/navlinks/pie-chart.svg"
+                    />
+                )}
                 <NavLink
                     current={current}
                     title="Leaderboard"
                     link="/leaderboard"
-                    icon="/pie-chart.svg"
+                    icon="/navlinks/podium.png"
                 />
                 {user && (
                     <li>
@@ -189,14 +191,20 @@ function UserMenu() {
 
 const NavBar = ({
     gameId,
+    setGameId,
     toggleChatVisibility,
 }: {
     gameId: string | undefined;
+    setGameId: (gameId: string | undefined) => void;
     toggleChatVisibility: () => void;
 }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useUserContext();
+
+    useEffect(() => {
+        setGameId(undefined);
+    }, [user]);
 
     const handleRejoin = () => {
         //TO DO: check if game is still available, if yes redirect, if no error message
