@@ -165,12 +165,10 @@ const MultiBattleRoyale = ({
             canvas,
             ctx,
             arenaSize,
-            players[gameObjects.currentPlayer]?.color ?? '#50C878',
+            players[gameObjects.currentPlayer]?.color ?? '#50C878', // TODO no default, what to do while not srarted?
         );
         for (const player of players) {
-            if (player) {
-                drawPlayer(canvas, ctx, player, arenaSize);
-            }
+            if (player) drawPlayer(canvas, ctx, player, arenaSize);
         }
         drawText(canvas, ctx);
     });

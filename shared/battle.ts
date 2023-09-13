@@ -25,3 +25,9 @@ export const BATTLE_COLORS = [
     '#16E52B',
     '#DDEEFF',
 ];
+
+export const getBallSpeedStart = (numPlayers: number) =>
+    0.0005 + 0.0001 * numPlayers;
+
+export const getBattleLives = (numPlayers: number) =>
+    Math.max(2, Math.ceil(10 / numPlayers));

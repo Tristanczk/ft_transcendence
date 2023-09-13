@@ -1,4 +1,8 @@
-import { BATTLE_COLORS } from 'src/shared/battle';
+import {
+    BATTLE_COLORS,
+    getBallSpeedStart,
+    getBattleLives,
+} from 'src/shared/battle';
 import {
     BALL_SPEED_START,
     MAX_Y_FACTOR,
@@ -11,7 +15,6 @@ import {
     PADDLE_HIGH,
     BALL_LOW,
     BALL_HIGH,
-    BALL_RADIUS,
     WINNING_SCORE_CLASSIC,
     WINNING_SCORE_MAYHEM,
     BALL_SPEED_INCREMENT,
@@ -34,6 +37,9 @@ import {
     getDefaultBattleObjects,
     BattleGameObjects,
     ClassicMayhemPlayers,
+    BattlePlayers,
+    BattlePlayer,
+    ClassicMayhemPlayer,
 } from 'src/shared/game_info';
 import {
     MayhemMap,
@@ -41,7 +47,7 @@ import {
     getMayhemCellPos,
     randomMap,
 } from 'src/shared/mayhem_maps';
-import { GameMode, MAX_PLAYERS } from 'src/shared/misc';
+import { GameMode, MAX_PLAYERS, TAU } from 'src/shared/misc';
 
 class Game {
     id: string;
@@ -68,21 +74,37 @@ class Game {
         this.addPlayer(firstPlayer);
     }
 
-    private resetBall(ball: MultiBall) {
-        ball.posX = 0.5;
-        ball.posY = 0.5;
-        ball.velX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
-        ball.velY = randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
+    public update() {
+        const now = performance.now();
+        const deltaTime = now - this.lastUpdate;
+        this.lastUpdate = now;
+        this.info.timeRemaining = Math.max(0, 3000 - (now - this.timeStarted));
+        if (this.info.timeRemaining > 0) return;
+        if (this.info.mode === 'battle') {
+            this.updateBattle(this.info.players, this.info.objects, deltaTime);
+        } else {
+            this.updateClassicMayhem(
+                this.info.players,
+                this.info.objects,
+                deltaTime,
+            );
+        }
     }
 
-    addPlayer(playerId: string) {
+    private getNumPlayers() {
+        return (
+            this.info.players as (BattlePlayer | ClassicMayhemPlayer | null)[]
+        ).reduce<number>((a, b) => a + (b ? 1 : 0), 0);
+    }
+
+    public addPlayer(playerId: string) {
         const emptyIdxs = [...this.info.players.keys()].filter(
             (i) => !this.info.players[i],
         );
         const idx = emptyIdxs[randomInt(0, emptyIdxs.length - 1)];
-        const numPlayers = MAX_PLAYERS[this.info.mode] - emptyIdxs.length + 1;
+        const numPlayers = this.getNumPlayers() + 1;
         if (this.info.mode === 'battle') {
-            const lives = Math.max(2, Math.ceil(10 / numPlayers));
+            const lives = getBattleLives(numPlayers);
             this.info.players[idx] = {
                 id: playerId,
                 angle: 0,
@@ -108,14 +130,25 @@ class Game {
             this.timeStarted = performance.now();
             if (this.info.mode !== 'battle') {
                 for (const ball of this.info.objects.balls) {
-                    this.resetBall(ball);
+                    this.resetBallClassicMayhem(ball);
                 }
             }
         }
         this.update();
     }
 
-    private hitPaddle(
+    /***************************************************************************
+     **************************** CLASSIC & MAYHEM *****************************
+     **************************************************************************/
+
+    private resetBallClassicMayhem(ball: MultiBall) {
+        ball.posX = 0.5;
+        ball.posY = 0.5;
+        ball.velX = randomChoice([-BALL_SPEED_START, BALL_SPEED_START]);
+        ball.velY = randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
+    }
+
+    private hitPaddleClassicMayhem(
         ball: MultiBall,
         players: ClassicMayhemPlayers,
         playerIdx: 0 | 1,
@@ -234,6 +267,7 @@ class Game {
             }
         }
         if (this.info.state !== 'playing') return;
+        const ballRadius = BALL_WIDTH / 2;
         for (const ball of objects.balls) {
             ball.posX += ball.velX * deltaTime;
             ball.posY += ball.velY * deltaTime;
@@ -241,12 +275,12 @@ class Game {
                 ball.posY = clamp(ball.posY, BALL_LOW, BALL_HIGH);
                 ball.velY = -ball.velY;
             }
-            if (ball.posX >= 1 + BALL_RADIUS) {
+            if (ball.posX >= 1 + ballRadius) {
                 ++players[0].score;
-                this.resetBall(ball);
-            } else if (ball.posX <= -BALL_RADIUS) {
+                this.resetBallClassicMayhem(ball);
+            } else if (ball.posX <= -ballRadius) {
                 ++players[1].score;
-                this.resetBall(ball);
+                this.resetBallClassicMayhem(ball);
             }
             const winningScore =
                 this.info.mode === 'classic'
@@ -261,8 +295,8 @@ class Game {
                 return;
             }
             const newVelY =
-                this.hitPaddle(ball, players, 0) ||
-                this.hitPaddle(ball, players, 1);
+                this.hitPaddleClassicMayhem(ball, players, 0) ||
+                this.hitPaddleClassicMayhem(ball, players, 1);
             if (newVelY !== null) {
                 ball.velX = -(
                     ball.velX +
@@ -275,7 +309,24 @@ class Game {
         }
     }
 
-    private updateBattle(objects: BattleGameObjects, deltaTime: number) {
+    /***************************************************************************
+     ********************************* BATTLE **********************************
+     **************************************************************************/
+
+    private resetBallBattle(ball: MultiBall) {
+        ball.posX = 0;
+        ball.posY = 0;
+        const angle = randomFloat(0, TAU);
+        const ballSpeedStart = getBallSpeedStart(this.getNumPlayers());
+        ball.velX = Math.cos(angle) * ballSpeedStart;
+        ball.velY = Math.sin(angle) * ballSpeedStart;
+    }
+
+    private updateBattle(
+        players: BattlePlayers,
+        objects: BattleGameObjects,
+        deltaTime: number,
+    ) {
         // for (const player of this.info.players) {
         //     if (player) {
         //         const paddleSpeed = PADDLE_SPEED * deltaTime;
@@ -298,10 +349,10 @@ class Game {
         //     }
         //     if (ball.posX >= 1 + BALL_RADIUS) {
         //         ++this.info.players[0].score;
-        //         this.resetBall(ball);
+        //         this.resetBallClassicMayhem(ball);
         //     } else if (ball.posX <= -BALL_RADIUS) {
         //         ++this.info.players[1].score;
-        //         this.resetBall(ball);
+        //         this.resetBallClassicMayhem(ball);
         //     }
         //     const winningScore =
         //         this.info.mode === 'classic'
@@ -317,7 +368,7 @@ class Game {
         //         this.info.state = 'finished';
         //         return;
         //     }
-        //     const newVelY = this.hitPaddle(ball, 0) || this.hitPaddle(ball, 1);
+        //     const newVelY = this.hitPaddleClassicMayhem(ball, 0) || this.hitPaddleClassicMayhem(ball, 1);
         //     if (newVelY !== null) {
         //         ball.velX = -(
         //             ball.velX +
@@ -328,23 +379,6 @@ class Game {
         //     }
         //     this.hitMayhemMap(ball, objects.mayhemMap);
         // }
-    }
-
-    update() {
-        const now = performance.now();
-        const deltaTime = now - this.lastUpdate;
-        this.lastUpdate = now;
-        this.info.timeRemaining = Math.max(0, 3000 - (now - this.timeStarted));
-        if (this.info.timeRemaining > 0) return;
-        if (this.info.mode === 'battle') {
-            this.updateBattle(this.info.objects, deltaTime); // TODO this.info.players
-        } else {
-            this.updateClassicMayhem(
-                this.info.players,
-                this.info.objects,
-                deltaTime,
-            );
-        }
     }
 }
 

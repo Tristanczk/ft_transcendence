@@ -6,7 +6,6 @@ import {
     BALL_HEIGHT,
     BALL_HIGH,
     BALL_LOW,
-    BALL_RADIUS,
     BALL_SPEED_INCREMENT,
     BALL_SPEED_START,
     BALL_WIDTH,
@@ -69,10 +68,10 @@ class Ball {
     }
 
     public checkScore(scoreLeft: number, scoreRight: number): [number, number] {
-        if (this.posX >= 1 + BALL_RADIUS) {
+        if (this.posX >= 1 + BALL_WIDTH / 2) {
             ++scoreLeft;
             this.reset();
-        } else if (this.posX <= -BALL_RADIUS) {
+        } else if (this.posX <= -BALL_WIDTH / 2) {
             ++scoreRight;
             this.reset();
         }

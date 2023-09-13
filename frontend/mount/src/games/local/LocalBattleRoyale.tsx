@@ -27,6 +27,7 @@ import {
     BATTLE_COLORS,
     BATTLE_DOT_RADIUS,
     BATTLE_DEFAULT_PLAYERS,
+    getBallSpeedStart,
 } from '../../shared/battle';
 import { useSearchParams } from 'react-router-dom';
 
@@ -260,7 +261,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     }
     const startLives = Math.max(2, Math.ceil(10 / numPlayers));
     const angleIncrement = TAU / numPlayers;
-    const ballSpeedStart = 0.0005 + 0.0001 * numPlayers;
+    const ballSpeedStart = getBallSpeedStart(numPlayers);
     let players = [
         new Player(BATTLE_COLORS[0], 37, 39, 0 * angleIncrement, startLives),
         new Player(BATTLE_COLORS[1], 81, 69, 1 * angleIncrement, startLives),
