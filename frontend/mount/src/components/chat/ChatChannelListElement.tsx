@@ -5,7 +5,6 @@ import { UserSimplified } from '../../types';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useState } from 'react';
 import { useUserContext } from '../../context/UserContext';
-import { set } from 'date-fns';
 
 export default function ChatChannelListElement({
     channel,
@@ -34,9 +33,23 @@ export default function ChatChannelListElement({
                 withCredentials: true,
             },
         );
+        if (isUserInChannel.data === true) {
+            setCurrentFriend(null);
+            setChannel(channel.id);
+            return;
+        }
 
-        console.log(isUserInChannel.data);
-        if (isUserInChannel.data === false) {
+        const response = await authAxios.get(
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/isChannelOpen`,
+            {
+                params: {
+                    idChannel: channel.id,
+                },
+                withCredentials: true,
+            },
+        );
+        if (response.data === true) {
+            console.log(isUserInChannel.data);
             const response = await authAxios.post(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/joinChannel`,
                 {
@@ -48,26 +61,11 @@ export default function ChatChannelListElement({
                     withCredentials: true,
                 },
             );
-            
             setCurrentFriend(null);
             setChannel(channel.id);
         } else {
-            const response = await authAxios.get(
-                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/isChannelOpen`,
-                {
-                    params: {
-                        idChannel: channel.id,
-                    },
-                    withCredentials: true,
-                },
-            );
-            if (response.data === false) {
-                setActiveInput(true);
-                console.log('input on');
-            } else {
-                setCurrentFriend(null);
-                setChannel(channel.id);
-            }
+            setActiveInput(true);
+            console.log('input on');
         }
     };
 
