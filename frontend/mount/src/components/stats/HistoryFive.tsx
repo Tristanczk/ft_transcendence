@@ -45,9 +45,10 @@ function HistoryFive({ user }: PresentationUserProps) {
                     Last Games
                 </h5>
                 <div className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
-                    {games && games.length > 0 && <Link to={'/games/' + user.id}>View all</Link>}
+                    {games && games.length > 0 && (
+                        <Link to={'/games/' + user.id}>View all</Link>
+                    )}
                 </div>
-
             </div>
             <div className="flow-root">
                 <ul className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -85,26 +86,34 @@ function HistoryFive({ user }: PresentationUserProps) {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-gray-900 truncate dark:text-white hover:font-bold">
-                                            <Link
-                                                to={
-                                                    '/dashboard/' +
-                                                    game.playerA?.id
-                                                }
-                                            >
-                                                {game.playerA?.nickname} (
-                                                {game.playerA?.eloStart})
-                                            </Link>
+                                            {game.playerA?.id !== -1 ? (
+                                                <Link
+                                                    to={
+                                                        '/dashboard/' +
+                                                        game.playerA?.id
+                                                    }
+                                                >
+                                                    {game.playerA?.nickname} (
+                                                    {game.playerA?.eloStart})
+                                                </Link>
+                                            ) : (
+                                                game.playerA?.nickname
+                                            )}
                                         </p>
                                         <p className="text-sm font-medium text-gray-900 truncate dark:text-white hover:font-bold">
-                                            <Link
-                                                to={
-                                                    '/dashboard/' +
-                                                    game.playerB?.id
-                                                }
-                                            >
-                                                {game.playerB?.nickname} (
-                                                {game.playerB?.eloStart})
-                                            </Link>
+                                            {game.playerB?.id !== -1 ? (
+                                                <Link
+                                                    to={
+                                                        '/dashboard/' +
+                                                        game.playerB?.id
+                                                    }
+                                                >
+                                                    {game.playerB?.nickname} (
+                                                    {game.playerB?.eloStart})
+                                                </Link>
+                                            ) : (
+                                                game.playerB?.nickname
+                                            )}
                                         </p>
                                     </div>
                                     <div className="flex-1 min-w-0 items-center justify-center text-base font-semibold text-gray-900 dark:text-white">
@@ -180,7 +189,7 @@ function HistoryFive({ user }: PresentationUserProps) {
                                 </div>
                             </li>
                         ))}
-						{games.length === 0 && 'No games played yet'}
+                    {games.length === 0 && 'No games played yet'}
                 </ul>
             </div>
         </div>

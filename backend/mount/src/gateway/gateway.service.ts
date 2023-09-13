@@ -128,7 +128,9 @@ export class GatewayService
         console.log('player ' + playerId + ' want to play');
         if (this.clients[client.id]) {
             return {
-                error: `You are already in game ${this.clients[client.id].idGamePlaying}`,
+                error: `You are already in game ${
+                    this.clients[client.id].idGamePlaying
+                }`,
                 errorCode: 'alreadyInGame',
                 gameId: this.clients[client.id].idGamePlaying,
             };
@@ -142,7 +144,7 @@ export class GatewayService
         for (const game of Object.values(this.games)) {
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
                 game.addPlayer(client.id);
-				this.liaiseGameToPlayer(client.id, game, 'B');
+                this.liaiseGameToPlayer(client.id, game, 'B');
                 this.server
                     .to(game.info.players[0].id)
                     .emit('startGame', game.id);
@@ -153,41 +155,58 @@ export class GatewayService
         }
         const game = new Game(generateId(this.games), gameMode, client.id);
         this.games[game.id] = game;
-		this.liaiseGameToPlayer(client.id, game, 'A');
+        this.liaiseGameToPlayer(client.id, game, 'A');
         // this.clients[client.id] = game.id;
         return { gameId: game.id, status: 'waiting' };
     }
 
-	//on ne prend pas en compte le mode multiplayer (battle)
-	async startGameStat(game: Game) {
-		const idPlayerA: number = game.playerA.userId;
-		const idPlayerB: number = game.playerB.userId;
-		let mode: number = -1;
-		if (game.info.mode === 'classic') mode = 0;
-		else if (game.info.mode === 'mayhem') mode = 1;
+    //on ne prend pas en compte le mode multiplayer (battle)
+    async startGameStat(game: Game) {
+        const idPlayerA: number = game.playerA.userId;
+        const idPlayerB: number = game.playerB.userId;
+        let mode: number = -1;
+        if (game.info.mode === 'classic') mode = 0;
+        else if (game.info.mode === 'mayhem') mode = 1;
 
-		if (mode !== -1)
-			game.idGameStat = await this.gamesService.initGame(idPlayerA, idPlayerB, 0);
-		console.log('for stats:' + game.idGameStat);
-	}
+        if (mode !== -1)
+            game.idGameStat = await this.gamesService.initGame(
+                idPlayerA,
+                idPlayerB,
+                0,
+            );
+        console.log('for stats:' + game.idGameStat);
+    }
 
-	liaiseGameToPlayer(socketId: string, game: Game, playerPos: 'A' | 'B'): boolean {
-		const player: IndivUser | null = this.users.getIndivUserBySocketId(socketId);
+    liaiseGameToPlayer(
+        socketId: string,
+        game: Game,
+        playerPos: 'A' | 'B',
+    ): boolean {
+        const player: IndivUser | null =
+            this.users.getIndivUserBySocketId(socketId);
         if (player) {
             player.setIsPlaying(game.id);
             this.clients[socketId] = player;
-			if (playerPos === 'A') game.playerA = player;
-			else game.playerB = player;
+            if (playerPos === 'A') game.playerA = player;
+            else game.playerB = player;
 
-			console.log(playerPos + '(' + player.userId + '/' + socketId + ') came, play=' + player.idGamePlaying);
+            console.log(
+                playerPos +
+                    '(' +
+                    player.userId +
+                    '/' +
+                    socketId +
+                    ') came, play=' +
+                    player.idGamePlaying,
+            );
 
-			return true;
+            return true;
         } else {
             console.log('error to handle');
             //TODO and TO TEST (si quelqu'un arrive sur la page et clique instantannement sur le bouton jouer.)
-			return false;
+            return false;
         }
-	}
+    }
 
     @SubscribeMessage('quitGame')
     async handleQuitGame(client: Socket, data: string) {

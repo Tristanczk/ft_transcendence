@@ -19,21 +19,6 @@ export class GamesController {
     constructor(private gamesService: GamesService) {}
 
     @UseGuards(JwtGuard)
-    @Post('init')
-    async initGame(@GetUser('id') idUser: number, @Body() body: InitGameDto) {
-        return this.gamesService.initGame(idUser, body.idPlayerB, body.mode);
-    }
-
-    @UseGuards(JwtGuard)
-    @Put(':id')
-    async updateGame(
-        @Param('id', ParseIntPipe) idGame: number,
-        @Body() body: updateGameDto,
-    ) {
-        return this.gamesService.updateGame(idGame, body);
-    }
-
-    @UseGuards(JwtGuard)
     @Get('short/me')
     async myHistoryFiveGames(@GetUser('id') idUser: number) {
         return this.gamesService.historyFiveGames(idUser);
@@ -52,5 +37,19 @@ export class GamesController {
     @Get('achiev/:id')
     async getAchievementsUser(@Param('id', ParseIntPipe) idUser: number) {
         return this.gamesService.getAchievementsUser(idUser);
+    }
+	
+
+	@Post('init/:id')
+    async initGame(@Param('id', ParseIntPipe) idUser: number, @Body() body: InitGameDto) {
+        return this.gamesService.initGame(idUser, body.idPlayerB, body.mode);
+    }
+
+    @Put(':id')
+    async updateGame(
+        @Param('id', ParseIntPipe) idGame: number,
+        @Body() body: updateGameDto,
+    ) {
+        return this.gamesService.updateGame(idGame, body);
     }
 }
