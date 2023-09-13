@@ -14,7 +14,11 @@ import { CreateMessageDto } from 'src/chat/dto/message.dto';
 import Game from './Game';
 import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
-import { BattlePlayers, ClassicMayhemPlayers, GameInfo } from 'src/shared/game_info';
+import {
+    BattlePlayers,
+    ClassicMayhemPlayers,
+    GameInfo,
+} from 'src/shared/game_info';
 import { IndivUser, ResponseCheckConnexion, Users } from './gateway.users';
 import { GamesService } from 'src/games/games.service';
 
@@ -134,11 +138,9 @@ export class GatewayService
         console.log('player ' + playerId + ' want to play');
         if (currentClient.isPlaying) {
             return {
-                error: `You are already in game ${
-                    this.clients[client.id].idGamePlaying
-                }`,
+                error: `You are already in game ${currentClient.idGamePlaying}`,
                 errorCode: 'alreadyInGame',
-                gameId: this.clients[client.id].idGamePlaying,
+                gameId: currentClient.idGamePlaying,
             };
         }
         if (!isGameMode(gameMode)) {
@@ -177,6 +179,7 @@ export class GatewayService
         if (game.info.mode === 'classic') mode = 0;
         else if (game.info.mode === 'mayhem') mode = 1;
 
+		console.log('new game: playerA=' + idPlayerA + ', playerB=' + idPlayerB + ', mode=' + mode);
         if (mode !== -1)
             game.idGameStat = await this.gamesService.initGame(
                 idPlayerA,
@@ -232,8 +235,10 @@ export class GatewayService
                 errorCode: 'gameStarted',
             };
         }
-        delete this.games[gameId];
-        delete this.clients[client.id];
+		const gameToAbort: Game = this.games[gameId];
+		this.handleEndGame(gameToAbort, true);
+        // delete this.games[gameId];
+        // delete this.clients[client.id];
         return { status: 'matchmaking cancelled' };
     }
 
@@ -301,7 +306,7 @@ export class GatewayService
             if (game.info.state !== 'finished') {
                 retourUpdate = game.update();
                 if (retourUpdate === 'finished') {
-                    this.handleEndGame(game);
+                    this.handleEndGame(game, true);
                 }
                 for (const player of game.info.players) {
                     if (player) {
@@ -314,22 +319,52 @@ export class GatewayService
         }
     }
 
-    async handleEndGame(game: Game) {
-		if (!(game.info.mode === 'classic' || game.info.mode === 'mayhem')) return ;
-		const players: ClassicMayhemPlayers = game.info.players;
-        await this.gamesService.updateGame(game.idGameStat, {
-            scoreA: players[0].score,
-            scoreB: players[1].score,
-            won:
-                players[0].score > players[1].score
-                    ? true
-                    : false,
-        });
+    async handleEndGame(game: Game, update: boolean) {
+        if (!(game.info.mode === 'classic' || game.info.mode === 'mayhem'))
+            return;
 
-        game.playerA.isPlaying = false;
-        game.playerA.idGamePlaying = null;
-        game.playerB.isPlaying = false;
-        game.playerB.idGamePlaying = null;
+        if (update) {
+			const players: ClassicMayhemPlayers = game.info.players;
+
+			let scoreA: number = 0;
+			let scoreB: number = 0;
+			let result: boolean = false;
+
+			if (game.playerA.sockets.includes(players[0].id)) {
+				scoreA = players[0].score;
+				scoreB = players[1].score;
+			}
+			else {
+				scoreA = players[1].score;
+				scoreB = players[0].score;
+			}
+			result = scoreA > scoreB ? true : false;
+
+			// console.log('player[0]=' + players[0].id + ' vs player[1]=' + players[1].id)
+
+			// console.log('playerA=' + game.playerA.userId + ', score=' + scoreA + ', won=' + result)
+			// console.log(game.playerA.sockets)
+
+			// console.log('playerB=' + game.playerB.userId + ', score=' + scoreB)
+			// console.log(game.playerB.sockets)
+
+            try {
+                await this.gamesService.updateGame(game.idGameStat, {
+                    scoreA: scoreA,
+                    scoreB: scoreB,
+                    won: scoreA > scoreB ? true : false,
+                });
+            } catch (error) {}
+        }
+
+        if (game.playerA) {
+            game.playerA.isPlaying = false;
+            game.playerA.idGamePlaying = null;
+        }
+        if (game.playerB) {
+            game.playerB.isPlaying = false;
+            game.playerB.idGamePlaying = null;
+        }
 
         delete this.games[game.id];
     }
@@ -344,4 +379,4 @@ export class GatewayService
         */
         console.log(messageBody);
     }
-}
+} 
