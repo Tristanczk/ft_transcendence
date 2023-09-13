@@ -133,27 +133,33 @@ export class GamesService {
     }
 
     async historyFiveGames(userId: number) {
-		try {
-			const gamesTab: Games[] = await this.getGamesPlayer(userId, 5, true);
-			gamesTab.sort((a, b) => b.id - a.id);
-			const transformedTab = await this.transformListReadable(gamesTab);
-        	return transformedTab;
-		}
-		catch (error) {
-			throw error
-		}
+        try {
+            const gamesTab: Games[] = await this.getGamesPlayer(
+                userId,
+                5,
+                true,
+            );
+            gamesTab.sort((a, b) => b.id - a.id);
+            const transformedTab = await this.transformListReadable(gamesTab);
+            return transformedTab;
+        } catch (error) {
+            throw error;
+        }
     }
 
-	async historyAllGames(userId: number) {
-		try {
-			const gamesTab: Games[] = await this.getGamesPlayer(userId, -1, false);
-			const transformedTab = this.transformListReadable(gamesTab);
-        	return transformedTab;
-		}
-		catch (error) {
-			return null;
-		} 
-	}
+    async historyAllGames(userId: number) {
+        try {
+            const gamesTab: Games[] = await this.getGamesPlayer(
+                userId,
+                -1,
+                false,
+            );
+            const transformedTab = this.transformListReadable(gamesTab);
+            return transformedTab;
+        } catch (error) {
+            return null;
+        }
+    }
 
     async transformListReadable(tab: any) {
         const tabId: number[] = [];
@@ -278,7 +284,7 @@ export class GamesService {
             gamesPlayerA = await this.getGamesPlayer(playerA.id, -1, true);
             gamesPlayerB = await this.getGamesPlayer(playerB.id, -1, true);
         } catch (error) {
-			throw new ForbiddenException('User does not exists')
+            throw new ForbiddenException('User does not exists');
             return;
         }
 
@@ -513,11 +519,12 @@ export class GamesService {
 
             const achiev: AchievType[] = dataAchievements;
             for (let i = 0; i < achiev.length; i++) {
-                const foundIndex = user.achievements.findIndex((e) => e === achiev[i].id);
+                const foundIndex = user.achievements.findIndex(
+                    (e) => e === achiev[i].id,
+                );
                 if (foundIndex !== -1) {
                     achiev[i].userHave = true;
-                }
-				else achiev[i].userHave = false;
+                } else achiev[i].userHave = false;
             }
             return achiev;
         } catch (error) {

@@ -28,10 +28,11 @@ export class ChatService {
         createChannelDto: CreateChannelDto,
     ): Promise<CreateChannelDto> {
 
+        console.log(createChannelDto);
         await this.prisma.channels.create({
             data: {
-                idAdmin: [createChannelDto.idUser],
-                idUsers: [createChannelDto.idUser],
+                idAdmin: [...createChannelDto.idUser],
+                idUsers: [...createChannelDto.idUser],
                 isPublic: createChannelDto.isPublic,
                 password: createChannelDto.password,
                 name: createChannelDto.name,

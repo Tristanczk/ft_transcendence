@@ -1,8 +1,13 @@
 import React from 'react';
 import p5Types from 'p5';
 import Sketch from 'react-p5';
-import { trueMod } from '../../shared/functions';
-import { CANVAS_MARGIN, NAVBAR_HEIGHT, TAU } from '../../shared/misc';
+import { clamp, trueMod } from '../../shared/functions';
+import {
+    CANVAS_MARGIN,
+    NAVBAR_HEIGHT,
+    NEARLY_BLACK,
+    TAU,
+} from '../../shared/misc';
 import {
     BATTLE_DEFAULT_PADDLE_SIZE,
     BATTLE_HIT_LEEWAY,
@@ -19,12 +24,15 @@ import {
     BATTLE_PADDLE_WIDTH,
     BATTLE_MAX_PLAYERS,
     BATTLE_MIN_PLAYERS,
+    BATTLE_COLORS,
+    BATTLE_DOT_RADIUS,
+    BATTLE_DEFAULT_PLAYERS,
 } from '../../shared/battle';
+import { useSearchParams } from 'react-router-dom';
 
 class Player {
     private keys: { clockwise: number; antiClockwise: number };
     readonly color: string;
-    paddleSize: number;
     angle: number;
     lives: number;
 
@@ -37,7 +45,6 @@ class Player {
     ) {
         this.lives = startLives;
         this.angle = startAngle;
-        this.paddleSize = BATTLE_DEFAULT_PADDLE_SIZE;
         this.color = color;
         this.keys = {
             clockwise: keyClockwise,
@@ -57,7 +64,8 @@ class Player {
 
     hit(ballPos: p5Types.Vector): number | null {
         const angleDiff = angleDist(this.angle, ballPos.heading());
-        const limit = this.paddleSize + BATTLE_BALL_SIZE * BATTLE_HIT_LEEWAY;
+        const limit =
+            BATTLE_DEFAULT_PADDLE_SIZE + BATTLE_BALL_SIZE * BATTLE_HIT_LEEWAY;
         return Math.abs(angleDiff) <= limit ? angleDiff / limit : null;
     }
 
@@ -66,13 +74,15 @@ class Player {
         innerRadius: number,
         outerRadius: number,
     ): void {
-        p5.fill('black');
+        p5.fill(NEARLY_BLACK);
         p5.beginShape();
         const angles: number[] = Array.from(
             { length: BATTLE_ARC_VERTICES + 1 },
             (_, i) =>
                 this.angle +
-                (i / BATTLE_ARC_VERTICES - 0.5) * this.paddleSize * 2,
+                (i / BATTLE_ARC_VERTICES - 0.5) *
+                    BATTLE_DEFAULT_PADDLE_SIZE *
+                    2,
         );
         for (const angle of angles) {
             p5.vertex(p5.cos(angle) * innerRadius, p5.sin(angle) * innerRadius);
@@ -93,21 +103,19 @@ class Player {
         p5.circle(
             p5.cos(angle) * middleRadius,
             p5.sin(angle) * middleRadius,
-            BATTLE_PADDLE_WIDTH * arenaSize * 0.32,
+            BATTLE_PADDLE_WIDTH * arenaSize * BATTLE_DOT_RADIUS,
         );
     }
 
-    private drawLives(
-        p5: p5Types,
-        middleRadius: number,
-        arenaSize: number,
-    ): void {
+    private drawLives(p5: p5Types, middleRadius: number, arenaSize: number) {
         if (this.lives === 1) {
             this.drawLife(p5, middleRadius, this.angle, arenaSize);
         } else {
-            const startDot = this.angle - BATTLE_DOT_SHIFT * this.paddleSize;
+            const startDot =
+                this.angle - BATTLE_DOT_SHIFT * BATTLE_DEFAULT_PADDLE_SIZE;
             const angleInc =
-                (2 * BATTLE_DOT_SHIFT * this.paddleSize) / (this.lives - 1);
+                (2 * BATTLE_DOT_SHIFT * BATTLE_DEFAULT_PADDLE_SIZE) /
+                (this.lives - 1);
             for (let i = 0; i < this.lives; ++i) {
                 this.drawLife(
                     p5,
@@ -156,7 +164,7 @@ class Ball {
     }
 
     draw(p5: p5Types, arenaSize: number): void {
-        p5.fill('black');
+        p5.fill(NEARLY_BLACK);
         p5.circle(
             this.pos.x * arenaSize * 0.5,
             this.pos.y * arenaSize * 0.5,
@@ -192,7 +200,7 @@ const gameOver = (p5: p5Types, arenaSize: number) => {
     p5.textFont('monospace');
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.textSize(8 + arenaSize / 30);
-    p5.fill('black');
+    p5.fill(NEARLY_BLACK);
     p5.text('Game Over!', 0, 0);
     p5.noLoop();
 };
@@ -203,8 +211,7 @@ const avoidCollision = (
     step: number,
 ): boolean => {
     const angleDiff = angleDist(player1.angle, player2.angle);
-    const limit =
-        player1.paddleSize + player2.paddleSize + BATTLE_BETWEEN_PADDLES;
+    const limit = 2 * BATTLE_DEFAULT_PADDLE_SIZE + BATTLE_BETWEEN_PADDLES;
     if (Math.abs(angleDiff) >= limit) return false;
     const toMove = Math.min((limit - Math.abs(angleDiff)) / 2 + 1e-5, step);
     if (angleDiff > 0) {
@@ -255,12 +262,12 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     const angleIncrement = TAU / numPlayers;
     const ballSpeedStart = 0.0005 + 0.0001 * numPlayers;
     let players = [
-        new Player('#E51654', 37, 39, 0 * angleIncrement, startLives),
-        new Player('#16A7E5', 81, 69, 1 * angleIncrement, startLives),
-        new Player('#E5D016', 73, 80, 2 * angleIncrement, startLives),
-        new Player('#7E16E5', 90, 67, 3 * angleIncrement, startLives),
-        new Player('#16E52B', 66, 77, 4 * angleIncrement, startLives),
-        new Player('#DDEEFF', 70, 72, 5 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[0], 37, 39, 0 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[1], 81, 69, 1 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[2], 73, 80, 2 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[3], 90, 67, 3 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[4], 66, 77, 4 * angleIncrement, startLives),
+        new Player(BATTLE_COLORS[5], 70, 72, 5 * angleIncrement, startLives),
     ].slice(0, numPlayers);
     let currentPlayer = getRandomPlayer(numPlayers);
     let arenaSize = 0;
@@ -354,15 +361,28 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     );
 };
 
-const LocalBattleRoyale: React.FC = () => (
-    <div
-        className="w-full flex items-center justify-center"
-        style={{
-            height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
-        }}
-    >
-        <BattleGame numPlayers={3} />
-    </div>
-);
+const LocalBattleRoyale: React.FC = () => {
+    const [params] = useSearchParams();
+    const numPlayersString = params.get('numPlayers');
+    const numPlayers =
+        numPlayersString && /^\d+$/.test(numPlayersString)
+            ? clamp(
+                  parseInt(numPlayersString),
+                  BATTLE_MIN_PLAYERS,
+                  BATTLE_MAX_PLAYERS,
+              )
+            : BATTLE_DEFAULT_PLAYERS;
+
+    return (
+        <div
+            className="w-full flex items-center justify-center"
+            style={{
+                height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+            }}
+        >
+            <BattleGame numPlayers={numPlayers} />
+        </div>
+    );
+};
 
 export default LocalBattleRoyale;
