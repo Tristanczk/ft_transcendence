@@ -203,7 +203,6 @@ const NavBar = ({
     const { user } = useUserContext();
 
     useEffect(() => {
-        console.log('user changed');
         setGameId(undefined);
     }, [user]);
 

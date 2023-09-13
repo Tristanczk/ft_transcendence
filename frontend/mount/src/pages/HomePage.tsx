@@ -3,7 +3,6 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode, NAVBAR_HEIGHT } from '../shared/misc';
-import { set } from 'date-fns';
 
 const joinGame = (
     mode: GameMode,
@@ -195,13 +194,17 @@ const GameModePage = ({
                 {...buttonParams}
             />
             {error && <div className="text-white">{error}</div>}
+            {/* TO DO: change href to a button to rejoin the game */}
             {errorCode === 'alreadyInGame' && (
-                <a
-                    href={`/game/${gameId}`}
-                    className="font-medium text-white hover:underline dark:text-primary-500"
+                <button
+                    type="button"
+                    className=" rounded-md"
+                    onClick={() => navigate(`/game/${gameId}`)}
                 >
-                    Rejoin game
-                </a>
+                    <span className="text-sm font-medium inline-flex items-center justify-center text-white hover:text-gray-500 focus:outline-none">
+                        Rejoin game
+                    </span>
+                </button>
             )}
         </>
     );
@@ -267,11 +270,11 @@ const HomePage: React.FC<{
     const [errorCode, setErrorCode] = useState<string | undefined>();
     const [matchmaking, setMatchmaking] = useState<boolean>(false);
 
+    console.log('socket it', socket.id);
     useEffect(() => {
         if (socket) {
             const startGame = (gameId: string) => {
-                console.log('starting game', gameId);
-                if (gameId.startsWith('waiting_')) setGameId(gameId.slice(8));
+                setGameId(gameId);
                 navigate(`/game/${gameId}`);
             };
 

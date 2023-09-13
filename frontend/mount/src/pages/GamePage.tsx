@@ -40,6 +40,7 @@ const GamePage: React.FC = () => {
     const { width, height } = useWindowSize();
     const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
 
+    console.log('socket id', socket.id);
     useEffect(() => {
         const handleUpdateGameInfo = (newGameInfo: GameInfo) => {
             setGameInfo(newGameInfo);
