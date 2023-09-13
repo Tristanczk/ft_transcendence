@@ -95,7 +95,6 @@ const leaveMatchmaking = (
     });
 };
 
-//TO DO link with backend to actually cancel matchmaking and the game currently activated
 const CancelButton = ({
     text,
     socket,
