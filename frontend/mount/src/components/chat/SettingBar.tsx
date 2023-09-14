@@ -94,7 +94,7 @@ export default function SettingBar({
         event: React.KeyboardEvent<HTMLInputElement>;
         exec: () => void;
     }) => {
-        if (event.key === 'Enter' && input.length > 2) {
+        if (event.key === 'Enter' && !(activeInput === 'name' && input.length < 3)) {
             if (!event.shiftKey) {
                 event.preventDefault();
                 exec();

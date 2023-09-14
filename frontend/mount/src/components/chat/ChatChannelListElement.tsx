@@ -10,10 +10,14 @@ export default function ChatChannelListElement({
     channel,
     setChannel,
     setCurrentFriend,
+    notifications,
+    setNotifications,
 }: {
     channel: ChannelProps;
     setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
+    notifications: number[];
+    setNotifications: (notifications: number[]) => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
@@ -33,6 +37,7 @@ export default function ChatChannelListElement({
         );
         if (isUserInChannel.data === true) {
             setCurrentFriend(null);
+            setNotifications(notifications.filter((id) => id !== channel.id));
             setChannel(channel.id);
             return;
         }
@@ -61,6 +66,7 @@ export default function ChatChannelListElement({
                 },
             );
             setCurrentFriend(null);
+            setNotifications(notifications.filter((id) => id !== channel.id));
             setChannel(channel.id);
         } else {
             setActiveInput(true);
@@ -86,6 +92,7 @@ export default function ChatChannelListElement({
             setChannel(0);
         } else {
             setActiveInput(false);
+            setNotifications(notifications.filter((id) => id !== channel.id));
             setChannel(channel.id);
         }
         setInput('');
@@ -121,6 +128,9 @@ export default function ChatChannelListElement({
                 }}
             >
                 {' '}
+                {notifications.includes(channel.id) && (
+                    <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+                )}
                 <svg
                     className="text-blue-600 w-6 h-6"
                     xmlns="http://www.w3.org/2000/svg"

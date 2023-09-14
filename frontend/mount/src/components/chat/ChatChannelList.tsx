@@ -10,11 +10,15 @@ export default function ChatChannelList({
     setChannel,
     setCurrentFriend,
     channel,
+    notifications,
+    setNotifications,
 }: {
     channels: ChannelProps[] | null;
     setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
     channel: number;
+    notifications: number[];
+    setNotifications: (notifications: number[]) => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
@@ -96,6 +100,8 @@ export default function ChatChannelList({
                                 channel={channel}
                                 setChannel={setChannel}
                                 setCurrentFriend={setCurrentFriend}
+                                notifications={notifications}
+                                setNotifications={setNotifications}
                             />
                         ))}
                 </div>

@@ -41,6 +41,7 @@ function ChatPage({
     );
     const [channelUsers, setChannelUsers] = useState<UserSimplified[]>([]);
     const [blockedUsers, setBlockedUsers] = useState<number[]>([]);
+    const [notifications, setNotifications] = useState<number[]>([]);
 
     useEffect(() => {
         setVisibleSettings(false);
@@ -113,8 +114,7 @@ function ChatPage({
         const response = await authAxios.get(
             `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelById`,
             {
-                params: { idChannel: channel,
-                    idUser: user?.id, },
+                params: { idChannel: channel, idUser: user?.id },
                 withCredentials: true,
             },
         );
@@ -137,6 +137,12 @@ function ChatPage({
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
             console.log('received message', message);
+            if (!notifications.includes(message.idChannel)) {
+                setNotifications((oldNotifications) => [
+                    ...oldNotifications,
+                    message.idChannel,
+                ]);
+            }
             setMessages((oldMessages) => [...oldMessages, message]);
         };
 
@@ -204,7 +210,8 @@ function ChatPage({
                             channel={channel}
                             setChannel={setChannel}
                             setCurrentFriend={setCurrentFriend}
-                            // notifications={notifications} int[] of channel ids
+                            notifications={notifications}
+                            setNotifications={setNotifications}
                         />
                     ) : (
                         <ChatChannelList
@@ -212,7 +219,8 @@ function ChatPage({
                             setChannel={setChannel}
                             setCurrentFriend={setCurrentFriend}
                             channel={channel}
-                            // notifications={notifications} int[] of channel ids
+                            notifications={notifications}
+                            setNotifications={setNotifications}
                         />
                     )}
                     <div
@@ -265,48 +273,3 @@ function ChatPage({
 }
 
 export default ChatPage;
-
-// const send = (message: MessageProps) => {
-// socket?.emit('message', { idSender: message.idSender, idChannel: message.idChannel, message: message.message });
-//     const response = authAxios.post(
-//         '/chat/sendMessage',
-//         {
-//             idChannel: message.idChannel,
-//             idSender: message.idSender,
-//             content: message.message,
-//         },
-//         { withCredentials: true },
-//     );
-//     console.log(response);
-//     setMessages((oldMessages) => [...oldMessages, message]);
-// };
-// useEffect(() => {
-//     if (socket) {
-//         const messageListener = ({
-//             idSender,
-//             idChannel,
-//             message,
-//         }: {
-//             idSender: number;
-//             idChannel: number;
-//             message: string;
-//         }) => {
-//             console.log(idSender);
-// const newMessage: MessageProps = {
-//     idSender: idSender,
-//     idChannel: idChannel,
-//     message: message,
-//     createdAt: new Date(),
-// };
-
-// setMessages((oldMessages) => [...oldMessages, newMessage]);
-// console.log('setting oldmessages to message');
-//         };
-
-//         socket.on('message', messageListener);
-
-//         return () => {
-//             socket.off('message', messageListener);
-//         };
-//     }
-// }, [socket]);

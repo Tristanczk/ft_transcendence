@@ -3,18 +3,24 @@ import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
 import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
+import { useEffect, useState } from 'react';
 
 export default function ChatFriendListElement({
     friend,
     setChannel,
     setCurrentFriend,
+    notifications,
+    setNotifications,
 }: {
     friend: UserSimplified;
     setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified) => void;
+    notifications: number[];
+    setNotifications: (notifications: number[]) => void;
 }) {
     const { user } = useUserContext();
     const authAxios = useAuthAxios();
+    const [channel, setChannelState] = useState<number>(0);
 
     const fetchChannel = async (IdFriend: number) => {
         console.log('fetching channels for', user?.id, IdFriend);
@@ -25,7 +31,9 @@ export default function ChatFriendListElement({
                 withCredentials: true,
             },
         );
-        console.log('fetching channel response', response); 
+        console.log('fetching channel response', response);
+        setNotifications(notifications.filter((id) => id !== response.data.id));
+        setChannelState(response.data.id);
         setChannel(response.data.id);
         setCurrentFriend(friend);
     };
@@ -46,12 +54,16 @@ export default function ChatFriendListElement({
                     </div>
                 </div>
             </div>
+
             <button
                 onClick={() => {
                     fetchChannel(friend.id);
                 }}
             >
                 {' '}
+                {notifications.includes(channel) && (
+                    <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+                )}
                 <svg
                     className="text-blue-600 w-6 h-6"
                     xmlns="http://www.w3.org/2000/svg"
