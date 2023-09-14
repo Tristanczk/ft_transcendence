@@ -65,7 +65,7 @@ export const getDefaultBattleObjects = (): BattleGameObjects => ({
 
 export type ClassicMayhemPlayer = {
     id: string;
-	user: any;
+	side: number;
     pos: number;
     score: number;
     activeKeys: Set<string>;
@@ -75,7 +75,7 @@ export type ClassicMayhemPlayers = (ClassicMayhemPlayer | null)[];
 
 export type BattlePlayer = {
     id: string;
-	user: any;
+	side: number;
     angle: number;
     lives: number;
     color: string;

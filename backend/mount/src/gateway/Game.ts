@@ -97,7 +97,7 @@ class Game {
             const lives = Math.max(2, Math.ceil(10 / numPlayers));
             this.info.players[idx] = {
                 id: playerId,
-				user: null,
+				side: 0,
                 angle: 0,
                 lives: lives,
                 color: BATTLE_COLORS[idx],
@@ -111,7 +111,7 @@ class Game {
         } else {
             this.info.players[idx] = {
                 id: playerId,
-				user: null,
+				side: idx,
                 pos: 0.5,
                 score: 0,
                 activeKeys: new Set(),
