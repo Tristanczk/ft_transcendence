@@ -75,6 +75,14 @@ const GamePage: React.FC = () => {
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
 
+		document.addEventListener('keydown', function(event) {
+			if (event.key === "q" || event.key === "Q") {
+				// La touche "Q" a été appuyée
+				socket.emit('quitGame', gameId );
+			}
+		});
+		
+
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             document.removeEventListener('keyup', handleKeyUp);
