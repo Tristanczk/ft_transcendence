@@ -130,7 +130,9 @@ class Game {
         if (numPlayers === 2) {
             this.info.state = 'playing';
             this.timeStarted = performance.now();
-            if (this.info.mode !== 'battle') {
+            if (this.info.mode === 'battle') {
+                this.resetBallBattle(this.info.objects.ball);
+            } else {
                 for (const ball of this.info.objects.balls) {
                     this.resetBallClassicMayhem(ball);
                 }
@@ -341,9 +343,11 @@ class Game {
             }
         }
         avoidCollisions(players);
+        console.log(this.info.state);
         if (this.info.state !== 'playing') return;
-        // ball.posX += ball.velX * deltaTime;
-        // ball.posY += ball.velY * deltaTime;
+        objects.ball.posX += objects.ball.velX * deltaTime;
+        objects.ball.posY += objects.ball.velY * deltaTime;
+        console.log(objects.ball);
         // if (ball.posY <= BALL_LOW || ball.posY >= BALL_HIGH) {
         //     ball.posY = clamp(ball.posY, BALL_LOW, BALL_HIGH);
         //     ball.velY = -ball.velY;
