@@ -1,5 +1,6 @@
 import {
     BATTLE_COLORS,
+    BATTLE_PADDLE_SPEED,
     getBallSpeedStart,
     getBattleLives,
 } from 'src/shared/battle';
@@ -327,58 +328,55 @@ class Game {
         objects: BattleGameObjects,
         deltaTime: number,
     ) {
-        // for (const player of this.info.players) {
-        //     if (player) {
-        //         const paddleSpeed = PADDLE_SPEED * deltaTime;
-        //         if (player.activeKeys.has('ArrowUp')) {
-        //             player.pos -= paddleSpeed;
-        //         }
-        //         if (player.activeKeys.has('ArrowDown')) {
-        //             player.pos += paddleSpeed;
-        //         }
-        //         player.pos = clamp(player.pos, PADDLE_LOW, PADDLE_HIGH);
-        //     }
-        // }
+        const paddleSpeed = BATTLE_PADDLE_SPEED * deltaTime;
+        for (const player of players) {
+            if (player) {
+                if (player.activeKeys.has('ArrowRight')) {
+                    player.angle -= paddleSpeed;
+                }
+                if (player.activeKeys.has('ArrowLeft')) {
+                    player.angle += paddleSpeed;
+                }
+            }
+        }
         if (this.info.state !== 'playing') return;
-        // for (const ball of objects.balls) {
-        //     ball.posX += ball.velX * deltaTime;
-        //     ball.posY += ball.velY * deltaTime;
-        //     if (ball.posY <= BALL_LOW || ball.posY >= BALL_HIGH) {
-        //         ball.posY = clamp(ball.posY, BALL_LOW, BALL_HIGH);
-        //         ball.velY = -ball.velY;
-        //     }
-        //     if (ball.posX >= 1 + BALL_RADIUS) {
-        //         ++this.info.players[0].score;
-        //         this.resetBallClassicMayhem(ball);
-        //     } else if (ball.posX <= -BALL_RADIUS) {
-        //         ++this.info.players[1].score;
-        //         this.resetBallClassicMayhem(ball);
-        //     }
-        //     const winningScore =
-        //         this.info.mode === 'classic'
-        //             ? WINNING_SCORE_CLASSIC
-        //             : WINNING_SCORE_MAYHEM;
-        //     if (
-        //         (this.info.players[0].score >= winningScore ||
-        //             this.info.players[1].score >= winningScore) &&
-        //         Math.abs(
-        //             this.info.players[0].score - this.info.players[1].score,
-        //         ) >= 2
-        //     ) {
-        //         this.info.state = 'finished';
-        //         return;
-        //     }
-        //     const newVelY = this.hitPaddleClassicMayhem(ball, 0) || this.hitPaddleClassicMayhem(ball, 1);
-        //     if (newVelY !== null) {
-        //         ball.velX = -(
-        //             ball.velX +
-        //             Math.sign(ball.velX) * BALL_SPEED_INCREMENT
-        //         );
-        //         ball.velY = newVelY;
-        //         ball.posX = clamp(ball.posX, COLLISION_X, 1 - COLLISION_X);
-        //     }
-        //     this.hitMayhemMap(ball, objects.mayhemMap);
+        // ball.posX += ball.velX * deltaTime;
+        // ball.posY += ball.velY * deltaTime;
+        // if (ball.posY <= BALL_LOW || ball.posY >= BALL_HIGH) {
+        //     ball.posY = clamp(ball.posY, BALL_LOW, BALL_HIGH);
+        //     ball.velY = -ball.velY;
         // }
+        // if (ball.posX >= 1 + BALL_RADIUS) {
+        //     ++this.info.players[0].score;
+        //     this.resetBallClassicMayhem(ball);
+        // } else if (ball.posX <= -BALL_RADIUS) {
+        //     ++this.info.players[1].score;
+        //     this.resetBallClassicMayhem(ball);
+        // }
+        // const winningScore =
+        //     this.info.mode === 'classic'
+        //         ? WINNING_SCORE_CLASSIC
+        //         : WINNING_SCORE_MAYHEM;
+        // if (
+        //     (this.info.players[0].score >= winningScore ||
+        //         this.info.players[1].score >= winningScore) &&
+        //     Math.abs(
+        //         this.info.players[0].score - this.info.players[1].score,
+        //     ) >= 2
+        // ) {
+        //     this.info.state = 'finished';
+        //     return;
+        // }
+        // const newVelY = this.hitPaddleClassicMayhem(ball, 0) || this.hitPaddleClassicMayhem(ball, 1);
+        // if (newVelY !== null) {
+        //     ball.velX = -(
+        //         ball.velX +
+        //         Math.sign(ball.velX) * BALL_SPEED_INCREMENT
+        //     );
+        //     ball.velY = newVelY;
+        //     ball.posX = clamp(ball.posX, COLLISION_X, 1 - COLLISION_X);
+        // }
+        // this.hitMayhemMap(ball, objects.mayhemMap);
     }
 }
 

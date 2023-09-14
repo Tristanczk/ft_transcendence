@@ -1,3 +1,5 @@
+import { TAU } from './misc';
+
 export const randomChoice = <T>(arr: T[]): T =>
     arr[Math.floor(Math.random() * arr.length)];
 
@@ -21,4 +23,15 @@ export const remap = (
 export const trueMod = (x: number, y: number) => {
     let res = x % y;
     return res >= 0 ? res : res + y;
+};
+
+export const angleDist = (angle1: number, angle2: number) => {
+    angle1 = trueMod(angle1, TAU);
+    angle2 = trueMod(angle2, TAU);
+    const d1 = angle1 - angle2;
+    const d2 = angle1 - angle2 + TAU;
+    const d3 = angle1 - angle2 - TAU;
+    const ad1 = Math.abs(d1);
+    const ad3 = Math.abs(d3);
+    return ad1 <= d2 && ad1 <= ad3 ? d1 : d2 <= ad3 ? d2 : d3;
 };
