@@ -73,7 +73,6 @@ class Game {
         const deltaTime = now - this.lastUpdate;
         this.lastUpdate = now;
         this.info.timeRemaining = Math.max(0, this.timeStarted + 3000 - now);
-        if (this.info.timeRemaining > 0) return;
         if (this.info.mode === 'battle') {
             this.updateBattle(this.info.players, this.info.objects, deltaTime);
         } else {
@@ -101,7 +100,7 @@ class Game {
             const lives = getBattleLives(numPlayers);
             this.info.players[idx] = {
                 id: playerId,
-                angle: 0,
+                angle: idx + TAU / 6,
                 lives: lives,
                 color: BATTLE_COLORS[idx],
                 activeKeys: new Set(),
@@ -179,7 +178,8 @@ class Game {
                 player.pos = clamp(player.pos, PADDLE_LOW, PADDLE_HIGH);
             }
         }
-        if (this.info.state !== 'playing') return;
+        if (this.info.state !== 'playing' || this.info.timeRemaining > 0)
+            return;
         const ballRadius = BALL_WIDTH / 2;
         for (const ball of objects.balls) {
             ball.posX += ball.velX * deltaTime;
@@ -253,7 +253,8 @@ class Game {
         }
         avoidCollisions(players);
         console.log(this.info.state);
-        if (this.info.state !== 'playing') return;
+        if (this.info.state !== 'playing' || this.info.timeRemaining > 0)
+            return;
         objects.ball.posX += objects.ball.velX * deltaTime;
         objects.ball.posY += objects.ball.velY * deltaTime;
         console.log(objects.ball);
