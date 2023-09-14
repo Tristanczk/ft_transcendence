@@ -1,6 +1,7 @@
 import {
     BATTLE_COLORS,
     BATTLE_PADDLE_SPEED,
+    avoidCollisions,
     getBallSpeedStart,
     getBattleLives,
 } from 'src/shared/battle';
@@ -339,6 +340,7 @@ class Game {
                 }
             }
         }
+        avoidCollisions(players);
         if (this.info.state !== 'playing') return;
         // ball.posX += ball.velX * deltaTime;
         // ball.posY += ball.velY * deltaTime;
