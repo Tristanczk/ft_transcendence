@@ -36,9 +36,23 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
     };
 
     const handleSendMessage = async () => {
-        console.log('sending message', input, ' miao ', idChannel);
         if (input === '' || idChannel === 0) return;
         setInput('');
+
+        const isMuted = await authAxios.get(`/chat/isUserMuted`, {
+            params: {
+                idChannel: idChannel,
+                idUser: user?.id,
+            },
+            withCredentials: true,
+        });
+
+        console.log(isMuted);
+
+        if (isMuted.data === true) {
+            return;
+        }
+
         const response = await authAxios.post(
             '/chat/sendMessage',
             {

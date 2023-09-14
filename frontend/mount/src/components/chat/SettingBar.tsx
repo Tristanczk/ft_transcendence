@@ -87,8 +87,6 @@ export default function SettingBar({
         );
     };
 
-    const muteUser = async () => {};
-
     const onKeyPress = ({
         event,
         exec,
@@ -136,9 +134,10 @@ export default function SettingBar({
         const response = await authAxios.patch(
             `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/muteUser`,
             {
-                id: currentChannel?.id,
+                idChannel: currentChannel?.id,
                 idRequester: user?.id,
                 idUser: idUser,
+                time: new Date().getTime() + 120000, // 2 minute
             },
             { withCredentials: true },
         );

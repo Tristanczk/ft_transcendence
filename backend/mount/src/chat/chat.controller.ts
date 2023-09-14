@@ -22,7 +22,7 @@ import {
     MessageDto,
 } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
-import { ChannelDto, ChannelIdDto } from './dto/channel.dto';
+import { ChannelDto, ChannelIdDto, MuteUserDto } from './dto/channel.dto';
 import { GetChannelDto } from './dto/getchannel.dto';
 import { UserSimplifiedDto } from './dto/usersimplifieddto';
 
@@ -127,9 +127,16 @@ export class ChatController {
 
     @Patch('muteUser')
     async muteUser(
-        @Body() editChannel: EditChannelUserDto,
+        @Body() editChannel: MuteUserDto,
     ): Promise<EditChannelDto> {
         return this.chatService.muteUser(editChannel);
+    }
+
+    @Get('isUserMuted')
+    async isUserMuted(
+        @Query() editChannel: ChannelIdDto,
+    ): Promise<boolean> {
+        return this.chatService.isUserMuted(editChannel);
     }
 
     @Post('sendMessage')
