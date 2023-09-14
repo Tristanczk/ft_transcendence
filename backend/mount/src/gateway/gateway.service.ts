@@ -15,7 +15,9 @@ import Game from './Game';
 import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
 import {
+    BattlePlayer,
     BattlePlayers,
+    ClassicMayhemPlayer,
     ClassicMayhemPlayers,
     GameInfo,
 } from 'src/shared/game_info';
@@ -130,7 +132,8 @@ export class GatewayService
     async handleJoinGame(client: Socket, data: JoinGameType) {
         const gameMode: string = data.mode;
         const playerId: number = data.userId;
-        const currentClient = this.users.getIndivUserBySocketId(client.id);
+        const currentClient: IndivUser | null = this.users.getIndivUserBySocketId(client.id);
+
         if (!currentClient) {
             console.log('to handle');
             return;
@@ -151,7 +154,7 @@ export class GatewayService
         }
         for (const game of Object.values(this.games)) {
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
-                game.addPlayer(client.id);
+                game.addPlayer(client.id, false);
                 this.liaiseGameToPlayer(client.id, game, 'B');
 
                 for (const player of game.info.players) {
@@ -165,9 +168,8 @@ export class GatewayService
             }
         }
         const game = new Game(generateId(this.games), gameMode, client.id);
-        this.games[game.id] = game;
+		this.games[game.id] = game;
         this.liaiseGameToPlayer(client.id, game, 'A');
-        // this.clients[client.id] = game.id;
         return { gameId: game.id, status: 'waiting' };
     }
 
@@ -179,14 +181,16 @@ export class GatewayService
         if (game.info.mode === 'classic') mode = 0;
         else if (game.info.mode === 'mayhem') mode = 1;
 
-		console.log('new game: playerA=' + idPlayerA + ', playerB=' + idPlayerB + ', mode=' + mode);
         if (mode !== -1)
             game.idGameStat = await this.gamesService.initGame(
                 idPlayerA,
                 idPlayerB,
                 mode,
             );
-        console.log('for stats:' + game.idGameStat);
+		
+		//complete players
+		
+
     }
 
     liaiseGameToPlayer(
@@ -202,15 +206,15 @@ export class GatewayService
             if (playerPos === 'A') game.playerA = player;
             else game.playerB = player;
 
-            console.log(
-                playerPos +
-                    '(' +
-                    player.userId +
-                    '/' +
-                    socketId +
-                    ') came, play=' +
-                    player.idGamePlaying,
-            );
+            // console.log(
+            //     playerPos +
+            //         '(' +
+            //         player.userId +
+            //         '/' +
+            //         socketId +
+            //         ') came, play=' +
+            //         player.idGamePlaying,
+            // );
 
             return true;
         } else {
@@ -235,8 +239,8 @@ export class GatewayService
                 errorCode: 'gameStarted',
             };
         }
-		const gameToAbort: Game = this.games[gameId];
-		this.handleEndGame(gameToAbort, false);
+        const gameToAbort: Game = this.games[gameId];
+        this.handleEndGame(gameToAbort, false);
         // delete this.games[gameId];
         // delete this.clients[client.id];
         return { status: 'matchmaking cancelled' };
@@ -308,45 +312,60 @@ export class GatewayService
                 if (retourUpdate === 'finished') {
                     this.handleEndGame(game, true);
                 }
-                for (const player of game.info.players) {
-                    if (player) {
-                        this.server
-                            .to(player.id)
-                            .emit('updateGameInfo', game.info);
-                    }
-                }
+				this.emitUpdateToPlayers(game);
+                // for (const player of game.info.players) {
+                //     // this.emitUpdateToPlayers(game);
+				// 	if (player) {
+				// 		this.server.to(player.id).emit('updateGameInfo', game.info);
+				// 	}
+                // }
             }
         }
     }
+
+	// /!\ /!\ /!\ a retravailler pour inclure le mode battle /!\ /!\ /!\
+    emitUpdateToPlayers(game: Game) {
+		if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
+			if (game.playerA)
+				this.emitUpdateToPlayer(game, game.playerA);
+			if (game.playerB)
+				this.emitUpdateToPlayer(game, game.playerB);
+		}
+		else {
+			for (const player of game.info.players) {
+				if (player) {
+					this.server.to(player.id).emit('updateGameInfo', game.info);
+				}
+			}
+		}
+    }
+
+	emitUpdateToPlayer(game: Game, player: IndivUser) {
+		for (const socketId of player.sockets) {
+			this.server.to(socketId).emit('updateGameInfo', game.info);
+		}
+	}
+
 
     async handleEndGame(game: Game, update: boolean) {
         if (!(game.info.mode === 'classic' || game.info.mode === 'mayhem'))
             return;
 
         if (update) {
-			const players: ClassicMayhemPlayers = game.info.players;
+            const players: ClassicMayhemPlayers = game.info.players;
 
-			let scoreA: number = 0;
-			let scoreB: number = 0;
-			let result: boolean = false;
+            let scoreA: number = 0;
+            let scoreB: number = 0;
+            let result: boolean = false;
 
-			if (game.playerA.sockets.includes(players[0].id)) {
-				scoreA = players[0].score;
-				scoreB = players[1].score;
-			}
-			else {
-				scoreA = players[1].score;
-				scoreB = players[0].score;
-			}
-			result = scoreA > scoreB ? true : false;
-
-			// console.log('player[0]=' + players[0].id + ' vs player[1]=' + players[1].id)
-
-			// console.log('playerA=' + game.playerA.userId + ', score=' + scoreA + ', won=' + result)
-			// console.log(game.playerA.sockets)
-
-			// console.log('playerB=' + game.playerB.userId + ', score=' + scoreB)
-			// console.log(game.playerB.sockets)
+            if (game.playerA.sockets.includes(players[0].id)) {
+                scoreA = players[0].score;
+                scoreB = players[1].score;
+            } else {
+                scoreA = players[1].score;
+                scoreB = players[0].score;
+            }
+            result = scoreA > scoreB ? true : false;
 
             try {
                 await this.gamesService.updateGame(game.idGameStat, {
@@ -365,7 +384,6 @@ export class GatewayService
             game.playerB.isPlaying = false;
             game.playerB.idGamePlaying = null;
         }
-
         delete this.games[game.id];
     }
 
@@ -379,4 +397,4 @@ export class GatewayService
         */
         console.log(messageBody);
     }
-} 
+}
