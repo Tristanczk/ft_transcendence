@@ -10,12 +10,10 @@ export default function ChatChannelListElement({
     channel,
     setChannel,
     setCurrentFriend,
-    setPasswordPrompt,
 }: {
     channel: ChannelProps;
     setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
-    setPasswordPrompt: (passwordPrompt: boolean) => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
@@ -44,6 +42,7 @@ export default function ChatChannelListElement({
             {
                 params: {
                     idChannel: channel.id,
+                    idUser: user?.id,
                 },
                 withCredentials: true,
             },
@@ -83,7 +82,7 @@ export default function ChatChannelListElement({
         );
 
         if (response.data === false) {
-            setPasswordPrompt(true);
+            setActiveInput(false);
             setChannel(0);
         } else {
             setActiveInput(false);

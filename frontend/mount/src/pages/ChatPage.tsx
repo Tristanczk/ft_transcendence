@@ -1,9 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Socket } from 'socket.io-client';
-import {
-    WebsocketContext,
-    socket as constSocket,
-} from '../context/WebsocketContext';
+import { useContext, useEffect, useState } from 'react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { UserSimplified } from '../types';
 import { useUserContext } from '../context/UserContext';
@@ -17,6 +12,7 @@ import MessageInput from '../components/chat/MessageInput';
 import ChatFriendList from '../components/chat/ChatFriendList';
 import ChatChannelList from '../components/chat/ChatChannelList';
 import ChannelHeader from '../components/chat/ChannelHeader';
+import { WebsocketContext } from '../context/WebsocketContext';
 
 function ChatPage({
     isChatVisible,
@@ -36,7 +32,6 @@ function ChatPage({
     const [currentChannel, setCurrentChannel] = useState<ChannelProps | null>(
         null,
     );
-    const [isVisible, setIsVisible] = useState(false);
     const [visibleSettings, setVisibleSettings] = useState(false);
     const socket = useContext(WebsocketContext);
     const [channelListSelected, setChannelListSelected] = useState<number>(-1);
@@ -52,12 +47,10 @@ function ChatPage({
     }, [isChatVisible, currentFriend, currentChannel]);
 
     const handleClose = () => {
-        setIsVisible(false); // Start the fade-out animation
         setTimeout(() => setChannel(0), 500); // Wait for the animation to complete before setting state
     };
 
     const closeChat = () => {
-        setIsVisible(false);
         setChannelListSelected(-1);
         setTimeout(() => setChannel(0), 500);
         toggleChatVisibility();
@@ -120,7 +113,8 @@ function ChatPage({
         const response = await authAxios.get(
             `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelById`,
             {
-                params: { idChannel: channel },
+                params: { idChannel: channel,
+                    idUser: user?.id, },
                 withCredentials: true,
             },
         );
@@ -157,12 +151,13 @@ function ChatPage({
         const response = await authAxios.get(
             `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelUsers`,
             {
-                params: { idChannel: currentChannel?.id },
+                params: { idChannel: currentChannel?.id, idUser: user?.id },
                 withCredentials: true,
             },
         );
         console.log('fetchUsers');
         console.log(response.data);
+
         setChannelUsers(response.data);
     };
 

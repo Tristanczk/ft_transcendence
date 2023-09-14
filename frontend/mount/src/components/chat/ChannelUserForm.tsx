@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react';
 import { ChannelProps } from './Messages';
 import { UserSimplified } from '../../types';
-import { useAuthAxios } from '../../context/AuthAxiosContext';
-import { useUserContext } from '../../context/UserContext';
 
 export default function ChannelUserForm({
     currentChannel,

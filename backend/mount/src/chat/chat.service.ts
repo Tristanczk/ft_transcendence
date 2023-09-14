@@ -10,11 +10,10 @@ import {
 } from './dto/editchannel.dto';
 import {
     CreateMessageDto,
-    DeleteMessageDto,
     MessageDto,
 } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
-import { ChannelDto, isChannelAdminDto } from './dto/channel.dto';
+import { ChannelDto, ChannelIdDto } from './dto/channel.dto';
 import { GetChannelDto } from './dto/getchannel.dto';
 import { channel } from 'diagnostics_channel';
 import { EditUserDto } from 'src/user/dto';
@@ -114,7 +113,7 @@ export class ChatService {
         return false;
     }
 
-    async isChannelAdmin(channelDto: isChannelAdminDto): Promise<boolean> {
+    async isChannelAdmin(channelDto: ChannelIdDto): Promise<boolean> {
         try {
             const channel = await this.prisma.channels.findUnique({
                 where: {
@@ -129,7 +128,7 @@ export class ChatService {
         return false;
     }
 
-    async isUserInChannel(channelDto: isChannelAdminDto): Promise<boolean> {
+    async isUserInChannel(channelDto: ChannelIdDto): Promise<boolean> {
         try {
             const channel = await this.prisma.channels.findUnique({
                 where: {
@@ -547,36 +546,6 @@ export class ChatService {
         }
 
         return newMessage;
-    }
-
-    async deleteMessage(idUser: number, message: DeleteMessageDto) {
-        try {
-            const channel = await this.prisma.channels.findUnique({
-                where: {
-                    id: message.idChannel,
-                },
-            });
-        } catch (error) {
-            throw new NotFoundException('Channel not found');
-        }
-
-        try {
-            const user = await this.prisma.user.findUnique({
-                where: {
-                    id: message.idSender,
-                },
-            });
-        } catch (error) {
-            throw new NotFoundException('User not found');
-        }
-
-        if (idUser !== message.idSender) throw new Error('Not authorized');
-
-        const deletedMessage = await this.prisma.message.delete({
-            where: {
-                id: message.idSender,
-            },
-        });
     }
 
     async getMessages(channelId: number, idUser: number) {
