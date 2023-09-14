@@ -121,6 +121,22 @@ export class GamesService {
                     },
                 });
             }
+			else {
+				newGame = await this.prisma.games.create({
+                    data: {
+                        finished: false,
+                        finishedAt: new Date(),
+                        won: true,
+                        scoreA: 0,
+                        scoreB: 0,
+                        varEloA: 0,
+                        varEloB: 0,
+                        initEloA: playerA ? playerA.elo : 1000,
+                        initEloB: playerB ? playerB.elo : 1000,
+                        mode: mode,
+                    },
+                });
+			}
 
             const thisGame: CurrentGame = {
                 idGame: newGame.id,
