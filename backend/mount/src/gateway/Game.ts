@@ -70,9 +70,6 @@ class Game {
                 ? { mode: gameMode, objects: getDefaultMayhemObjects() }
                 : { mode: gameMode, objects: getDefaultBattleObjects() }),
         };
-        if (this.info.mode === 'mayhem') {
-            this.info.objects.mayhemMap = randomMap();
-        }
         this.addPlayer(firstPlayer);
     }
 
