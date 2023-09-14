@@ -1,5 +1,5 @@
 import React from 'react';
-import p5Types from 'p5';
+import type P5 from 'p5';
 import Sketch from 'react-p5';
 import { angleDist, clamp } from '../../shared/functions';
 import {
@@ -54,7 +54,7 @@ class Player {
         };
     }
 
-    move(p5: p5Types): void {
+    move(p5: P5): void {
         const paddleSpeed = BATTLE_PADDLE_SPEED * p5.deltaTime;
         if (p5.keyIsDown(this.keys.clockwise)) {
             this.angle += paddleSpeed;
@@ -64,18 +64,14 @@ class Player {
         }
     }
 
-    hit(ballPos: p5Types.Vector): number | null {
+    hit(ballPos: P5.Vector): number | null {
         const angleDiff = angleDist(this.angle, ballPos.heading());
         const limit =
             BATTLE_DEFAULT_PADDLE_SIZE + BATTLE_BALL_SIZE * BATTLE_HIT_LEEWAY;
         return Math.abs(angleDiff) <= limit ? angleDiff / limit : null;
     }
 
-    private drawPaddle(
-        p5: p5Types,
-        innerRadius: number,
-        outerRadius: number,
-    ): void {
+    private drawPaddle(p5: P5, innerRadius: number, outerRadius: number): void {
         p5.fill(NEARLY_BLACK);
         p5.beginShape();
         const angles: number[] = Array.from(
@@ -96,7 +92,7 @@ class Player {
     }
 
     private drawLife(
-        p5: p5Types,
+        p5: P5,
         middleRadius: number,
         angle: number,
         arenaSize: number,
@@ -109,7 +105,7 @@ class Player {
         );
     }
 
-    private drawLives(p5: p5Types, middleRadius: number, arenaSize: number) {
+    private drawLives(p5: P5, middleRadius: number, arenaSize: number) {
         if (this.lives === 1) {
             this.drawLife(p5, middleRadius, this.angle, arenaSize);
         } else {
@@ -129,7 +125,7 @@ class Player {
         }
     }
 
-    draw(p5: p5Types, arenaSize: number): void {
+    draw(p5: P5, arenaSize: number): void {
         const innerRadius =
             (arenaSize * (1 - BATTLE_PADDLE_MARGIN - BATTLE_PADDLE_WIDTH)) / 2;
         const outerRadius = (arenaSize * (1 - BATTLE_PADDLE_MARGIN)) / 2;
@@ -140,10 +136,10 @@ class Player {
 }
 
 class Ball {
-    pos: p5Types.Vector;
-    vel: p5Types.Vector;
+    pos: P5.Vector;
+    vel: P5.Vector;
 
-    constructor(p5: p5Types, speedStart: number) {
+    constructor(p5: P5, speedStart: number) {
         this.pos = p5.createVector(0, 0);
         const angle = p5.random(0, p5.TAU);
         this.vel = p5.createVector(
@@ -161,11 +157,11 @@ class Ball {
             .mult(this.vel.mag() + BATTLE_BALL_SPEED_INCREMENT);
     }
 
-    move(p5: p5Types): void {
+    move(p5: P5): void {
         this.pos.add(this.vel.copy().mult(p5.deltaTime));
     }
 
-    draw(p5: p5Types, arenaSize: number): void {
+    draw(p5: P5, arenaSize: number): void {
         p5.fill(NEARLY_BLACK);
         p5.circle(
             this.pos.x * arenaSize * 0.5,
@@ -187,7 +183,7 @@ const getRandomPlayer = (
     }
 };
 
-const gameOver = (p5: p5Types, arenaSize: number) => {
+const gameOver = (p5: P5, arenaSize: number) => {
     p5.textFont('monospace');
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.textSize(8 + arenaSize / 30);
@@ -196,7 +192,7 @@ const gameOver = (p5: p5Types, arenaSize: number) => {
     p5.noLoop();
 };
 
-const drawRepeatingBackground = (p5: p5Types, bgImage: p5Types.Image) => {
+const drawRepeatingBackground = (p5: P5, bgImage: P5.Image) => {
     p5.imageMode(p5.CORNER);
     for (let y = 0; y < p5.height; y += bgImage.height) {
         for (let x = 0; x < p5.width; x += bgImage.width) {
@@ -225,9 +221,9 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     let currentPlayer = getRandomPlayer(numPlayers);
     let arenaSize = 0;
     let ball: Ball;
-    let bgImage: p5Types.Image;
+    let bgImage: P5.Image;
 
-    const windowResized = (p5: p5Types) => {
+    const windowResized = (p5: P5) => {
         p5.resizeCanvas(p5.windowWidth, p5.windowHeight - NAVBAR_HEIGHT);
         arenaSize = Math.min(
             p5.width - CANVAS_MARGIN,
@@ -236,13 +232,13 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
         );
     };
 
-    const preload = (p5: p5Types) => {
+    const preload = (p5: P5) => {
         bgImage = p5.loadImage(
             process.env.PUBLIC_URL + '/game-background.webp',
         );
     };
 
-    const setup = (p5: p5Types, canvasParentRef: Element) => {
+    const setup = (p5: P5, canvasParentRef: Element) => {
         p5.createCanvas(0, 0).parent(canvasParentRef);
         windowResized(p5);
         p5.rectMode(p5.CENTER);
@@ -250,7 +246,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
         ball = new Ball(p5, ballSpeedStart);
     };
 
-    const draw = (p5: p5Types) => {
+    const draw = (p5: P5) => {
         for (const player of players) {
             player.move(p5);
         }
