@@ -39,12 +39,10 @@ interface AnglyBoi {
 }
 
 const avoidCollision = (
-    player1: AnglyBoi | null,
-    player2: AnglyBoi | null,
+    player1: AnglyBoi,
+    player2: AnglyBoi,
     step: number,
 ): boolean => {
-    if (!player1) return false;
-    if (!player2) return false;
     const angleDiff = angleDist(player1.angle, player2.angle);
     const limit = 2 * BATTLE_DEFAULT_PADDLE_SIZE + BATTLE_BETWEEN_PADDLES;
     if (Math.abs(angleDiff) >= limit) return false;
@@ -60,14 +58,19 @@ const avoidCollision = (
 };
 
 export const avoidCollisions = (players: (AnglyBoi | null)[]) => {
+    const nonNullPlayers = players.filter((p) => p !== null) as AnglyBoi[];
     for (let step = 0.001; step <= 0.1; step += 0.001) {
         for (let i = 0; i < 10; ++i) {
             let collided = false;
-            for (let i = 0; i < players.length; ++i) {
-                for (let j = 0; j < players.length; ++j) {
+            for (let i = 0; i < nonNullPlayers.length; ++i) {
+                for (let j = 0; j < nonNullPlayers.length; ++j) {
                     if (
                         i !== j &&
-                        avoidCollision(players[i], players[j], step)
+                        avoidCollision(
+                            nonNullPlayers[i],
+                            nonNullPlayers[j],
+                            step,
+                        )
                     ) {
                         collided = true;
                     }
