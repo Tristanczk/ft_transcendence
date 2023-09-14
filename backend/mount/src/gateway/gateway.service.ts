@@ -231,7 +231,7 @@ export class GatewayService
 
     @SubscribeMessage('quitGame')
     async handleQuitGame(client: Socket, data: string) {
-        console.log('end');
+        console.log('end game');
         // TODO only player
         // TODO not in game
         // TODO waiting

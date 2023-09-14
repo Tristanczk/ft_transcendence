@@ -179,6 +179,9 @@ export class IndivUser {
 		this.idGamePlaying = null;
         this.sockets = [socketId];
         this.lastPingTime = Date.now();
+
+		console.log('new user, sockets for ' + this.userId);
+		console.log(this.sockets)
     }
 
     //return true if need to emit message
@@ -216,7 +219,10 @@ export class IndivUser {
     }
 
     addNewSocketId(socketId: string): boolean {
-        this.sockets.push(socketId);
+		if (!this.sockets.includes(socketId))
+        	this.sockets.push(socketId);
+		console.log('sockets for ' + this.userId);
+		console.log(this.sockets)
         if (this.isConnected) return false;
         return true;
     }
