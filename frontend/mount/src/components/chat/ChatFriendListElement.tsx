@@ -20,7 +20,7 @@ export default function ChatFriendListElement({
 }) {
     const { user } = useUserContext();
     const authAxios = useAuthAxios();
-    const [channel, setChannelState] = useState<number>(0);
+    const [channelId, setChannelId] = useState<number>(0);
 
     const fetchChannel = async (IdFriend: number) => {
         console.log('fetching channels for', user?.id, IdFriend);
@@ -32,11 +32,27 @@ export default function ChatFriendListElement({
             },
         );
         console.log('fetching channel response', response);
-        setNotifications(notifications.filter((id) => id !== response.data.id));
-        setChannelState(response.data.id);
         setChannel(response.data.id);
+        setNotifications(notifications.filter((id) => id !== response.data.id));
+        if (channelId === 0) setChannelId(response.data.id);
         setCurrentFriend(friend);
     };
+
+    const fetchChannelId = async (IdFriend: number) => {
+        const response = await authAxios.get(
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelByUsers`,
+            {
+                params: { idAdmin: user?.id, idUser: IdFriend },
+                withCredentials: true,
+            },
+        );
+        setChannelId(response.data.id);
+    };
+
+
+    useEffect(() => {
+        fetchChannelId(friend.id);
+    }, [notifications]);
 
     return (
         <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
@@ -61,7 +77,7 @@ export default function ChatFriendListElement({
                 }}
             >
                 {' '}
-                {notifications.includes(channel) && (
+                {notifications && notifications.includes(channelId) && (
                     <div className="w-3 h-3 bg-red-600 rounded-full"></div>
                 )}
                 <svg
