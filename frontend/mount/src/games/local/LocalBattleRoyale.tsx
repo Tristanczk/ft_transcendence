@@ -28,6 +28,7 @@ import {
     BATTLE_DOT_RADIUS,
     BATTLE_DEFAULT_PLAYERS,
     getBallSpeedStart,
+    getBattleLives,
 } from '../../shared/battle';
 import { useSearchParams } from 'react-router-dom';
 
@@ -259,7 +260,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
             `numPlayers must be between ${BATTLE_MIN_PLAYERS} and ${BATTLE_MAX_PLAYERS}`,
         );
     }
-    const startLives = Math.max(2, Math.ceil(10 / numPlayers));
+    const startLives = getBattleLives(numPlayers);
     const angleIncrement = TAU / numPlayers;
     const ballSpeedStart = getBallSpeedStart(numPlayers);
     let players = [

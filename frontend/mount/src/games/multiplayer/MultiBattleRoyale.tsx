@@ -3,6 +3,7 @@ import {
     BattleGameObjects,
     BattlePlayer,
     BattlePlayers,
+    MultiBall,
 } from '../../shared/game_info';
 import {
     CANVAS_MARGIN,
@@ -13,6 +14,7 @@ import {
 import { getCanvasCtx } from './getCanvasCtx';
 import {
     BATTLE_ARC_VERTICES,
+    BATTLE_BALL_SIZE,
     BATTLE_DEFAULT_PADDLE_SIZE,
     BATTLE_DOT_RADIUS,
     BATTLE_DOT_SHIFT,
@@ -20,15 +22,6 @@ import {
     BATTLE_PADDLE_MARGIN,
     BATTLE_PADDLE_WIDTH,
 } from '../../shared/battle';
-
-const drawText = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
-    ctx.fillStyle = 'white';
-    const textSize = 8 + canvas.width / 30;
-    ctx.font = `${textSize}px monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('COMING SOON', canvas.width / 2, canvas.height / 2);
-};
 
 const drawArena = (
     canvas: HTMLCanvasElement,
@@ -139,6 +132,25 @@ const drawPlayer = (
     drawLives(ctx, middleRadius, arenaSize, player);
 };
 
+const drawBall = (
+    ctx: CanvasRenderingContext2D,
+    ball: MultiBall,
+    arenaSize: number,
+) => {
+    const halfArenaSize = arenaSize * 0.5;
+    ctx.beginPath();
+    ctx.arc(
+        (ball.posX + 1) * halfArenaSize,
+        (ball.posY + 1) * halfArenaSize,
+        BATTLE_BALL_SIZE * halfArenaSize,
+        0,
+        TAU,
+    );
+    ctx.fillStyle = NEARLY_BLACK;
+    ctx.fill();
+    ctx.closePath();
+};
+
 const MultiBattleRoyale = ({
     gameObjects,
     windowWidth,
@@ -165,12 +177,14 @@ const MultiBattleRoyale = ({
             canvas,
             ctx,
             arenaSize,
-            players[gameObjects.currentPlayer]?.color ?? '#50C878', // TODO no default, what to do while not srarted?
+            players[gameObjects.currentPlayer]?.color ?? '#50C878', // TODO no default, what to do while not started?
         );
         for (const player of players) {
-            if (player) drawPlayer(canvas, ctx, player, arenaSize);
+            if (player) {
+                drawPlayer(canvas, ctx, player, arenaSize);
+            }
         }
-        drawText(canvas, ctx);
+        drawBall(ctx, gameObjects.ball, arenaSize);
     });
 
     return <canvas ref={ref} style={{ width: arenaSize, height: arenaSize }} />;
