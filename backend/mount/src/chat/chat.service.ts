@@ -285,6 +285,9 @@ export class ChatService {
 
             if (!channel.idAdmin.includes(editChannel.idRequester))
                 throw new Error('Not authorized, Not admin');
+            
+            if (editChannel.idUser === editChannel.idRequester)
+                throw new Error('Not authorized, Cannot ban yourself');
 
             if (channel.idAdmin.includes(editChannel.idUser))
                 throw new Error('Not authorized, User is admin');
@@ -301,6 +304,16 @@ export class ChatService {
                     },
                 },
             });
+
+            const user = this.gateway.users.getIndivUserById(
+                editChannel.idUser,
+            );
+            if (user) {
+                user.sockets.forEach((socket) => {
+                    console.log('socket: ' + socket);
+                    this.gateway.server.to(socket).emit('ban');
+                });
+            }
 
             const updatedChannelDto: EditChannelDto = {
                 id: updatedChannel.id,
@@ -416,7 +429,7 @@ export class ChatService {
                     mutedUsers: channel.mutedUsers,
                 },
             });
-            
+
             const updatedChannelDto: EditChannelDto = {
                 id: updatedChannel.id,
                 idAdmin: updatedChannel.idAdmin,
@@ -436,7 +449,7 @@ export class ChatService {
         try {
             const channels = await this.prisma.channels.findMany({
                 where: {
-                    isPublic: true,         
+                    isPublic: true,
                 },
             });
 
@@ -482,7 +495,6 @@ export class ChatService {
                     return true;
                 }
             }
-
         } catch (error) {
             console.log(error);
         }

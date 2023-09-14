@@ -147,6 +147,7 @@ function ChatPage({
         };
 
         socket.on('message', messageListener);
+        socket.on('ban', () => setChannel(0));
 
         return () => {
             socket.off('message', messageListener);
