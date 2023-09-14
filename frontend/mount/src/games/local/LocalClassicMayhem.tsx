@@ -24,8 +24,8 @@ import {
 import {
     MayhemCell,
     MayhemMap,
-    MayhemMapCollision,
     getMayhemCellPos,
+    hitMayhemMap,
 } from '../../shared/mayhem_maps';
 import {
     clamp,
@@ -84,88 +84,6 @@ class Ball {
             this.velY = -this.velY;
         }
     }
-
-    private hitMayhemCell(
-        gridX: number,
-        gridY: number,
-    ): MayhemMapCollision | null {
-        const { posX, posY } = getMayhemCellPos(gridX, gridY);
-        const left = posX - BALL_WIDTH;
-        const right = posX + BALL_WIDTH;
-        const top = posY - BALL_HEIGHT;
-        const bottom = posY + BALL_HEIGHT;
-        if (
-            this.posX <= left ||
-            this.posX >= right ||
-            this.posY <= top ||
-            this.posY >= bottom
-        )
-            return null;
-        const distances = [
-            this.velY <= 0
-                ? Infinity
-                : Math.abs(this.posY - top) / Math.abs(this.velY),
-            this.velX >= 0
-                ? Infinity
-                : Math.abs(this.posX - right) / Math.abs(this.velX),
-            this.velY >= 0
-                ? Infinity
-                : Math.abs(this.posY - bottom) / Math.abs(this.velY),
-            this.velX <= 0
-                ? Infinity
-                : Math.abs(this.posX - left) / Math.abs(this.velX),
-        ];
-        const collisionSide = distances.indexOf(Math.min(...distances));
-        let newPosX = this.posX;
-        let newPosY = this.posY;
-        let newVelX = this.velX;
-        let newVelY = this.velY;
-        if (collisionSide === 0) {
-            newVelY = -this.velY;
-            newPosY = top;
-        } else if (collisionSide === 1) {
-            newVelX = -this.velX;
-            newPosX = right;
-        } else if (collisionSide === 2) {
-            newVelY = -this.velY;
-            newPosY = bottom;
-        } else {
-            newVelX = -this.velX;
-            newPosX = left;
-        }
-        const surface =
-            collisionSide & 1
-                ? Math.min(distances[0], distances[2]) / BALL_HEIGHT
-                : Math.min(distances[1], distances[3]) / BALL_WIDTH;
-        return { surface, gridX, gridY, newPosX, newPosY, newVelX, newVelY };
-    }
-
-    public hitMayhemMap = (mayhemMap: MayhemMap) => {
-        let bestCollision: MayhemMapCollision | null = null;
-        for (let gridY = 0; gridY < mayhemMap.length; ++gridY) {
-            const row = mayhemMap[gridY];
-            for (let gridX = 0; gridX < row.length; ++gridX) {
-                const mayhemCell = row[gridX];
-                if (mayhemCell.lives > 0) {
-                    const collision = this.hitMayhemCell(gridX, gridY);
-                    if (
-                        collision &&
-                        (!bestCollision ||
-                            collision.surface > bestCollision.surface)
-                    ) {
-                        bestCollision = collision;
-                    }
-                }
-            }
-        }
-        if (bestCollision) {
-            this.posX = bestCollision.newPosX;
-            this.posY = bestCollision.newPosY;
-            this.velX = bestCollision.newVelX;
-            this.velY = bestCollision.newVelY;
-            --mayhemMap[bestCollision.gridY][bestCollision.gridX].lives;
-        }
-    };
 
     private hitPaddle(left: boolean, paddle: number): number | null {
         const x = left ? this.posX : 1 - this.posX;
@@ -336,7 +254,7 @@ const ClassicMayhemGame = ({
             ball.hitBar();
             [scoreLeft, scoreRight] = ball.checkScore(scoreLeft, scoreRight);
             ball.hitPaddles(paddleLeft, paddleRight);
-            ball.hitMayhemMap(mayhemMap);
+            hitMayhemMap(ball, mayhemMap);
         }
 
         p5.background(15);
