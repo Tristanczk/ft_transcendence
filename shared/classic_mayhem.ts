@@ -1,4 +1,4 @@
-export const WINNING_SCORE_CLASSIC = 7;
+export const WINNING_SCORE_CLASSIC = 30;
 export const WINNING_SCORE_MAYHEM = 21;
 export const ASPECT_RATIO = 286 / 175;
 export const BALL_SIZE = 0.018; // TODO remove

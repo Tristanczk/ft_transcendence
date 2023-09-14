@@ -15,7 +15,9 @@ import Game from './Game';
 import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
 import {
+    BattlePlayer,
     BattlePlayers,
+    ClassicMayhemPlayer,
     ClassicMayhemPlayers,
     GameInfo,
 } from 'src/shared/game_info';
@@ -130,9 +132,11 @@ export class GatewayService
     async handleJoinGame(client: Socket, data: JoinGameType) {
         const gameMode: string = data.mode;
         const playerId: number = data.userId;
-        const currentClient = this.users.getIndivUserBySocketId(client.id);
+        const currentClient: IndivUser | null =
+            this.users.getIndivUserBySocketId(client.id);
+
         if (!currentClient) {
-            console.log('to handle');
+            console.log('error to handle');
             return;
         }
         console.log('player ' + playerId + ' want to play');
@@ -151,7 +155,7 @@ export class GatewayService
         }
         for (const game of Object.values(this.games)) {
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
-                game.addPlayer(client.id);
+                game.addPlayer(client.id, false);
                 this.liaiseGameToPlayer(client.id, game, 'B');
 
                 for (const player of game.info.players) {
@@ -167,7 +171,6 @@ export class GatewayService
         const game = new Game(generateId(this.games), gameMode, client.id);
         this.games[game.id] = game;
         this.liaiseGameToPlayer(client.id, game, 'A');
-        // this.clients[client.id] = game.id;
         return { gameId: game.id, status: 'waiting' };
     }
 
@@ -179,14 +182,12 @@ export class GatewayService
         if (game.info.mode === 'classic') mode = 0;
         else if (game.info.mode === 'mayhem') mode = 1;
 
-		console.log('new game: playerA=' + idPlayerA + ', playerB=' + idPlayerB + ', mode=' + mode);
         if (mode !== -1)
             game.idGameStat = await this.gamesService.initGame(
                 idPlayerA,
                 idPlayerB,
                 mode,
             );
-        console.log('for stats:' + game.idGameStat);
     }
 
     liaiseGameToPlayer(
@@ -202,20 +203,8 @@ export class GatewayService
             if (playerPos === 'A') game.playerA = player;
             else game.playerB = player;
 
-            console.log(
-                playerPos +
-                    '(' +
-                    player.userId +
-                    '/' +
-                    socketId +
-                    ') came, play=' +
-                    player.idGamePlaying,
-            );
-
             return true;
         } else {
-            console.log('error to handle');
-            //TODO and TO TEST (si quelqu'un arrive sur la page et clique instantannement sur le bouton jouer.)
             return false;
         }
     }
@@ -235,21 +224,48 @@ export class GatewayService
                 errorCode: 'gameStarted',
             };
         }
-		const gameToAbort: Game = this.games[gameId];
-		this.handleEndGame(gameToAbort, false);
-        // delete this.games[gameId];
-        // delete this.clients[client.id];
+        const gameToAbort: Game = this.games[gameId];
+        this.handleEndGame(gameToAbort, false, -1);
         return { status: 'matchmaking cancelled' };
     }
 
     @SubscribeMessage('quitGame')
     async handleQuitGame(client: Socket, data: string) {
-        console.log('end');
-        // TODO only player
-        // TODO not in game
-        // TODO waiting
-        // TODO playing
-        // TODO finished
+        console.log('end game : ' + data);
+        if (!this.games[data])
+            return { gameId: data, message: 'invalid gameId' };
+        const game = this.games[data];
+        const userAborting: IndivUser = this.users.getIndivUserBySocketId(
+            client.id,
+        );
+		console.log('try user asking')
+        if (!userAborting) return { gameId: data, message: 'invalid user' };
+		console.log('try rights socket:' + data)
+		console.log(game.playerA.sockets)
+		console.log(game.playerB.sockets)
+        if (
+            !(
+                game.playerA.sockets.includes(client.id) ||
+                game.playerB.sockets.includes(client.id)
+            )
+        ) {
+            return { gameId: data, message: 'invalid rights for user' };
+        }
+		console.log('try mode')
+		//si game existe + si user existe + si client a les droits, alors on aborte le jeu
+		if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
+			if (game.playerA.sockets.includes(client.id)) {
+				this.handleEndGame(game, true, 0);
+			}
+			else if (game.playerB.sockets.includes(client.id)) {
+				this.handleEndGame(game, true, 1);
+			}
+			game.info.state = 'finished';
+			console.log('game finished : ' + data)
+			return { gameId: data, message: 'game aborted' };
+		}
+
+		return { gameId: data, message: 'game not aborted' };
     }
 
     @SubscribeMessage('leavePage')
@@ -267,12 +283,27 @@ export class GatewayService
             return;
         }
         const gameInfo = this.games[keyEvent.gameId].info;
+        let user: IndivUser = null;
         for (const player of gameInfo.players) {
-            if (player && player.id === client.id) {
-                if (keyEvent.type === 'down') {
-                    player.activeKeys.add(keyEvent.key);
-                } else {
-                    player.activeKeys.delete(keyEvent.key);
+            // oblige de separer en 2... desole !
+            if (gameInfo.mode === 'classic' || gameInfo.mode === 'mayhem') {
+                if (player.side === this.games[keyEvent.gameId].sidePlayerA)
+                    user = this.games[keyEvent.gameId].playerA;
+                else user = this.games[keyEvent.gameId].playerB;
+                if (player && user.sockets.includes(client.id)) {
+                    if (keyEvent.type === 'down') {
+                        player.activeKeys.add(keyEvent.key);
+                    } else {
+                        player.activeKeys.delete(keyEvent.key);
+                    }
+                }
+            } else {
+                if (player && player.id === client.id) {
+                    if (keyEvent.type === 'down') {
+                        player.activeKeys.add(keyEvent.key);
+                    } else {
+                        player.activeKeys.delete(keyEvent.key);
+                    }
                 }
             }
         }
@@ -306,53 +337,61 @@ export class GatewayService
             if (game.info.state !== 'finished') {
                 retourUpdate = game.update();
                 if (retourUpdate === 'finished') {
-                    this.handleEndGame(game, true);
+                    this.handleEndGame(game, true, -1);
                 }
-                for (const player of game.info.players) {
-                    if (player) {
-                        this.server
-                            .to(player.id)
-                            .emit('updateGameInfo', game.info);
-                    }
+                this.emitUpdateToPlayers(game);
+            }
+        }
+    }
+
+    // /!\ /!\ /!\ a retravailler pour inclure le mode battle /!\ /!\ /!\
+    emitUpdateToPlayers(game: Game) {
+        if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
+            if (game.playerA) this.emitUpdateToPlayer(game, game.playerA);
+            if (game.playerB) this.emitUpdateToPlayer(game, game.playerB);
+        } else {
+            for (const player of game.info.players) {
+                if (player) {
+                    this.server.to(player.id).emit('updateGameInfo', game.info);
                 }
             }
         }
     }
 
-    async handleEndGame(game: Game, update: boolean) {
+    emitUpdateToPlayer(game: Game, player: IndivUser) {
+        for (const socketId of player.sockets) {
+            this.server.to(socketId).emit('updateGameInfo', game.info);
+        }
+    }
+
+	//aborted: -1: classic ending, 0: aborted by A, 1: aborted by B
+    async handleEndGame(game: Game, update: boolean, aborted: number) {
         if (!(game.info.mode === 'classic' || game.info.mode === 'mayhem'))
             return;
 
         if (update) {
-			const players: ClassicMayhemPlayers = game.info.players;
+            const players: ClassicMayhemPlayers = game.info.players;
 
-			let scoreA: number = 0;
-			let scoreB: number = 0;
-			let result: boolean = false;
+            let scoreA: number = 0;
+            let scoreB: number = 0;
+            let result: boolean = false;
 
-			if (game.playerA.sockets.includes(players[0].id)) {
-				scoreA = players[0].score;
-				scoreB = players[1].score;
-			}
-			else {
-				scoreA = players[1].score;
-				scoreB = players[0].score;
-			}
-			result = scoreA > scoreB ? true : false;
-
-			// console.log('player[0]=' + players[0].id + ' vs player[1]=' + players[1].id)
-
-			// console.log('playerA=' + game.playerA.userId + ', score=' + scoreA + ', won=' + result)
-			// console.log(game.playerA.sockets)
-
-			// console.log('playerB=' + game.playerB.userId + ', score=' + scoreB)
-			// console.log(game.playerB.sockets)
+            if (game.playerA.sockets.includes(players[0].id)) {
+                scoreA = players[0].score;
+                scoreB = players[1].score;
+            } else {
+                scoreA = players[1].score;
+                scoreB = players[0].score;
+            }
+            result = scoreA > scoreB ? true : false;
+			if (aborted === 0) result = false;
+			else if (aborted === 1) result = true;
 
             try {
                 await this.gamesService.updateGame(game.idGameStat, {
                     scoreA: scoreA,
                     scoreB: scoreB,
-                    won: scoreA > scoreB ? true : false,
+                    won: result,
                 });
             } catch (error) {}
         }
@@ -365,7 +404,6 @@ export class GatewayService
             game.playerB.isPlaying = false;
             game.playerB.idGamePlaying = null;
         }
-
         delete this.games[game.id];
     }
 
@@ -379,4 +417,4 @@ export class GatewayService
         */
         console.log(messageBody);
     }
-} 
+}
