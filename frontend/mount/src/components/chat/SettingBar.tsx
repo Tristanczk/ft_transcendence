@@ -1,9 +1,10 @@
+import { act } from 'react-dom/test-utils';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
 import { UserSimplified } from '../../types';
 import ChannelUserForm from './ChannelUserForm';
 import { ChannelProps } from './Messages';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 export default function SettingBar({
     currentChannel,
@@ -23,11 +24,29 @@ export default function SettingBar({
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     const [input, setInput] = useState<string>('');
-    const [formState, setFormState] = useState<'ban' | 'admin' | 'mute' | null>(null);
+    const [formState, setFormState] = useState<'ban' | 'admin' | 'mute' | null>(
+        null,
+    );
+    const blurTimeout = useRef<any>(null);
+    const [showInput, setShowInput] = useState(false);
+    const [barHidden, setBarHidden] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const [activeInput, setActiveInput] = useState<'password' | 'name' | null>(
         null,
     );
+
+    const handleBlur = () => {
+        blurTimeout.current = setTimeout(() => {
+            setShowInput(false);
+            setActiveInput(null);
+        }, 100) as any;
+    };
+
+    const handleFocus = () => {
+        if (blurTimeout.current !== null) clearTimeout(blurTimeout.current);
+        setBarHidden(false);
+    };
 
     const removeInput = () => {
         if (activeInput) {
@@ -39,8 +58,14 @@ export default function SettingBar({
     const handlePasswordClick = () => {
         if (activeInput === 'password') {
             setActiveInput(null);
+            setShowInput((prev) => !prev);
             setInput('');
-        } else setActiveInput('password');
+        } else {
+            setActiveInput('password');
+            if (inputRef.current) {
+                inputRef.current.focus();
+            }
+        }
     };
 
     const handleNameClick = () => {
@@ -94,7 +119,10 @@ export default function SettingBar({
         event: React.KeyboardEvent<HTMLInputElement>;
         exec: () => void;
     }) => {
-        if (event.key === 'Enter' && !(activeInput === 'name' && input.length < 3)) {
+        if (
+            event.key === 'Enter' &&
+            !(activeInput === 'name' && input.length < 3)
+        ) {
             if (!event.shiftKey) {
                 event.preventDefault();
                 exec();
@@ -146,32 +174,31 @@ export default function SettingBar({
 
     const getClickHandler = () => {
         switch (formState) {
-          case 'ban':
-            return handleBanUser;
-          case 'admin':
-            return handleAddAdmin;
-          case 'mute':
-            return handleMuteUser;
+            case 'ban':
+                return handleBanUser;
+            case 'admin':
+                return handleAddAdmin;
+            case 'mute':
+                return handleMuteUser;
             default:
                 return () => {};
         }
-      };
-      
+    };
+
     if (!currentChannel) return null;
 
     return (
         <div
             className={`relative flex-col items-center space-y-4 bg-gray-200 w-1/6 flex z-0 object-bottom object-fill 
-    ${isSettingVisible ? 'right-20' : 'right-0'} 
+    ${isSettingVisible ? 'right-20 opacity-100' : 'right-0 opacity-0'} 
     transition-all duration-500 ease-in-out rounded-3xl py-5`}
         >
-                        <ChannelUserForm
+            <ChannelUserForm
                 currentChannel={currentChannel}
                 channelUsers={channelUsers}
                 handleClick={getClickHandler()}
                 setChannelUsers={setChannelUsers}
-            />
-            {' '}
+            />{' '}
             <button
                 name="Password"
                 onClick={() => {
@@ -186,11 +213,11 @@ export default function SettingBar({
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
-                    stroke-width="2"
+                    strokeWidth="2"
                     stroke="currentColor"
                     fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                 >
                     {' '}
                     <path stroke="none" d="M0 0h24v24H0z" />{' '}
@@ -200,21 +227,23 @@ export default function SettingBar({
                     <line x1="15" y1="8" x2="17" y2="10" />
                 </svg>
             </button>
-            {activeInput === 'password' && (
-                <input
-                    type="password"
-                    className="absolute top-5 transform text-slate-500 -translate-y-1/2 left-full ml-4 p-1 border border-gray-300 bg-white rounded-md z-40 transition-all ease-in-out duration-500"
-                    placeholder="Enter password"
-                    value={input}
-                    onChange={(e) => {
-                        setInput(e.target.value);
-                    }}
-                    onKeyDown={(event) =>
-                        onKeyPress({ event, exec: editPassword })
-                    }
-                />
-            )}
-
+            <input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(event) => onKeyPress({ event, exec: editPassword })}
+                placeholder="Enter password"
+                className={`focus:outline-none focus:placeholder-gray-400 absolute left-24 text-gray-600 placeholder-gray-600 bg-white rounded-3xl border-white transition-opacity transition-width ease-in-out duration-500 h-8 z-40 overflow-hidden ${
+                    activeInput === 'password'
+                        ? showInput
+                            ? 'opacity-100 pointer-events-auto w-44'
+                            : 'opacity-0 pointer-events-none w-0'
+                        : 'opacity-0 pointer-events-none w-0'
+                }`}
+                readOnly={activeInput !== 'password' || !showInput}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+            />
             <button
                 name="Ban"
                 onClick={() => {
@@ -231,11 +260,11 @@ export default function SettingBar({
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
-                    stroke-width="2"
+                    strokeWidth="2"
                     stroke="currentColor"
                     fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                 >
                     {' '}
                     <path stroke="none" d="M0 0h24v24H0z" />{' '}
@@ -263,9 +292,9 @@ export default function SettingBar({
                 >
                     {' '}
                     <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                     />
                 </svg>
             </button>
@@ -285,9 +314,9 @@ export default function SettingBar({
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                 >
                     {' '}
                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
@@ -347,16 +376,16 @@ export default function SettingBar({
                     stroke="currentColor"
                 >
                     <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
                         d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                     />
                     <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
                         d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
                     />
                 </svg>
@@ -375,11 +404,11 @@ export default function SettingBar({
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
-                    stroke-width="2"
+                    strokeWidth="2"
                     stroke="currentColor"
                     fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                 >
                     {' '}
                     <path stroke="none" d="M0 0h24v24H0z" />{' '}

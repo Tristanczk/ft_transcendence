@@ -103,7 +103,7 @@ export default function Messages({
             <div
                 id="messages"
                 ref={messageContainerRef}
-                className={`flex-grow h-full flex flex-col space-y-4 p-3 overflow-y-auto scrolling-touch bg-white shadow-2xl overflow-clip w-104 ${zIndexClass}`}
+                className={`flex-grow h-full flex flex-col space-y-4 p-3 overflow-y-auto scrolling-touch bg-white shadow-md overflow-clip w-104 ${zIndexClass}`}
                 style={{ height: '420px', marginLeft: '-69px' }}
             >
                 {groupedMessages.map(
