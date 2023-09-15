@@ -38,6 +38,7 @@ model Games {
     finishedAt DateTime
     finished   Boolean
     won        Boolean
+    aborted    Boolean
     scoreA     Int
     scoreB     Int
     mode       Int

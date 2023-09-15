@@ -392,6 +392,7 @@ export class GatewayService
                     scoreA: scoreA,
                     scoreB: scoreB,
                     won: result,
+                    aborted: aborted === -1 ? false : true,
                 });
             } catch (error) {}
         }
