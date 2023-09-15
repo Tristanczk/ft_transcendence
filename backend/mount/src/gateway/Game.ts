@@ -42,11 +42,17 @@ import {
     randomMap,
 } from 'src/shared/mayhem_maps';
 import { GameMode, MAX_PLAYERS } from 'src/shared/misc';
+import { IndivUser } from './gateway.users';
 
 class Game {
     id: string;
     timeStarted: number;
     info: GameInfo;
+	idGameStat: number;
+	playerA: IndivUser | null;
+	playerB: IndivUser | null;
+	sidePlayerA: number; //to find the user
+	sidePlayerB: number; //to find the user
     private lastUpdate: number;
 
     constructor(gameId: string, gameMode: GameMode, firstPlayer: string) {
@@ -65,7 +71,12 @@ class Game {
         if (this.info.mode === 'mayhem') {
             this.info.objects.mayhemMap = randomMap();
         }
-        this.addPlayer(firstPlayer);
+		this.sidePlayerA = 0;
+		this.sidePlayerB = 0;
+        this.addPlayer(firstPlayer, true);
+		this.idGameStat = -1;
+		this.playerA = null;
+		this.playerB = null;
     }
 
     private resetBall(ball: MultiBall) {
@@ -75,21 +86,23 @@ class Game {
         ball.velY = randomFloat(-MAX_Y_FACTOR, MAX_Y_FACTOR) * BALL_SPEED_START;
     }
 
-    addPlayer(playerId: string) {
+    addPlayer(playerId: string, arrivedFirst: boolean) {
         const emptyIdxs = [...this.info.players.keys()].filter(
             (i) => !this.info.players[i],
         );
+		// const player: IndivUser
         const idx = emptyIdxs[randomInt(0, emptyIdxs.length - 1)];
         const numPlayers = MAX_PLAYERS[this.info.mode] - emptyIdxs.length + 1;
         if (this.info.mode === 'battle') {
             const lives = Math.max(2, Math.ceil(10 / numPlayers));
             this.info.players[idx] = {
                 id: playerId,
+				side: 0,
                 angle: 0,
                 lives: lives,
                 color: BATTLE_COLORS[idx],
                 activeKeys: new Set(),
-            };
+            }; 
             for (const player of this.info.players) {
                 if (player) {
                     player.lives = lives;
@@ -98,10 +111,13 @@ class Game {
         } else {
             this.info.players[idx] = {
                 id: playerId,
+				side: idx,
                 pos: 0.5,
                 score: 0,
                 activeKeys: new Set(),
             };
+			if (arrivedFirst) this.sidePlayerA = idx;
+			else this.sidePlayerB = idx;
         }
         if (numPlayers === 2) {
             this.info.state = 'playing';
@@ -330,7 +346,7 @@ class Game {
         // }
     }
 
-    update() {
+    update(): string {
         const now = performance.now();
         const deltaTime = now - this.lastUpdate;
         this.lastUpdate = now;
@@ -339,13 +355,17 @@ class Game {
         if (this.info.mode === 'battle') {
             this.updateBattle(this.info.objects, deltaTime); // TODO this.info.players
         } else {
-            this.updateClassicMayhem(
-                this.info.players,
-                this.info.objects,
-                deltaTime,
-            );
+            this.updateClassicMayhem(this.info.players, this.info.objects, deltaTime);
+			if (this.info.state === 'finished') {
+				return 'finished';
+			}
         }
+		return 'playing';
     }
+
+	handleEndGame() {
+		
+	}
 }
 
 export default Game;

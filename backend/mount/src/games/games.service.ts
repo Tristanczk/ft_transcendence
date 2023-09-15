@@ -34,37 +34,120 @@ export class GamesService {
 
     dataGamesPlaying: CurrentGame[] = [];
 
-    async initGame(playerA: any, idPlayerB: number, mode: number) {
+    async initGame(idPlayerA: number, idPlayerB: number, mode: number) {
+        //verif players
+        let verifiedIdPlayerA: number = -1;
+        let playerA: User | null = null;
+        let verifiedIdPlayerB: number = -1;
+        let playerB: User | null = null;
+
+        try {
+            playerA = await this.prisma.user.findUnique({
+                where: { id: idPlayerA },
+            });
+            verifiedIdPlayerA = idPlayerA;
+        } catch (error) {
+            console.log('A not found');
+            verifiedIdPlayerA = -1;
+        }
+
+        try {
+            playerB = await this.prisma.user.findUnique({
+                where: { id: idPlayerB },
+            });
+            verifiedIdPlayerB = idPlayerB;
+        } catch (error) {
+            console.log('B not found');
+            verifiedIdPlayerB = -1;
+        }
+
         //verif playerB exist
-        const playerB = await this.prisma.user.findUnique({
-            where: { id: idPlayerB },
-        });
-        if (!playerB) throw new NotFoundException();
+        // const playerB: User = await this.prisma.user.findUnique({
+        //     where: { id: idPlayerB },
+        // });
+
+        // if (!playerB) throw new NotFoundException();
 
         //creating game
         try {
-            const newGame = await this.prisma.games.create({
-                data: {
-                    finished: false,
-                    finishedAt: new Date(),
-                    won: true,
-                    scoreA: 0,
-                    scoreB: 0,
-                    varEloA: 0,
-                    varEloB: 0,
-                    initEloA: playerA.elo,
-                    initEloB: playerB.elo,
-                    mode: mode,
-                    UserA: { connect: { id: playerA.id } },
-                    UserB: { connect: { id: idPlayerB } },
-                },
-            });
+            let newGame: Games = null;
+            if (playerA && playerB) {
+                newGame = await this.prisma.games.create({
+                    data: {
+                        finished: false,
+                        finishedAt: new Date(),
+                        won: true,
+                        aborted: false,
+                        scoreA: 0,
+                        scoreB: 0,
+                        varEloA: 0,
+                        varEloB: 0,
+                        initEloA: playerA ? playerA.elo : 1000,
+                        initEloB: playerB ? playerB.elo : 1000,
+                        mode: mode,
+                        UserA: { connect: { id: playerA.id } },
+                        UserB: { connect: { id: playerB.id } },
+                    },
+                });
+            } else if (playerA) {
+                newGame = await this.prisma.games.create({
+                    data: {
+                        finished: false,
+                        finishedAt: new Date(),
+                        won: true,
+                        aborted: false,
+                        scoreA: 0,
+                        scoreB: 0,
+                        varEloA: 0,
+                        varEloB: 0,
+                        initEloA: playerA ? playerA.elo : 1000,
+                        initEloB: playerB ? playerB.elo : 1000,
+                        mode: mode,
+                        UserA: { connect: { id: playerA.id } },
+                    },
+                });
+            } else if (playerB) {
+                newGame = await this.prisma.games.create({
+                    data: {
+                        finished: false,
+                        finishedAt: new Date(),
+                        won: true,
+                        aborted: false,
+                        scoreA: 0,
+                        scoreB: 0,
+                        varEloA: 0,
+                        varEloB: 0,
+                        initEloA: playerA ? playerA.elo : 1000,
+                        initEloB: playerB ? playerB.elo : 1000,
+                        mode: mode,
+                        UserB: { connect: { id: playerB.id } },
+                    },
+                });
+            }
+			else {
+				newGame = await this.prisma.games.create({
+                    data: {
+                        finished: false,
+                        finishedAt: new Date(),
+                        won: true,
+                        aborted: false,
+                        scoreA: 0,
+                        scoreB: 0,
+                        varEloA: 0,
+                        varEloB: 0,
+                        initEloA: playerA ? playerA.elo : 1000,
+                        initEloB: playerB ? playerB.elo : 1000,
+                        mode: mode,
+                    },
+                });
+			}
+
             const thisGame: CurrentGame = {
                 idGame: newGame.id,
-                idPlayerA: playerA.id,
-                eloPlayerA: playerA.elo,
-                idPlayerB: idPlayerB,
-                eloPlayerB: playerB.elo,
+                idPlayerA: playerA ? playerA.id : -1,
+                eloPlayerA: playerA ? playerA.elo : 1000,
+                idPlayerB: playerB ? playerB.id : -1,
+                eloPlayerB: playerB ? playerB.elo : 1000,
             };
             this.dataGamesPlaying.push(thisGame);
             return newGame.id;
@@ -113,19 +196,23 @@ export class GamesService {
 
         const variation: VariationElo = { varEloA: varEloA, varEloB: varEloB };
 
-        await this.prisma.user.update({
-            where: { id: this.dataGamesPlaying[gameIndex].idPlayerA },
-            data: {
-                elo: won ? { increment: varEloA } : { decrement: -varEloA },
-            },
-        });
+        if (this.dataGamesPlaying[gameIndex].idPlayerA !== -1) {
+            await this.prisma.user.update({
+                where: { id: this.dataGamesPlaying[gameIndex].idPlayerA },
+                data: {
+                    elo: won ? { increment: varEloA } : { decrement: -varEloA },
+                },
+            });
+        }
 
-        await this.prisma.user.update({
-            where: { id: this.dataGamesPlaying[gameIndex].idPlayerB },
-            data: {
-                elo: won ? { decrement: -varEloB } : { increment: varEloB },
-            },
-        });
+        if (this.dataGamesPlaying[gameIndex].idPlayerB !== -1) {
+            await this.prisma.user.update({
+                where: { id: this.dataGamesPlaying[gameIndex].idPlayerB },
+                data: {
+                    elo: won ? { decrement: -varEloB } : { increment: varEloB },
+                },
+            });
+        }
 
         this.dataGamesPlaying.splice(gameIndex, 1);
 
@@ -161,13 +248,13 @@ export class GamesService {
         }
     }
 
-    async transformListReadable(tab: any) {
+    async transformListReadable(tab: Games[]) {
         const tabId: number[] = [];
         tab.forEach((element) => {
-            if (!tabId.includes(element.playerA)) {
+            if (element.playerA && !tabId.includes(element.playerA)) {
                 tabId.push(element.playerA);
             }
-            if (!tabId.includes(element.playerB)) {
+            if (element.playerB && !tabId.includes(element.playerB)) {
                 tabId.push(element.playerB);
             }
         });
@@ -253,11 +340,13 @@ export class GamesService {
             eloStart: 0,
             score: 0,
         };
-        const user = users.find((user) => user.id === userId);
+		let user = null; 
+		if (userId)
+        	user = users.find((user) => user.id === userId);
 
-        formatedUser.id = userId;
-        formatedUser.nickname = user.nickname;
-        formatedUser.elo = user.elo;
+        formatedUser.id = userId ? userId : -1;
+        formatedUser.nickname = user? user.nickname : 'anonymous';
+        formatedUser.elo = user ? user.elo : 1000;
         formatedUser.eloStart = initElo;
         formatedUser.score = score;
         return formatedUser;
@@ -275,124 +364,178 @@ export class GamesService {
         let gamesPlayerB: Games[] = [];
 
         try {
-            playerA = await this.prisma.user.findUnique({
-                where: { id: game.playerA },
-            });
-            playerB = await this.prisma.user.findUnique({
-                where: { id: game.playerB },
-            });
-            gamesPlayerA = await this.getGamesPlayer(playerA.id, -1, true);
-            gamesPlayerB = await this.getGamesPlayer(playerB.id, -1, true);
+            if (game.playerA) {
+                playerA = await this.prisma.user.findUnique({
+                    where: { id: game.playerA },
+                });
+            }
+
+            if (game.playerB) {
+                playerB = await this.prisma.user.findUnique({
+                    where: { id: game.playerB },
+                });
+            }
+
+            if (playerA)
+                gamesPlayerA = await this.getGamesPlayer(playerA.id, -1, true);
+            if (playerB)
+                gamesPlayerB = await this.getGamesPlayer(playerB.id, -1, true);
         } catch (error) {
             throw new ForbiddenException('User does not exists');
             return;
         }
 
         //achievement ELO
-        achievement = this.achievementElo(playerA);
-        achievement && achievementsA.push(achievement);
-        achievement = this.achievementElo(playerB);
-        achievement && achievementsB.push(achievement);
+        if (playerA) {
+            achievement = this.achievementElo(playerA);
+            achievement && achievementsA.push(achievement);
+        }
+
+        if (playerB) {
+            achievement = this.achievementElo(playerB);
+            achievement && achievementsB.push(achievement);
+        }
 
         //achievement score
         achievNb = this.achievementScoreTakeAll(game);
-        achievNb === 1 && achievementsA.push('classic-boss');
-        achievNb === 2 && achievementsB.push('classic-boss');
+        if (playerA) {
+			achievNb === 1 && achievementsA.push('classic-boss');
+        }
+        if (playerB) {
+			achievNb === 2 && achievementsB.push('classic-boss');
+		}
+        
 
         //achievement time < 60sec
         achievNb = this.achievementClassicTime(game);
-        achievNb === 1 && achievementsA.push('classic-win-time');
-        achievNb === 2 && achievementsB.push('classic-win-time');
+        if (playerA) {
+			achievNb === 1 && achievementsA.push('classic-win-time');
+        }
+        
+        if (playerB) {
+			achievNb === 2 && achievementsB.push('classic-win-time');
+        }
+        
 
         //achievement Marathon
         achievement = this.achievementMarathon(game);
-        achievement && achievementsA.push(achievement);
-        achievement && achievementsB.push(achievement);
+        if (playerA) {
+            achievement && achievementsA.push(achievement);
+        }
+
+        if (playerB) {
+            achievement && achievementsB.push(achievement);
+        }
 
         //achievement based on games history
         //played 1 game in classic mode
-        achievBool = this.achievementNbGames(
-            gamesPlayerA,
-            0,
-            playerA.id,
-            1,
-            false,
-        );
-        achievBool && achievementsA.push('classic-1');
-        achievBool = this.achievementNbGames(
-            gamesPlayerB,
-            0,
-            playerB.id,
-            1,
-            false,
-        );
-        achievBool && achievementsB.push('classic-1');
+        if (playerA) {
+            achievBool = this.achievementNbGames(
+                gamesPlayerA,
+                0,
+                playerA.id,
+                1,
+                false,
+            );
+            achievBool && achievementsA.push('classic-1');
+        }
+
+        if (playerB) {
+            achievBool = this.achievementNbGames(
+                gamesPlayerB,
+                0,
+                playerB.id,
+                1,
+                false,
+            );
+            achievBool && achievementsB.push('classic-1');
+        }
 
         //played 5 game in classic mode
-        achievBool = this.achievementNbGames(
-            gamesPlayerA,
-            0,
-            playerA.id,
-            5,
-            false,
-        );
-        achievBool && achievementsA.push('classic-5');
-        achievBool = this.achievementNbGames(
-            gamesPlayerB,
-            0,
-            playerB.id,
-            5,
-            false,
-        );
-        achievBool && achievementsB.push('classic-5');
+        if (playerA) {
+            achievBool = this.achievementNbGames(
+                gamesPlayerA,
+                0,
+                playerA.id,
+                5,
+                false,
+            );
+            achievBool && achievementsA.push('classic-5');
+        }
+
+        if (playerB) {
+            achievBool = this.achievementNbGames(
+                gamesPlayerB,
+                0,
+                playerB.id,
+                5,
+                false,
+            );
+            achievBool && achievementsB.push('classic-5');
+        }
 
         //won 1 game in classic mode
-        achievBool = this.achievementNbGames(
-            gamesPlayerA,
-            0,
-            playerA.id,
-            1,
-            true,
-        );
-        achievBool && achievementsA.push('classic-win-1');
-        achievBool = this.achievementNbGames(
-            gamesPlayerB,
-            0,
-            playerB.id,
-            1,
-            true,
-        );
-        achievBool && achievementsB.push('classic-win-1');
+        if (playerA) {
+            achievBool = this.achievementNbGames(
+                gamesPlayerA,
+                0,
+                playerA.id,
+                1,
+                true,
+            );
+            achievBool && achievementsA.push('classic-win-1');
+        }
+
+        if (playerB) {
+            achievBool = this.achievementNbGames(
+                gamesPlayerB,
+                0,
+                playerB.id,
+                1,
+                true,
+            );
+            achievBool && achievementsB.push('classic-win-1');
+        }
 
         //won 5 game in classic mode
-        achievBool = this.achievementNbGames(
-            gamesPlayerA,
-            0,
-            playerA.id,
-            5,
-            true,
-        );
-        achievBool && achievementsA.push('classic-win-5');
-        achievBool = this.achievementNbGames(
-            gamesPlayerB,
-            0,
-            playerB.id,
-            5,
-            true,
-        );
-        achievBool && achievementsB.push('classic-win-5');
+        if (playerA) {
+            achievBool = this.achievementNbGames(
+                gamesPlayerA,
+                0,
+                playerA.id,
+                5,
+                true,
+            );
+            achievBool && achievementsA.push('classic-win-5');
+        }
+
+        if (playerB) {
+            achievBool = this.achievementNbGames(
+                gamesPlayerB,
+                0,
+                playerB.id,
+                5,
+                true,
+            );
+            achievBool && achievementsB.push('classic-win-5');
+        }
 
         try {
-            await this.saveAchievements(
-                achievementsA,
-                playerA.achievements,
-                playerA.id,
-            );
-            await this.saveAchievements(
-                achievementsB,
-                playerB.achievements,
-                playerB.id,
-            );
+            if (playerA) {
+                await this.saveAchievements(
+                    achievementsA,
+                    playerA.achievements,
+                    playerA.id,
+                );
+            }
+
+            if (playerB) {
+                await this.saveAchievements(
+                    achievementsB,
+                    playerB.achievements,
+                    playerB.id,
+                );
+            }
         } catch (error) {
             return;
         }

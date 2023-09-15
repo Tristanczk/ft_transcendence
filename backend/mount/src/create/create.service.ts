@@ -331,6 +331,7 @@ export class CreateService {
                 createdAt: created,
                 finishedAt: finished,
                 won: won,
+                aborted: false,
                 scoreA: scoreA,
                 scoreB: scoreB,
                 varEloA: variation.varEloA,

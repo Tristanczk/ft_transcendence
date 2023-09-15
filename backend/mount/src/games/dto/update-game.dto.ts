@@ -12,4 +12,8 @@ export class updateGameDto {
     @IsNotEmpty()
     @IsBoolean()
     won: boolean;
+
+    @IsNotEmpty()
+    @IsBoolean()
+    aborted: boolean
 }
