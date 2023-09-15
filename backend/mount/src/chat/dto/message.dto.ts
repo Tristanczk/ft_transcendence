@@ -4,12 +4,6 @@ export interface CreateMessageDto {
 	message: string;
 }
 
-export interface DeleteMessageDto {
-	idChannel: number;
-	idSender: number;
-	idMessage: number;
-}
-
 export interface MessageDto {
 	id: number;
 	idChannel: number;

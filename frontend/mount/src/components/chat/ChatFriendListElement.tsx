@@ -3,18 +3,24 @@ import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
 import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
+import { useEffect, useState } from 'react';
 
 export default function ChatFriendListElement({
     friend,
     setChannel,
     setCurrentFriend,
+    notifications,
+    setNotifications,
 }: {
     friend: UserSimplified;
     setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified) => void;
+    notifications: number[];
+    setNotifications: (notifications: number[]) => void;
 }) {
     const { user } = useUserContext();
     const authAxios = useAuthAxios();
+    const [channelId, setChannelId] = useState<number>(0);
 
     const fetchChannel = async (IdFriend: number) => {
         console.log('fetching channels for', user?.id, IdFriend);
@@ -25,10 +31,28 @@ export default function ChatFriendListElement({
                 withCredentials: true,
             },
         );
-        console.log('fetching channel response', response); 
+        console.log('fetching channel response', response);
         setChannel(response.data.id);
+        setNotifications(notifications.filter((id) => id !== response.data.id));
+        if (channelId === 0) setChannelId(response.data.id);
         setCurrentFriend(friend);
     };
+
+    const fetchChannelId = async (IdFriend: number) => {
+        const response = await authAxios.get(
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelByUsers`,
+            {
+                params: { idAdmin: user?.id, idUser: IdFriend },
+                withCredentials: true,
+            },
+        );
+        setChannelId(response.data.id);
+    };
+
+
+    useEffect(() => {
+        fetchChannelId(friend.id);
+    }, [notifications]);
 
     return (
         <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
@@ -46,12 +70,16 @@ export default function ChatFriendListElement({
                     </div>
                 </div>
             </div>
+
             <button
                 onClick={() => {
                     fetchChannel(friend.id);
                 }}
             >
                 {' '}
+                {notifications && notifications.includes(channelId) && (
+                    <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+                )}
                 <svg
                     className="text-blue-600 w-6 h-6"
                     xmlns="http://www.w3.org/2000/svg"

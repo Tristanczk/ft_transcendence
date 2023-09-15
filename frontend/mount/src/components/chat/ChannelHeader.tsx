@@ -1,9 +1,4 @@
-import { Link } from 'react-router-dom';
-import { UserSimplified } from '../../types';
-import ImageFriend from '../dashboard/friends/ImgFriend';
-import { useEffect, useState } from 'react';
 import { ChannelProps } from './Messages';
-import { useAuthAxios } from '../../context/AuthAxiosContext';
 
 export default function ChannelHeader({
     channel,

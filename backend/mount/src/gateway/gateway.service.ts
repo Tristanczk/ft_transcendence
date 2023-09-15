@@ -14,6 +14,7 @@ import { CreateMessageDto } from 'src/chat/dto/message.dto';
 import Game from './Game';
 import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
+import { IndivUser, ResponseCheckConnexion, Users } from './gateway.users';
 import {
     BattlePlayer,
     BattlePlayers,
@@ -22,7 +23,6 @@ import {
     GameInfo,
     UpdateGameEvent,
 } from 'src/shared/game_info';
-import { IndivUser, ResponseCheckConnexion, Users } from './gateway.users';
 import { GamesService } from 'src/games/games.service';
 
 const ID_SIZE = 6;

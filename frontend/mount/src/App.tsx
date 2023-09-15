@@ -43,7 +43,12 @@ const App: React.FC = () => {
                             gameId={gameId}
                             setGameId={setGameId}
                         />
-                        {<ChatPage isChatVisible={isChatVisible} />}
+                        {
+                            <ChatPage
+                                isChatVisible={isChatVisible}
+                                toggleChatVisibility={toggleChatVisibility}
+                            />
+                        }
                         <Routes>
                             <Route
                                 path="/"
