@@ -2,6 +2,7 @@ export type GameExports = {
     gameId: number;
     date: Date;
     duration: number;
+    finished: boolean;
     mode: number;
     won: boolean;
     aborted: boolean;

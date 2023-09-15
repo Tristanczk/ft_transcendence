@@ -273,6 +273,7 @@ export class GamesService {
                 gameId: -1,
                 date: new Date(),
                 duration: 0,
+                finished: true,
                 mode: 0,
                 won: true,
                 aborted: false,
@@ -288,6 +289,7 @@ export class GamesService {
             newElem.mode = elem.mode;
             newElem.won = elem.won;
             newElem.aborted = elem.aborted;
+            newElem.finished = elem.finished;
             newElem.playerA = this.getUserFormat(
                 elem.playerA,
                 users,

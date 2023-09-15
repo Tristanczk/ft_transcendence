@@ -88,6 +88,9 @@ function ShowGameElem({ game, userId }: ShowGameProps) {
     )
         classStyle =
             'bg-emerald-100 dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 flex items-center';
+    if (game.finished === false)
+        classStyle =
+            'bg-amber-300 dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 flex items-center';
     return (
         <div className={classStyle}>
             <div className="flex-shrink-0">
@@ -156,7 +159,8 @@ function ShowGameElem({ game, userId }: ShowGameProps) {
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                     <span className="">
-                        Game played on{' '}
+                        {game.finished === true ? ('Game played on') : ('Game in play on')}
+                        {' '}
                         {format(new Date(game.date), 'MMM d, yyyy')}
                     </span>
                 </p>
