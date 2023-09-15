@@ -53,6 +53,7 @@ class Game {
 	playerB: IndivUser | null;
 	sidePlayerA: number; //to find the user
 	sidePlayerB: number; //to find the user
+    timeUserLeave: number;
     private lastUpdate: number;
 
     constructor(gameId: string, gameMode: GameMode, firstPlayer: string) {
@@ -73,6 +74,7 @@ class Game {
         }
 		this.sidePlayerA = 0;
 		this.sidePlayerB = 0;
+        this.timeUserLeave = 0;
         this.addPlayer(firstPlayer, true);
 		this.idGameStat = -1;
 		this.playerA = null;

@@ -99,3 +99,10 @@ export type GameInfo = {
           objects: BattleGameObjects;
       }
 );
+
+export type UpdateGameEvent = {
+    gameId: string;
+    message: string;
+    timeLeft?: number;
+    from?: string;
+}
