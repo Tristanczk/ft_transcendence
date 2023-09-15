@@ -4,6 +4,7 @@ export type GameExports = {
     duration: number;
     mode: number;
     won: boolean;
+    aborted: boolean;
     playerA: UserGame | null;
     playerB: UserGame | null;
 };

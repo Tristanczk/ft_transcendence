@@ -45,6 +45,7 @@ export type GameImports = {
     duration: number;
     mode: number;
     won: boolean;
+    aborted: boolean;
     playerA: UserGame;
     playerB: UserGame;
 };

@@ -34,7 +34,7 @@ function HistoryFive({ user }: PresentationUserProps) {
             // console.log(response.data);
             return response.data;
         } catch (error) {
-            console.error(error);
+            // console.error(error);
         }
     }
 
@@ -167,7 +167,7 @@ function HistoryFive({ user }: PresentationUserProps) {
                                     <div className="flex-1 min-w-0 inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
                                         <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                                             {game.playerA?.score}/
-                                            {game.playerB?.score}
+                                            {game.playerB?.score} {game.aborted && ('(A)')}
                                         </p>
                                     </div>
                                     <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">

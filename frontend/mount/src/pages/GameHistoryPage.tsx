@@ -151,6 +151,7 @@ function ShowGameElem({ game, userId }: ShowGameProps) {
                               (game.duration % 60) +
                               's'
                             : (game.duration > 0 ? game.duration : 0) + 's'}
+                            {game.aborted && ('(game aborted)')}
                     </span>
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
