@@ -20,6 +20,7 @@ import {
     ClassicMayhemPlayer,
     ClassicMayhemPlayers,
     GameInfo,
+    UpdateGameEvent,
 } from 'src/shared/game_info';
 import { IndivUser, ResponseCheckConnexion, Users } from './gateway.users';
 import { GamesService } from 'src/games/games.service';
@@ -231,18 +232,15 @@ export class GatewayService
 
     @SubscribeMessage('quitGame')
     async handleQuitGame(client: Socket, data: string) {
-        console.log('end game : ' + data);
         if (!this.games[data])
             return { gameId: data, message: 'invalid gameId' };
         const game = this.games[data];
         const userAborting: IndivUser = this.users.getIndivUserBySocketId(
             client.id,
         );
-		console.log('try user asking')
         if (!userAborting) return { gameId: data, message: 'invalid user' };
-		console.log('try rights socket:' + data)
-		console.log(game.playerA.sockets)
-		console.log(game.playerB.sockets)
+        console.log(game.playerA.sockets);
+        console.log(game.playerB.sockets);
         if (
             !(
                 game.playerA.sockets.includes(client.id) ||
@@ -251,21 +249,96 @@ export class GatewayService
         ) {
             return { gameId: data, message: 'invalid rights for user' };
         }
-		console.log('try mode')
-		//si game existe + si user existe + si client a les droits, alors on aborte le jeu
-		if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
-			if (game.playerA.sockets.includes(client.id)) {
-				this.handleEndGame(game, true, 0);
-			}
-			else if (game.playerB.sockets.includes(client.id)) {
-				this.handleEndGame(game, true, 1);
-			}
-			game.info.state = 'finished';
-			console.log('game finished : ' + data)
-			return { gameId: data, message: 'game aborted' };
-		}
+        console.log('try mode');
+        //si game existe + si user existe + si client a les droits, alors on aborte le jeu
+        if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
+            if (game.playerA.sockets.includes(client.id)) {
+                this.handleEndGame(game, true, 0);
+            } else if (game.playerB.sockets.includes(client.id)) {
+                this.handleEndGame(game, true, 1);
+            }
+            game.info.state = 'finished';
+            console.log('game finished : ' + data);
+            const returnData: UpdateGameEvent = {
+                gameId: data,
+                message: 'game aborted by user',
+                from: client.id,
+            };
+            this.emitUpdateToPlayers(game, 'eventGame', returnData);
+            return { gameId: data, message: 'game aborted' };
+        }
 
-		return { gameId: data, message: 'game not aborted' };
+        return { gameId: data, message: 'game not aborted' };
+    }
+
+    private timeDisconnection: number = 5000;
+    @Interval(1000)
+    checkUserStillPlaying() {
+        for (const game of Object.values(this.games)) {
+            if (game.info.state !== 'finished') {
+                if (
+                    game.info.mode === 'classic' ||
+                    game.info.mode === 'mayhem'
+                ) {
+                    if (
+                        (game.playerA && game.playerA.isConnected === false) ||
+                        (game.playerB && game.playerB.isConnected === false)
+                    ) {
+                        let returnData: UpdateGameEvent = {
+                            gameId: game.id,
+                            message: '',
+                        };
+                        const timeNow: number = Date.now();
+                        //check si premiere fois
+                        if (game.timeUserLeave === 0) {
+                            game.timeUserLeave = Date.now();
+                            returnData.message = 'user leave';
+                            returnData.timeLeft = this.timeDisconnection;
+                        } else if (
+                            timeNow - game.timeUserLeave <
+                            this.timeDisconnection
+                        ) {
+                            //faire le décompte
+                            returnData.message = 'user leave';
+                            returnData.timeLeft =
+                                this.timeDisconnection -
+                                (timeNow - game.timeUserLeave);
+                        } else {
+                            //end game
+                            returnData.message = 'user left';
+                            returnData.timeLeft = 0;
+
+                            if (
+                                game.playerA &&
+                                game.playerA.isConnected === false &&
+                                game.playerB &&
+                                game.playerB.isConnected
+                            ) {
+                                this.handleEndGame(game, true, 0);
+                            } else if (
+                                game.playerB &&
+                                game.playerB.isConnected === false &&
+                                game.playerA &&
+                                game.playerA.isConnected
+                            ) {
+                                this.handleEndGame(game, true, 1);
+                            }
+                            game.info.state = 'finished';
+                            console.log('game finished : ' + game.id);
+                        }
+
+                        this.emitUpdateToPlayers(game, 'eventGame', returnData);
+                    } else if (game.timeUserLeave !== 0) {
+                        game.timeUserLeave = 0;
+                        const returnData: UpdateGameEvent = {
+                            gameId: game.id,
+                            message: 'user back',
+                        };
+                        this.emitUpdateToPlayers(game, 'eventGame', returnData);
+                    }
+                }
+            }
+        }
     }
 
     @SubscribeMessage('leavePage')
@@ -339,16 +412,18 @@ export class GatewayService
                 if (retourUpdate === 'finished') {
                     this.handleEndGame(game, true, -1);
                 }
-                this.emitUpdateToPlayers(game);
+                this.emitUpdateToPlayers(game, 'updateGameInfo', game.info);
             }
         }
     }
 
     // /!\ /!\ /!\ a retravailler pour inclure le mode battle /!\ /!\ /!\
-    emitUpdateToPlayers(game: Game) {
+    emitUpdateToPlayers(game: Game, canal: string, dataToTransfer: any) {
         if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
-            if (game.playerA) this.emitUpdateToPlayer(game, game.playerA);
-            if (game.playerB) this.emitUpdateToPlayer(game, game.playerB);
+            if (game.playerA)
+                this.emitUpdateToPlayer(game.playerA, canal, dataToTransfer);
+            if (game.playerB)
+                this.emitUpdateToPlayer(game.playerB, canal, dataToTransfer);
         } else {
             for (const player of game.info.players) {
                 if (player) {
@@ -358,13 +433,13 @@ export class GatewayService
         }
     }
 
-    emitUpdateToPlayer(game: Game, player: IndivUser) {
+    emitUpdateToPlayer(player: IndivUser, canal: string, dataToTransfer: any) {
         for (const socketId of player.sockets) {
-            this.server.to(socketId).emit('updateGameInfo', game.info);
+            this.server.to(socketId).emit(canal, dataToTransfer);
         }
     }
 
-	//aborted: -1: classic ending, 0: aborted by A, 1: aborted by B
+    //aborted: -1: classic ending, 0: aborted by A, 1: aborted by B
     async handleEndGame(game: Game, update: boolean, aborted: number) {
         if (!(game.info.mode === 'classic' || game.info.mode === 'mayhem'))
             return;
@@ -384,8 +459,8 @@ export class GatewayService
                 scoreB = players[0].score;
             }
             result = scoreA > scoreB ? true : false;
-			if (aborted === 0) result = false;
-			else if (aborted === 1) result = true;
+            if (aborted === 0) result = false;
+            else if (aborted === 1) result = true;
 
             try {
                 await this.gamesService.updateGame(game.idGameStat, {
