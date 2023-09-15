@@ -17,6 +17,7 @@ export type UserSimplified = {
     elo: number;
     avatarPath: any;
     isConnected: boolean;
+    isPlaying: boolean;
     isYourFriend?: boolean;
 };
 

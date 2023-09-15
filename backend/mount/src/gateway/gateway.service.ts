@@ -189,6 +189,23 @@ export class GatewayService
                 idPlayerB,
                 mode,
             );
+
+        if (idPlayerA !== -1) {
+            this.server.emit('updateStatus', {
+                idUser: idPlayerA,
+                type: 'startPlaying',
+            });
+            game.playerA.updateStatusUserPlayingDB(true);
+        }
+            
+        if (idPlayerB !== -1) {
+            this.server.emit('updateStatus', {
+                idUser: idPlayerB,
+                type: 'startPlaying',
+            });
+            game.playerB.updateStatusUserPlayingDB(true);
+        }
+            
     }
 
     liaiseGameToPlayer(
@@ -441,6 +458,17 @@ export class GatewayService
 
     //aborted: -1: classic ending, 0: aborted by A, 1: aborted by B
     async handleEndGame(game: Game, update: boolean, aborted: number) {
+        if (game.playerA && game.playerA.userId !== -1)
+            this.server.emit('updateStatus', {
+                idUser: game.playerA.userId,
+                type: 'endPlaying',
+            });
+        if (game.playerB && game.playerB.userId !== -1)
+            this.server.emit('updateStatus', {
+                idUser: game.playerB.userId,
+                type: 'endPlaying',
+            });
+
         if (!(game.info.mode === 'classic' || game.info.mode === 'mayhem'))
             return;
 
@@ -475,10 +503,14 @@ export class GatewayService
         if (game.playerA) {
             game.playerA.isPlaying = false;
             game.playerA.idGamePlaying = null;
+            if (game.playerA.userId !== -1)
+                game.playerA.updateStatusUserPlayingDB(false);
         }
         if (game.playerB) {
             game.playerB.isPlaying = false;
             game.playerB.idGamePlaying = null;
+            if (game.playerB.userId !== -1)
+                game.playerB.updateStatusUserPlayingDB(false);
         }
         delete this.games[game.id];
     }

@@ -24,6 +24,7 @@ model User {
 
     twoFactorAuthentication Boolean @default(false)
     isConnected             Boolean @default(false)
+    isPlaying               Boolean @default(false)
     twoFactorSecret         String?
 
     gamesasPlayerA Games[] @relation("PlayerAGames")
