@@ -84,9 +84,8 @@ export class Users {
         return null;
     }
 
-	getIndivUserBySocketId(socketId: string): IndivUser | null {
-		if (this.socketIds[socketId])
-			return this.socketIds[socketId].indivUser;
+    getIndivUserBySocketId(socketId: string): IndivUser | null {
+        if (this.socketIds[socketId]) return this.socketIds[socketId].indivUser;
         return null;
     }
 
@@ -163,7 +162,7 @@ export class IndivUser {
     isSignedIn: boolean;
     isConnected: boolean;
     isPlaying: boolean;
-	idGamePlaying: string;
+    idGamePlaying: string;
     sockets: string[];
     lastPingTime: number;
 
@@ -176,12 +175,12 @@ export class IndivUser {
         this.isConnected = false;
         this.isSignedIn = userId === -1 ? false : true;
         this.isPlaying = false;
-		this.idGamePlaying = null;
+        this.idGamePlaying = null;
         this.sockets = [socketId];
         this.lastPingTime = Date.now();
 
-		console.log('new user, sockets for ' + this.userId);
-		console.log(this.sockets)
+        console.log('new user, sockets for ' + this.userId);
+        console.log(this.sockets);
     }
 
     //return true if need to emit message
@@ -219,10 +218,9 @@ export class IndivUser {
     }
 
     addNewSocketId(socketId: string): boolean {
-		if (!this.sockets.includes(socketId))
-        	this.sockets.push(socketId);
-		console.log('sockets for ' + this.userId);
-		console.log(this.sockets)
+        if (!this.sockets.includes(socketId)) this.sockets.push(socketId);
+        console.log('sockets for ' + this.userId);
+        console.log(this.sockets);
         if (this.isConnected) return false;
         return true;
     }
@@ -244,8 +242,8 @@ export class IndivUser {
         return false;
     }
 
-	setIsPlaying(gameId: string) {
-		this.isPlaying = true;
-		this.idGamePlaying = gameId;
-	}
+    setIsPlaying(gameId: string) {
+        this.isPlaying = true;
+        this.idGamePlaying = gameId;
+    }
 }

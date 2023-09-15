@@ -128,6 +128,22 @@ export class GatewayService
     private spectators: Record<string, Set<string>> = {};
     private spectating: Record<string, string> = {};
 
+    getGameStatus(userId: number): { status: string; gameId: string } {
+        const client: IndivUser | null = this.users.getIndivUserById(userId);
+        if (!client) {
+            return { status: 'not connected', gameId: null };
+        }
+        const game = this.games[client.idGamePlaying];
+        if (client.isPlaying) {
+            if (game.info.state === 'waiting') {
+                return { status: 'waiting', gameId: client.idGamePlaying };
+            } else {
+                return { status: 'playing', gameId: client.idGamePlaying };
+            }
+        }
+        return { status: 'not playing', gameId: null };
+    }
+
     @SubscribeMessage('joinGame')
     async handleJoinGame(client: Socket, data: JoinGameType) {
         const gameMode: string = data.mode;
@@ -141,11 +157,21 @@ export class GatewayService
         }
         console.log('player ' + playerId + ' want to play');
         if (currentClient.isPlaying) {
-            return {
-                error: `You are already in game ${currentClient.idGamePlaying}`,
-                errorCode: 'alreadyInGame',
-                gameId: currentClient.idGamePlaying,
-            };
+            if (
+                this.games[currentClient.idGamePlaying].info.state === 'waiting'
+            ) {
+                return {
+                    error: `You are already in matchmaking for game ${currentClient.idGamePlaying} in another tab`,
+                    errorCode: 'alreadyInMatchmaking',
+                    gameId: currentClient.idGamePlaying,
+                };
+            } else {
+                return {
+                    error: `You are already in game ${currentClient.idGamePlaying}`,
+                    errorCode: 'alreadyInGame',
+                    gameId: currentClient.idGamePlaying,
+                };
+            }
         }
         if (!isGameMode(gameMode)) {
             return {
@@ -238,11 +264,11 @@ export class GatewayService
         const userAborting: IndivUser = this.users.getIndivUserBySocketId(
             client.id,
         );
-		console.log('try user asking')
+        console.log('try user asking');
         if (!userAborting) return { gameId: data, message: 'invalid user' };
-		console.log('try rights socket:' + data)
-		console.log(game.playerA.sockets)
-		console.log(game.playerB.sockets)
+        console.log('try rights socket:' + data);
+        console.log(game.playerA.sockets);
+        console.log(game.playerB.sockets);
         if (
             !(
                 game.playerA.sockets.includes(client.id) ||
@@ -251,21 +277,20 @@ export class GatewayService
         ) {
             return { gameId: data, message: 'invalid rights for user' };
         }
-		console.log('try mode')
-		//si game existe + si user existe + si client a les droits, alors on aborte le jeu
-		if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
-			if (game.playerA.sockets.includes(client.id)) {
-				this.handleEndGame(game, true, 0);
-			}
-			else if (game.playerB.sockets.includes(client.id)) {
-				this.handleEndGame(game, true, 1);
-			}
-			game.info.state = 'finished';
-			console.log('game finished : ' + data)
-			return { gameId: data, message: 'game aborted' };
-		}
+        console.log('try mode');
+        //si game existe + si user existe + si client a les droits, alors on aborte le jeu
+        if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
+            if (game.playerA.sockets.includes(client.id)) {
+                this.handleEndGame(game, true, 0);
+            } else if (game.playerB.sockets.includes(client.id)) {
+                this.handleEndGame(game, true, 1);
+            }
+            game.info.state = 'finished';
+            console.log('game finished : ' + data);
+            return { gameId: data, message: 'game aborted' };
+        }
 
-		return { gameId: data, message: 'game not aborted' };
+        return { gameId: data, message: 'game not aborted' };
     }
 
     @SubscribeMessage('leavePage')
@@ -364,7 +389,7 @@ export class GatewayService
         }
     }
 
-	//aborted: -1: classic ending, 0: aborted by A, 1: aborted by B
+    //aborted: -1: classic ending, 0: aborted by A, 1: aborted by B
     async handleEndGame(game: Game, update: boolean, aborted: number) {
         if (!(game.info.mode === 'classic' || game.info.mode === 'mayhem'))
             return;
@@ -384,8 +409,8 @@ export class GatewayService
                 scoreB = players[0].score;
             }
             result = scoreA > scoreB ? true : false;
-			if (aborted === 0) result = false;
-			else if (aborted === 1) result = true;
+            if (aborted === 0) result = false;
+            else if (aborted === 1) result = true;
 
             try {
                 await this.gamesService.updateGame(game.idGameStat, {

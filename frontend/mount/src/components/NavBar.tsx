@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { useUserContext } from '../context/UserContext';
@@ -6,6 +6,10 @@ import ImageFriend from './dashboard/friends/ImgFriend';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { useWindowSize } from 'usehooks-ts';
 import { NAVBAR_HEIGHT } from '../shared/misc';
+import { WebsocketContext } from '../context/WebsocketContext';
+import axios from 'axios';
+import { set } from 'date-fns';
+import { is } from 'date-fns/locale';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -201,13 +205,30 @@ const NavBar = ({
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useUserContext();
+    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        setGameId(undefined);
-    }, [user]);
+    useEffect(
+        () => () => {
+            const getGameStatus = async () => {
+                console.log('checking game status', user!.id);
+                const response = await axios.get(
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/gate/gameStatus/${user?.id}`,
+                    { withCredentials: true },
+                );
+                console.log('status', response.data.status);
+                if (response.data.status === 'playing') {
+                    setGameId(response.data.gameId);
+                    console.log('gameId', response.data.gameId);
+                }
+                setIsLoading(false);
+            };
+            if (user) getGameStatus();
+            else setIsLoading(false);
+        },
+        [user, setGameId, isLoading],
+    );
 
     const handleRejoin = () => {
-        //TO DO: check if game is still available, if yes redirect, if no error message
         navigate(`/game/${gameId}`);
     };
 
