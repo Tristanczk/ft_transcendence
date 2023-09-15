@@ -6,10 +6,14 @@ import {
 import { GetAllUsersResponseDto } from '../friends/dto/get-all-users.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { FriendsJson } from './friends.type';
+import { GatewayService } from 'src/gateway/gateway.service';
 
 @Injectable()
 export class FriendsService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private gateway: GatewayService,
+    ) {}
 
     async getAllFriends(userId: number): Promise<GetAllUsersResponseDto[]> {
         const users = await this.prisma.user.findMany();
@@ -54,8 +58,16 @@ export class FriendsService {
             if (!retour) {
                 throw new BadRequestException(`Error updating database`);
             }
+
+            const user = this.gateway.users.getIndivUserById(userId);
+            if (user) {
+                user.sockets.forEach((socket) => {
+                    this.gateway.server.to(socket).emit('reloadfriend');
+                });
+            }
+        
         } catch (error) {
-            return ;
+            return;
         }
     }
 

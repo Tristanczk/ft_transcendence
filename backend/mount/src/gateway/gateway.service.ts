@@ -514,15 +514,4 @@ export class GatewayService
         }
         delete this.games[game.id];
     }
-
-    @SubscribeMessage('message')
-    handleMessage(@MessageBody() messageBody: CreateMessageDto) {
-        /*
-        get all user of messageBody.idChannel
-        for each user
-            for socket in user
-                this.socket.to(userid).emit('message', messageBody)
-        */
-        console.log(messageBody);
-    }
 }

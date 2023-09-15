@@ -132,14 +132,14 @@ function ChatPage({
         else setMessages([]);
         fetchChannel();
         setChannelUsers([]);
-    }, [channel, currentFriend, channelListSelected]);
+    }, [channel, currentFriend, channelListSelected]); //friendsList but it breaks the chat settings
 
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
             console.log('received message', message);
             if (!notifications.includes(message.idChannel)) {
                 setNotifications((oldNotifications) => [
-                    ...oldNotifications,
+                    ...oldNotifications,    
                     message.idChannel,
                 ]);
             }
@@ -148,6 +148,7 @@ function ChatPage({
 
         socket.on('message', messageListener);
         socket.on('ban', () => setChannel(0));
+        socket.on('reloadfriends', () => fetchFriends());
 
         return () => {
             socket.off('message', messageListener);
