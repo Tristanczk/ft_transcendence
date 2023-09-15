@@ -123,9 +123,8 @@ export class GamesService {
                         UserB: { connect: { id: playerB.id } },
                     },
                 });
-            }
-			else {
-				newGame = await this.prisma.games.create({
+            } else {
+                newGame = await this.prisma.games.create({
                     data: {
                         finished: false,
                         finishedAt: new Date(),
@@ -140,7 +139,7 @@ export class GamesService {
                         mode: mode,
                     },
                 });
-			}
+            }
 
             const thisGame: CurrentGame = {
                 idGame: newGame.id,
@@ -169,6 +168,7 @@ export class GamesService {
                 varEloA: varElo.varEloA,
                 varEloB: varElo.varEloB,
                 won: body.won,
+                aborted: body.aborted,
             },
         });
         this.checkAchievements(retour);
@@ -273,8 +273,10 @@ export class GamesService {
                 gameId: -1,
                 date: new Date(),
                 duration: 0,
+                finished: true,
                 mode: 0,
                 won: true,
+                aborted: false,
                 playerA: null,
                 playerB: null,
             };
@@ -286,6 +288,8 @@ export class GamesService {
             );
             newElem.mode = elem.mode;
             newElem.won = elem.won;
+            newElem.aborted = elem.aborted;
+            newElem.finished = elem.finished;
             newElem.playerA = this.getUserFormat(
                 elem.playerA,
                 users,
@@ -340,12 +344,11 @@ export class GamesService {
             eloStart: 0,
             score: 0,
         };
-		let user = null; 
-		if (userId)
-        	user = users.find((user) => user.id === userId);
+        let user = null;
+        if (userId) user = users.find((user) => user.id === userId);
 
         formatedUser.id = userId ? userId : -1;
-        formatedUser.nickname = user? user.nickname : 'anonymous';
+        formatedUser.nickname = user ? user.nickname : 'anonymous';
         formatedUser.elo = user ? user.elo : 1000;
         formatedUser.eloStart = initElo;
         formatedUser.score = score;
@@ -399,23 +402,21 @@ export class GamesService {
         //achievement score
         achievNb = this.achievementScoreTakeAll(game);
         if (playerA) {
-			achievNb === 1 && achievementsA.push('classic-boss');
+            achievNb === 1 && achievementsA.push('classic-boss');
         }
         if (playerB) {
-			achievNb === 2 && achievementsB.push('classic-boss');
-		}
-        
+            achievNb === 2 && achievementsB.push('classic-boss');
+        }
 
         //achievement time < 60sec
         achievNb = this.achievementClassicTime(game);
         if (playerA) {
-			achievNb === 1 && achievementsA.push('classic-win-time');
+            achievNb === 1 && achievementsA.push('classic-win-time');
         }
-        
+
         if (playerB) {
-			achievNb === 2 && achievementsB.push('classic-win-time');
+            achievNb === 2 && achievementsB.push('classic-win-time');
         }
-        
 
         //achievement Marathon
         achievement = this.achievementMarathon(game);

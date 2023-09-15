@@ -34,7 +34,7 @@ function HistoryFive({ user }: PresentationUserProps) {
             // console.log(response.data);
             return response.data;
         } catch (error) {
-            console.error(error);
+            // console.error(error);
         }
     }
 
@@ -117,10 +117,32 @@ function HistoryFive({ user }: PresentationUserProps) {
                                         </p>
                                     </div>
                                     <div className="flex-1 min-w-0 items-center justify-center text-base font-semibold text-gray-900 dark:text-white">
-                                        {(game.playerA?.id === user?.id &&
+                                        {game.finished === false && (
+                                            <button className="text-white bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-orange-600 dark:hover:bg-orange-400 dark:focus:ring-orange-400">
+                                            <svg
+                                                className="w-2 h-2"
+                                                aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 14 14"
+                                            >
+                                                <path
+                                                    stroke="currentColor"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M7 1v12m6-6H1"
+                                                />
+                                            </svg>
+                                            <span className="sr-only">
+                                                Icon description
+                                            </span>
+                                        </button>
+                                        )}
+                                        {game.finished === true && ((game.playerA?.id === user?.id &&
                                             game.won) ||
                                         (game.playerB?.id === user?.id &&
-                                            !game.won) ? (
+                                            !game.won)) ? (
                                             <button className="text-white bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                                                 <svg
                                                     className="w-2 h-2"
@@ -141,7 +163,7 @@ function HistoryFive({ user }: PresentationUserProps) {
                                                     Icon description
                                                 </span>
                                             </button>
-                                        ) : (
+                                        ) : (game.finished === true && 
                                             <button className="text-white bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
                                                 <svg
                                                     className="w-2 h-2"
@@ -167,7 +189,7 @@ function HistoryFive({ user }: PresentationUserProps) {
                                     <div className="flex-1 min-w-0 inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
                                         <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                                             {game.playerA?.score}/
-                                            {game.playerB?.score}
+                                            {game.playerB?.score} {game.aborted && ('(A)')}
                                         </p>
                                     </div>
                                     <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">

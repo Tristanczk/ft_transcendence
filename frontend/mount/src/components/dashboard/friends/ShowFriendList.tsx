@@ -21,20 +21,13 @@ function ShowFriendList({
     handleDeleteFriendClick,
     currUserId,
 }: Props) {
-    let i: number = 0;
-    if (!friendsList)
-        return <div className="mb-6">No friends</div>;
-
-    const max: number = friendsList.length;
+    if (!friendsList) return <div className="mb-6">No friends</div>;
 
     return friendsList.length > 0 ? (
         <div className="bg-white">
             <ul className="flex flex-wrap my-6 justify-center divide-y divide-gray-200 dark:divide-gray-700">
                 {friendsList.map((friend, i) => (
-                    <li
-                        className={'w-full sm:w-1/2 lg:w-1/3 '}
-                        key={friend.id}
-                    >
+                    <li className={'w-full sm:w-1/2 lg:w-1/3 '} key={friend.id}>
                         <div className="relative p-4">
                             <div className="flex-shrink-0">
                                 <ImageFriend
@@ -54,6 +47,7 @@ function ShowFriendList({
                                     <ShowIsOnline
                                         userId={friend.id}
                                         initStatus={friend.isConnected}
+                                        playingStatus={friend.isPlaying}
                                     />
                                 </p>
                                 <p className="text-sm text-gray-500 truncate dark:text-gray-400">
