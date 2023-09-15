@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useUserContext } from '../../context/UserContext';
 import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
@@ -46,7 +47,17 @@ export default function Messages({
     setChannelUsers: (users: UserSimplified[]) => void;
 }) {
     const { user } = useUserContext();
-
+    const messageContainerRef = useRef<HTMLDivElement>(null);
+    
+    const groupedMessages = groupMessagesBySender(messages);
+    
+    useEffect(() => {
+        // Scroll to the bottom of the container
+        if (messageContainerRef.current) {
+            messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+        }
+    }, [groupedMessages]);
+    
     if (!messages) return <div></div>;
 
     function groupMessagesBySender(messages: MessageProps[]) {
@@ -76,8 +87,6 @@ export default function Messages({
         return groupedMessages;
     }
 
-    const groupedMessages = groupMessagesBySender(messages);
-    
     return (
         <div className="flex">
             {' '}
@@ -93,7 +102,8 @@ export default function Messages({
             />
             <div
                 id="messages"
-                className={`flex-grow flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip w-104 ${zIndexClass}`}
+                ref={messageContainerRef}
+                className={`flex-grow h-full flex flex-col space-y-4 p-3 overflow-y-auto scrolling-touch bg-white shadow-2xl overflow-clip w-104 ${zIndexClass}`}
                 style={{ height: '420px', marginLeft: '-69px' }}
             >
                 {groupedMessages.map(
