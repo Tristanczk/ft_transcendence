@@ -23,8 +23,8 @@ export default function SettingBar({
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     const [input, setInput] = useState<string>('');
-    const [formState, setFormState] = useState<'ban' | 'admin' | 'mute' | null>(null);
 
+    const [formState, setFormState] = useState<'ban' | 'admin' | 'mute' | null>(null);
     const [activeInput, setActiveInput] = useState<'password' | 'name' | null>(
         null,
     );

@@ -12,8 +12,7 @@ import { CreateMessageDto, MessageDto } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
 import { ChannelDto, ChannelIdDto, MuteUserDto } from './dto/channel.dto';
 import { GetChannelDto } from './dto/getchannel.dto';
-import { channel } from 'diagnostics_channel';
-import { EditUserDto } from 'src/user/dto';
+
 import { GatewayService } from 'src/gateway/gateway.service';
 import { UserSimplifiedDto } from './dto/usersimplifieddto';
 import { Interval } from '@nestjs/schedule';
