@@ -90,8 +90,6 @@ export default function Messages({
     return (
         <div className="flex">
             {' '}
-            {/* Parent container with relative positioning */}
-            {/* Sidebar content */}
             <SettingBar
                 currentChannel={currentChannel}
                 isSettingVisible={isSettingVisible}

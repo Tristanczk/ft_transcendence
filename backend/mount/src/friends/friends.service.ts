@@ -62,7 +62,14 @@ export class FriendsService {
             const user = this.gateway.users.getIndivUserById(userId);
             if (user) {
                 user.sockets.forEach((socket) => {
-                    this.gateway.server.to(socket).emit('reloadfriend');
+                    this.gateway.server.to(socket).emit('reloadfriends');
+                });
+            }
+
+            const friend = this.gateway.users.getIndivUserById(userId);
+            if (friend) {
+                friend.sockets.forEach((socket) => {
+                    this.gateway.server.to(socket).emit('reloadfriends');
                 });
             }
         
@@ -75,6 +82,21 @@ export class FriendsService {
         try {
             await this.deleteFriendFromList(userId, friendToDelete);
             await this.deleteFriendFromList(friendToDelete, userId);
+
+            const user = this.gateway.users.getIndivUserById(userId);
+            if (user) {
+                user.sockets.forEach((socket) => {
+                    this.gateway.server.to(socket).emit('reloadfriends');
+                });
+            }
+
+            const friend = this.gateway.users.getIndivUserById(friendToDelete);
+            if (friend) {
+                friend.sockets.forEach((socket) => {
+                    this.gateway.server.to(socket).emit('reloadfriends');
+                });
+            }
+
         } catch (error) {
             throw error;
         }

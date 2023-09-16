@@ -86,8 +86,7 @@ function ChatPage({
             setFriendsList(response.data);
         } catch (error) {
             console.error(error);
-            setAlertMessage('Failed to fetch friends. Please try again.');
-
+            //setAlertMessage('Failed to fetch friends. Please try again.');  it activate on first page load??
         }
     }, [authAxios]);
 
@@ -175,6 +174,11 @@ function ChatPage({
         socket.on('message', messageListener);
         socket.on('ban', () => setChannel(0));
         socket.on('reloadfriends', () => fetchFriends());
+        socket.on('reloadchannels', () => fetchChannels());
+        socket.on('signoutchat', () => {
+            setChannel(0);
+            toggleChatVisibility();
+        });
 
         return () => {
             socket.off('message', messageListener);

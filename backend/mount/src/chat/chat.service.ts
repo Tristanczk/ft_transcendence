@@ -38,6 +38,8 @@ export class ChatService {
             },
         });
 
+        this.gateway.server.emit('reloadchannels');
+
         return {
             idUser: createChannelDto.idUser,
             name: createChannelDto.name,
@@ -192,6 +194,9 @@ export class ChatService {
                         id: leaveChannel.id,
                     },
                 });
+                
+                this.gateway.server.emit('reloadchannels');
+
                 return updatedChannel;
             }
 
