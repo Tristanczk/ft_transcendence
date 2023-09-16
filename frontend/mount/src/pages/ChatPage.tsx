@@ -86,8 +86,7 @@ function ChatPage({
             setFriendsList(response.data);
         } catch (error) {
             console.error(error);
-            setAlertMessage('Failed to fetch friends. Please try again.');
-
+            //setAlertMessage('Failed to fetch friends. Please try again.');  it activate on first page load??
         }
     }, [authAxios]);
 
@@ -151,7 +150,7 @@ function ChatPage({
         else setMessages([]);
         fetchChannel();
         setChannelUsers([]);
-    }, [channel, fetchFriends, fetchChannels, fetchMessages, fetchChannel]); //friendsList but it breaks the chat settings
+    }, [channel, fetchFriends, fetchChannels, fetchMessages, fetchChannel, ]); //friendsList but it breaks the chat settings
 
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
@@ -175,6 +174,7 @@ function ChatPage({
         socket.on('message', messageListener);
         socket.on('ban', () => setChannel(0));
         socket.on('reloadfriends', () => fetchFriends());
+        socket.on('reloadchannels', () => fetchChannels());
 
         return () => {
             socket.off('message', messageListener);
