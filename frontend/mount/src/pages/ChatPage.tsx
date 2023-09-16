@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { UserSimplified } from '../types';
 import { useUserContext } from '../context/UserContext';
@@ -71,7 +71,7 @@ function ChatPage({
         }
     }, [visibleSettings]);
 
-    const fetchFriends = async () => {
+    const fetchFriends = useCallback(async () => {
         try {
             const response = await authAxios.get(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/friends/me`,
@@ -81,9 +81,9 @@ function ChatPage({
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [authAxios]);
 
-    const fetchChannels = async () => {
+    const fetchChannels = useCallback(async () => {
         try {
             const response = await authAxios.get(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannels`,
@@ -95,22 +95,27 @@ function ChatPage({
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [authAxios]);
 
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async () => {
         console.log('fetching messages for', channel);
-        const response = await authAxios.get(
-            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getMessages/${channel}`,
-            {
-                params: { idUser: user?.id },
-                withCredentials: true,
-            },
-        );
-        if (!response.data) setMessages([]);
-        setMessages(response.data);
-    };
+        try {
+            const response = await authAxios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getMessages/${channel}`,
+                {
+                    params: { idUser: user?.id },
+                    withCredentials: true,
+                },
+            );
+            if (!response.data) setMessages([]);
+            setMessages(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    }, [authAxios, channel, user?.id]);
 
-    const fetchChannel = async () => {
+    const fetchChannel = useCallback(async () => {
+        try {
         const response = await authAxios.get(
             `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelById`,
             {
@@ -119,7 +124,10 @@ function ChatPage({
             },
         );
         setCurrentChannel(response.data);
-    };
+        } catch (error) {
+            console.error(error);
+        }
+    }, [authAxios, channel, user?.id]);
 
     const settingEnabler = () => {
         setVisibleSettings(!visibleSettings);
@@ -132,14 +140,14 @@ function ChatPage({
         else setMessages([]);
         fetchChannel();
         setChannelUsers([]);
-    }, [channel, currentFriend, channelListSelected]); //friendsList but it breaks the chat settings
+    }, [channel, fetchFriends, fetchChannels, fetchMessages, fetchChannel]); //friendsList but it breaks the chat settings
 
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
             console.log('received message', message);
             if (!notifications.includes(message.idChannel)) {
                 setNotifications((oldNotifications) => [
-                    ...oldNotifications,    
+                    ...oldNotifications,
                     message.idChannel,
                 ]);
             }
@@ -153,9 +161,10 @@ function ChatPage({
         return () => {
             socket.off('message', messageListener);
         };
-    }, [socket]);
+    }, [socket, fetchFriends, notifications]);
 
     const fetchUsers = async () => {
+        try {
         const response = await authAxios.get(
             `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelUsers`,
             {
@@ -167,6 +176,9 @@ function ChatPage({
         console.log(response.data);
 
         setChannelUsers(response.data);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const handleBlock = async () => {
