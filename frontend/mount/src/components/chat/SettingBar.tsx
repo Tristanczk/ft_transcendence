@@ -1,4 +1,3 @@
-import { act } from 'react-dom/test-utils';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
 import { UserSimplified } from '../../types';
@@ -42,8 +41,11 @@ export default function SettingBar({
         setAlertMessage(null);
     };
 
+    // EFFECTS
+
     const handleBlur = () => {
         blurTimeout.current = setTimeout(() => {
+            setInput('');
             setShowInput(false);
             setActiveInput(null);
         }, 100) as any;
@@ -61,18 +63,25 @@ export default function SettingBar({
         }
     };
 
+    // PASSWORD
+
     const handlePasswordClick = () => {
-        if (activeInput === 'password') {
-            setActiveInput(null);
-            setShowInput((prev) => !prev);
-            setInput('');
-        } else {
+        if (activeInput !== 'password') {
             setActiveInput('password');
-            if (inputRef.current) {
+        }
+        setShowInput(prev => {
+            if (!prev && inputRef.current) {
                 inputRef.current.focus();
             }
-        }
+            return !prev;
+        });
     };
+
+    const isPasswordActive = activeInput === 'password';
+    const passwordInputClasses = isPasswordActive
+        ? (showInput ? 'opacity-100 pointer-events-auto w-44' : 'opacity-0 pointer-events-none w-0')
+        : 'opacity-0 pointer-events-none w-0';
+
 
     const handleNameClick = () => {
         if (activeInput === 'name') {
@@ -215,7 +224,7 @@ export default function SettingBar({
             case 'mute':
                 return handleMuteUser;
             default:
-                return () => {};
+                return () => { };
         }
     };
 
@@ -227,8 +236,8 @@ export default function SettingBar({
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
             <div
-                className={`relative flex-col items-center space-y-4 bg-gray-200 w-1/6 flex z-0 object-bottom object-fill 
-    ${isSettingVisible ? 'right-20 opacity-100' : 'right-0 opacity-0'} 
+                className={`relative flex-col items-center space-y-4 bg-gray-200 w-1/6 flex z-0 object-bottom object-fill
+    ${isSettingVisible ? 'right-20 opacity-100' : 'right-0 opacity-0'}
     transition-all duration-500 ease-in-out rounded-3xl py-5`}
             >
                 <ChannelUserForm
@@ -243,7 +252,7 @@ export default function SettingBar({
                         handlePasswordClick();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-500"
                 >
                     <svg
                         className="w-6 h-6"
@@ -268,19 +277,12 @@ export default function SettingBar({
                 <input
                     ref={inputRef}
                     value={input}
+                    type='password'
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(event) =>
-                        onKeyPress({ event, exec: editPassword })
-                    }
+                    onKeyDown={(event) => onKeyPress({ event, exec: editPassword })}
                     placeholder="Enter password"
-                    className={`focus:outline-none focus:placeholder-gray-400 absolute left-24 text-gray-600 placeholder-gray-600 bg-white rounded-3xl border-white transition-opacity transition-width ease-in-out duration-500 h-8 z-40 overflow-hidden ${
-                        activeInput === 'password'
-                            ? showInput
-                                ? 'opacity-100 pointer-events-auto w-44'
-                                : 'opacity-0 pointer-events-none w-0'
-                            : 'opacity-0 pointer-events-none w-0'
-                    }`}
-                    readOnly={activeInput !== 'password' || !showInput}
+                    className={`focus:outline-none focus:border-transparent focus:ring focus:ring-amber-500 border-0 absolute top-1 left-24 text-gray-600 bg-slate-100 rounded-3xl transition-all ease-in-out duration-500 py-2 px-4 z-40 overflow-hidden ${passwordInputClasses}`}
+                    readOnly={!isPasswordActive || !showInput}
                     onBlur={handleBlur}
                     onFocus={handleFocus}
                 />
