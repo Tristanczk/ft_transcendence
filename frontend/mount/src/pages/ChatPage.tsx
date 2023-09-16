@@ -116,14 +116,14 @@ function ChatPage({
 
     const fetchChannel = useCallback(async () => {
         try {
-        const response = await authAxios.get(
-            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelById`,
-            {
-                params: { idChannel: channel, idUser: user?.id },
-                withCredentials: true,
-            },
-        );
-        setCurrentChannel(response.data);
+            const response = await authAxios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelById`,
+                {
+                    params: { idChannel: channel, idUser: user?.id },
+                    withCredentials: true,
+                },
+            );
+            setCurrentChannel(response.data);
         } catch (error) {
             console.error(error);
         }
@@ -145,13 +145,22 @@ function ChatPage({
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
             console.log('received message', message);
-            if (!notifications.includes(message.idChannel)) {
-                setNotifications((oldNotifications) => [
-                    ...oldNotifications,
-                    message.idChannel,
-                ]);
+
+            // Check if the sender of the message is not the current user
+            if (message.idSender !== user?.id) {
+                // Check if the message is for the current channel
+                if (message.idChannel !== channel) {
+                    if (!notifications.includes(message.idChannel)) {
+                        setNotifications((oldNotifications) => [
+                            ...oldNotifications,
+                            message.idChannel,
+                        ]);
+                    }
+                }
             }
-            setMessages((oldMessages) => [...oldMessages, message]);
+
+            if (message.idChannel === channel)
+                setMessages((oldMessages) => [...oldMessages, message]);
         };
 
         socket.on('message', messageListener);
@@ -161,21 +170,21 @@ function ChatPage({
         return () => {
             socket.off('message', messageListener);
         };
-    }, [socket, fetchFriends, notifications]);
+    }, [socket, fetchFriends, notifications, user?.id, channel]);
 
     const fetchUsers = async () => {
         try {
-        const response = await authAxios.get(
-            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelUsers`,
-            {
-                params: { idChannel: currentChannel?.id, idUser: user?.id },
-                withCredentials: true,
-            },
-        );
-        console.log('fetchUsers');
-        console.log(response.data);
+            const response = await authAxios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelUsers`,
+                {
+                    params: { idChannel: currentChannel?.id, idUser: user?.id },
+                    withCredentials: true,
+                },
+            );
+            console.log('fetchUsers');
+            console.log(response.data);
 
-        setChannelUsers(response.data);
+            setChannelUsers(response.data);
         } catch (error) {
             console.error(error);
         }
