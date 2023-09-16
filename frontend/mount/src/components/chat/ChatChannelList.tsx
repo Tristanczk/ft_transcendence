@@ -4,6 +4,7 @@ import { useUserContext } from '../../context/UserContext';
 import ChatChannelListElement from './ChatChannelListElement';
 import { ChannelProps } from './Messages';
 import { UserSimplified } from '../../types';
+import { Alert } from './Alert';
 
 export default function ChatChannelList({
     channels,
@@ -27,6 +28,11 @@ export default function ChatChannelList({
     const inputRef = useRef<HTMLInputElement>(null);
     const [barHidden, setBarHidden] = useState(false);
     const [input, setInput] = useState('');
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+    const closeAlert = () => {
+        setAlertMessage(null);
+    };
 
     const handleBlur = () => {
         blurTimeout.current = setTimeout(() => {
@@ -66,6 +72,7 @@ export default function ChatChannelList({
             setChannel(response.data.id);
         } catch (error) {
             console.error(error);
+            setAlertMessage('Failed to create the channel. Please try again.');
         }
     };
 
@@ -82,6 +89,7 @@ export default function ChatChannelList({
 
     return (
         <>
+            {alertMessage && <Alert message={alertMessage} onClose={closeAlert} />}
             <div
                 id="list"
                 className={`flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip shadow-xl transition-all duration-500 ${
@@ -158,5 +166,3 @@ export default function ChatChannelList({
         </>
     );
 }
-
-//   {passwordPrompt && <h1>Batard</h1>}

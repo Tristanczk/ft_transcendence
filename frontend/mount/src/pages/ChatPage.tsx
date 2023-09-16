@@ -13,6 +13,7 @@ import ChatFriendList from '../components/chat/ChatFriendList';
 import ChatChannelList from '../components/chat/ChatChannelList';
 import ChannelHeader from '../components/chat/ChannelHeader';
 import { WebsocketContext } from '../context/WebsocketContext';
+import { Alert } from '../components/chat/Alert';
 
 function ChatPage({
     isChatVisible,
@@ -42,6 +43,11 @@ function ChatPage({
     const [channelUsers, setChannelUsers] = useState<UserSimplified[]>([]);
     const [blockedUsers, setBlockedUsers] = useState<number[]>([]);
     const [notifications, setNotifications] = useState<number[]>([]);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+    const closeAlert = () => {
+        setAlertMessage(null);
+    };
 
     useEffect(() => {
         setVisibleSettings(false);
@@ -80,6 +86,8 @@ function ChatPage({
             setFriendsList(response.data);
         } catch (error) {
             console.error(error);
+            setAlertMessage('Failed to fetch friends. Please try again.');
+
         }
     }, [authAxios]);
 
@@ -94,6 +102,7 @@ function ChatPage({
             setChannels(response.data);
         } catch (error) {
             console.error(error);
+            setAlertMessage('Failed to fetch channels. Please try again.');
         }
     }, [authAxios]);
 
@@ -111,6 +120,7 @@ function ChatPage({
             setMessages(response.data);
         } catch (error) {
             console.error(error);
+            setAlertMessage('Failed to fetch messages. Please try again.');
         }
     }, [authAxios, channel, user?.id]);
 
@@ -126,6 +136,7 @@ function ChatPage({
             setCurrentChannel(response.data);
         } catch (error) {
             console.error(error);
+            setAlertMessage('Failed to fetch channel. Please try again.');
         }
     }, [authAxios, channel, user?.id]);
 
@@ -146,9 +157,7 @@ function ChatPage({
         const messageListener = (message: MessageProps) => {
             console.log('received message', message);
 
-            // Check if the sender of the message is not the current user
             if (message.idSender !== user?.id) {
-                // Check if the message is for the current channel
                 if (message.idChannel !== channel) {
                     if (!notifications.includes(message.idChannel)) {
                         setNotifications((oldNotifications) => [
@@ -187,6 +196,7 @@ function ChatPage({
             setChannelUsers(response.data);
         } catch (error) {
             console.error(error);
+            setAlertMessage('Failed to fetch users. Please try again.');
         }
     };
 
@@ -205,49 +215,53 @@ function ChatPage({
     };
 
     return (
-        <div
-            className={`fixed z-10 inset-y-0 right-0 w-100 text-white transform top-28 ${
-                isChatVisible
-                    ? 'translate-x-0 transition-transform duration-500'
-                    : 'translate-x-full transition-transform duration-200'
-            }`}
-        >
+        <>
+            {alertMessage && (
+                <Alert message={alertMessage} onClose={closeAlert} />
+            )}
             <div
-                className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex"
-                style={{ marginRight: '36px' }}
+                className={`fixed z-10 inset-y-0 right-0 w-100 text-white transform top-28 ${
+                    isChatVisible
+                        ? 'translate-x-0 transition-transform duration-500'
+                        : 'translate-x-full transition-transform duration-200'
+                }`}
             >
                 <div
-                    className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
-                        channel ? 'w-104' : 'w-60'
-                    }`}
+                    className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex"
+                    style={{ marginRight: '36px' }}
                 >
-                    <ChatListHeader
-                        selector={setChannelListSelected}
-                        handleClose={closeChat}
-                    />
-                    {channelListSelected < 0 ? (
-                        <div className="flex flex-col h-full"></div>
-                    ) : channelListSelected ? (
-                        <ChatFriendList
-                            friends={friendsList}
-                            channel={channel}
-                            setChannel={setChannel}
-                            setCurrentFriend={setCurrentFriend}
-                            notifications={notifications}
-                            setNotifications={setNotifications}
-                        />
-                    ) : (
-                        <ChatChannelList
-                            channels={channels}
-                            setChannel={setChannel}
-                            setCurrentFriend={setCurrentFriend}
-                            channel={channel}
-                            notifications={notifications}
-                            setNotifications={setNotifications}
-                        />
-                    )}
                     <div
-                        className={`chat-content 
+                        className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
+                            channel ? 'w-104' : 'w-60'
+                        }`}
+                    >
+                        <ChatListHeader
+                            selector={setChannelListSelected}
+                            handleClose={closeChat}
+                        />
+                        {channelListSelected < 0 ? (
+                            <div className="flex flex-col h-full"></div>
+                        ) : channelListSelected ? (
+                            <ChatFriendList
+                                friends={friendsList}
+                                channel={channel}
+                                setChannel={setChannel}
+                                setCurrentFriend={setCurrentFriend}
+                                notifications={notifications}
+                                setNotifications={setNotifications}
+                            />
+                        ) : (
+                            <ChatChannelList
+                                channels={channels}
+                                setChannel={setChannel}
+                                setCurrentFriend={setCurrentFriend}
+                                channel={channel}
+                                notifications={notifications}
+                                setNotifications={setNotifications}
+                            />
+                        )}
+                        <div
+                            className={`chat-content 
                               ${
                                   channel
                                       ? 'opacity-100 delay-0'
@@ -260,38 +274,39 @@ function ChatPage({
                                   } 
                                 ${channel ? 'h-auto' : 'h-0'}
                                 transition-opacity transition-visibility transition-height duration-500`}
-                    >
-                        {currentFriend ? (
-                            <MessagesHeader
-                                channel={channel}
-                                currentFriend={currentFriend}
-                                handleClose={handleClose}
-                                handleBlock={handleBlock}
-                            />
-                        ) : (
-                            <ChannelHeader
-                                channel={channel}
+                        >
+                            {currentFriend ? (
+                                <MessagesHeader
+                                    channel={channel}
+                                    currentFriend={currentFriend}
+                                    handleClose={handleClose}
+                                    handleBlock={handleBlock}
+                                />
+                            ) : (
+                                <ChannelHeader
+                                    channel={channel}
+                                    currentChannel={currentChannel}
+                                    handleClose={handleClose}
+                                    onClick={settingEnabler}
+                                />
+                            )}
+                            <Messages
+                                messages={messages}
+                                isSettingVisible={visibleSettings}
+                                zIndexClass={zIndexClass}
                                 currentChannel={currentChannel}
                                 handleClose={handleClose}
-                                onClick={settingEnabler}
+                                channelUsers={channelUsers}
+                                fetchUsers={fetchUsers}
+                                blockedUsers={blockedUsers}
+                                setChannelUsers={setChannelUsers}
                             />
-                        )}
-                        <Messages
-                            messages={messages}
-                            isSettingVisible={visibleSettings}
-                            zIndexClass={zIndexClass}
-                            currentChannel={currentChannel}
-                            handleClose={handleClose}
-                            channelUsers={channelUsers}
-                            fetchUsers={fetchUsers}
-                            blockedUsers={blockedUsers}
-                            setChannelUsers={setChannelUsers}
-                        />
-                        <MessageInput idChannel={channel} />
+                            <MessageInput idChannel={channel} />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

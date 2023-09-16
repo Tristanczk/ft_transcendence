@@ -1,4 +1,4 @@
-export default function ChatPage({
+export default function ChatListHeader({
     selector,
     handleClose,
 }: {

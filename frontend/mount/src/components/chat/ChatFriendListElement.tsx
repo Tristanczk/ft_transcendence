@@ -4,6 +4,7 @@ import ImageFriend from '../dashboard/friends/ImgFriend';
 import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useEffect, useState } from 'react';
+import { Alert } from './Alert';
 
 export default function ChatFriendListElement({
     friend,
@@ -21,83 +22,93 @@ export default function ChatFriendListElement({
     const { user } = useUserContext();
     const authAxios = useAuthAxios();
     const [channelId, setChannelId] = useState<number>(0);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
-    const fetchChannel = async (IdFriend: number) => {
-        console.log('fetching channels for', user?.id, IdFriend);
-        const response = await authAxios.get(
-            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelByUsers`,
-            {
-                params: { idAdmin: user?.id, idUser: IdFriend },
-                withCredentials: true,
-            },
-        );
-        console.log('fetching channel response', response);
-        setChannel(response.data.id);
-        setNotifications(notifications.filter((id) => id !== response.data.id));
-        if (channelId === 0) setChannelId(response.data.id);
-        setCurrentFriend(friend);
+    const closeAlert = () => {
+        setAlertMessage(null);
     };
 
-    const fetchChannelId = async (IdFriend: number) => {
-        const response = await authAxios.get(
-            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelByUsers`,
-            {
-                params: { idAdmin: user?.id, idUser: IdFriend },
-                withCredentials: true,
-            },
-        );
-        setChannelId(response.data.id);
-    };
+    const fetchChannelData = async (
+        IdFriend: number,
+        onlySetChannelId = false,
+    ) => {
+        try {
+            const response = await authAxios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelByUsers`,
+                {
+                    params: { idAdmin: user?.id, idUser: IdFriend },
+                    withCredentials: true,
+                },
+            );
 
+            setChannelId(response.data.id);
+
+            if (!onlySetChannelId) {
+                setChannel(response.data.id);
+                setNotifications(
+                    notifications.filter((id) => id !== response.data.id),
+                );
+                setCurrentFriend(friend);
+            }
+        } catch (error) {
+            console.error('Error fetching channel data:', error);
+            setAlertMessage('Error fetching channel data');
+        }
+    };
 
     useEffect(() => {
-        fetchChannelId(friend.id);
-    }, [notifications]);
+        fetchChannelData(friend.id, true);
+    }, [notifications, friend.id]);
 
     return (
-        <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
-            <div className="flex items-center">
-                <ImageFriend
-                    userId={friend.id}
-                    textImg={friend.nickname}
-                    size={7}
-                />
-                <div className="ml-2 flex flex-col">
-                    <div className="leading-snug text-sm text-gray-900 font-medium">
-                        <Link to={'/dashboard/' + friend.id}>
-                            {friend.nickname}
-                        </Link>
+        <>
+            {alertMessage && (
+                <Alert message={alertMessage} onClose={closeAlert} />
+            )}
+            <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
+                <div className="flex items-center">
+                    <ImageFriend
+                        userId={friend.id}
+                        textImg={friend.nickname}
+                        size={7}
+                    />
+                    <div className="ml-2 flex flex-col">
+                        <div className="leading-snug text-sm text-gray-900 font-medium">
+                            <Link to={'/dashboard/' + friend.id}>
+                                {friend.nickname}
+                            </Link>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <button
-                onClick={() => {
-                    fetchChannel(friend.id);
-                }}
-            >
-                {' '}
-                {notifications && notifications.includes(channelId) && (
-                    <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-                )}
-                <svg
-                    className="text-blue-600 w-6 h-6"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                    stroke="currentColor"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                <button
+                    onClick={() => {
+                        fetchChannelData(friend.id);
+                    }}
                 >
                     {' '}
-                    <path stroke="none" d="M0 0h24v24H0z" />{' '}
-                    <path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1" />{' '}
-                    <line x1="12" y1="12" x2="12" y2="12.01" />{' '}
-                    <line x1="8" y1="12" x2="8" y2="12.01" />{' '}
-                    <line x1="16" y1="12" x2="16" y2="12.01" />
-                </svg>
-            </button>
-        </div>
+                    {notifications && notifications.includes(channelId) && (
+                        <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+                    )}
+                    <svg
+                        className="text-blue-600 w-6 h-6"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        {' '}
+                        <path stroke="none" d="M0 0h24v24H0z" />{' '}
+                        <path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1" />{' '}
+                        <line x1="12" y1="12" x2="12" y2="12.01" />{' '}
+                        <line x1="8" y1="12" x2="8" y2="12.01" />{' '}
+                        <line x1="16" y1="12" x2="16" y2="12.01" />
+                    </svg>
+                </button>
+            </div>
+        </>
     );
 }
