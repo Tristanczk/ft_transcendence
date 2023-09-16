@@ -150,7 +150,7 @@ function ChatPage({
         else setMessages([]);
         fetchChannel();
         setChannelUsers([]);
-    }, [channel, fetchFriends, fetchChannels, fetchMessages, fetchChannel, ]); //friendsList but it breaks the chat settings
+    }, [channel, fetchFriends, fetchChannels, fetchMessages, fetchChannel]); //friendsList but it breaks the chat settings
 
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
@@ -175,6 +175,10 @@ function ChatPage({
         socket.on('ban', () => setChannel(0));
         socket.on('reloadfriends', () => fetchFriends());
         socket.on('reloadchannels', () => fetchChannels());
+        socket.on('signoutchat', () => {
+            setChannel(0);
+            toggleChatVisibility();
+        });
 
         return () => {
             socket.off('message', messageListener);
