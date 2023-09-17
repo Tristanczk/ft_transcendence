@@ -14,14 +14,15 @@ import { CreateMessageDto } from 'src/chat/dto/message.dto';
 import Game from './Game';
 import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
+import { IndivUser, ResponseCheckConnexion, Users } from './gateway.users';
 import {
     BattlePlayer,
     BattlePlayers,
     ClassicMayhemPlayer,
     ClassicMayhemPlayers,
     GameInfo,
+    UpdateGameEvent,
 } from 'src/shared/game_info';
-import { IndivUser, ResponseCheckConnexion, Users } from './gateway.users';
 import { GamesService } from 'src/games/games.service';
 
 const ID_SIZE = 6;
@@ -216,6 +217,22 @@ export class GatewayService
                 idPlayerB,
                 mode,
             );
+
+        if (idPlayerA !== -1) {
+            this.server.emit('updateStatus', {
+                idUser: idPlayerA,
+                type: 'startPlaying',
+            });
+            game.playerA.updateStatusUserPlayingDB(true);
+        }
+
+        if (idPlayerB !== -1) {
+            this.server.emit('updateStatus', {
+                idUser: idPlayerB,
+                type: 'startPlaying',
+            });
+            game.playerB.updateStatusUserPlayingDB(true);
+        }
     }
 
     liaiseGameToPlayer(
@@ -259,16 +276,13 @@ export class GatewayService
 
     @SubscribeMessage('quitGame')
     async handleQuitGame(client: Socket, data: string) {
-        console.log('end game : ' + data);
         if (!this.games[data])
             return { gameId: data, message: 'invalid gameId' };
         const game = this.games[data];
         const userAborting: IndivUser = this.users.getIndivUserBySocketId(
             client.id,
         );
-        console.log('try user asking');
         if (!userAborting) return { gameId: data, message: 'invalid user' };
-        console.log('try rights socket:' + data);
         console.log(game.playerA.sockets);
         console.log(game.playerB.sockets);
         if (
@@ -289,10 +303,86 @@ export class GatewayService
             }
             game.info.state = 'finished';
             console.log('game finished : ' + data);
+            const returnData: UpdateGameEvent = {
+                gameId: data,
+                message: 'game aborted by user',
+                from: client.id,
+            };
+            this.emitUpdateToPlayers(game, 'eventGame', returnData);
             return { gameId: data, message: 'game aborted' };
         }
 
         return { gameId: data, message: 'game not aborted' };
+    }
+
+    private timeDisconnection: number = 5000;
+    @Interval(1000)
+    checkUserStillPlaying() {
+        for (const game of Object.values(this.games)) {
+            if (game.info.state !== 'finished') {
+                if (
+                    game.info.mode === 'classic' ||
+                    game.info.mode === 'mayhem'
+                ) {
+                    if (
+                        (game.playerA && game.playerA.isConnected === false) ||
+                        (game.playerB && game.playerB.isConnected === false)
+                    ) {
+                        let returnData: UpdateGameEvent = {
+                            gameId: game.id,
+                            message: '',
+                        };
+                        const timeNow: number = Date.now();
+                        //check si premiere fois
+                        if (game.timeUserLeave === 0) {
+                            game.timeUserLeave = Date.now();
+                            returnData.message = 'user leave';
+                            returnData.timeLeft = this.timeDisconnection;
+                        } else if (
+                            timeNow - game.timeUserLeave <
+                            this.timeDisconnection
+                        ) {
+                            //faire le décompte
+                            returnData.message = 'user leave';
+                            returnData.timeLeft =
+                                this.timeDisconnection -
+                                (timeNow - game.timeUserLeave);
+                        } else {
+                            //end game
+                            returnData.message = 'user left';
+                            returnData.timeLeft = 0;
+
+                            if (
+                                game.playerA &&
+                                game.playerA.isConnected === false &&
+                                game.playerB &&
+                                game.playerB.isConnected
+                            ) {
+                                this.handleEndGame(game, true, 0);
+                            } else if (
+                                game.playerB &&
+                                game.playerB.isConnected === false &&
+                                game.playerA &&
+                                game.playerA.isConnected
+                            ) {
+                                this.handleEndGame(game, true, 1);
+                            }
+                            game.info.state = 'finished';
+                            console.log('game finished : ' + game.id);
+                        }
+
+                        this.emitUpdateToPlayers(game, 'eventGame', returnData);
+                    } else if (game.timeUserLeave !== 0) {
+                        game.timeUserLeave = 0;
+                        const returnData: UpdateGameEvent = {
+                            gameId: game.id,
+                            message: 'user back',
+                        };
+                        this.emitUpdateToPlayers(game, 'eventGame', returnData);
+                    }
+                }
+            }
+        }
     }
 
     @SubscribeMessage('leavePage')
@@ -366,16 +456,18 @@ export class GatewayService
                 if (retourUpdate === 'finished') {
                     this.handleEndGame(game, true, -1);
                 }
-                this.emitUpdateToPlayers(game);
+                this.emitUpdateToPlayers(game, 'updateGameInfo', game.info);
             }
         }
     }
 
     // /!\ /!\ /!\ a retravailler pour inclure le mode battle /!\ /!\ /!\
-    emitUpdateToPlayers(game: Game) {
+    emitUpdateToPlayers(game: Game, canal: string, dataToTransfer: any) {
         if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
-            if (game.playerA) this.emitUpdateToPlayer(game, game.playerA);
-            if (game.playerB) this.emitUpdateToPlayer(game, game.playerB);
+            if (game.playerA)
+                this.emitUpdateToPlayer(game.playerA, canal, dataToTransfer);
+            if (game.playerB)
+                this.emitUpdateToPlayer(game.playerB, canal, dataToTransfer);
         } else {
             for (const player of game.info.players) {
                 if (player) {
@@ -385,14 +477,25 @@ export class GatewayService
         }
     }
 
-    emitUpdateToPlayer(game: Game, player: IndivUser) {
+    emitUpdateToPlayer(player: IndivUser, canal: string, dataToTransfer: any) {
         for (const socketId of player.sockets) {
-            this.server.to(socketId).emit('updateGameInfo', game.info);
+            this.server.to(socketId).emit(canal, dataToTransfer);
         }
     }
 
     //aborted: -1: classic ending, 0: aborted by A, 1: aborted by B
     async handleEndGame(game: Game, update: boolean, aborted: number) {
+        if (game.playerA && game.playerA.userId !== -1)
+            this.server.emit('updateStatus', {
+                idUser: game.playerA.userId,
+                type: 'endPlaying',
+            });
+        if (game.playerB && game.playerB.userId !== -1)
+            this.server.emit('updateStatus', {
+                idUser: game.playerB.userId,
+                type: 'endPlaying',
+            });
+
         if (!(game.info.mode === 'classic' || game.info.mode === 'mayhem'))
             return;
 
@@ -427,10 +530,14 @@ export class GatewayService
         if (game.playerA) {
             game.playerA.isPlaying = false;
             game.playerA.idGamePlaying = null;
+            if (game.playerA.userId !== -1)
+                game.playerA.updateStatusUserPlayingDB(false);
         }
         if (game.playerB) {
             game.playerB.isPlaying = false;
             game.playerB.idGamePlaying = null;
+            if (game.playerB.userId !== -1)
+                game.playerB.updateStatusUserPlayingDB(false);
         }
         delete this.games[game.id];
     }

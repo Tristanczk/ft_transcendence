@@ -8,25 +8,26 @@ import {
     EditChannelUserDto,
     EditPasswordDto,
 } from './dto/editchannel.dto';
-import {
-    CreateMessageDto,
-    DeleteMessageDto,
-    MessageDto,
-} from './dto/message.dto';
+import { CreateMessageDto, MessageDto } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
-import { ChannelDto, isChannelAdminDto } from './dto/channel.dto';
+import { ChannelDto, ChannelIdDto, MuteUserDto } from './dto/channel.dto';
 import { GetChannelDto } from './dto/getchannel.dto';
 import { channel } from 'diagnostics_channel';
 import { EditUserDto } from 'src/user/dto';
+import { GatewayService } from 'src/gateway/gateway.service';
+import { UserSimplifiedDto } from './dto/usersimplifieddto';
+import { Interval } from '@nestjs/schedule';
 
 @Injectable()
 export class ChatService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private gateway: GatewayService,
+    ) {}
 
     async createChannel(
         createChannelDto: CreateChannelDto,
     ): Promise<CreateChannelDto> {
-
         console.log(createChannelDto);
         await this.prisma.channels.create({
             data: {
@@ -112,7 +113,7 @@ export class ChatService {
         return false;
     }
 
-    async isChannelAdmin(channelDto: isChannelAdminDto): Promise<boolean> {
+    async isChannelAdmin(channelDto: ChannelIdDto): Promise<boolean> {
         try {
             const channel = await this.prisma.channels.findUnique({
                 where: {
@@ -127,7 +128,7 @@ export class ChatService {
         return false;
     }
 
-    async isUserInChannel(channelDto: isChannelAdminDto): Promise<boolean> {
+    async isUserInChannel(channelDto: ChannelIdDto): Promise<boolean> {
         try {
             const channel = await this.prisma.channels.findUnique({
                 where: {
@@ -137,7 +138,10 @@ export class ChatService {
 
             console.log(channelDto);
             console.log(channel);
-            if (channel && channel.idUsers.includes(Number(channelDto.idUser))) {
+            if (
+                channel &&
+                channel.idUsers.includes(Number(channelDto.idUser))
+            ) {
                 return true;
             }
         } catch (error) {
@@ -280,10 +284,13 @@ export class ChatService {
             });
 
             if (!channel.idAdmin.includes(editChannel.idRequester))
-                throw new Error('Not authorized');
+                throw new Error('Not authorized, Not admin');
+            
+            if (editChannel.idUser === editChannel.idRequester)
+                throw new Error('Not authorized, Cannot ban yourself');
 
             if (channel.idAdmin.includes(editChannel.idUser))
-                throw new Error('Not authorized');
+                throw new Error('Not authorized, User is admin');
 
             const updatedChannel = await this.prisma.channels.update({
                 where: {
@@ -297,6 +304,16 @@ export class ChatService {
                     },
                 },
             });
+
+            const user = this.gateway.users.getIndivUserById(
+                editChannel.idUser,
+            );
+            if (user) {
+                user.sockets.forEach((socket) => {
+                    console.log('socket: ' + socket);
+                    this.gateway.server.to(socket).emit('ban');
+                });
+            }
 
             const updatedChannelDto: EditChannelDto = {
                 id: updatedChannel.id,
@@ -385,6 +402,105 @@ export class ChatService {
         }
     }
 
+    async muteUser(editChannel: MuteUserDto): Promise<EditChannelDto> {
+        try {
+            const channel = await this.prisma.channels.findFirst({
+                where: {
+                    id: editChannel.idChannel,
+                },
+            });
+
+            if (!channel.idAdmin.includes(editChannel.idRequester))
+                throw new Error('Not authorized');
+
+            if (channel.idAdmin.includes(editChannel.idUser))
+                throw new Error('Not authorized, User is admin');
+
+            console.log(editChannel.time);
+            channel.mutedUsers.push([
+                { idUser: editChannel.idUser, time: editChannel.time },
+            ]);
+
+            const updatedChannel = await this.prisma.channels.update({
+                where: {
+                    id: editChannel.idChannel,
+                },
+                data: {
+                    mutedUsers: channel.mutedUsers,
+                },
+            });
+
+            const updatedChannelDto: EditChannelDto = {
+                id: updatedChannel.id,
+                idAdmin: updatedChannel.idAdmin,
+                idUser: updatedChannel.idUsers,
+                isPublic: updatedChannel.isPublic,
+                name: updatedChannel.name,
+            };
+            return updatedChannelDto;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    @Interval(6000) // Runs every minute
+    async unmuteUser() {
+        const currentTime = new Date().getTime();
+        try {
+            const channels = await this.prisma.channels.findMany({
+                where: {
+                    isPublic: true,
+                },
+            });
+
+            for (const channel of channels) {
+                const unmutedUsers = [];
+                for (const user of channel.mutedUsers) {
+                    const unmuteTime = new Date(user[0].time).getTime();
+                    if (unmuteTime <= currentTime) {
+                        console.log(
+                            `Unmuted user ${user[0].idUser} in channel ${channel.id}`,
+                        );
+                    } else {
+                        unmutedUsers.push(user);
+                    }
+                }
+
+                await this.prisma.channels.update({
+                    where: { id: channel.id },
+                    data: {
+                        mutedUsers: {
+                            set: unmutedUsers,
+                        },
+                    },
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async isUserMuted(channelDto: ChannelIdDto): Promise<boolean> {
+        try {
+            const channel = await this.prisma.channels.findFirst({
+                where: {
+                    id: Number(channelDto.idChannel),
+                },
+            });
+
+            if (!channel) throw new Error('Channel not found');
+
+            for (const user of channel.mutedUsers) {
+                if (Number(user[0].idUser) === Number(channelDto.idUser)) {
+                    return true;
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        return false;
+    }
+
     async getChannels(): Promise<ChannelDto[]> {
         let channels = null;
 
@@ -408,6 +524,48 @@ export class ChatService {
             }));
         }
         return channelDtos;
+    }
+
+    async getChannelUsers(idChannel: number): Promise<UserSimplifiedDto[]> {
+        let users: UserSimplifiedDto[] = [];
+
+        try {
+            const channel = await this.prisma.channels.findUnique({
+                where: {
+                    id: Number(idChannel),
+                },
+            });
+
+            console.log('channel');
+            console.log(channel);
+            for (const id of channel.idUsers) {
+                const user = await this.prisma.user.findUnique({
+                    where: {
+                        id: Number(id),
+                    },
+                });
+
+                console.log('user');
+                console.log(user);
+
+                const userDto: UserSimplifiedDto = {
+                    id: user.id,
+                    nickname: user.nickname,
+                    avatarPath: user.avatarPath,
+                };
+
+                console.log('userDto');
+                console.log(userDto);
+
+                users.push(userDto);
+            }
+
+            console.log('users');
+            console.log(users);
+        } catch (error) {
+            console.log(error);
+        }
+        return users;
     }
 
     async sendMessage(message: CreateMessageDto): Promise<CreateMessageDto> {
@@ -439,37 +597,27 @@ export class ChatService {
             },
         });
 
-        return newMessage;
-    }
-
-    async deleteMessage(idUser: number, message: DeleteMessageDto) {
         try {
             const channel = await this.prisma.channels.findUnique({
-                where: {
-                    id: message.idChannel,
-                },
+                where: { id: message.idChannel },
+            });
+
+            console.log(message);
+            channel.idUsers.forEach((id) => {
+                console.log('userid: ' + id);
+                const user = this.gateway.users.getIndivUserById(id);
+                if (user) {
+                    user.sockets.forEach((socket) => {
+                        console.log('socket: ' + socket);
+                        this.gateway.server.to(socket).emit('message', message);
+                    });
+                }
             });
         } catch (error) {
-            throw new NotFoundException('Channel not found');
+            console.log(error);
         }
 
-        try {
-            const user = await this.prisma.user.findUnique({
-                where: {
-                    id: message.idSender,
-                },
-            });
-        } catch (error) {
-            throw new NotFoundException('User not found');
-        }
-
-        if (idUser !== message.idSender) throw new Error('Not authorized');
-
-        const deletedMessage = await this.prisma.message.delete({
-            where: {
-                id: message.idSender,
-            },
-        });
+        return newMessage;
     }
 
     async getMessages(channelId: number, idUser: number) {

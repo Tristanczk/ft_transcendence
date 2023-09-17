@@ -10,16 +10,19 @@ export default function ChatChannelList({
     setChannel,
     setCurrentFriend,
     channel,
+    notifications,
+    setNotifications,
 }: {
     channels: ChannelProps[] | null;
     setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
     channel: number;
+    notifications: number[];
+    setNotifications: (notifications: number[]) => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     const [showInput, setShowInput] = useState(false);
-    const [passwordPrompt, setPasswordPrompt] = useState(false);
     const blurTimeout = useRef<any>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [barHidden, setBarHidden] = useState(false);
@@ -66,10 +69,6 @@ export default function ChatChannelList({
         }
     };
 
-    useEffect(() => {
-        setPasswordPrompt(false);
-    }, [channel]);
-
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             if (input.length < 2) return;
@@ -78,7 +77,6 @@ export default function ChatChannelList({
             setShowInput(false);
             setChannel(0);
             setInput('');
-            setPasswordPrompt(false);
         }
     };
 
@@ -102,7 +100,8 @@ export default function ChatChannelList({
                                 channel={channel}
                                 setChannel={setChannel}
                                 setCurrentFriend={setCurrentFriend}
-                                setPasswordPrompt={setPasswordPrompt}
+                                notifications={notifications}
+                                setNotifications={setNotifications}
                             />
                         ))}
                 </div>

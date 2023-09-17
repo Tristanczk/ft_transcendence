@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+    ChangeEvent,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { WebsocketContext } from '../../context/WebsocketContext';
@@ -12,6 +18,12 @@ import EmojiPicker, {
     Theme,
 } from 'emoji-picker-react';
 
+export interface MessageInputProps {
+    idSender: number;
+    idChannel: number;
+    message: string;
+}
+
 export default function MessageInput({ idChannel }: { idChannel: number }) {
     const [input, setInput] = useState('');
     const socket = useContext(WebsocketContext);
@@ -24,9 +36,23 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
     };
 
     const handleSendMessage = async () => {
-        console.log('sending message', input, ' miao ', idChannel);
         if (input === '' || idChannel === 0) return;
         setInput('');
+
+        const isMuted = await authAxios.get(`/chat/isUserMuted`, {
+            params: {
+                idChannel: idChannel,
+                idUser: user?.id,
+            },
+            withCredentials: true,
+        });
+
+        console.log(isMuted);
+
+        if (isMuted.data === true) {
+            return;
+        }
+
         const response = await authAxios.post(
             '/chat/sendMessage',
             {
@@ -36,11 +62,6 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
             },
             { withCredentials: true },
         );
-        socket?.emit('message', {
-            idSender: user?.id,
-            idChannel: idChannel,
-            message: input,
-        });
     };
 
     const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {

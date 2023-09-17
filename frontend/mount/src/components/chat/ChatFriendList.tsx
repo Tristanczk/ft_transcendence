@@ -6,11 +6,15 @@ export default function ChatFriendList({
     channel,
     setChannel,
     setCurrentFriend,
+    notifications,
+    setNotifications,
 }: {
     friends: UserSimplified[] | null;
     channel: number;
     setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified) => void;
+    notifications: number[];
+    setNotifications: (notifications: number[]) => void;
 }) {
     return (
         <div
@@ -25,6 +29,8 @@ export default function ChatFriendList({
                             friend={friend}
                             setChannel={setChannel}
                             setCurrentFriend={setCurrentFriend}
+                            notifications={notifications}
+                            setNotifications={setNotifications}
                         />
                     ))}
             </div>

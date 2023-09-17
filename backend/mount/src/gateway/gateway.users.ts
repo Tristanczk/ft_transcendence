@@ -206,6 +206,18 @@ export class IndivUser {
         }
     }
 
+    async updateStatusUserPlayingDB(newStatus: boolean): Promise<boolean> {
+        try {
+            await this.prisma.user.update({
+                where: { id: this.userId },
+                data: { isPlaying: newStatus },
+            });
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
     updateTimeLastSeen(socketId: string): boolean {
         let boolConnection: boolean = false;
         if (this.isConnected === false) {

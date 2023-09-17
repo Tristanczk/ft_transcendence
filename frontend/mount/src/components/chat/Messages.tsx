@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
-import { UserSimplified } from '../../types';
-import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useUserContext } from '../../context/UserContext';
+import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
 import SettingBar from './SettingBar';
 
@@ -32,12 +30,20 @@ export default function Messages({
     currentChannel,
     zIndexClass,
     handleClose,
+    channelUsers,
+    fetchUsers,
+    blockedUsers,
+    setChannelUsers,
 }: {
     messages: MessageProps[];
     isSettingVisible: boolean;
     currentChannel: ChannelProps | null;
     zIndexClass: string;
     handleClose: () => void;
+    channelUsers: UserSimplified[];
+    fetchUsers: () => void;
+    blockedUsers: number[];
+    setChannelUsers: (users: UserSimplified[]) => void;
 }) {
     const { user } = useUserContext();
 
@@ -48,6 +54,8 @@ export default function Messages({
         let currentGroup: MessageGroup | null = null;
 
         messages.forEach((message) => {
+            if (blockedUsers.includes(message.idSender)) return;
+
             if (currentGroup && currentGroup.idSender === message.idSender) {
                 currentGroup.messages.push(message);
             } else {
@@ -79,6 +87,9 @@ export default function Messages({
                 currentChannel={currentChannel}
                 isSettingVisible={isSettingVisible}
                 handleClose={handleClose}
+                channelUsers={channelUsers}
+                fetchUsers={fetchUsers}
+                setChannelUsers={setChannelUsers}
             />
             <div
                 id="messages"

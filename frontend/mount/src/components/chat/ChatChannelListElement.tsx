@@ -5,18 +5,19 @@ import { UserSimplified } from '../../types';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useState } from 'react';
 import { useUserContext } from '../../context/UserContext';
-import { set } from 'date-fns';
 
 export default function ChatChannelListElement({
     channel,
     setChannel,
     setCurrentFriend,
-    setPasswordPrompt,
+    notifications,
+    setNotifications,
 }: {
     channel: ChannelProps;
     setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
-    setPasswordPrompt: (passwordPrompt: boolean) => void;
+    notifications: number[];
+    setNotifications: (notifications: number[]) => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
@@ -34,9 +35,25 @@ export default function ChatChannelListElement({
                 withCredentials: true,
             },
         );
-
-        console.log(isUserInChannel.data);
         if (isUserInChannel.data === true) {
+            setCurrentFriend(null);
+            setNotifications(notifications.filter((id) => id !== channel.id));
+            setChannel(channel.id);
+            return;
+        }
+
+        const response = await authAxios.get(
+            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/isChannelOpen`,
+            {
+                params: {
+                    idChannel: channel.id,
+                    idUser: user?.id,
+                },
+                withCredentials: true,
+            },
+        );
+        if (response.data === true) {
+            console.log(isUserInChannel.data);
             const response = await authAxios.post(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/joinChannel`,
                 {
@@ -48,26 +65,12 @@ export default function ChatChannelListElement({
                     withCredentials: true,
                 },
             );
-            
             setCurrentFriend(null);
+            setNotifications(notifications.filter((id) => id !== channel.id));
             setChannel(channel.id);
         } else {
-            const response = await authAxios.get(
-                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/isChannelOpen`,
-                {
-                    params: {
-                        idChannel: channel.id,
-                    },
-                    withCredentials: true,
-                },
-            );
-            if (response.data === false) {
-                setActiveInput(true);
-                console.log('input on');
-            } else {
-                setCurrentFriend(null);
-                setChannel(channel.id);
-            }
+            setActiveInput(true);
+            console.log('input on');
         }
     };
 
@@ -85,10 +88,11 @@ export default function ChatChannelListElement({
         );
 
         if (response.data === false) {
-            setPasswordPrompt(true);
+            setActiveInput(false);
             setChannel(0);
         } else {
             setActiveInput(false);
+            setNotifications(notifications.filter((id) => id !== channel.id));
             setChannel(channel.id);
         }
         setInput('');
@@ -124,6 +128,9 @@ export default function ChatChannelListElement({
                 }}
             >
                 {' '}
+                {notifications.includes(channel.id) && (
+                    <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+                )}
                 <svg
                     className="text-blue-600 w-6 h-6"
                     xmlns="http://www.w3.org/2000/svg"

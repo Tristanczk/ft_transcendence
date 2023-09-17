@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
-import { GameInfo } from '../shared/game_info';
+import { GameInfo, UpdateGameEvent } from '../shared/game_info';
 import { ApiResult, KeyEventType, NAVBAR_HEIGHT } from '../shared/misc';
 import MultiClassicMayhem from '../games/multiplayer/MultiClassicMayhem';
 import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
@@ -46,7 +46,13 @@ const GamePage: React.FC = () => {
             setGameInfo(newGameInfo);
         };
 
+        const handleEventGame = (eventGameInfo: UpdateGameEvent) => {
+            console.log(eventGameInfo);
+        };
+
         socket.on('updateGameInfo', handleUpdateGameInfo);
+
+        socket.on('eventGame', handleEventGame);
 
         return () => {
             socket.off('updateGameInfo', handleUpdateGameInfo);
