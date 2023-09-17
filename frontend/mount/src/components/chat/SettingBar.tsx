@@ -29,12 +29,17 @@ export default function SettingBar({
     );
     const blurTimeout = useRef<any>(null);
     const [showInput, setShowInput] = useState(false);
+    const [showAdminList, setShowAdminList] = useState(false);
+    const [activeList, setActiveList] = useState<'admin' | null>(null);
+
     const passwordInputRef = useRef<HTMLInputElement>(null);
     const nameInputRef = useRef<HTMLInputElement>(null);
 
     const [activeInput, setActiveInput] = useState<'password' | 'name' | null>(
         null,
     );
+    const [activeElement, setActiveElement] = useState<'password' | 'name' | 'adminList' | null>(null);
+
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
     const closeAlert = () => {
@@ -94,6 +99,16 @@ export default function SettingBar({
         }
     };
 
+    const handleAdminListClick = () => {
+        if (activeElement !== 'adminList') {
+            setActiveElement('adminList');
+            removeInput();
+            fetchUsers();
+        } else {
+            setActiveElement(null);
+        }
+    };
+
     const isPasswordActive = activeInput === 'password';
     const passwordInputClasses = isPasswordActive
         ? showInput
@@ -107,6 +122,17 @@ export default function SettingBar({
             ? 'opacity-100 pointer-events-auto w-44'
             : 'opacity-0 pointer-events-none w-0'
         : 'opacity-0 pointer-events-none w-0';
+
+    const isAdminListActive = activeList === 'admin';
+    const adminListClasses = activeElement === 'adminList'
+    ? 'transition-all ease-in-out duration-500 opacity-100 pointer-events-auto w-44 max-h-64 overflow-y-auto focus:outline-none focus:border-transparent focus:ring focus:ring-amber-500 border-0 absolute top-0 left-24 text-gray-600 bg-slate-100 rounded-3xl z-40'
+    : 'transition-all ease-in-out duration-500 opacity-0 pointer-events-none absolute top-0 left-24 w-0 h-0';
+
+
+
+
+
+
 
     const editPassword = async () => {
         try {
@@ -242,7 +268,7 @@ export default function SettingBar({
             case 'mute':
                 return handleMuteUser;
             default:
-                return () => {};
+                return () => { };
         }
     };
 
@@ -258,12 +284,6 @@ export default function SettingBar({
     ${isSettingVisible ? 'right-20 opacity-100' : 'right-0 opacity-0'}
     transition-all duration-500 ease-in-out rounded-3xl py-5`}
             >
-                <ChannelUserForm
-                    currentChannel={currentChannel}
-                    channelUsers={channelUsers}
-                    handleClick={getClickHandler()}
-                    setChannelUsers={setChannelUsers}
-                />{' '}
                 <button
                     name="Password"
                     onClick={handlePasswordClick}
@@ -398,11 +418,7 @@ export default function SettingBar({
                 />
                 <button
                     name="Admin"
-                    onClick={() => {
-                        removeInput();
-                        setFormState('admin');
-                        fetchUsers();
-                    }}
+                    onClick={handleAdminListClick}
                     type="button"
                     className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-amber-300"
                 >
@@ -414,7 +430,6 @@ export default function SettingBar({
                         viewBox="0 0 20 20"
                         fill="currentColor"
                     >
-                        {' '}
                         <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
                     </svg>
                 </button>
@@ -481,7 +496,16 @@ export default function SettingBar({
                         <path d="M6 21v-7m-2 2l8 -8l8 8m-2 -2v7" />
                     </svg>
                 </button>
+                <div className={adminListClasses}>
+                    <ChannelUserForm
+                        currentChannel={currentChannel}
+                        channelUsers={channelUsers}
+                        handleClick={getClickHandler()}
+                        setChannelUsers={setChannelUsers}
+                    />{' '}
+                </div>
             </div>
+
         </>
     );
 }
