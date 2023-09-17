@@ -47,6 +47,7 @@ const App: React.FC = () => {
                             <ChatPage
                                 isChatVisible={isChatVisible}
                                 toggleChatVisibility={toggleChatVisibility}
+                                setIsChatVisible={setIsChatVisible}
                             />
                         }
                         <Routes>

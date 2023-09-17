@@ -18,9 +18,11 @@ import { Alert } from '../components/chat/Alert';
 function ChatPage({
     isChatVisible,
     toggleChatVisibility,
+    setIsChatVisible,
 }: {
     isChatVisible: boolean;
     toggleChatVisibility: () => void;
+    setIsChatVisible: (value: boolean) => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
@@ -177,7 +179,9 @@ function ChatPage({
         socket.on('reloadchannels', () => fetchChannels());
         socket.on('signoutchat', () => {
             setChannel(0);
-            toggleChatVisibility();
+            setChannelListSelected(-1);
+            closeChat();
+            setIsChatVisible(false);
         });
 
         return () => {
