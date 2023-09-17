@@ -137,8 +137,10 @@ export class GatewayService
         if (client.isPlaying) {
             if (game.info.state === 'waiting') {
                 return { status: 'waiting', gameId: client.idGamePlaying };
-            } else {
+            } else if (game.info.state === 'playing') {
                 return { status: 'playing', gameId: client.idGamePlaying };
+            } else {
+                return { status: 'finished', gameId: client.idGamePlaying };
             }
         }
         return { status: 'not playing', gameId: null };

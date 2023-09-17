@@ -215,10 +215,10 @@ const NavBar = ({
                     `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/gate/gameStatus/${user?.id}`,
                     { withCredentials: true },
                 );
-                console.log('status', response.data.status);
                 if (response.data.status === 'playing') {
                     setGameId(response.data.gameId);
-                    console.log('gameId', response.data.gameId);
+                } else if (response.data.status === 'finished') {
+                    setGameId(undefined);
                 }
                 setIsLoading(false);
             };
