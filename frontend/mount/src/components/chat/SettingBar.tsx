@@ -3,7 +3,7 @@ import { useUserContext } from '../../context/UserContext';
 import { UserSimplified } from '../../types';
 import ChannelUserForm from './ChannelUserForm';
 import { ChannelProps } from './Messages';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Alert } from './Alert';
 
 export default function SettingBar({
@@ -29,8 +29,8 @@ export default function SettingBar({
     );
     const blurTimeout = useRef<any>(null);
     const [showInput, setShowInput] = useState(false);
-    const [barHidden, setBarHidden] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const passwordInputRef = useRef<HTMLInputElement>(null);
+    const nameInputRef = useRef<HTMLInputElement>(null);
 
     const [activeInput, setActiveInput] = useState<'password' | 'name' | null>(
         null,
@@ -48,12 +48,11 @@ export default function SettingBar({
             setInput('');
             setShowInput(false);
             setActiveInput(null);
-        }, 100) as any;
+        }, 100);
     };
 
     const handleFocus = () => {
         if (blurTimeout.current !== null) clearTimeout(blurTimeout.current);
-        setBarHidden(false);
     };
 
     const removeInput = () => {
@@ -65,30 +64,49 @@ export default function SettingBar({
 
     // PASSWORD
 
+    useEffect(() => {
+        if (showInput && activeInput) {
+            if (activeInput === 'password' && passwordInputRef.current) {
+                passwordInputRef.current.focus();
+            } else if (activeInput === 'name' && nameInputRef.current) {
+                nameInputRef.current.focus();
+            }
+        }
+    }, [showInput, activeInput]);
+
     const handlePasswordClick = () => {
         if (activeInput !== 'password') {
             setActiveInput('password');
+            setShowInput(true);
+        } else {
+            setActiveInput(null);
+            setShowInput(false);
         }
-        setShowInput(prev => {
-            if (!prev && inputRef.current) {
-                inputRef.current.focus();
-            }
-            return !prev;
-        });
+    };
+
+    const handleNameClick = () => {
+        if (activeInput !== 'name') {
+            setActiveInput('name');
+            setShowInput(true);
+        } else {
+            setActiveInput(null);
+            setShowInput(false);
+        }
     };
 
     const isPasswordActive = activeInput === 'password';
     const passwordInputClasses = isPasswordActive
-        ? (showInput ? 'opacity-100 pointer-events-auto w-44' : 'opacity-0 pointer-events-none w-0')
+        ? showInput
+            ? 'opacity-100 pointer-events-auto w-44'
+            : 'opacity-0 pointer-events-none w-0'
         : 'opacity-0 pointer-events-none w-0';
 
-
-    const handleNameClick = () => {
-        if (activeInput === 'name') {
-            setActiveInput(null);
-            setInput('');
-        } else setActiveInput('name');
-    };
+    const isNameActive = activeInput === 'name';
+    const nameInputClasses = isNameActive
+        ? showInput
+            ? 'opacity-100 pointer-events-auto w-44'
+            : 'opacity-0 pointer-events-none w-0'
+        : 'opacity-0 pointer-events-none w-0';
 
     const editPassword = async () => {
         try {
@@ -108,23 +126,6 @@ export default function SettingBar({
         }
     };
 
-    const leaveChannel = async () => {
-        try {
-            const response = await authAxios.patch(
-                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/leaveChannel`,
-                {
-                    id: currentChannel?.id,
-                    idRequester: user?.id,
-                },
-                { withCredentials: true },
-            );
-            handleClose();
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error leaving channel');
-        }
-    };
-
     const editName = async () => {
         try {
             const response = await authAxios.patch(
@@ -139,6 +140,23 @@ export default function SettingBar({
         } catch (error) {
             console.error(error);
             setAlertMessage('Error editing name');
+        }
+    };
+
+    const leaveChannel = async () => {
+        try {
+            const response = await authAxios.patch(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/leaveChannel`,
+                {
+                    id: currentChannel?.id,
+                    idRequester: user?.id,
+                },
+                { withCredentials: true },
+            );
+            handleClose();
+        } catch (error) {
+            console.error(error);
+            setAlertMessage('Error leaving channel');
         }
     };
 
@@ -224,7 +242,7 @@ export default function SettingBar({
             case 'mute':
                 return handleMuteUser;
             default:
-                return () => { };
+                return () => {};
         }
     };
 
@@ -248,9 +266,7 @@ export default function SettingBar({
                 />{' '}
                 <button
                     name="Password"
-                    onClick={() => {
-                        handlePasswordClick();
-                    }}
+                    onClick={handlePasswordClick}
                     type="button"
                     className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-500"
                 >
@@ -275,11 +291,13 @@ export default function SettingBar({
                     </svg>
                 </button>
                 <input
-                    ref={inputRef}
+                    ref={passwordInputRef}
                     value={input}
-                    type='password'
+                    type="password"
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(event) => onKeyPress({ event, exec: editPassword })}
+                    onKeyDown={(event) =>
+                        onKeyPress({ event, exec: editPassword })
+                    }
                     placeholder="Enter password"
                     className={`focus:outline-none focus:border-transparent focus:ring focus:ring-amber-500 border-0 absolute top-1 left-24 text-gray-600 bg-slate-100 rounded-3xl transition-all ease-in-out duration-500 py-2 px-4 z-40 overflow-hidden ${passwordInputClasses}`}
                     readOnly={!isPasswordActive || !showInput}
@@ -364,20 +382,20 @@ export default function SettingBar({
                         <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                     </svg>
                 </button>
-                {activeInput === 'name' && (
-                    <input
-                        type="text"
-                        className="absolute top-48 transform text-slate-500 -translate-y-1/2 left-full ml-4 p-1 border border-gray-300 bg-white rounded-md z-40 transition-all ease-in-out duration-500"
-                        placeholder="Edit channel name"
-                        value={input}
-                        onChange={(e) => {
-                            setInput(e.target.value);
-                        }}
-                        onKeyDown={(event) =>
-                            onKeyPress({ event, exec: editName })
-                        }
-                    />
-                )}
+                <input
+                    ref={nameInputRef}
+                    type="text"
+                    value={input}
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                    }}
+                    onKeyDown={(event) => onKeyPress({ event, exec: editName })}
+                    placeholder="Edit channel name"
+                    className={`focus:outline-none focus:border-transparent focus:ring focus:ring-amber-500 border-0 absolute top-44 left-24 text-gray-600 bg-slate-100 rounded-3xl transition-all ease-in-out duration-500 py-2 px-4 z-40 overflow-hidden ${nameInputClasses}`}
+                    readOnly={!isNameActive || !showInput}
+                    onBlur={handleBlur}
+                    onFocus={handleFocus}
+                />
                 <button
                     name="Admin"
                     onClick={() => {
