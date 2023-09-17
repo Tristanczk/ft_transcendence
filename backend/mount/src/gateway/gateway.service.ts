@@ -129,6 +129,24 @@ export class GatewayService
     private spectators: Record<string, Set<string>> = {};
     private spectating: Record<string, string> = {};
 
+    getGameStatus(userId: number): { status: string; gameId: string } {
+        const client: IndivUser | null = this.users.getIndivUserById(userId);
+        if (!client) {
+            return { status: 'not connected', gameId: null };
+        }
+        const game = this.games[client.idGamePlaying];
+        if (client.isPlaying) {
+            if (game.info.state === 'waiting') {
+                return { status: 'waiting', gameId: client.idGamePlaying };
+            } else if (game.info.state === 'playing') {
+                return { status: 'playing', gameId: client.idGamePlaying };
+            } else {
+                return { status: 'finished', gameId: client.idGamePlaying };
+            }
+        }
+        return { status: 'not playing', gameId: null };
+    }
+
     @SubscribeMessage('joinGame')
     async handleJoinGame(client: Socket, data: JoinGameType) {
         const gameMode: string = data.mode;
@@ -142,11 +160,21 @@ export class GatewayService
         }
         console.log('player ' + playerId + ' want to play');
         if (currentClient.isPlaying) {
-            return {
-                error: `You are already in game ${currentClient.idGamePlaying}`,
-                errorCode: 'alreadyInGame',
-                gameId: currentClient.idGamePlaying,
-            };
+            if (
+                this.games[currentClient.idGamePlaying].info.state === 'waiting'
+            ) {
+                return {
+                    error: `You are already in matchmaking for game ${currentClient.idGamePlaying} in another tab`,
+                    errorCode: 'alreadyInMatchmaking',
+                    gameId: currentClient.idGamePlaying,
+                };
+            } else {
+                return {
+                    error: `You are already in game ${currentClient.idGamePlaying}`,
+                    errorCode: 'alreadyInGame',
+                    gameId: currentClient.idGamePlaying,
+                };
+            }
         }
         if (!isGameMode(gameMode)) {
             return {
@@ -197,7 +225,7 @@ export class GatewayService
             });
             game.playerA.updateStatusUserPlayingDB(true);
         }
-            
+
         if (idPlayerB !== -1) {
             this.server.emit('updateStatus', {
                 idUser: idPlayerB,
@@ -205,7 +233,6 @@ export class GatewayService
             });
             game.playerB.updateStatusUserPlayingDB(true);
         }
-            
     }
 
     liaiseGameToPlayer(
