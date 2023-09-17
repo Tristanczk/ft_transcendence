@@ -249,6 +249,7 @@ function ChatPage({
                         <ChatListHeader
                             selector={setChannelListSelected}
                             handleClose={closeChat}
+                            channelListSelected={channelListSelected}
                         />
                         {channelListSelected < 0 ? (
                             <div className="flex flex-col h-full"></div>

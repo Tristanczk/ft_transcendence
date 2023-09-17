@@ -73,7 +73,7 @@ export default function ChatFriendListElement({
                         textImg={friend.nickname}
                         size={7}
                     />
-                    <div className="friend-name">
+                    <div className="friend-name pl-2 pt-1">
                         <Link to={'/dashboard/' + friend.id}>
                             {friend.nickname}
                         </Link>

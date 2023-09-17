@@ -184,7 +184,7 @@ export default function ChatChannelListElement({
                         <div className="w-3 h-3 bg-red-600 rounded-full"></div>
                     )}
                     <svg
-                        className="text-blue-600 w-6 h-6"
+                        className="text-blue-600 w-6 h-6 hover:scale-110"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         strokeWidth="2"
