@@ -24,7 +24,6 @@ export default function ChannelUserForm({
                     .filter(currentUser => currentUser.id !== user?.id)
                     .map((currentUser) => (
                         <div
-                            key={user.id}
                             className="friend-container flex items-center justify-center cursor-pointer bg-gray-100 hover:bg-gray-200 hover:scale-110 rounded-xl p-2 shadow-md transition-transform transform duration-200 ease-in-out"
                             onClick={() => {
                                 handleClick(currentUser.id);
