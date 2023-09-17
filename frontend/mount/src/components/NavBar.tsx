@@ -8,8 +8,6 @@ import { useWindowSize } from 'usehooks-ts';
 import { NAVBAR_HEIGHT } from '../shared/misc';
 import { WebsocketContext } from '../context/WebsocketContext';
 import axios from 'axios';
-import { set } from 'date-fns';
-import { is } from 'date-fns/locale';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -206,6 +204,7 @@ const NavBar = ({
     const navigate = useNavigate();
     const { user } = useUserContext();
     const [isLoading, setIsLoading] = useState(true);
+    const socket = useContext(WebsocketContext);
 
     useEffect(
         () => () => {
@@ -227,6 +226,18 @@ const NavBar = ({
         },
         [user, setGameId, isLoading],
     );
+
+    useEffect(() => {
+        socket.on('endGame', (data: { message: string }) => {
+            if (data.message === 'game ended') {
+                setGameId(undefined);
+            }
+        });
+
+        return () => {
+            socket.off('endGame');
+        };
+    }, [socket]);
 
     const handleRejoin = () => {
         navigate(`/game/${gameId}`);

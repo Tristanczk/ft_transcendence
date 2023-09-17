@@ -24,6 +24,7 @@ import {
     UpdateGameEvent,
 } from 'src/shared/game_info';
 import { GamesService } from 'src/games/games.service';
+import { emit } from 'process';
 
 const ID_SIZE = 6;
 const ID_BASE = 36;
@@ -485,6 +486,7 @@ export class GatewayService
 
     //aborted: -1: classic ending, 0: aborted by A, 1: aborted by B
     async handleEndGame(game: Game, update: boolean, aborted: number) {
+        this.emitUpdateToPlayers(game, 'endGame', { message: 'game ended' });
         if (game.playerA && game.playerA.userId !== -1)
             this.server.emit('updateStatus', {
                 idUser: game.playerA.userId,
