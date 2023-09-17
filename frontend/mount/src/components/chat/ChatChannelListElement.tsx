@@ -127,14 +127,16 @@ export default function ChatChannelListElement({
             {alertMessage && (
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
-            <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
+            <div className="friend-container">
                 <div className="flex items-center">
                     <div className="ml-2 flex flex-col">
-                        <div className="leading-snug text-sm text-gray-900 font-medium">
+                        <div className="friend-name">
+                            {' '}
+                            <span>{channel.name}</span>
                             {activeInput && (
                                 <input
                                     type="password"
-                                    className="relative transform text-slate-500 -translate-y left-full z-50 border border-gray-300 bg-white rounded-md transition-all ease-in-out duration-500 left-0 top-0 right-0"
+                                    className="relative transform text-slate-500 -translate-y z-50 border border-gray-300 bg-white rounded-md transition-all ease-in-out duration-500 left-0 top-0 right-0"
                                     placeholder="Enter password"
                                     value={input}
                                     onChange={(e) => {
@@ -145,7 +147,6 @@ export default function ChatChannelListElement({
                                     }
                                 />
                             )}
-                            <span>{channel.name}</span>
                         </div>
                     </div>
                 </div>

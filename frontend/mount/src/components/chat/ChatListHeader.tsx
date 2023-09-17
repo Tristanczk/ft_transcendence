@@ -1,3 +1,5 @@
+import '../../css/index.css';
+
 export default function ChatListHeader({
     selector,
     handleClose,
@@ -8,18 +10,21 @@ export default function ChatListHeader({
     return (
         <div className="flex items-center justify-between py-2 bg-gray-50 px-3 rounded-tl-3xl rounded-tr-3xl shadow-md">
             <div className="flex items-center space-x-6">
-                <button 
-                    onClick={() => selector(1)} 
-                    className="px-4 py-2 text-lg text-gray-600 hover:text-gray-900 transition duration-400 focus:outline-none">
+                <button
+                    onClick={() => selector(1)}
+                    className="halo-effect rounded-t-3xl px-4 py-2 text-lg text-gray-600 hover:text-gray-900 transition duration-400 focus:outline-none"
+                >
                     Friends
                 </button>
-                <button 
-                    onClick={() => selector(0)} 
-                    className="px-4 py-2 text-lg text-gray-600 hover:text-gray-900 transition duration-400 focus:outline-none">
+
+                <button
+                    onClick={() => selector(0)}
+                    className="halo-effect rounded-t-3xl px-4 py-2 text-lg text-gray-600 hover:text-gray-900 transition duration-400 focus:outline-none"
+                >
                     Channels
                 </button>
             </div>
-            
+
             <button
                 type="button"
                 onClick={handleClose}
@@ -39,5 +44,5 @@ export default function ChatListHeader({
                 </svg>
             </button>
         </div>
-    );    
-};
+    );
+}

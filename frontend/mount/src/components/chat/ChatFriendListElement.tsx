@@ -5,6 +5,7 @@ import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useEffect, useState } from 'react';
 import { Alert } from './Alert';
+import '../../css/index.css';
 
 export default function ChatFriendListElement({
     friend,
@@ -65,31 +66,29 @@ export default function ChatFriendListElement({
             {alertMessage && (
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
-            <div className="p-1 px-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
+            <div className="friend-container">
                 <div className="flex items-center">
                     <ImageFriend
                         userId={friend.id}
                         textImg={friend.nickname}
                         size={7}
                     />
-                    <div className="ml-2 flex flex-col">
-                        <div className="leading-snug text-sm text-gray-900 font-medium">
-                            <Link to={'/dashboard/' + friend.id}>
-                                {friend.nickname}
-                            </Link>
-                        </div>
+                    <div className="friend-name">
+                        <Link to={'/dashboard/' + friend.id}>
+                            {friend.nickname}
+                        </Link>
                     </div>
                 </div>
 
+                {notifications && notifications.includes(channelId) && (
+                    <div className="notification-dot"></div>
+                )}
                 <button
                     onClick={() => {
                         fetchChannelData(friend.id);
                     }}
                 >
                     {' '}
-                    {notifications && notifications.includes(channelId) && (
-                        <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-                    )}
                     <svg
                         className="text-blue-600 w-6 h-6"
                         xmlns="http://www.w3.org/2000/svg"
