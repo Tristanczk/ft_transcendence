@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import {
     ASPECT_RATIO,
     BALL_HEIGHT,
@@ -21,6 +21,8 @@ import {
 } from '../../shared/mayhem_maps';
 import { CANVAS_MARGIN, NAVBAR_HEIGHT, NEARLY_BLACK } from '../../shared/misc';
 import { getCanvasCtx } from './getCanvasCtx';
+import { WebsocketContext } from '../../context/WebsocketContext';
+import { Socket } from 'socket.io-client';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
@@ -195,17 +197,64 @@ const drawTimeRemaining = (
     );
 };
 
+const drawVersus = (
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    players: ClassicMayhemPlayers,
+) => {
+    ctx.fillStyle = 'white';
+    const leftName =
+        players[0]!.name.length > 10
+            ? players[0]!.name.slice(0, 10) + '...'
+            : players[0]!.name;
+    const rightName =
+        players[1]!.name.length > 10
+            ? players[1]!.name.slice(0, 10) + '...'
+            : players[1]!.name;
+    const textSize = 8 + canvas.width / 30;
+    ctx.font = `${textSize}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${leftName}`, canvas.width / 4, canvas.height / 4);
+    ctx.fillText(`${rightName}`, (3 * canvas.width) / 4, canvas.height / 4);
+    const versusSize = 8 + canvas.width / 20;
+    ctx.font = `${versusSize}px monospace`;
+    ctx.fillText(`VS`, canvas.width / 2, canvas.height / 4);
+};
+
+const drawEndScreen = (
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    players: ClassicMayhemPlayers,
+    socket: Socket,
+) => {
+    ctx.fillStyle = 'white';
+    const textSize = 8 + canvas.width / 20;
+    const winner =
+        players[0]!.score > players[1]!.score ? players[0]!.id : players[1]!.id;
+    ctx.font = `${textSize}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(
+        socket.id === winner ? 'Congratulations, you won!' : 'Sorry, you lost!',
+        canvas.width / 2,
+        canvas.height / 2,
+    );
+};
+
 const MultiClassicMayhem = ({
     gameObjects,
     windowWidth,
     windowHeight,
     players,
+    state,
     timeRemaining,
 }: {
     gameObjects: ClassicMayhemGameObjects;
     windowWidth: number;
     windowHeight: number;
     players: ClassicMayhemPlayers;
+    state: string;
     timeRemaining: number;
 }) => {
     const arenaHeight = Math.min(
@@ -213,6 +262,7 @@ const MultiClassicMayhem = ({
         windowHeight - NAVBAR_HEIGHT - CANVAS_MARGIN,
     );
     const arenaWidth = arenaHeight * ASPECT_RATIO;
+    const socket = useContext(WebsocketContext);
 
     const ref = useRef<HTMLCanvasElement | null>(null);
 
@@ -221,16 +271,19 @@ const MultiClassicMayhem = ({
         drawBackground(canvas, ctx);
         drawBar(canvas, ctx, LINE_MARGIN);
         drawBar(canvas, ctx, 1 - LINE_MARGIN - LINE_WIDTH);
-        if (gameObjects.hasNet) drawNet(canvas, ctx);
         if (players[0]) drawPaddle(canvas, ctx, true, players[0].pos);
         if (players[1]) drawPaddle(canvas, ctx, false, players[1].pos);
         drawMayhemMap(canvas, ctx, gameObjects.mayhemMap);
         drawScore(canvas, ctx, players);
-        if (timeRemaining === 0) {
+        if (state === 'finished') {
+            drawEndScreen(canvas, ctx, players, socket);
+        } else if (timeRemaining === 0) {
+            if (gameObjects.hasNet) drawNet(canvas, ctx);
             for (const ball of gameObjects.balls) {
                 drawBall(canvas, ctx, ball.posX, ball.posY);
             }
         } else if (players[0] && players[1]) {
+            drawVersus(canvas, ctx, players);
             drawTimeRemaining(canvas, ctx, timeRemaining);
         }
     });

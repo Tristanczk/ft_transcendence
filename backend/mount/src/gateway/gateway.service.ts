@@ -59,6 +59,8 @@ export type HandlePingProp = {
 export type JoinGameType = {
     mode: string;
     userId: number;
+    userName: string;
+    userElo: number;
 };
 
 @Injectable()
@@ -154,7 +156,11 @@ export class GatewayService
         const playerId: number = data.userId;
         const currentClient: IndivUser | null =
             this.users.getIndivUserBySocketId(client.id);
-
+        const user = await this.prisma.user.findUnique({
+            where: { id: playerId },
+        });
+        const userElo = user ? user.elo : 1000;
+        const userName = user ? user.nickname : 'Anonymous';
         if (!currentClient) {
             console.log('error to handle');
             return;
@@ -185,7 +191,7 @@ export class GatewayService
         }
         for (const game of Object.values(this.games)) {
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
-                game.addPlayer(client.id, false);
+                game.addPlayer(client.id, false, userName, userElo);
                 this.liaiseGameToPlayer(client.id, game, 'B');
 
                 for (const player of game.info.players) {
@@ -198,7 +204,13 @@ export class GatewayService
                 return { gameId: game.id, status: 'joined' };
             }
         }
-        const game = new Game(generateId(this.games), gameMode, client.id);
+        const game = new Game(
+            generateId(this.games),
+            gameMode,
+            client.id,
+            userName,
+            userElo,
+        );
         this.games[game.id] = game;
         this.liaiseGameToPlayer(client.id, game, 'A');
         return { gameId: game.id, status: 'waiting' };

@@ -3,7 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
 import { GameInfo, UpdateGameEvent } from '../shared/game_info';
-import { ApiResult, KeyEventType, NAVBAR_HEIGHT } from '../shared/misc';
+import {
+    ApiResult,
+    KeyEventType,
+    NAVBAR_HEIGHT,
+    PLAYERS_TEXT_SIZE,
+} from '../shared/misc';
 import MultiClassicMayhem from '../games/multiplayer/MultiClassicMayhem';
 import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
 
@@ -15,8 +20,20 @@ const Game = ({
     gameInfo: GameInfo;
     width: number;
     height: number;
-}) =>
-    gameInfo.mode === 'battle' ? (
+}) => {
+    let leftName: string = '',
+        rightName: string = '';
+    if (gameInfo.mode !== 'battle') {
+        leftName =
+            gameInfo.players[0]!.name.length > 10
+                ? gameInfo.players[0]!.name.slice(0, 10) + '...'
+                : gameInfo.players[0]!.name;
+        rightName =
+            gameInfo.players[1]!.name.length > 10
+                ? gameInfo.players[1]!.name.slice(0, 10) + '...'
+                : gameInfo.players[1]!.name;
+    }
+    return gameInfo.mode === 'battle' ? (
         <MultiBattleRoyale
             gameObjects={gameInfo.objects}
             players={gameInfo.players}
@@ -24,14 +41,26 @@ const Game = ({
             windowHeight={height}
         />
     ) : (
-        <MultiClassicMayhem
-            gameObjects={gameInfo.objects}
-            players={gameInfo.players}
-            timeRemaining={gameInfo.timeRemaining}
-            windowWidth={width}
-            windowHeight={height}
-        />
+        <div className="flex flex-col items-center">
+            <div className="flex justify-between w-full">
+                <div className="text-black">
+                    {leftName} ({gameInfo.players[0]?.elo})
+                </div>
+                <div className="text-black">
+                    {rightName} ({gameInfo.players[1]?.elo})
+                </div>
+            </div>
+            <MultiClassicMayhem
+                gameObjects={gameInfo.objects}
+                players={gameInfo.players}
+                state={gameInfo.state}
+                timeRemaining={gameInfo.timeRemaining}
+                windowWidth={width}
+                windowHeight={height}
+            />
+        </div>
     );
+};
 
 const GamePage: React.FC = () => {
     const navigate = useNavigate();
@@ -39,8 +68,8 @@ const GamePage: React.FC = () => {
     const socket = useContext(WebsocketContext);
     const { width, height } = useWindowSize();
     const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
+    const [message, setMessage] = useState<string>('');
 
-    console.log('socket id', socket.id);
     useEffect(() => {
         const handleUpdateGameInfo = (newGameInfo: GameInfo) => {
             setGameInfo(newGameInfo);
@@ -81,13 +110,12 @@ const GamePage: React.FC = () => {
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
 
-		document.addEventListener('keydown', function(event) {
-			if (event.key === "q" || event.key === "Q") {
-				// La touche "Q" a été appuyée
-				socket.emit('quitGame', gameId );
-			}
-		});
-		
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'q' || event.key === 'Q') {
+                // La touche "Q" a été appuyée
+                socket.emit('quitGame', gameId);
+            }
+        });
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
@@ -106,6 +134,17 @@ const GamePage: React.FC = () => {
         });
     }, [gameId, navigate, socket]);
 
+    useEffect(() => {
+        socket.on('eventGame', (data: UpdateGameEvent) => {
+            console.log('message', data.message);
+            setMessage(data.message);
+        });
+
+        return () => {
+            socket.off('eventGame');
+        };
+    });
+
     return (
         <div
             className="w-full flex items-center justify-center"
@@ -120,7 +159,11 @@ const GamePage: React.FC = () => {
             }}
         >
             {gameInfo && (
-                <Game gameInfo={gameInfo} width={width} height={height} />
+                <Game
+                    gameInfo={gameInfo}
+                    width={width}
+                    height={height - PLAYERS_TEXT_SIZE}
+                />
             )}
         </div>
     );

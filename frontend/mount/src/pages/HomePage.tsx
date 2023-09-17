@@ -23,7 +23,10 @@ const joinGame = (
     setMatchmaking: (matchmaking: boolean) => void,
     setErrorMatchmaking: (error: string) => void,
 ) => {
-    const joinGame: JoinGameType = { mode: mode, userId: userId };
+    const joinGame: JoinGameType = {
+        mode: mode,
+        userId: userId,
+    };
     setErrorMatchmaking('');
     socket.emit('joinGame', joinGame, (response: any) => {
         if (response.error) {
@@ -181,7 +184,9 @@ const GameModePage = ({
 }) => {
     const { user } = useUserContext();
     let userId: number = -1;
-    if (user) userId = user.id;
+    if (user) {
+        userId = user.id;
+    }
 
     const buttonParams = {
         socket,
