@@ -1,9 +1,14 @@
 import {
+    BATTLE_BALL_SIZE,
     BATTLE_COLORS,
+    BATTLE_HIT_PADDLE,
+    BATTLE_PADDLE_MARGIN,
     BATTLE_PADDLE_SPEED,
+    BATTLE_PADDLE_WIDTH,
     avoidCollisions,
     getBallSpeedStart,
     getBattleLives,
+    getRandomPlayer,
 } from 'src/shared/battle';
 import {
     BALL_SPEED_START,
@@ -252,47 +257,47 @@ class Game {
             }
         }
         avoidCollisions(players);
-        console.log(this.info.state);
         if (this.info.state !== 'playing' || this.info.timeRemaining > 0)
             return;
         objects.ball.posX += objects.ball.velX * deltaTime;
         objects.ball.posY += objects.ball.velY * deltaTime;
-        console.log(objects.ball);
-        // if (ball.posY <= BALL_LOW || ball.posY >= BALL_HIGH) {
-        //     ball.posY = clamp(ball.posY, BALL_LOW, BALL_HIGH);
-        //     ball.velY = -ball.velY;
-        // }
-        // if (ball.posX >= 1 + BALL_RADIUS) {
-        //     ++this.info.players[0].score;
-        //     this.resetBallClassicMayhem(ball);
-        // } else if (ball.posX <= -BALL_RADIUS) {
-        //     ++this.info.players[1].score;
-        //     this.resetBallClassicMayhem(ball);
-        // }
-        // const winningScore =
-        //     this.info.mode === 'classic'
-        //         ? WINNING_SCORE_CLASSIC
-        //         : WINNING_SCORE_MAYHEM;
-        // if (
-        //     (this.info.players[0].score >= winningScore ||
-        //         this.info.players[1].score >= winningScore) &&
-        //     Math.abs(
-        //         this.info.players[0].score - this.info.players[1].score,
-        //     ) >= 2
+        const centerDist = Math.hypot(objects.ball.posX, objects.ball.posY);
+        if (centerDist >= 1 + BATTLE_BALL_SIZE) {
+            --players[objects.currentPlayer].lives;
+            if (players[objects.currentPlayer].lives === 0) {
+                players = players.filter((_, i) => i !== objects.currentPlayer);
+                objects.currentPlayer = getRandomPlayer(players);
+            } else {
+                objects.currentPlayer = getRandomPlayer(
+                    players,
+                    objects.currentPlayer,
+                );
+            }
+            this.resetBallBattle(objects.ball);
+        }
+        // else if (
+        //     centerDist >= BATTLE_HIT_PADDLE &&
+        //     centerDist <= 1 - BATTLE_PADDLE_MARGIN - BATTLE_PADDLE_WIDTH / 2
         // ) {
-        //     this.info.state = 'finished';
-        //     return;
+        //     let closestHit: number | null = null;
+        //     for (const player of players) {
+        //         const hit = player.hit(ball.pos);
+        //         if (
+        //             hit !== null &&
+        //             (closestHit === null ||
+        //                 Math.abs(hit) < Math.abs(closestHit))
+        //         ) {
+        //             closestHit = hit;
+        //         }
+        //     }
+        //     if (closestHit !== null) {
+        //         ball.bounce(closestHit);
+        //         objects.currentPlayer = getRandomPlayer(
+        //             players,
+        //             objects.currentPlayer,
+        //         );
+        //     }
         // }
-        // const newVelY = this.hitPaddleClassicMayhem(ball, 0) || this.hitPaddleClassicMayhem(ball, 1);
-        // if (newVelY !== null) {
-        //     ball.velX = -(
-        //         ball.velX +
-        //         Math.sign(ball.velX) * BALL_SPEED_INCREMENT
-        //     );
-        //     ball.velY = newVelY;
-        //     ball.posX = clamp(ball.posX, COLLISION_X, 1 - COLLISION_X);
-        // }
-        // this.hitMayhemMap(ball, objects.mayhemMap);
     }
 }
 

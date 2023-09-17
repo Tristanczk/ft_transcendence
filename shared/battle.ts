@@ -80,3 +80,15 @@ export const avoidCollisions = (players: (AnglyBoi | null)[]) => {
         }
     }
 };
+
+export const getRandomPlayer = (
+    players: any[],
+    previousPlayer: number | null = null,
+) => {
+    while (true) {
+        const player = Math.floor(Math.random() * players.length);
+        if (players[player] != null && player !== previousPlayer) {
+            return player;
+        }
+    }
+};

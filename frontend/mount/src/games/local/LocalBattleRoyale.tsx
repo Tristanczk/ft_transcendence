@@ -29,6 +29,7 @@ import {
     getBallSpeedStart,
     getBattleLives,
     avoidCollisions,
+    getRandomPlayer,
 } from '../../shared/battle';
 import { useSearchParams } from 'react-router-dom';
 
@@ -171,18 +172,6 @@ class Ball {
     }
 }
 
-const getRandomPlayer = (
-    numPlayers: number,
-    previousPlayer: number | null = null,
-) => {
-    while (true) {
-        const player = Math.floor(Math.random() * numPlayers);
-        if (player !== previousPlayer) {
-            return player;
-        }
-    }
-};
-
 const gameOver = (p5: P5, arenaSize: number) => {
     p5.textFont('monospace');
     p5.textAlign(p5.CENTER, p5.CENTER);
@@ -218,7 +207,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
         new Player(BATTLE_COLORS[4], 66, 77, 4 * angleIncrement, startLives),
         new Player(BATTLE_COLORS[5], 70, 72, 5 * angleIncrement, startLives),
     ].slice(0, numPlayers);
-    let currentPlayer = getRandomPlayer(numPlayers);
+    let currentPlayer = getRandomPlayer(players);
     let arenaSize = 0;
     let ball: Ball;
     let bgImage: P5.Image;
@@ -257,9 +246,9 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
             --players[currentPlayer].lives;
             if (players[currentPlayer].lives === 0) {
                 players = players.filter((_, i) => i !== currentPlayer);
-                currentPlayer = getRandomPlayer(players.length);
+                currentPlayer = getRandomPlayer(players);
             } else {
-                currentPlayer = getRandomPlayer(players.length, currentPlayer);
+                currentPlayer = getRandomPlayer(players, currentPlayer);
             }
             ball = new Ball(p5, ballSpeedStart);
         } else if (
@@ -279,7 +268,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
             }
             if (closestHit !== null) {
                 ball.bounce(closestHit);
-                currentPlayer = getRandomPlayer(players.length, currentPlayer);
+                currentPlayer = getRandomPlayer(players, currentPlayer);
             }
         }
         drawRepeatingBackground(p5, bgImage);
