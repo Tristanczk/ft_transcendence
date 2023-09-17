@@ -3,7 +3,7 @@ import ImageFriend from '../dashboard/friends/ImgFriend';
 import { ChannelProps } from './Messages';
 import { UserSimplified } from '../../types';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useUserContext } from '../../context/UserContext';
 import { Alert } from './Alert';
 
@@ -25,7 +25,28 @@ export default function ChatChannelListElement({
     const [activeInput, setActiveInput] = useState<boolean>(false);
     const [input, setInput] = useState<string>('');
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
+    const passwordInputRef = useRef<HTMLInputElement>(null);
+    const blurTimeout = useRef<number | null>(null);
 
+    // Focusing the password input when it becomes active
+    useEffect(() => {
+        if (activeInput === true && passwordInputRef.current) {
+            passwordInputRef.current.focus();
+        }
+    }, [activeInput]);
+
+    // Handler for when input loses focus
+    const handleBlur = () => {
+        blurTimeout.current = window.setTimeout(() => {
+            setActiveInput(false);
+            setInput('');
+        }, 100);
+    };
+
+    // Handler for when input gains focus
+    const handleFocus = () => {
+        if (blurTimeout.current !== null) clearTimeout(blurTimeout.current);
+    };
     const closeAlert = () => {
         setAlertMessage(null);
     };
@@ -139,9 +160,12 @@ export default function ChatChannelListElement({
                                     className="relative transform text-slate-500 -translate-y z-50 border border-gray-300 bg-white rounded-md transition-all ease-in-out duration-500 left-0 top-0 right-0"
                                     placeholder="Enter password"
                                     value={input}
+                                    ref={passwordInputRef}
                                     onChange={(e) => {
                                         setInput(e.target.value);
                                     }}
+                                    onBlur={handleBlur}
+                                    onFocus={handleFocus}
                                     onKeyDown={(event) =>
                                         event.key === 'Enter' && onKeyPress()
                                     }

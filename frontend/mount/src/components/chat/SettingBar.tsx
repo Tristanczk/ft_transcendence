@@ -29,8 +29,7 @@ export default function SettingBar({
     );
     const blurTimeout = useRef<any>(null);
     const [showInput, setShowInput] = useState(false);
-    const [showAdminList, setShowAdminList] = useState(false);
-    const [activeList, setActiveList] = useState<'admin' | null>(null);
+    const [showList, setShowList] = useState(false);
 
     const passwordInputRef = useRef<HTMLInputElement>(null);
     const nameInputRef = useRef<HTMLInputElement>(null);
@@ -38,7 +37,6 @@ export default function SettingBar({
     const [activeInput, setActiveInput] = useState<'password' | 'name' | null>(
         null,
     );
-    const [activeElement, setActiveElement] = useState<'password' | 'name' | 'adminList' | null>(null);
 
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
@@ -67,6 +65,7 @@ export default function SettingBar({
         }
     };
 
+
     // PASSWORD
 
     useEffect(() => {
@@ -82,6 +81,7 @@ export default function SettingBar({
     const handlePasswordClick = () => {
         if (activeInput !== 'password') {
             setActiveInput('password');
+            setShowList(false);
             setShowInput(true);
         } else {
             setActiveInput(null);
@@ -92,6 +92,7 @@ export default function SettingBar({
     const handleNameClick = () => {
         if (activeInput !== 'name') {
             setActiveInput('name');
+            setShowList(false);
             setShowInput(true);
         } else {
             setActiveInput(null);
@@ -99,13 +100,13 @@ export default function SettingBar({
         }
     };
 
-    const handleAdminListClick = () => {
-        if (activeElement !== 'adminList') {
-            setActiveElement('adminList');
+    const handleListClick = () => {
+        if (showList === false) {
+            setShowList(true);
             removeInput();
             fetchUsers();
         } else {
-            setActiveElement(null);
+            setShowList(false);
         }
     };
 
@@ -123,16 +124,10 @@ export default function SettingBar({
             : 'opacity-0 pointer-events-none w-0'
         : 'opacity-0 pointer-events-none w-0';
 
-    const isAdminListActive = activeList === 'admin';
-    const adminListClasses = activeElement === 'adminList'
-    ? 'transition-all ease-in-out duration-500 opacity-100 pointer-events-auto w-44 max-h-64 overflow-y-auto focus:outline-none focus:border-transparent focus:ring focus:ring-amber-500 border-0 absolute top-0 left-24 text-gray-600 bg-slate-100 rounded-3xl z-40'
-    : 'transition-all ease-in-out duration-500 opacity-0 pointer-events-none absolute top-0 left-24 w-0 h-0';
-
-
-
-
-
-
+    const adminListClasses =
+        showList === true
+            ? 'transition-all ease-in-out duration-500 opacity-100 pointer-events-auto w-44 max-h-64 overflow-y-auto focus:outline-none focus:border-transparent focus:ring focus:ring-amber-500 border-0 absolute top-0 left-24 text-gray-600 bg-slate-100 rounded-3xl z-40'
+            : 'transition-all ease-in-out duration-500 opacity-0 pointer-events-none absolute top-0 left-24 w-0 h-0';
 
     const editPassword = async () => {
         try {
@@ -268,7 +263,7 @@ export default function SettingBar({
             case 'mute':
                 return handleMuteUser;
             default:
-                return () => { };
+                return () => {};
         }
     };
 
@@ -327,9 +322,8 @@ export default function SettingBar({
                 <button
                     name="Ban"
                     onClick={() => {
-                        removeInput();
                         setFormState('ban');
-                        fetchUsers();
+                        handleListClick();
                     }}
                     type="button"
                     className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-rose-500"
@@ -418,7 +412,10 @@ export default function SettingBar({
                 />
                 <button
                     name="Admin"
-                    onClick={handleAdminListClick}
+                    onClick={() => {
+                        setFormState('admin');
+                        handleListClick();
+                    }}
                     type="button"
                     className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-amber-300"
                 >
@@ -437,9 +434,8 @@ export default function SettingBar({
                     name="Mute"
                     type="button"
                     onClick={() => {
-                        removeInput();
                         setFormState('mute');
-                        fetchUsers();
+                        handleListClick();
                     }}
                     className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-green-500"
                 >
@@ -505,7 +501,6 @@ export default function SettingBar({
                     />{' '}
                 </div>
             </div>
-
         </>
     );
 }
