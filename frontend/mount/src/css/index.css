@@ -11,7 +11,7 @@
     left: -5px;
     right: -5px;
     bottom: -5px;
-    border: 3px solid transparent;  
+    border: 3px solid transparent;
     border-radius: inherit;   /* To keep rounded corners if button has them */
     transition: 0.3s;
     opacity: 0;   /* Initial state: Completely transparent */
@@ -38,7 +38,6 @@
 
 /* User name and icon styling */
 .friend-name {
-    margin-left: 8px;
     font-weight: 600;
     color: #333;
 }
