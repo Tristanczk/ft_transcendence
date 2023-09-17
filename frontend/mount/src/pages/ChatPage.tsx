@@ -179,6 +179,7 @@
             socket.on('reloadchannels', () => fetchChannels());
             socket.on('reloadchannel', async () => {
                 fetchChannels();
+                setCurrentChannel(null);
                 await fetchChannel();
             });
             socket.on('signoutchat', () => {

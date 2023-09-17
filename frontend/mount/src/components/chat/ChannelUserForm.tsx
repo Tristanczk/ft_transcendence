@@ -1,5 +1,6 @@
 import { ChannelProps } from './Messages';
 import { UserSimplified } from '../../types';
+import { useUserContext } from '../../context/UserContext';
 
 export default function ChannelUserForm({
     currentChannel,
@@ -12,21 +13,24 @@ export default function ChannelUserForm({
     handleClick: (idUser: number) => void;
     setChannelUsers: (users: UserSimplified[]) => void;
 }) {
+    const { user } = useUserContext();
     if (!currentChannel) return <></>;
 
     return (
         <>
             {channelUsers.length > 0 && (
                 <form>
-                    {channelUsers.map((user) => (
+                    {channelUsers
+                    .filter(currentUser => currentUser.id !== user?.id)
+                    .map((currentUser) => (
                         <div
                             onClick={() => {
+                                handleClick(currentUser.id);
                                 setChannelUsers([]);
-                                handleClick(user.id);
                             }}
-                            key={user.id}
+                            key={currentUser.id}
                         >
-                            {user.nickname}
+                            {currentUser.nickname}
                         </div>
                     ))}
                 </form>

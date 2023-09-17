@@ -194,7 +194,7 @@ export class ChatService {
                         id: leaveChannel.id,
                     },
                 });
-                
+
                 this.gateway.server.emit('reloadchannels');
 
                 return updatedChannel;
@@ -289,7 +289,7 @@ export class ChatService {
 
             if (!channel.idAdmin.includes(editChannel.idRequester))
                 throw new Error('Not authorized, Not admin');
-            
+
             if (editChannel.idUser === editChannel.idRequester)
                 throw new Error('Not authorized, Cannot ban yourself');
 
@@ -303,7 +303,7 @@ export class ChatService {
                 data: {
                     idUsers: {
                         set: channel.idUsers.filter(
-                            (id) => id !== editChannel.idRequester,
+                            (id) => id !== editChannel.idUser,
                         ),
                     },
                 },
@@ -352,6 +352,14 @@ export class ChatService {
                 },
             });
 
+            const updatedChannelDto: EditChannelDto = {
+                id: updatedChannel.id,
+                idAdmin: updatedChannel.idAdmin,
+                idUser: updatedChannel.idUsers,
+                isPublic: updatedChannel.isPublic,
+                name: updatedChannel.name,
+            };
+
             channel.idUsers.forEach((id) => {
                 const user = this.gateway.users.getIndivUserById(id);
                 if (user) {
@@ -360,14 +368,6 @@ export class ChatService {
                     });
                 }
             });
-
-            const updatedChannelDto: EditChannelDto = {
-                id: updatedChannel.id,
-                idAdmin: updatedChannel.idAdmin,
-                idUser: updatedChannel.idUsers,
-                isPublic: updatedChannel.isPublic,
-                name: updatedChannel.name,
-            };
             return updatedChannelDto;
         } catch (error) {
             console.log(error);
@@ -396,11 +396,17 @@ export class ChatService {
                     idAdmin: {
                         push: editChannel.idUser,
                     },
-                    idUsers: {
-                        push: editChannel.idUser,
-                    },
                 },
             });
+
+            const user = this.gateway.users.getIndivUserById(
+                editChannel.idUser,
+            );
+            if (user) {
+                user.sockets.forEach((socket) => {
+                    this.gateway.server.to(socket).emit('reloadchannel');
+                });
+            }
 
             const updatedChannelDto: EditChannelDto = {
                 id: updatedChannel.id,
