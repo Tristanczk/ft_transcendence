@@ -5,7 +5,6 @@ import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { useEffect, useState } from 'react';
 import { Alert } from './Alert';
-import '../../css/index.css';
 
 export default function ChatFriendListElement({
     friend,
@@ -66,14 +65,14 @@ export default function ChatFriendListElement({
             {alertMessage && (
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
-            <div className="friend-container">
+            <div className="flex items-center justify-between p-3 border-b border-gray-300 transition-colors duration-300 hover:bg-gray-100">
                 <div className="flex items-center">
                     <ImageFriend
                         userId={friend.id}
                         textImg={friend.nickname}
                         size={7}
                     />
-                    <div className="friend-name pl-2 pt-1">
+                    <div className="no-underline transition-colors duration-300 hover:text-blue-600 text-gray-600 pl-2 pt-1">
                         <Link to={'/dashboard/' + friend.id}>
                             {friend.nickname}
                         </Link>
@@ -81,7 +80,7 @@ export default function ChatFriendListElement({
                 </div>
 
                 {notifications && notifications.includes(channelId) && (
-                    <div className="notification-dot"></div>
+                    <div className="w-2 h-2 bg-rose-500 rounded-full mr-2"></div>
                 )}
                 <button
                     onClick={() => {

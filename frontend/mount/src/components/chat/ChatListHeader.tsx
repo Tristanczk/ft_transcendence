@@ -1,5 +1,3 @@
-import '../../css/index.css';
-
 export default function ChatListHeader({
     selector,
     handleClose,
