@@ -6,52 +6,38 @@ export default function ChatListHeader({
     handleClose: () => void;
 }) {
     return (
-        <div className="flex sm:items-center justify-between py-1 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
-            <div className="relative flex items-center space-x-4">
-                <div className="flex flex-col leading-tight">
-                    <div className="text-2xl mt-1 flex items-center">
-                        <span
-                            onClick={() => selector(1)}
-                            className="text-gray-700 mr-3"
-                        >
-                            Friends
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div className="relative flex items-center space-x-4">
-                <div className="flex flex-col leading-tight">
-                    <div className="text-2xl mt-1 flex items-center">
-                        <span
-                            onClick={() => selector(0)}
-                            className="text-gray-700 mr-3"
-                        >
-                            Channels
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <button
-                    type="button"
-                    onClick={handleClose}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
-                >
-                    <svg
-                        className="h-6 w-6 text-slate-500 hover:text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                    >
-                        {' '}
-                        <path
-                            fillRule="evenodd"
-                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                            clipRule="evenodd"
-                        />
-                    </svg>
+        <div className="flex items-center justify-between py-2 bg-gray-50 px-3 rounded-tl-3xl rounded-tr-3xl shadow-md">
+            <div className="flex items-center space-x-6">
+                <button 
+                    onClick={() => selector(1)} 
+                    className="px-4 py-2 text-lg text-gray-600 hover:text-gray-900 transition duration-400 focus:outline-none">
+                    Friends
                 </button>
+                <button 
+                    onClick={() => selector(0)} 
+                    className="px-4 py-2 text-lg text-gray-600 hover:text-gray-900 transition duration-400 focus:outline-none">
+                    Channels
+                </button>
+            </div>
+            
+            <button
+                type="button"
+                onClick={handleClose}
+                className="inline-flex items-center justify-center rounded-full h-8 w-8 transition duration-400 ease-in-out focus:outline-none bg-gray-200 hover:bg-red-500 transform hover:scale-110"
+            >
+                <svg
+                    className="h-4 w-4 text-gray-700 hover:text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                >
+                    <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                    />
+                </svg>
+            </button>
         </div>
-    );
-}
+    );    
+};

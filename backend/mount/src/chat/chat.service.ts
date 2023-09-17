@@ -352,6 +352,15 @@ export class ChatService {
                 },
             });
 
+            channel.idUsers.forEach((id) => {
+                const user = this.gateway.users.getIndivUserById(id);
+                if (user) {
+                    user.sockets.forEach((socket) => {
+                        this.gateway.server.to(socket).emit('reloadchannel');
+                    });
+                }
+            });
+
             const updatedChannelDto: EditChannelDto = {
                 id: updatedChannel.id,
                 idAdmin: updatedChannel.idAdmin,
@@ -549,18 +558,11 @@ export class ChatService {
                     },
                 });
 
-                console.log('user');
-                console.log(user);
-
                 const userDto: UserSimplifiedDto = {
                     id: user.id,
                     nickname: user.nickname,
                     avatarPath: user.avatarPath,
                 };
-
-                console.log('userDto');
-                console.log(userDto);
-
                 users.push(userDto);
             }
 
@@ -608,11 +610,9 @@ export class ChatService {
 
             console.log(message);
             channel.idUsers.forEach((id) => {
-                console.log('userid: ' + id);
                 const user = this.gateway.users.getIndivUserById(id);
                 if (user) {
                     user.sockets.forEach((socket) => {
-                        console.log('socket: ' + socket);
                         this.gateway.server.to(socket).emit('message', message);
                     });
                 }

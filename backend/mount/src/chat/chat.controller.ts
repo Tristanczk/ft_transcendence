@@ -53,7 +53,6 @@ export class ChatController {
     async getChannelByUsers(
         @Query() getChannel: GetChannelDto,
     ): Promise<ChannelDto | null> {
-        console.log('getChannelByUsers controller');
         return this.chatService.getChannelByUsers(getChannel);
     }
 

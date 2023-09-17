@@ -37,7 +37,7 @@ function ChatPage({
     );
     const [visibleSettings, setVisibleSettings] = useState(false);
     const socket = useContext(WebsocketContext);
-    const [channelListSelected, setChannelListSelected] = useState<number>(-1);
+    const [channelListSelected, setChannelListSelected] = useState<number>(1);
     const [zIndexClass, setZIndexClass] = useState('z-0');
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
@@ -60,7 +60,7 @@ function ChatPage({
     };
 
     const closeChat = () => {
-        setChannelListSelected(-1);
+        setChannelListSelected(1);
         setTimeout(() => setChannel(0), 500);
         toggleChatVisibility();
     };
@@ -177,9 +177,13 @@ function ChatPage({
         socket.on('ban', () => setChannel(0));
         socket.on('reloadfriends', () => fetchFriends());
         socket.on('reloadchannels', () => fetchChannels());
+        socket.on('reloadchannel', async () => {
+            fetchChannels();
+            await fetchChannel();
+        });
         socket.on('signoutchat', () => {
             setChannel(0);
-            setChannelListSelected(-1);
+            setChannelListSelected(1);
             closeChat();
             setIsChatVisible(false);
         });
@@ -240,7 +244,7 @@ function ChatPage({
                 >
                     <div
                         className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
-                            channel ? 'w-104' : 'w-60'
+                            channel ? 'w-104' : 'w-80'
                         }`}
                     >
                         <ChatListHeader
