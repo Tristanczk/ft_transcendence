@@ -24,14 +24,14 @@ export default function ChannelUserForm({
                     .filter(currentUser => currentUser.id !== user?.id)
                     .map((currentUser) => (
                         <div
-                            className="friend-container flex items-center justify-center cursor-pointer bg-gray-100 hover:bg-gray-200 hover:scale-110 rounded-xl p-2 shadow-md transition-transform transform duration-200 ease-in-out"
+                            className="flex items-center justify-between p-4 border-b border-gray-300 transition-colors duration-300 hover:bg-gray-100 flex items-center justify-center cursor-pointer bg-gray-100 hover:bg-gray-200 hover:scale-110 rounded-xl p-2 shadow-md transition-transform transform duration-200 ease-in-out"
                             onClick={() => {
                                 handleClick(currentUser.id);
                                 setChannelUsers([]);
                             }}
                             key={currentUser.id}
                         >
-                            <span className="friend-name text-gray-800 font-medium">{currentUser.nickname}</span>
+                            <span className="no-underline transition-colors duration-300 hover:text-blue-600 text-gray-800 font-medium">{currentUser.nickname}</span>
                         </div>
                     ))}
                 </div>
