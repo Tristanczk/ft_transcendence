@@ -98,7 +98,7 @@ export default function ChannelHeader({
                     className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-200 hover:bg-rose-500 transform hover:scale-110"
                 >
                     <svg
-                        className="h-6 w-6 text-slate-500 hover:text-white"
+                        className="h-6 w-6 text-rose-500 hover:text-white"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
