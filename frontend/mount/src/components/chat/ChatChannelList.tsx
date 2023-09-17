@@ -89,7 +89,9 @@ export default function ChatChannelList({
 
     return (
         <>
-            {alertMessage && <Alert message={alertMessage} onClose={closeAlert} />}
+            {alertMessage && (
+                <Alert message={alertMessage} onClose={closeAlert} />
+            )}
             <div
                 id="list"
                 className={`flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip shadow-xl transition-all duration-500 ${
@@ -102,16 +104,18 @@ export default function ChatChannelList({
                     }`}
                 >
                     {channels &&
-                        channels.map((channel) => (
-                            <ChatChannelListElement
-                                key={channel.id}
-                                channel={channel}
-                                setChannel={setChannel}
-                                setCurrentFriend={setCurrentFriend}
-                                notifications={notifications}
-                                setNotifications={setNotifications}
-                            />
-                        ))}
+                        channels
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .map((channel) => (
+                                <ChatChannelListElement
+                                    key={channel.id}
+                                    channel={channel}
+                                    setChannel={setChannel}
+                                    setCurrentFriend={setCurrentFriend}
+                                    notifications={notifications}
+                                    setNotifications={setNotifications}
+                                />
+                            ))}
                 </div>
             </div>
 

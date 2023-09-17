@@ -54,7 +54,7 @@ export default function ChannelHeader({
                     <button
                         onClick={onClick}
                         type="button"
-                        className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
+                        className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-200 hover:bg-amber-400 transform hover:scale-110"
                     >
                         <svg
                             className="w-6 h-6 rotate-[90deg]"
@@ -72,7 +72,7 @@ export default function ChannelHeader({
                     <button
                         onClick={leaveChannel}
                         type="button"
-                        className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
+                        className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300 transform hover:scale-110"
                     >
                         <svg
                             className="w-6 h-6"
@@ -95,7 +95,7 @@ export default function ChannelHeader({
                 <button
                     type="button"
                     onClick={handleClose}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-200 hover:bg-rose-500 transform hover:scale-110"
                 >
                     <svg
                         className="h-6 w-6 text-slate-500 hover:text-white"
