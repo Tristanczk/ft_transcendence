@@ -268,7 +268,7 @@ export default function SettingBar({
                     name="Password"
                     onClick={handlePasswordClick}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-amber-500"
                 >
                     <svg
                         className="w-6 h-6"
@@ -312,7 +312,7 @@ export default function SettingBar({
                         fetchUsers();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-rose-500"
                 >
                     <svg
                         className="w-6 h-6"
@@ -340,7 +340,7 @@ export default function SettingBar({
                         leaveChannel();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-rose-500"
                 >
                     <svg
                         className="w-6 h-6"
@@ -364,7 +364,7 @@ export default function SettingBar({
                         handleNameClick();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-amber-300"
                 >
                     <svg
                         width="24"
@@ -404,7 +404,7 @@ export default function SettingBar({
                         fetchUsers();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-amber-300"
                 >
                     <svg
                         className="w-6 h-6"
@@ -426,7 +426,7 @@ export default function SettingBar({
                         setFormState('mute');
                         fetchUsers();
                     }}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-green-500"
                 >
                     <svg
                         className="w-6 h-6"
@@ -458,7 +458,7 @@ export default function SettingBar({
                     onClick={() => {
                         removeInput();
                     }}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-green-500"
                 >
                     <svg
                         className="w-6 h-6"
