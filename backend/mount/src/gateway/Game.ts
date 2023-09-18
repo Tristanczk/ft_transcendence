@@ -366,7 +366,7 @@ class Game {
         const now = performance.now();
         const deltaTime = now - this.lastUpdate;
         this.lastUpdate = now;
-        this.info.timeRemaining = Math.max(0, 3000 - (now - this.timeStarted));
+        this.info.timeRemaining = Math.max(0, 5000 - (now - this.timeStarted));
         if (this.info.timeRemaining > 0) return;
         if (this.info.mode === 'battle') {
             this.updateBattle(this.info.objects, deltaTime); // TODO this.info.players

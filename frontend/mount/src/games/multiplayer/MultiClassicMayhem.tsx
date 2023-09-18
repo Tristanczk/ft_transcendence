@@ -23,6 +23,9 @@ import { CANVAS_MARGIN, NAVBAR_HEIGHT, NEARLY_BLACK } from '../../shared/misc';
 import { getCanvasCtx } from './getCanvasCtx';
 import { WebsocketContext } from '../../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
+import { text } from 'stream/consumers';
+import { time } from 'console';
+import { clamp } from '../../shared/functions';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
@@ -46,8 +49,13 @@ const drawBar = (
     );
 };
 
-const drawNet = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
-    ctx.fillStyle = 'white';
+const drawNet = (
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    timeRemaining: number,
+) => {
+    const opacity = clamp((3000 - timeRemaining) / 3000, 0, 1);
+    ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
     const rectSize = BALL_SIZE * canvas.width;
     const halfRectSize = 0.5 * rectSize;
     const midX = 0.5 * canvas.width - halfRectSize;
@@ -66,7 +74,10 @@ const drawPaddle = (
     ctx: CanvasRenderingContext2D,
     left: boolean,
     y: number,
+    timeRemaining: number,
 ) => {
+    const opacity = clamp((3000 - timeRemaining) / 3000, 0, 1);
+    ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
     const paddleMargin = (PADDLE_MARGIN_X + PADDLE_WIDTH / 2) * canvas.width;
     const w = PADDLE_WIDTH * canvas.width;
     const h = PADDLE_HEIGHT * canvas.height;
@@ -101,6 +112,7 @@ const drawMayhemCell = (
     mayhemCell: MayhemCell,
     x: number,
     y: number,
+    timeRemaining: number,
 ) => {
     if (mayhemCell.lives > 0) {
         const cellSize = Math.ceil(BALL_WIDTH * ctx.canvas.width);
@@ -114,15 +126,15 @@ const drawMayhemCell = (
             mayhemCell.lives === mayhemCell.startingLives
                 ? 1
                 : mayhemCell.lives / mayhemCell.startingLives;
-
+        const opacity = clamp((3000 - timeRemaining) / 3000, 0, 1);
         for (let i = 0; i < cellSize; i++) {
             for (let j = 0; j < cellSize; j++) {
                 if (ratio === 1 || Math.random() <= ratio) {
                     const pixelIdx =
                         4 * (screenX + i + (screenY + j) * ctx.canvas.width);
-                    imageData.data[pixelIdx] = 255;
-                    imageData.data[pixelIdx + 1] = 255;
-                    imageData.data[pixelIdx + 2] = 255;
+                    imageData.data[pixelIdx] = opacity * 255;
+                    imageData.data[pixelIdx + 1] = opacity * 255;
+                    imageData.data[pixelIdx + 2] = opacity * 255;
                     imageData.data[pixelIdx + 3] = 255;
                 }
             }
@@ -134,11 +146,12 @@ const drawMayhemMap = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     mayhemMap: MayhemMap,
+    timeRemaining: number,
 ) => {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     mayhemMap.forEach((row, y) => {
         row.forEach((mayhemCell, x) => {
-            drawMayhemCell(ctx, imageData, mayhemCell, x, y);
+            drawMayhemCell(ctx, imageData, mayhemCell, x, y, timeRemaining);
         });
     });
     ctx.putImageData(imageData, 0, 0);
@@ -148,8 +161,10 @@ const drawScore = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     players: ClassicMayhemPlayers,
+    timeRemaining: number,
 ) => {
-    ctx.fillStyle = 'white';
+    const opacity = clamp((3000 - timeRemaining) / 3000, 0, 1);
+    ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
     const textSize = 8 + canvas.width / 30;
     ctx.font = `${textSize}px monospace`;
     ctx.textAlign = 'center';
@@ -201,8 +216,10 @@ const drawVersus = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     players: ClassicMayhemPlayers,
+    timeRemaining: number,
 ) => {
-    ctx.fillStyle = 'white';
+    const opacity = (timeRemaining - 3000) / 2000;
+    ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
     const leftName =
         players[0]!.name.length > 10
             ? players[0]!.name.slice(0, 10) + '...'
@@ -211,15 +228,19 @@ const drawVersus = (
         players[1]!.name.length > 10
             ? players[1]!.name.slice(0, 10) + '...'
             : players[1]!.name;
-    const textSize = 8 + canvas.width / 30;
+    const textSize = 8 + canvas.width / 20;
     ctx.font = `${textSize}px monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(`${leftName}`, canvas.width / 4, canvas.height / 4);
-    ctx.fillText(`${rightName}`, (3 * canvas.width) / 4, canvas.height / 4);
-    const versusSize = 8 + canvas.width / 20;
+    ctx.fillText(
+        `${rightName}`,
+        (3 * canvas.width) / 4,
+        (3 * canvas.height) / 4,
+    );
+    const versusSize = 8 + canvas.width / 10;
     ctx.font = `${versusSize}px monospace`;
-    ctx.fillText(`VS`, canvas.width / 2, canvas.height / 4);
+    ctx.fillText(`VS`, canvas.width / 2, canvas.height / 2);
 };
 
 const drawEndScreen = (
@@ -228,10 +249,10 @@ const drawEndScreen = (
     players: ClassicMayhemPlayers,
     socket: Socket,
 ) => {
-    ctx.fillStyle = 'white';
     const textSize = 8 + canvas.width / 20;
     const winner =
         players[0]!.score > players[1]!.score ? players[0]!.id : players[1]!.id;
+    ctx.fillStyle = 'white';
     ctx.font = `${textSize}px monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -271,20 +292,38 @@ const MultiClassicMayhem = ({
         drawBackground(canvas, ctx);
         drawBar(canvas, ctx, LINE_MARGIN);
         drawBar(canvas, ctx, 1 - LINE_MARGIN - LINE_WIDTH);
-        if (players[0]) drawPaddle(canvas, ctx, true, players[0].pos);
-        if (players[1]) drawPaddle(canvas, ctx, false, players[1].pos);
-        drawMayhemMap(canvas, ctx, gameObjects.mayhemMap);
-        drawScore(canvas, ctx, players);
-        if (state === 'finished') {
-            drawEndScreen(canvas, ctx, players, socket);
-        } else if (timeRemaining === 0) {
-            if (gameObjects.hasNet) drawNet(canvas, ctx);
-            for (const ball of gameObjects.balls) {
-                drawBall(canvas, ctx, ball.posX, ball.posY);
-            }
-        } else if (players[0] && players[1]) {
-            drawVersus(canvas, ctx, players);
-            drawTimeRemaining(canvas, ctx, timeRemaining);
+        if (players[0] && players[1] && timeRemaining > 3000)
+            drawVersus(canvas, ctx, players, timeRemaining);
+        else {
+            if (players[0])
+                drawPaddle(canvas, ctx, true, players[0].pos, timeRemaining);
+            if (players[1])
+                drawPaddle(canvas, ctx, false, players[1].pos, timeRemaining);
+            drawScore(canvas, ctx, players, timeRemaining);
+            if (state === 'finished') {
+                drawEndScreen(canvas, ctx, players, socket);
+            } else if (timeRemaining === 0) {
+                drawMayhemMap(
+                    canvas,
+                    ctx,
+                    gameObjects.mayhemMap,
+                    timeRemaining,
+                );
+                if (gameObjects.hasNet) drawNet(canvas, ctx, timeRemaining);
+                for (const ball of gameObjects.balls) {
+                    drawBall(canvas, ctx, ball.posX, ball.posY);
+                }
+            } else if (players[0] && players[1] && timeRemaining <= 3000) {
+                drawMayhemMap(
+                    canvas,
+                    ctx,
+                    gameObjects.mayhemMap,
+                    timeRemaining,
+                );
+                if (gameObjects.hasNet) drawNet(canvas, ctx, timeRemaining);
+                drawTimeRemaining(canvas, ctx, timeRemaining);
+            } else if (players[0] && players[1])
+                drawVersus(canvas, ctx, players, timeRemaining);
         }
     });
 
