@@ -162,9 +162,6 @@ function UserMenu() {
                                 <span className="block text-sm text-white">
                                     {user?.nickname}
                                 </span>
-                                {/* <span className="block text-sm truncate text-gray-400">
-                                    login if different
-                                </span> */}
                             </div>
                             <ul className="py-2">
                                 <MenuLink
