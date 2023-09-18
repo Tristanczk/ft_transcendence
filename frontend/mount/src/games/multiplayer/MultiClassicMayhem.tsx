@@ -169,7 +169,7 @@ const drawScore = (
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(
-        `${players[0] ? players[0].score : ' '}   ${
+        `${players[0] ? players[0].score : ' '} - ${
             players[1] ? players[1].score : ' '
         }`,
         canvas.width / 2,
