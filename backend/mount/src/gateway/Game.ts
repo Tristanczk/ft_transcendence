@@ -29,7 +29,6 @@ import {
     WINNING_SCORE_CLASSIC,
     WINNING_SCORE_MAYHEM,
     BALL_SPEED_INCREMENT,
-    BALL_HEIGHT,
     BALL_WIDTH,
 } from 'src/shared/classic_mayhem';
 import {
@@ -294,7 +293,6 @@ class Game {
         objects.ball.posY += objects.ball.velY * deltaTime;
         const centerDist = Math.hypot(objects.ball.posX, objects.ball.posY);
         if (centerDist >= 1 + BATTLE_BALL_SIZE) {
-            console.log(players[objects.currentPlayer]);
             --players[objects.currentPlayer].lives;
             if (players[objects.currentPlayer].lives === 0) {
                 this.info.players = players.filter(
