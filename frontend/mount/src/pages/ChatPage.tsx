@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { UserSimplified } from '../types';
 import { useUserContext } from '../context/UserContext';
@@ -13,13 +13,16 @@ import ChatFriendList from '../components/chat/ChatFriendList';
 import ChatChannelList from '../components/chat/ChatChannelList';
 import ChannelHeader from '../components/chat/ChannelHeader';
 import { WebsocketContext } from '../context/WebsocketContext';
+import { Alert } from '../components/chat/Alert';
 
 function ChatPage({
     isChatVisible,
     toggleChatVisibility,
+    setIsChatVisible,
 }: {
     isChatVisible: boolean;
     toggleChatVisibility: () => void;
+    setIsChatVisible: (value: boolean) => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
@@ -34,7 +37,7 @@ function ChatPage({
     );
     const [visibleSettings, setVisibleSettings] = useState(false);
     const socket = useContext(WebsocketContext);
-    const [channelListSelected, setChannelListSelected] = useState<number>(-1);
+    const [channelListSelected, setChannelListSelected] = useState<number>(1);
     const [zIndexClass, setZIndexClass] = useState('z-0');
     const [friendsList, setFriendsList] = useState<UserSimplified[] | null>(
         null,
@@ -42,6 +45,11 @@ function ChatPage({
     const [channelUsers, setChannelUsers] = useState<UserSimplified[]>([]);
     const [blockedUsers, setBlockedUsers] = useState<number[]>([]);
     const [notifications, setNotifications] = useState<number[]>([]);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+    const closeAlert = () => {
+        setAlertMessage(null);
+    };
 
     useEffect(() => {
         setVisibleSettings(false);
@@ -52,7 +60,7 @@ function ChatPage({
     };
 
     const closeChat = () => {
-        setChannelListSelected(-1);
+        setChannelListSelected(1);
         setTimeout(() => setChannel(0), 500);
         toggleChatVisibility();
     };
@@ -71,7 +79,7 @@ function ChatPage({
         }
     }, [visibleSettings]);
 
-    const fetchFriends = async () => {
+    const fetchFriends = useCallback(async () => {
         try {
             const response = await authAxios.get(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/friends/me`,
@@ -80,10 +88,11 @@ function ChatPage({
             setFriendsList(response.data);
         } catch (error) {
             console.error(error);
+            //setAlertMessage('Failed to fetch friends. Please try again.');  it activate on first page load??
         }
-    };
+    }, [authAxios]);
 
-    const fetchChannels = async () => {
+    const fetchChannels = useCallback(async () => {
         try {
             const response = await authAxios.get(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannels`,
@@ -94,32 +103,43 @@ function ChatPage({
             setChannels(response.data);
         } catch (error) {
             console.error(error);
+            setAlertMessage('Failed to fetch channels. Please try again.');
         }
-    };
+    }, [authAxios]);
 
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async () => {
         console.log('fetching messages for', channel);
-        const response = await authAxios.get(
-            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getMessages/${channel}`,
-            {
-                params: { idUser: user?.id },
-                withCredentials: true,
-            },
-        );
-        if (!response.data) setMessages([]);
-        setMessages(response.data);
-    };
+        try {
+            const response = await authAxios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getMessages/${channel}`,
+                {
+                    params: { idUser: user?.id },
+                    withCredentials: true,
+                },
+            );
+            if (!response.data) setMessages([]);
+            setMessages(response.data);
+        } catch (error) {
+            console.error(error);
+            setAlertMessage('Failed to fetch messages. Please try again.');
+        }
+    }, [authAxios, channel, user?.id]);
 
-    const fetchChannel = async () => {
-        const response = await authAxios.get(
-            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelById`,
-            {
-                params: { idChannel: channel, idUser: user?.id },
-                withCredentials: true,
-            },
-        );
-        setCurrentChannel(response.data);
-    };
+    const fetchChannel = useCallback(async () => {
+        try {
+            const response = await authAxios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelById`,
+                {
+                    params: { idChannel: channel, idUser: user?.id },
+                    withCredentials: true,
+                },
+            );
+            setCurrentChannel(response.data);
+        } catch (error) {
+            console.error(error);
+            setAlertMessage('Failed to fetch channel. Please try again.');
+        }
+    }, [authAxios, channel, user?.id]);
 
     const settingEnabler = () => {
         setVisibleSettings(!visibleSettings);
@@ -132,40 +152,65 @@ function ChatPage({
         else setMessages([]);
         fetchChannel();
         setChannelUsers([]);
-    }, [channel, currentFriend, channelListSelected]);
+    }, [channel, fetchFriends, fetchChannels, fetchMessages, fetchChannel]); //friendsList but it breaks the chat settings
 
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
             console.log('received message', message);
-            if (!notifications.includes(message.idChannel)) {
-                setNotifications((oldNotifications) => [
-                    ...oldNotifications,
-                    message.idChannel,
-                ]);
+
+            if (message.idSender !== user?.id) {
+                if (message.idChannel !== channel) {
+                    if (!notifications.includes(message.idChannel)) {
+                        setNotifications((oldNotifications) => [
+                            ...oldNotifications,
+                            message.idChannel,
+                        ]);
+                    }
+                }
             }
-            setMessages((oldMessages) => [...oldMessages, message]);
+
+            if (message.idChannel === channel)
+                setMessages((oldMessages) => [...oldMessages, message]);
         };
 
         socket.on('message', messageListener);
         socket.on('ban', () => setChannel(0));
+        socket.on('reloadfriends', () => fetchFriends());
+        socket.on('reloadchannels', () => fetchChannels());
+        socket.on('reloadchannel', async () => {
+            fetchChannels();
+            setCurrentChannel(null);
+            await fetchChannel();
+        });
+        socket.on('signoutchat', () => {
+            setChannel(0);
+            setChannelListSelected(1);
+            closeChat();
+            setIsChatVisible(false);
+        });
 
         return () => {
             socket.off('message', messageListener);
         };
-    }, [socket]);
+    }, [socket, fetchFriends, notifications, user?.id, channel]);
 
     const fetchUsers = async () => {
-        const response = await authAxios.get(
-            `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelUsers`,
-            {
-                params: { idChannel: currentChannel?.id, idUser: user?.id },
-                withCredentials: true,
-            },
-        );
-        console.log('fetchUsers');
-        console.log(response.data);
+        try {
+            const response = await authAxios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getChannelUsers`,
+                {
+                    params: { idChannel: currentChannel?.id, idUser: user?.id },
+                    withCredentials: true,
+                },
+            );
+            console.log('fetchUsers');
+            console.log(response.data);
 
-        setChannelUsers(response.data);
+            setChannelUsers(response.data);
+        } catch (error) {
+            console.error(error);
+            setAlertMessage('Failed to fetch users. Please try again.');
+        }
     };
 
     const handleBlock = async () => {
@@ -183,93 +228,95 @@ function ChatPage({
     };
 
     return (
-        <div
-            className={`fixed z-10 inset-y-0 right-0 w-100 text-white transform top-28 ${
-                isChatVisible
-                    ? 'translate-x-0 transition-transform duration-500'
-                    : 'translate-x-full transition-transform duration-200'
-            }`}
-        >
+        <>
+            {alertMessage && (
+                <Alert message={alertMessage} onClose={closeAlert} />
+            )}
             <div
-                className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex"
-                style={{ marginRight: '36px' }}
+                className={`fixed z-10 inset-y-0 right-0 w-100 text-white transform top-24 ${isChatVisible
+                    ? 'translate-x-0 transition-transform duration-500 ease-in-out'
+                    : 'translate-x-full transition-transform duration-200 ease-in-out'
+                    }`}
             >
                 <div
-                    className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
-                        channel ? 'w-104' : 'w-60'
-                    }`}
+                    className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex"
+                    style={{ marginRight: '36px' }}
                 >
-                    <ChatListHeader
-                        selector={setChannelListSelected}
-                        handleClose={closeChat}
-                    />
-                    {channelListSelected < 0 ? (
-                        <div className="flex flex-col h-full"></div>
-                    ) : channelListSelected ? (
-                        <ChatFriendList
-                            friends={friendsList}
-                            channel={channel}
-                            setChannel={setChannel}
-                            setCurrentFriend={setCurrentFriend}
-                            notifications={notifications}
-                            setNotifications={setNotifications}
-                        />
-                    ) : (
-                        <ChatChannelList
-                            channels={channels}
-                            setChannel={setChannel}
-                            setCurrentFriend={setCurrentFriend}
-                            channel={channel}
-                            notifications={notifications}
-                            setNotifications={setNotifications}
-                        />
-                    )}
                     <div
-                        className={`chat-content 
-                              ${
-                                  channel
-                                      ? 'opacity-100 delay-0'
-                                      : 'opacity-0 delay-500'
-                              } 
-                                  ${
-                                      channel
-                                          ? 'visible delay-500'
-                                          : 'invisible delay-0'
-                                  } 
-                                ${channel ? 'h-auto' : 'h-0'}
-                                transition-opacity transition-visibility transition-height duration-500`}
+                        className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${channel ? 'w-104' : 'w-80'
+                            }`}
                     >
-                        {currentFriend ? (
-                            <MessagesHeader
+                        <ChatListHeader
+                            selector={setChannelListSelected}
+                            handleClose={closeChat}
+                            channelListSelected={channelListSelected}
+                        />
+                        {channelListSelected < 0 ? (
+                            <div className="flex flex-col h-full"></div>
+                        ) : channelListSelected ? (
+                            <ChatFriendList
+                                friends={friendsList}
                                 channel={channel}
-                                currentFriend={currentFriend}
-                                handleClose={handleClose}
-                                handleBlock={handleBlock}
+                                setChannel={setChannel}
+                                setCurrentFriend={setCurrentFriend}
+                                notifications={notifications}
+                                setNotifications={setNotifications}
                             />
                         ) : (
-                            <ChannelHeader
+                            <ChatChannelList
+                                channels={channels}
+                                setChannel={setChannel}
+                                setCurrentFriend={setCurrentFriend}
                                 channel={channel}
-                                currentChannel={currentChannel}
-                                handleClose={handleClose}
-                                onClick={settingEnabler}
+                                notifications={notifications}
+                                setNotifications={setNotifications}
                             />
                         )}
-                        <Messages
-                            messages={messages}
-                            isSettingVisible={visibleSettings}
-                            zIndexClass={zIndexClass}
-                            currentChannel={currentChannel}
-                            handleClose={handleClose}
-                            channelUsers={channelUsers}
-                            fetchUsers={fetchUsers}
-                            blockedUsers={blockedUsers}
-                            setChannelUsers={setChannelUsers}
-                        />
-                        <MessageInput idChannel={channel} />
+                        <div
+                            className={`chat-content
+                                ${channel
+                                    ? 'opacity-100 delay-0'
+                                    : 'opacity-0 delay-500'
+                                }
+                                    ${channel
+                                    ? 'visible delay-500'
+                                    : 'invisible delay-0'
+                                }
+                                    ${channel ? 'h-auto' : 'h-0'}
+                                    transition-opacity transition-visibility transition-height duration-500`}
+                        >
+                            {currentFriend ? (
+                                <MessagesHeader
+                                    channel={channel}
+                                    currentFriend={currentFriend}
+                                    handleClose={handleClose}
+                                    handleBlock={handleBlock}
+                                />
+                            ) : (
+                                <ChannelHeader
+                                    channel={channel}
+                                    currentChannel={currentChannel}
+                                    handleClose={handleClose}
+                                    onClick={settingEnabler}
+                                />
+                            )}
+                            <Messages
+                                messages={messages}
+                                isSettingVisible={visibleSettings}
+                                zIndexClass={zIndexClass}
+                                currentChannel={currentChannel}
+                                handleClose={handleClose}
+                                channelUsers={channelUsers}
+                                fetchUsers={fetchUsers}
+                                blockedUsers={blockedUsers}
+                                setChannelUsers={setChannelUsers}
+                            />
+                            <MessageInput idChannel={channel} />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

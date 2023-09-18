@@ -1,4 +1,4 @@
-import { EMPTY_MAP, MayhemMap } from './mayhem_maps';
+import { EMPTY_MAP, MayhemMap, randomMap } from './mayhem_maps';
 
 export type GameState = 'waiting' | 'playing' | 'finished';
 
@@ -54,7 +54,7 @@ export const getDefaultMayhemObjects = (): ClassicMayhemGameObjects => ({
         { ...DEFAULT_CLASSIC_MAYHEM_BALL },
         { ...DEFAULT_CLASSIC_MAYHEM_BALL },
     ],
-    mayhemMap: EMPTY_MAP,
+    mayhemMap: randomMap(),
     hasNet: false,
 });
 

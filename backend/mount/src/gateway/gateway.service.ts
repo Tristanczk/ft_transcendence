@@ -463,11 +463,9 @@ export class GatewayService
 
     @Interval(1000 / 60)
     async notifyUsers() {
-        let retourUpdate: string = null;
         for (const game of Object.values(this.games)) {
             if (game.info.state !== 'finished') {
-                retourUpdate = game.update();
-                if (retourUpdate === 'finished') {
+                if (game.update() === 'finished') {
                     this.handleEndGame(game, true, -1);
                 }
                 this.emitUpdateToPlayers(game, 'updateGameInfo', game.info);
@@ -565,16 +563,5 @@ export class GatewayService
                 game.playerB.updateStatusUserPlayingDB(false);
         }
         delete this.games[game.id];
-    }
-
-    @SubscribeMessage('message')
-    handleMessage(@MessageBody() messageBody: CreateMessageDto) {
-        /*
-        get all user of messageBody.idChannel
-        for each user
-            for socket in user
-                this.socket.to(userid).emit('message', messageBody)
-        */
-        console.log(messageBody);
     }
 }

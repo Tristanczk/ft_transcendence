@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { useUserContext } from '../context/UserContext';
@@ -6,11 +6,41 @@ import ImageFriend from './dashboard/friends/ImgFriend';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { useWindowSize } from 'usehooks-ts';
 import { NAVBAR_HEIGHT } from '../shared/misc';
-import { WebsocketContext } from '../context/WebsocketContext';
 import axios from 'axios';
 
+const TextNavLink: React.FC<{
+    innerDivStyle: string;
+    isActive: boolean;
+    title: string;
+}> = ({ innerDivStyle, isActive, title }) => (
+    <div
+        className={`${innerDivStyle} ${
+            isActive
+                ? 'bg-blue-700 bg-transparent p-0 text-blue-500'
+                : 'p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700'
+        }`}
+    >
+        {title}
+    </div>
+);
+
+const ImgNavLink: React.FC<{
+    innerDivStyle: string;
+    isActive: boolean;
+    icon: string;
+    title: string;
+}> = ({ innerDivStyle, isActive, icon, title }) => (
+    <div
+        className={`${innerDivStyle} ${
+            isActive ? 'inset shadow-inner bg-indigo-700' : ''
+        }`}
+    >
+        <img src={icon} className="w-6 h-6 mx-1" alt={`${title} icon`} />
+    </div>
+);
+
 const NavLink: React.FC<{
-    title: ReactNode;
+    title: string;
     current: string;
     link: string;
     icon: string;
@@ -24,27 +54,18 @@ const NavLink: React.FC<{
         <li>
             <Link to={link}>
                 {showText ? (
-                    <div
-                        className={`${innerDivStyle} ${
-                            isActive
-                                ? 'bg-blue-700 bg-transparent p-0 text-blue-500'
-                                : 'p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700'
-                        }`}
-                    >
-                        {title}
-                    </div>
+                    <TextNavLink
+                        innerDivStyle={innerDivStyle}
+                        isActive={isActive}
+                        title={title}
+                    />
                 ) : (
-                    <div
-                        className={`${innerDivStyle} ${
-                            isActive ? 'inset shadow-inner bg-indigo-700' : ''
-                        }`}
-                    >
-                        <img
-                            src={icon}
-                            className="w-6 h-6 mx-1"
-                            alt={`${title} icon`}
-                        />
-                    </div>
+                    <ImgNavLink
+                        innerDivStyle={innerDivStyle}
+                        isActive={isActive}
+                        icon={icon}
+                        title={title}
+                    />
                 )}
             </Link>
         </li>
@@ -163,9 +184,6 @@ function UserMenu() {
                                 <span className="block text-sm text-white">
                                     {user?.nickname}
                                 </span>
-                                {/* <span className="block text-sm truncate text-gray-400">
-                                    login if different
-                                </span> */}
                             </div>
                             <ul className="py-2">
                                 <MenuLink

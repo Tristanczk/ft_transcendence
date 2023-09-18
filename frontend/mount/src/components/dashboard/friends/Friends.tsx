@@ -5,6 +5,7 @@ import ShowTitleFriends from './ShowTitleFriends';
 import AddFriendElem from './AddFriendElem';
 import { useAuthAxios } from '../../../context/AuthAxiosContext';
 import { useUserContext } from '../../../context/UserContext';
+import { Alert } from '../../chat/Alert';
 
 interface FriendsProps {
     currUser: User;
@@ -17,6 +18,11 @@ function Friends({ currUser }: FriendsProps) {
     const [change, setChange] = useState<boolean>(false);
     const { user } = useUserContext();
     const authAxios = useAuthAxios();
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+    const closeAlert = () => {
+        setAlertMessage(null);
+    };
 
     useEffect(() => {
         const fetchFriends = async () => {
@@ -44,7 +50,7 @@ function Friends({ currUser }: FriendsProps) {
             setFriendsList(response.data);
         } catch (error) {
             setFriendsList(null);
-            // console.error(error);
+            setAlertMessage('Error fetching friends list');
         }
     };
 
@@ -74,7 +80,7 @@ function Friends({ currUser }: FriendsProps) {
             }
             getMyFriends();
             setChange(true);
-        } else alert("You can't add yourself as a friend!");
+        } else setAlertMessage("You can't add yourself as a friend!");
     };
 
     const handleDeleteFriendClick = async (event: any, idToDelete: number) => {
@@ -91,6 +97,7 @@ function Friends({ currUser }: FriendsProps) {
             // console.log(response.data);
         } catch (error) {
             console.error(error);
+            setAlertMessage('Error deleting friend');
         }
         getMyFriends();
         setChange(true);
@@ -98,6 +105,9 @@ function Friends({ currUser }: FriendsProps) {
 
     return (
         <>
+            {alertMessage && (
+                <Alert message={alertMessage} onClose={closeAlert} />
+            )}
             <div>
                 <ShowTitleFriends
                     friendsList={friendsList}

@@ -12,8 +12,7 @@ import { CreateMessageDto, MessageDto } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
 import { ChannelDto, ChannelIdDto, MuteUserDto } from './dto/channel.dto';
 import { GetChannelDto } from './dto/getchannel.dto';
-import { channel } from 'diagnostics_channel';
-import { EditUserDto } from 'src/user/dto';
+
 import { GatewayService } from 'src/gateway/gateway.service';
 import { UserSimplifiedDto } from './dto/usersimplifieddto';
 import { Interval } from '@nestjs/schedule';
@@ -38,6 +37,8 @@ export class ChatService {
                 name: createChannelDto.name,
             },
         });
+
+        this.gateway.server.emit('reloadchannels');
 
         return {
             idUser: createChannelDto.idUser,
@@ -193,6 +194,9 @@ export class ChatService {
                         id: leaveChannel.id,
                     },
                 });
+
+                this.gateway.server.emit('reloadchannels');
+
                 return updatedChannel;
             }
 
@@ -285,7 +289,7 @@ export class ChatService {
 
             if (!channel.idAdmin.includes(editChannel.idRequester))
                 throw new Error('Not authorized, Not admin');
-            
+
             if (editChannel.idUser === editChannel.idRequester)
                 throw new Error('Not authorized, Cannot ban yourself');
 
@@ -299,7 +303,7 @@ export class ChatService {
                 data: {
                     idUsers: {
                         set: channel.idUsers.filter(
-                            (id) => id !== editChannel.idRequester,
+                            (id) => id !== editChannel.idUser,
                         ),
                     },
                 },
@@ -355,6 +359,15 @@ export class ChatService {
                 isPublic: updatedChannel.isPublic,
                 name: updatedChannel.name,
             };
+
+            channel.idUsers.forEach((id) => {
+                const user = this.gateway.users.getIndivUserById(id);
+                if (user) {
+                    user.sockets.forEach((socket) => {
+                        this.gateway.server.to(socket).emit('reloadchannel');
+                    });
+                }
+            });
             return updatedChannelDto;
         } catch (error) {
             console.log(error);
@@ -383,11 +396,17 @@ export class ChatService {
                     idAdmin: {
                         push: editChannel.idUser,
                     },
-                    idUsers: {
-                        push: editChannel.idUser,
-                    },
                 },
             });
+
+            const user = this.gateway.users.getIndivUserById(
+                editChannel.idUser,
+            );
+            if (user) {
+                user.sockets.forEach((socket) => {
+                    this.gateway.server.to(socket).emit('reloadchannel');
+                });
+            }
 
             const updatedChannelDto: EditChannelDto = {
                 id: updatedChannel.id,
@@ -545,18 +564,11 @@ export class ChatService {
                     },
                 });
 
-                console.log('user');
-                console.log(user);
-
                 const userDto: UserSimplifiedDto = {
                     id: user.id,
                     nickname: user.nickname,
                     avatarPath: user.avatarPath,
                 };
-
-                console.log('userDto');
-                console.log(userDto);
-
                 users.push(userDto);
             }
 
@@ -604,11 +616,9 @@ export class ChatService {
 
             console.log(message);
             channel.idUsers.forEach((id) => {
-                console.log('userid: ' + id);
                 const user = this.gateway.users.getIndivUserById(id);
                 if (user) {
                     user.sockets.forEach((socket) => {
-                        console.log('socket: ' + socket);
                         this.gateway.server.to(socket).emit('message', message);
                     });
                 }
