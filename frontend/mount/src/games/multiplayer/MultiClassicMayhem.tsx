@@ -13,6 +13,7 @@ import {
 import {
     ClassicMayhemGameObjects,
     ClassicMayhemPlayers,
+    eloVariation,
 } from '../../shared/game_info';
 import {
     MayhemCell,
@@ -247,6 +248,7 @@ const drawEndScreen = (
     ctx: CanvasRenderingContext2D,
     players: ClassicMayhemPlayers,
     socket: Socket,
+    varElo: eloVariation | null,
 ) => {
     const textSize = 8 + canvas.width / 20;
     const winner =
@@ -258,8 +260,31 @@ const drawEndScreen = (
     ctx.fillText(
         socket.id === winner ? 'Congratulations, you won!' : 'Sorry, you lost!',
         canvas.width / 2,
-        canvas.height / 2,
+        canvas.height * 0.3,
     );
+    if (varElo) {
+        const eloSize = 8 + canvas.width / 40;
+        ctx.font = `${eloSize}px monospace`;
+        ctx.fillText(
+            socket.id === players[0]!.id
+                ? `Elo: ${players[0]!.elo} -> ${
+                      players[0]!.elo + varElo.varEloLeft
+                  } (${
+                      varElo.varEloLeft > 0
+                          ? `+${varElo.varEloLeft}`
+                          : varElo.varEloLeft
+                  })`
+                : `Elo: ${players[1]!.elo} -> ${
+                      players[1]!.elo + varElo.varEloRight
+                  } (${
+                      varElo.varEloRight > 0
+                          ? `+${varElo.varEloRight}`
+                          : varElo.varEloRight
+                  })`,
+            canvas.width / 2,
+            canvas.height * 0.5,
+        );
+    }
 };
 
 const drawEndButtons = (
@@ -273,7 +298,7 @@ const drawEndButtons = (
         width: canvas.width * 0.3,
         height: canvas.height * 0.1,
         x: (canvas.width * 0.7) / 2,
-        y: canvas.height * 0.7,
+        y: canvas.height * 0.72,
         text: 'Go to homepage',
         onClick: () => {
             navigate('/');
@@ -283,7 +308,7 @@ const drawEndButtons = (
         width: canvas.width * 0.3,
         height: canvas.height * 0.1,
         x: (canvas.width * 0.7) / 2,
-        y: canvas.height * 0.55,
+        y: canvas.height * 0.6,
         text: 'Play again',
         onClick: () => {
             navigate(`/?replay=${mode}`);
@@ -358,6 +383,7 @@ const MultiClassicMayhem = ({
     players,
     state,
     timeRemaining,
+    varElo,
 }: {
     gameObjects: ClassicMayhemGameObjects;
     windowWidth: number;
@@ -366,6 +392,7 @@ const MultiClassicMayhem = ({
     players: ClassicMayhemPlayers;
     state: string;
     timeRemaining: number;
+    varElo: eloVariation | null;
 }) => {
     const arenaHeight = Math.min(
         (windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
@@ -391,7 +418,7 @@ const MultiClassicMayhem = ({
                 drawPaddle(canvas, ctx, false, players[1].pos, timeRemaining);
             drawScore(canvas, ctx, players, timeRemaining);
             if (state === 'finished') {
-                drawEndScreen(canvas, ctx, players, socket);
+                drawEndScreen(canvas, ctx, players, socket, varElo);
                 drawEndButtons(canvas, ctx, navigate, mode);
             } else if (timeRemaining === 0) {
                 drawMayhemMap(

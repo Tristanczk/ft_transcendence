@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
-import { GameInfo, UpdateGameEvent } from '../shared/game_info';
+import { GameInfo, UpdateGameEvent, eloVariation } from '../shared/game_info';
 import {
     ApiResult,
     KeyEventType,
@@ -14,10 +14,12 @@ import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
 
 const Game = ({
     gameInfo,
+    varElo,
     width,
     height,
 }: {
     gameInfo: GameInfo;
+    varElo: eloVariation | null;
     width: number;
     height: number;
 }) => {
@@ -44,10 +46,46 @@ const Game = ({
         <div className="flex flex-col items-center">
             <div className="flex justify-between w-full">
                 <div className="text-black">
-                    {leftName} ({gameInfo.players[0]?.elo})
+                    {leftName} (
+                    {varElo
+                        ? gameInfo.players[0]!.elo + varElo.varEloLeft
+                        : gameInfo.players[0]!.elo}
+                    {varElo && (
+                        <span
+                            className={
+                                varElo.varEloLeft > 0
+                                    ? 'text-green-500'
+                                    : 'text-red-500'
+                            }
+                        >
+                            {' '}
+                            {varElo!.varEloLeft > 0
+                                ? `+${varElo!.varEloLeft}`
+                                : varElo!.varEloLeft}
+                        </span>
+                    )}
+                    )
                 </div>
                 <div className="text-black">
-                    {rightName} ({gameInfo.players[1]?.elo})
+                    {rightName} (
+                    {varElo
+                        ? gameInfo.players[1]!.elo + varElo.varEloRight
+                        : gameInfo.players[1]!.elo}
+                    {varElo && (
+                        <span
+                            className={
+                                varElo.varEloRight > 0
+                                    ? 'text-green-500'
+                                    : 'text-red-500'
+                            }
+                        >
+                            {' '}
+                            {varElo!.varEloRight > 0
+                                ? `+${varElo!.varEloRight}`
+                                : varElo!.varEloRight}
+                        </span>
+                    )}
+                    )
                 </div>
             </div>
             <MultiClassicMayhem
@@ -56,6 +94,7 @@ const Game = ({
                 players={gameInfo.players}
                 state={gameInfo.state}
                 timeRemaining={gameInfo.timeRemaining}
+                varElo={varElo}
                 windowWidth={width}
                 windowHeight={height}
             />
@@ -70,6 +109,7 @@ const GamePage: React.FC = () => {
     const { width, height } = useWindowSize();
     const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
     const [message, setMessage] = useState<string>('');
+    const [varElo, setVarElo] = useState<eloVariation | null>(null);
 
     useEffect(() => {
         const handleUpdateGameInfo = (newGameInfo: GameInfo) => {
@@ -137,13 +177,18 @@ const GamePage: React.FC = () => {
 
     useEffect(() => {
         socket.on('eventGame', (data: UpdateGameEvent) => {
-            console.log('message', data.message);
             setMessage(data.message);
         });
 
         return () => {
             socket.off('eventGame');
         };
+    });
+
+    useEffect(() => {
+        socket.on('varElo', (data: eloVariation) => {
+            setVarElo(data);
+        });
     });
 
     return (
@@ -162,6 +207,7 @@ const GamePage: React.FC = () => {
             {gameInfo && (
                 <Game
                     gameInfo={gameInfo}
+                    varElo={varElo}
                     width={width}
                     height={height - PLAYERS_TEXT_SIZE}
                 />

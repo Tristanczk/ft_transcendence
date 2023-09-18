@@ -22,6 +22,7 @@ import {
     ClassicMayhemPlayers,
     GameInfo,
     UpdateGameEvent,
+    eloVariation,
 } from 'src/shared/game_info';
 import { GamesService } from 'src/games/games.service';
 import { emit } from 'process';
@@ -519,6 +520,7 @@ export class GatewayService
             let scoreA: number = 0;
             let scoreB: number = 0;
             let result: boolean = false;
+            let reversed: boolean = false;
 
             if (game.playerA.sockets.includes(players[0].id)) {
                 scoreA = players[0].score;
@@ -526,18 +528,27 @@ export class GatewayService
             } else {
                 scoreA = players[1].score;
                 scoreB = players[0].score;
+                reversed = true;
             }
             result = scoreA > scoreB ? true : false;
             if (aborted === 0) result = false;
             else if (aborted === 1) result = true;
 
             try {
-                await this.gamesService.updateGame(game.idGameStat, {
-                    scoreA: scoreA,
-                    scoreB: scoreB,
-                    won: result,
-                    aborted: aborted === -1 ? false : true,
-                });
+                const response = await this.gamesService.updateGame(
+                    game.idGameStat,
+                    {
+                        scoreA: scoreA,
+                        scoreB: scoreB,
+                        won: result,
+                        aborted: aborted === -1 ? false : true,
+                    },
+                );
+                const varElo: eloVariation = {
+                    varEloLeft: reversed ? response.varEloB : response.varEloA,
+                    varEloRight: reversed ? response.varEloA : response.varEloB,
+                };
+                this.emitUpdateToPlayers(game, 'varElo', varElo);
             } catch (error) {}
         }
 
