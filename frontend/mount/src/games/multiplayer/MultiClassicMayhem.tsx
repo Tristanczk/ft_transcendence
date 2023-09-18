@@ -26,6 +26,8 @@ import { Socket } from 'socket.io-client';
 import { text } from 'stream/consumers';
 import { time } from 'console';
 import { clamp } from '../../shared/functions';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { on } from 'events';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
@@ -263,6 +265,68 @@ const drawEndScreen = (
     );
 };
 
+const drawHomeButton = (
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    navigate: NavigateFunction,
+) => {
+    const textSize = 8 + canvas.width / 50;
+    const HomeButton = {
+        width: canvas.width * 0.3,
+        height: canvas.height * 0.1,
+        x: (canvas.width * 0.7) / 2,
+        y: canvas.height * 0.7,
+        onClick: () => {
+            navigate('/');
+        },
+    };
+    ctx.fillStyle = 'white';
+    ctx.fillRect(
+        HomeButton.x,
+        HomeButton.y,
+        HomeButton.width,
+        HomeButton.height,
+    );
+    ctx.fillStyle = 'black';
+    ctx.font = `${textSize}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(
+        'Go to homepage',
+        canvas.width / 2,
+        HomeButton.y + 0.5 * HomeButton.height,
+    );
+
+    canvas.addEventListener('mousemove', (event) => {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        if (
+            mouseX >= HomeButton.x &&
+            mouseX <= HomeButton.x + HomeButton.width &&
+            mouseY >= HomeButton.y &&
+            mouseY <= HomeButton.y + HomeButton.height
+        ) {
+            canvas.style.cursor = 'pointer';
+        } else {
+            canvas.style.cursor = 'auto';
+        }
+    });
+
+    canvas.addEventListener('click', (event) => {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+        if (
+            mouseX >= HomeButton.x &&
+            mouseX <= HomeButton.x + HomeButton.width &&
+            mouseY >= HomeButton.y &&
+            mouseY <= HomeButton.y + HomeButton.height
+        ) {
+            HomeButton.onClick();
+        }
+    });
+};
+
 const MultiClassicMayhem = ({
     gameObjects,
     windowWidth,
@@ -284,6 +348,7 @@ const MultiClassicMayhem = ({
     );
     const arenaWidth = arenaHeight * ASPECT_RATIO;
     const socket = useContext(WebsocketContext);
+    const navigate = useNavigate();
 
     const ref = useRef<HTMLCanvasElement | null>(null);
 
@@ -302,6 +367,7 @@ const MultiClassicMayhem = ({
             drawScore(canvas, ctx, players, timeRemaining);
             if (state === 'finished') {
                 drawEndScreen(canvas, ctx, players, socket);
+                drawHomeButton(canvas, ctx, navigate);
             } else if (timeRemaining === 0) {
                 drawMayhemMap(
                     canvas,
