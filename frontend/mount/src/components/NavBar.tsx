@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { useUserContext } from '../context/UserContext';
@@ -7,6 +7,7 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import { useWindowSize } from 'usehooks-ts';
 import { NAVBAR_HEIGHT } from '../shared/misc';
 import axios from 'axios';
+import { WebsocketContext } from '../context/WebsocketContext';
 
 const TextNavLink: React.FC<{
     innerDivStyle: string;
