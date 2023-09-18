@@ -1,6 +1,10 @@
 import {
     BATTLE_BALL_SIZE,
+    BATTLE_BALL_SPEED_INCREMENT,
     BATTLE_COLORS,
+    BATTLE_DEFAULT_PADDLE_SIZE,
+    BATTLE_HIT_ANGLE_FACTOR,
+    BATTLE_HIT_LEEWAY,
     BATTLE_HIT_PADDLE,
     BATTLE_PADDLE_MARGIN,
     BATTLE_PADDLE_SPEED,
@@ -34,6 +38,7 @@ import {
     randomChoice,
     randomFloat,
     randomInt,
+    angleDist,
 } from 'src/shared/functions';
 import {
     GameInfo,
@@ -128,6 +133,9 @@ class Game {
             this.timeStarted = performance.now();
             if (this.info.mode === 'battle') {
                 this.resetBallBattle(this.info.objects.ball);
+                this.info.objects.currentPlayer = getRandomPlayer(
+                    this.info.players,
+                );
             } else {
                 for (const ball of this.info.objects.balls) {
                     this.resetBallClassicMayhem(ball);
@@ -240,6 +248,29 @@ class Game {
         ball.velY = Math.sin(angle) * ballSpeedStart;
     }
 
+    private hitPaddleBattle(player: BattlePlayer, ball: MultiBall) {
+        const ballAngle = Math.atan2(ball.posY, ball.posX);
+        const angleDiff = angleDist(player.angle, ballAngle);
+        const limit =
+            BATTLE_DEFAULT_PADDLE_SIZE + BATTLE_BALL_SIZE * BATTLE_HIT_LEEWAY;
+        return Math.abs(angleDiff) <= limit ? angleDiff / limit : null;
+    }
+
+    private bounceBattle(ball: MultiBall, hit: number) {
+        const posMag = Math.hypot(ball.posY, ball.posX);
+        const posFactor = BATTLE_HIT_PADDLE / posMag;
+        ball.posX *= posFactor;
+        ball.posY *= posFactor;
+        const newVelAngle =
+            Math.atan2(ball.posY, ball.posX) +
+            Math.PI -
+            hit * BATTLE_HIT_ANGLE_FACTOR;
+        const newVelMag =
+            Math.hypot(ball.velX, ball.velY) + BATTLE_BALL_SPEED_INCREMENT;
+        ball.velX = Math.cos(newVelAngle) * newVelMag;
+        ball.velY = Math.sin(newVelAngle) * newVelMag;
+    }
+
     private updateBattle(
         players: BattlePlayers,
         objects: BattleGameObjects,
@@ -263,41 +294,44 @@ class Game {
         objects.ball.posY += objects.ball.velY * deltaTime;
         const centerDist = Math.hypot(objects.ball.posX, objects.ball.posY);
         if (centerDist >= 1 + BATTLE_BALL_SIZE) {
+            console.log(players[objects.currentPlayer]);
             --players[objects.currentPlayer].lives;
             if (players[objects.currentPlayer].lives === 0) {
-                players = players.filter((_, i) => i !== objects.currentPlayer);
-                objects.currentPlayer = getRandomPlayer(players);
+                this.info.players = players.filter(
+                    (_, i) => i !== objects.currentPlayer,
+                );
+                objects.currentPlayer = getRandomPlayer(this.info.players);
             } else {
                 objects.currentPlayer = getRandomPlayer(
-                    players,
+                    this.info.players,
                     objects.currentPlayer,
                 );
             }
             this.resetBallBattle(objects.ball);
+        } else if (
+            centerDist >= BATTLE_HIT_PADDLE &&
+            centerDist <= 1 - BATTLE_PADDLE_MARGIN - BATTLE_PADDLE_WIDTH / 2
+        ) {
+            let closestHit: number | null = null;
+            for (const player of players) {
+                if (!player) continue;
+                const hit = this.hitPaddleBattle(player, objects.ball);
+                if (
+                    hit !== null &&
+                    (closestHit === null ||
+                        Math.abs(hit) < Math.abs(closestHit))
+                ) {
+                    closestHit = hit;
+                }
+            }
+            if (closestHit !== null) {
+                this.bounceBattle(objects.ball, closestHit);
+                objects.currentPlayer = getRandomPlayer(
+                    this.info.players,
+                    objects.currentPlayer,
+                );
+            }
         }
-        // else if (
-        //     centerDist >= BATTLE_HIT_PADDLE &&
-        //     centerDist <= 1 - BATTLE_PADDLE_MARGIN - BATTLE_PADDLE_WIDTH / 2
-        // ) {
-        //     let closestHit: number | null = null;
-        //     for (const player of players) {
-        //         const hit = player.hit(ball.pos);
-        //         if (
-        //             hit !== null &&
-        //             (closestHit === null ||
-        //                 Math.abs(hit) < Math.abs(closestHit))
-        //         ) {
-        //             closestHit = hit;
-        //         }
-        //     }
-        //     if (closestHit !== null) {
-        //         ball.bounce(closestHit);
-        //         objects.currentPlayer = getRandomPlayer(
-        //             players,
-        //             objects.currentPlayer,
-        //         );
-        //     }
-        // }
     }
 }
 
