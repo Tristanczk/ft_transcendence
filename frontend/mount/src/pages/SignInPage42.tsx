@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import TwoFactorForm from '../components/TwoFactorForm';
+import TwoFactorForm from '../components/Auth/TwoFactorForm';
 import { useUserContext } from '../context/UserContext';
 import { NAVBAR_HEIGHT } from '../shared/misc';
 

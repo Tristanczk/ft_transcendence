@@ -23,11 +23,8 @@ import { CANVAS_MARGIN, NAVBAR_HEIGHT, NEARLY_BLACK } from '../../shared/misc';
 import { getCanvasCtx } from './getCanvasCtx';
 import { WebsocketContext } from '../../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
-import { text } from 'stream/consumers';
-import { time } from 'console';
 import { clamp } from '../../shared/functions';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
-import { on } from 'events';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
@@ -265,46 +262,64 @@ const drawEndScreen = (
     );
 };
 
-const drawHomeButton = (
+const drawEndButtons = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     navigate: NavigateFunction,
+    mode: string,
 ) => {
     const textSize = 8 + canvas.width / 50;
-    const HomeButton = {
+    const homeButton = {
         width: canvas.width * 0.3,
         height: canvas.height * 0.1,
         x: (canvas.width * 0.7) / 2,
         y: canvas.height * 0.7,
+        text: 'Go to homepage',
         onClick: () => {
             navigate('/');
         },
     };
-    ctx.fillStyle = 'white';
-    ctx.fillRect(
-        HomeButton.x,
-        HomeButton.y,
-        HomeButton.width,
-        HomeButton.height,
-    );
-    ctx.fillStyle = 'black';
-    ctx.font = `${textSize}px monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(
-        'Go to homepage',
-        canvas.width / 2,
-        HomeButton.y + 0.5 * HomeButton.height,
-    );
+    const replayButton = {
+        width: canvas.width * 0.3,
+        height: canvas.height * 0.1,
+        x: (canvas.width * 0.7) / 2,
+        y: canvas.height * 0.55,
+        text: 'Play again',
+        onClick: () => {
+            navigate(`/?replay=${mode}`);
+        },
+    };
+    for (const buttonParams of [homeButton, replayButton]) {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(
+            buttonParams.x,
+            buttonParams.y,
+            buttonParams.width,
+            buttonParams.height,
+        );
+        ctx.fillStyle = 'black';
+        ctx.font = `${textSize}px monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(
+            buttonParams.text,
+            canvas.width / 2,
+            buttonParams.y + 0.5 * buttonParams.height,
+        );
+    }
 
     canvas.addEventListener('mousemove', (event) => {
         const mouseX = event.clientX - canvas.getBoundingClientRect().left;
         const mouseY = event.clientY - canvas.getBoundingClientRect().top;
         if (
-            mouseX >= HomeButton.x &&
-            mouseX <= HomeButton.x + HomeButton.width &&
-            mouseY >= HomeButton.y &&
-            mouseY <= HomeButton.y + HomeButton.height
+            (mouseX >= homeButton.x &&
+                mouseX <= homeButton.x + homeButton.width &&
+                mouseY >= homeButton.y &&
+                mouseY <= homeButton.y + homeButton.height) ||
+            (mouseX >= replayButton.x &&
+                mouseX <= replayButton.x + replayButton.width &&
+                mouseY >= replayButton.y &&
+                mouseY <= replayButton.y + replayButton.height)
         ) {
             canvas.style.cursor = 'pointer';
         } else {
@@ -317,12 +332,20 @@ const drawHomeButton = (
         const mouseY = event.clientY - canvas.getBoundingClientRect().top;
 
         if (
-            mouseX >= HomeButton.x &&
-            mouseX <= HomeButton.x + HomeButton.width &&
-            mouseY >= HomeButton.y &&
-            mouseY <= HomeButton.y + HomeButton.height
+            mouseX >= homeButton.x &&
+            mouseX <= homeButton.x + homeButton.width &&
+            mouseY >= homeButton.y &&
+            mouseY <= homeButton.y + homeButton.height
         ) {
-            HomeButton.onClick();
+            homeButton.onClick();
+        }
+        if (
+            mouseX >= replayButton.x &&
+            mouseX <= replayButton.x + replayButton.width &&
+            mouseY >= replayButton.y &&
+            mouseY <= replayButton.y + replayButton.height
+        ) {
+            replayButton.onClick();
         }
     });
 };
@@ -331,6 +354,7 @@ const MultiClassicMayhem = ({
     gameObjects,
     windowWidth,
     windowHeight,
+    mode,
     players,
     state,
     timeRemaining,
@@ -338,6 +362,7 @@ const MultiClassicMayhem = ({
     gameObjects: ClassicMayhemGameObjects;
     windowWidth: number;
     windowHeight: number;
+    mode: string;
     players: ClassicMayhemPlayers;
     state: string;
     timeRemaining: number;
@@ -367,7 +392,7 @@ const MultiClassicMayhem = ({
             drawScore(canvas, ctx, players, timeRemaining);
             if (state === 'finished') {
                 drawEndScreen(canvas, ctx, players, socket);
-                drawHomeButton(canvas, ctx, navigate);
+                drawEndButtons(canvas, ctx, navigate, mode);
             } else if (timeRemaining === 0) {
                 drawMayhemMap(
                     canvas,

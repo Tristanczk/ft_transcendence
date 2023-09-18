@@ -52,6 +52,7 @@ const Game = ({
             </div>
             <MultiClassicMayhem
                 gameObjects={gameInfo.objects}
+                mode={gameInfo.mode}
                 players={gameInfo.players}
                 state={gameInfo.state}
                 timeRemaining={gameInfo.timeRemaining}

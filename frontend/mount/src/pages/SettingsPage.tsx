@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import ToggleButton from '../components/ToggleButton';
+import ToggleButton from '../components/Auth/ToggleButton';
 import Button from '../components/Button';
 import { useForm } from 'react-hook-form';
-import ErrorsFormField from '../components/ErrorsFormField';
-import TwoFactorModal, { ModalInputs } from '../components/TwoFactorModal';
+import ErrorsFormField from '../components/Auth/ErrorsFormField';
+import TwoFactorModal, { ModalInputs } from '../components/Auth/TwoFactorModal';
 import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
 import AvatarUploader from '../components/user/AvatarUpload';

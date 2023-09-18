@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import TwoFactorForm from '../components/TwoFactorForm';
-import LoginForm from '../components/LoginForm';
+import TwoFactorForm from '../components/Auth/TwoFactorForm';
+import LoginForm from '../components/Auth/LoginForm';
 import { NAVBAR_HEIGHT } from '../shared/misc';
 
 const SignInPage: React.FC = () => {
