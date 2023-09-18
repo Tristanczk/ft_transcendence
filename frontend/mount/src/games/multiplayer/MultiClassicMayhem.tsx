@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import {
     ASPECT_RATIO,
     BALL_HEIGHT,
-    BALL_SIZE,
     BALL_WIDTH,
     LINE_MARGIN,
     LINE_WIDTH,
@@ -46,12 +45,12 @@ const drawBar = (
 
 const drawNet = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
     ctx.fillStyle = 'white';
-    const rectSize = BALL_SIZE * canvas.width;
+    const rectSize = BALL_WIDTH * canvas.width;
     const halfRectSize = 0.5 * rectSize;
     const midX = 0.5 * canvas.width - halfRectSize;
     const midY = 0.5 * canvas.height - halfRectSize;
     const limit = (LINE_MARGIN + LINE_WIDTH) * canvas.height - halfRectSize;
-    const step = 2 * BALL_SIZE * canvas.width;
+    const step = 2 * BALL_WIDTH * canvas.width;
     const symmetric = canvas.height + rectSize;
     for (let y = midY; y >= limit; y -= step) {
         ctx.fillRect(midX, y, rectSize, rectSize);
@@ -82,7 +81,7 @@ const drawBall = (
     ballPosX: number,
     ballPosY: number,
 ) => {
-    const ballSize = BALL_SIZE * canvas.width;
+    const ballSize = BALL_WIDTH * canvas.width;
     const halfBallSize = 0.5 * ballSize;
     ctx.fillStyle = 'white';
     ctx.fillRect(

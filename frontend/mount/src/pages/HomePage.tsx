@@ -5,8 +5,6 @@ import { Socket } from 'socket.io-client';
 import { GameMode, NAVBAR_HEIGHT } from '../shared/misc';
 import { useUserContext } from '../context/UserContext';
 
-const activateMatchmaking = false;
-
 type JoinGameType = {
     mode: GameMode;
     userId: number;
@@ -23,7 +21,7 @@ const joinGame = (
     setMatchmaking: (matchmaking: boolean) => void,
     setErrorMatchmaking: (error: string) => void,
 ) => {
-    const joinGame: JoinGameType = { mode: mode, userId: userId };
+    const joinGame: JoinGameType = { mode, userId };
     setErrorMatchmaking('');
     socket.emit('joinGame', joinGame, (response: any) => {
         if (response.error) {
@@ -288,7 +286,7 @@ const HomePage: React.FC<{
     const [errorCode, setErrorCode] = useState<string | undefined>();
     const [matchmaking, setMatchmaking] = useState<boolean>(false);
 
-    console.log('socket it', socket.id);
+    console.log('socket.id', socket.id);
     useEffect(() => {
         if (socket) {
             const startGame = (gameId: string) => {
@@ -302,7 +300,7 @@ const HomePage: React.FC<{
                 socket.off('startGame', startGame);
             };
         }
-    }, [socket, navigate]);
+    }, [socket, navigate, setGameId]);
 
     useEffect(() => {
         const handlePageRefresh = (event: BeforeUnloadEvent) => {

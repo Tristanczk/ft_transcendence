@@ -449,11 +449,9 @@ export class GatewayService
 
     @Interval(1000 / 60)
     async notifyUsers() {
-        let retourUpdate: string = null;
         for (const game of Object.values(this.games)) {
             if (game.info.state !== 'finished') {
-                retourUpdate = game.update();
-                if (retourUpdate === 'finished') {
+                if (game.update() === 'finished') {
                     this.handleEndGame(game, true, -1);
                 }
                 this.emitUpdateToPlayers(game, 'updateGameInfo', game.info);
