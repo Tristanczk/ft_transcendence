@@ -3,9 +3,13 @@ import React, { useState } from 'react';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import ErrorsFormField from '../components/ErrorsFormField';
+import ErrorsFormField from '../components/Auth/ErrorsFormField';
 import { useUserContext } from '../context/UserContext';
-import { NAVBAR_HEIGHT } from '../shared/misc';
+import {
+    NAVBAR_HEIGHT,
+    USERNAME_MAX_LENGTH,
+    USERNAME_MIN_LENGTH,
+} from '../shared/misc';
 
 interface Inputs {
     username: string;
@@ -74,11 +78,13 @@ const SignUpPage: React.FC = () => {
                                 label="Username"
                                 placeholder="Username"
                                 rules={{
-                                    required: 'Username is required',
                                     minLength: {
-                                        value: 3,
-                                        message:
-                                            'Username must be at least 3 characters long',
+                                        value: USERNAME_MIN_LENGTH,
+                                        message: `Username must be at least ${USERNAME_MIN_LENGTH} characters long`,
+                                    },
+                                    maxLength: {
+                                        value: USERNAME_MAX_LENGTH,
+                                        message: `Username must be at most ${USERNAME_MAX_LENGTH} characters long`,
                                     },
                                     pattern: {
                                         value: /^[a-zA-Z0-9_]+$/,

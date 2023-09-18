@@ -56,6 +56,7 @@ import {
 import { hitMayhemMap } from 'src/shared/mayhem_maps';
 import { GameMode, MAX_PLAYERS, TAU } from 'src/shared/misc';
 import { IndivUser } from './gateway.users';
+import { userInfo } from 'os';
 
 class Game {
     id: string;
@@ -69,7 +70,13 @@ class Game {
     timeUserLeave: number;
     private lastUpdate: number;
 
-    constructor(gameId: string, gameMode: GameMode, firstPlayer: string) {
+    constructor(
+        gameId: string,
+        gameMode: GameMode,
+        firstPlayer: string,
+        userName: string,
+        userElo: number,
+    ) {
         this.lastUpdate = performance.now();
         this.id = gameId;
         this.info = {
@@ -85,7 +92,7 @@ class Game {
         this.sidePlayerA = 0;
         this.sidePlayerB = 0;
         this.timeUserLeave = 0;
-        this.addPlayer(firstPlayer, true);
+        this.addPlayer(firstPlayer, true, userName, userElo);
         this.idGameStat = -1;
         this.playerA = null;
         this.playerB = null;
@@ -114,7 +121,12 @@ class Game {
         ).reduce<number>((a, b) => a + (b ? 1 : 0), 0);
     }
 
-    public addPlayer(playerId: string, arrivedFirst: boolean) {
+    addPlayer(
+        playerId: string,
+        arrivedFirst: boolean,
+        userName: string,
+        userElo: number,
+    ) {
         const emptyIdxs = [...this.info.players.keys()].filter(
             (i) => !this.info.players[i],
         );
@@ -139,6 +151,8 @@ class Game {
         } else {
             this.info.players[idx] = {
                 id: playerId,
+                name: userName,
+                elo: userElo,
                 side: idx,
                 pos: 0.5,
                 score: 0,

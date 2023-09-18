@@ -222,6 +222,7 @@ const NavBar = ({
     const navigate = useNavigate();
     const { user } = useUserContext();
     const [isLoading, setIsLoading] = useState(true);
+    const socket = useContext(WebsocketContext);
 
     useEffect(
         () => () => {
@@ -243,6 +244,18 @@ const NavBar = ({
         },
         [user, setGameId, isLoading],
     );
+
+    useEffect(() => {
+        socket.on('endGame', (data: { message: string }) => {
+            if (data.message === 'game ended') {
+                setGameId(undefined);
+            }
+        });
+
+        return () => {
+            socket.off('endGame');
+        };
+    }, [socket]);
 
     const handleRejoin = () => {
         navigate(`/game/${gameId}`);

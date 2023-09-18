@@ -1,11 +1,11 @@
 import React from 'react';
 import axios from 'axios';
-import Button from './Button';
+import Button from '../Button';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ErrorsFormField from './ErrorsFormField';
 import { useNavigate } from 'react-router-dom';
-import { useUserContext } from '../context/UserContext';
+import { useUserContext } from '../../context/UserContext';
 
 interface TwoFactorInputs {
     validationCode: string;

@@ -22,8 +22,10 @@ import {
     ClassicMayhemPlayers,
     GameInfo,
     UpdateGameEvent,
+    eloVariation,
 } from 'src/shared/game_info';
 import { GamesService } from 'src/games/games.service';
+import { emit } from 'process';
 
 const ID_SIZE = 6;
 const ID_BASE = 36;
@@ -58,6 +60,8 @@ export type HandlePingProp = {
 export type JoinGameType = {
     mode: string;
     userId: number;
+    userName: string;
+    userElo: number;
 };
 
 @Injectable()
@@ -153,7 +157,11 @@ export class GatewayService
         const playerId: number = data.userId;
         const currentClient: IndivUser | null =
             this.users.getIndivUserBySocketId(client.id);
-
+        const user = await this.prisma.user.findUnique({
+            where: { id: playerId },
+        });
+        const userElo = user ? user.elo : 1000;
+        const userName = user ? user.nickname : 'Anonymous';
         if (!currentClient) {
             console.log('error to handle');
             return;
@@ -184,7 +192,7 @@ export class GatewayService
         }
         for (const game of Object.values(this.games)) {
             if (game.info.mode === gameMode && game.info.state === 'waiting') {
-                game.addPlayer(client.id, false);
+                game.addPlayer(client.id, false, userName, userElo);
                 this.liaiseGameToPlayer(client.id, game, 'B');
 
                 for (const player of game.info.players) {
@@ -197,7 +205,13 @@ export class GatewayService
                 return { gameId: game.id, status: 'joined' };
             }
         }
-        const game = new Game(generateId(this.games), gameMode, client.id);
+        const game = new Game(
+            generateId(this.games),
+            gameMode,
+            client.id,
+            userName,
+            userElo,
+        );
         this.games[game.id] = game;
         this.liaiseGameToPlayer(client.id, game, 'A');
         return { gameId: game.id, status: 'waiting' };
@@ -483,6 +497,7 @@ export class GatewayService
 
     //aborted: -1: classic ending, 0: aborted by A, 1: aborted by B
     async handleEndGame(game: Game, update: boolean, aborted: number) {
+        this.emitUpdateToPlayers(game, 'endGame', { message: 'game ended' });
         if (game.playerA && game.playerA.userId !== -1)
             this.server.emit('updateStatus', {
                 idUser: game.playerA.userId,
@@ -503,6 +518,7 @@ export class GatewayService
             let scoreA: number = 0;
             let scoreB: number = 0;
             let result: boolean = false;
+            let reversed: boolean = false;
 
             if (game.playerA.sockets.includes(players[0].id)) {
                 scoreA = players[0].score;
@@ -510,18 +526,27 @@ export class GatewayService
             } else {
                 scoreA = players[1].score;
                 scoreB = players[0].score;
+                reversed = true;
             }
             result = scoreA > scoreB ? true : false;
             if (aborted === 0) result = false;
             else if (aborted === 1) result = true;
 
             try {
-                await this.gamesService.updateGame(game.idGameStat, {
-                    scoreA: scoreA,
-                    scoreB: scoreB,
-                    won: result,
-                    aborted: aborted === -1 ? false : true,
-                });
+                const response = await this.gamesService.updateGame(
+                    game.idGameStat,
+                    {
+                        scoreA: scoreA,
+                        scoreB: scoreB,
+                        won: result,
+                        aborted: aborted === -1 ? false : true,
+                    },
+                );
+                const varElo: eloVariation = {
+                    varEloLeft: reversed ? response.varEloB : response.varEloA,
+                    varEloRight: reversed ? response.varEloA : response.varEloB,
+                };
+                this.emitUpdateToPlayers(game, 'varElo', varElo);
             } catch (error) {}
         }
 

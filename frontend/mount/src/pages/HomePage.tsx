@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { NavigateFunction, useLocation, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { GameMode, NAVBAR_HEIGHT } from '../shared/misc';
@@ -179,7 +179,9 @@ const GameModePage = ({
 }) => {
     const { user } = useUserContext();
     let userId: number = -1;
-    if (user) userId = user.id;
+    if (user) {
+        userId = user.id;
+    }
 
     const buttonParams = {
         socket,
@@ -210,7 +212,6 @@ const GameModePage = ({
                 {...buttonParams}
             />
             {error && <div className="text-white">{error}</div>}
-            {/* TO DO: change href to a button to rejoin the game */}
             {errorCode === 'alreadyInGame' && (
                 <button
                     type="button"
@@ -280,13 +281,51 @@ const HomePage: React.FC<{
     setGameId: (gameId: string | undefined) => void;
 }> = ({ gameId, setGameId }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const socket = useContext(WebsocketContext);
     const [error, setError] = useState<string>('');
     const [errorMatchmaking, setErrorMatchmaking] = useState<string>('');
     const [errorCode, setErrorCode] = useState<string | undefined>();
     const [matchmaking, setMatchmaking] = useState<boolean>(false);
+    const [replayProcessed, setReplayProcessed] = useState<boolean>(false);
+    const { user } = useUserContext();
+    let userId: number = -1;
+    if (user) {
+        userId = user.id;
+    }
 
-    console.log('socket.id', socket.id);
+    useEffect(() => {
+        const replay = new URLSearchParams(location.search).get('replay');
+        if (replay && !replayProcessed) {
+            setReplayProcessed(true);
+            if (replay === 'classic') {
+                joinGame(
+                    'classic',
+                    socket,
+                    userId,
+                    navigate,
+                    setError,
+                    setErrorCode,
+                    setGameId,
+                    setMatchmaking,
+                    setErrorMatchmaking,
+                );
+            } else if (replay === 'mayhem') {
+                joinGame(
+                    'mayhem',
+                    socket,
+                    userId,
+                    navigate,
+                    setError,
+                    setErrorCode,
+                    setGameId,
+                    setMatchmaking,
+                    setErrorMatchmaking,
+                );
+            }
+        }
+    });
+
     useEffect(() => {
         if (socket) {
             const startGame = (gameId: string) => {

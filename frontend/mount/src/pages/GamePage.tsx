@@ -2,21 +2,40 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
-import { GameInfo, UpdateGameEvent } from '../shared/game_info';
-import { ApiResult, KeyEventType, NAVBAR_HEIGHT } from '../shared/misc';
+import { GameInfo, UpdateGameEvent, eloVariation } from '../shared/game_info';
+import {
+    ApiResult,
+    KeyEventType,
+    NAVBAR_HEIGHT,
+    PLAYERS_TEXT_SIZE,
+} from '../shared/misc';
 import MultiClassicMayhem from '../games/multiplayer/MultiClassicMayhem';
 import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
 
 const Game = ({
     gameInfo,
+    varElo,
     width,
     height,
 }: {
     gameInfo: GameInfo;
+    varElo: eloVariation | null;
     width: number;
     height: number;
-}) =>
-    gameInfo.mode === 'battle' ? (
+}) => {
+    let leftName: string = '',
+        rightName: string = '';
+    if (gameInfo.mode !== 'battle') {
+        leftName =
+            gameInfo.players[0]!.name.length > 10
+                ? gameInfo.players[0]!.name.slice(0, 10) + '...'
+                : gameInfo.players[0]!.name;
+        rightName =
+            gameInfo.players[1]!.name.length > 10
+                ? gameInfo.players[1]!.name.slice(0, 10) + '...'
+                : gameInfo.players[1]!.name;
+    }
+    return gameInfo.mode === 'battle' ? (
         <MultiBattleRoyale
             gameObjects={gameInfo.objects}
             players={gameInfo.players}
@@ -24,14 +43,64 @@ const Game = ({
             windowHeight={height}
         />
     ) : (
-        <MultiClassicMayhem
-            gameObjects={gameInfo.objects}
-            players={gameInfo.players}
-            timeRemaining={gameInfo.timeRemaining}
-            windowWidth={width}
-            windowHeight={height}
-        />
+        <div className="flex flex-col items-center">
+            <div className="flex justify-between w-full">
+                <div className="text-black">
+                    {leftName} (
+                    {varElo
+                        ? gameInfo.players[0]!.elo + varElo.varEloLeft
+                        : gameInfo.players[0]!.elo}
+                    {varElo && (
+                        <span
+                            className={
+                                varElo.varEloLeft > 0
+                                    ? 'text-green-500'
+                                    : 'text-red-500'
+                            }
+                        >
+                            {' '}
+                            {varElo!.varEloLeft > 0
+                                ? `+${varElo!.varEloLeft}`
+                                : varElo!.varEloLeft}
+                        </span>
+                    )}
+                    )
+                </div>
+                <div className="text-black">
+                    {rightName} (
+                    {varElo
+                        ? gameInfo.players[1]!.elo + varElo.varEloRight
+                        : gameInfo.players[1]!.elo}
+                    {varElo && (
+                        <span
+                            className={
+                                varElo.varEloRight > 0
+                                    ? 'text-green-500'
+                                    : 'text-red-500'
+                            }
+                        >
+                            {' '}
+                            {varElo!.varEloRight > 0
+                                ? `+${varElo!.varEloRight}`
+                                : varElo!.varEloRight}
+                        </span>
+                    )}
+                    )
+                </div>
+            </div>
+            <MultiClassicMayhem
+                gameObjects={gameInfo.objects}
+                mode={gameInfo.mode}
+                players={gameInfo.players}
+                state={gameInfo.state}
+                timeRemaining={gameInfo.timeRemaining}
+                varElo={varElo}
+                windowWidth={width}
+                windowHeight={height}
+            />
+        </div>
     );
+};
 
 const GamePage: React.FC = () => {
     const navigate = useNavigate();
@@ -39,8 +108,9 @@ const GamePage: React.FC = () => {
     const socket = useContext(WebsocketContext);
     const { width, height } = useWindowSize();
     const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
+    const [message, setMessage] = useState<string>('');
+    const [varElo, setVarElo] = useState<eloVariation | null>(null);
 
-    console.log('socket id', socket.id);
     useEffect(() => {
         const handleUpdateGameInfo = (newGameInfo: GameInfo) => {
             setGameInfo(newGameInfo);
@@ -81,13 +151,12 @@ const GamePage: React.FC = () => {
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
 
-		document.addEventListener('keydown', function(event) {
-			if (event.key === "q" || event.key === "Q") {
-				// La touche "Q" a été appuyée
-				socket.emit('quitGame', gameId );
-			}
-		});
-		
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'q' || event.key === 'Q') {
+                // La touche "Q" a été appuyée
+                socket.emit('quitGame', gameId);
+            }
+        });
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
@@ -106,6 +175,22 @@ const GamePage: React.FC = () => {
         });
     }, [gameId, navigate, socket]);
 
+    useEffect(() => {
+        socket.on('eventGame', (data: UpdateGameEvent) => {
+            setMessage(data.message);
+        });
+
+        return () => {
+            socket.off('eventGame');
+        };
+    });
+
+    useEffect(() => {
+        socket.on('varElo', (data: eloVariation) => {
+            setVarElo(data);
+        });
+    });
+
     return (
         <div
             className="w-full flex items-center justify-center"
@@ -120,7 +205,12 @@ const GamePage: React.FC = () => {
             }}
         >
             {gameInfo && (
-                <Game gameInfo={gameInfo} width={width} height={height} />
+                <Game
+                    gameInfo={gameInfo}
+                    varElo={varElo}
+                    width={width}
+                    height={height - PLAYERS_TEXT_SIZE}
+                />
             )}
         </div>
     );
