@@ -11,7 +11,9 @@ interface Props {
 
 function ImageFriend({ userId, textImg, size, customClassName }: Props) {
     const [imgY, setImgY] = useState<any>();
-    const inputClassName = customClassName ?  customClassName : `w-${size} h-${size} rounded-full`;
+    const inputClassName = customClassName
+        ? customClassName
+        : `w-${size} h-${size} rounded-full`;
     const { user } = useUserContext();
 
     useEffect(() => {
@@ -49,13 +51,11 @@ function ImageFriend({ userId, textImg, size, customClassName }: Props) {
     };
 
     return imgY ? (
-        <>
-            <img
-                className={inputClassName}
-                src={`data:image/png;base64,${imgY}`}
-                alt={textImg}
-            />
-        </>
+        <img
+            className={inputClassName}
+            src={`data:image/png;base64,${imgY}`}
+            alt={textImg}
+        />
     ) : (
         <>vide</>
     );
