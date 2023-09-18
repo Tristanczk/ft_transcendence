@@ -1,9 +1,6 @@
-import { Link } from 'react-router-dom';
-import { UserSimplified } from '../../types';
-import ImageFriend from '../dashboard/friends/ImgFriend';
-import { useEffect, useState } from 'react';
-import { ChannelProps } from './Messages';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
+import { useUserContext } from '../../context/UserContext';
+import { ChannelProps } from './Messages';
 
 export default function ChannelHeader({
     channel,
@@ -16,8 +13,26 @@ export default function ChannelHeader({
     currentChannel: ChannelProps | null;
     onClick: () => void;
 }) {
-    if (channel === 0 || !currentChannel) return <div></div>;
+    const { user } = useUserContext();
+    const authAxios = useAuthAxios();
 
+    const leaveChannel = async () => {
+        try {
+            const response = await authAxios.patch(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/leaveChannel`,
+                {
+                    id: currentChannel?.id,
+                    idRequester: user?.id,
+                },
+                { withCredentials: true },
+            );
+            handleClose();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    if (channel === 0 || !currentChannel) return <div></div>;
     return (
         <div className="flex sm:items-center justify-between py-6 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
             <div className="relative flex items-center space-x-4">
@@ -35,30 +50,55 @@ export default function ChannelHeader({
                 </div>
             </div>
             <div className="flex items-center space-x-2">
-                <button
-                onClick={onClick}
-                    type="button"
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
-                >
-                    <svg
-                        className="w-6 h-6 rotate-[90deg]"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                {currentChannel?.idAdmin.includes(user?.id ? user.id : 0) ? (
+                    <button
+                        onClick={onClick}
+                        type="button"
+                        className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-200 hover:bg-amber-400 transform hover:scale-110"
                     >
-                        {' '}
-                        <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
-                    </svg>
-                </button>
+                        <svg
+                            className="w-6 h-6 rotate-[90deg]"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            {' '}
+                            <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                        </svg>
+                    </button>
+                ) : (
+                    <button
+                        onClick={leaveChannel}
+                        type="button"
+                        className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300 transform hover:scale-110"
+                    >
+                        <svg
+                            className="w-6 h-6"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                            />
+                        </svg>
+                    </button>
+                )}
                 <button
                     type="button"
                     onClick={handleClose}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-200 hover:bg-rose-500 transform hover:scale-110"
                 >
                     <svg
-                        className="h-6 w-6 text-slate-500 hover:text-white"
+                        className="h-6 w-6 hover:text-white"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"

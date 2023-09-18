@@ -13,6 +13,14 @@ function TrackingOnline() {
     const [userObj, setUserObj] = useState<TypeTracking>();
 
     useEffect(() => {
+        setUserObj({
+            id: user ? user.id : -1,
+            idConnection: socket.id,
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
         socket.on('connect', () => {
             setUserObj({
                 id: user ? user.id : -1,
@@ -32,8 +40,12 @@ function TrackingOnline() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            socket.emit('ping', userObj);
-        }, 2000);
+            const userObja: TypeTracking = {
+                id: user ? user.id : -1,
+                idConnection: socket.id,
+            }
+            socket.emit('ping', userObja);
+        }, 500);
 
         return () => {
             socket.off('ping');

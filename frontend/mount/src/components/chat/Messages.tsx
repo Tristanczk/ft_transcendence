@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
-import { UserSimplified } from '../../types';
-import { useAuthAxios } from '../../context/AuthAxiosContext';
+import { useEffect, useRef } from 'react';
 import { useUserContext } from '../../context/UserContext';
+import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
 import SettingBar from './SettingBar';
 
@@ -32,15 +31,33 @@ export default function Messages({
     currentChannel,
     zIndexClass,
     handleClose,
+    channelUsers,
+    fetchUsers,
+    blockedUsers,
+    setChannelUsers,
 }: {
     messages: MessageProps[];
     isSettingVisible: boolean;
     currentChannel: ChannelProps | null;
     zIndexClass: string;
     handleClose: () => void;
+    channelUsers: UserSimplified[];
+    fetchUsers: () => void;
+    blockedUsers: number[];
+    setChannelUsers: (users: UserSimplified[]) => void;
 }) {
     const { user } = useUserContext();
-
+    const messageContainerRef = useRef<HTMLDivElement>(null);
+    
+    const groupedMessages = groupMessagesBySender(messages);
+    
+    useEffect(() => {
+        // Scroll to the bottom of the container
+        if (messageContainerRef.current) {
+            messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+        }
+    }, [groupedMessages]);
+    
     if (!messages) return <div></div>;
 
     function groupMessagesBySender(messages: MessageProps[]) {
@@ -48,6 +65,8 @@ export default function Messages({
         let currentGroup: MessageGroup | null = null;
 
         messages.forEach((message) => {
+            if (blockedUsers.includes(message.idSender)) return;
+
             if (currentGroup && currentGroup.idSender === message.idSender) {
                 currentGroup.messages.push(message);
             } else {
@@ -68,21 +87,21 @@ export default function Messages({
         return groupedMessages;
     }
 
-    const groupedMessages = groupMessagesBySender(messages);
-    
     return (
         <div className="flex">
             {' '}
-            {/* Parent container with relative positioning */}
-            {/* Sidebar content */}
             <SettingBar
                 currentChannel={currentChannel}
                 isSettingVisible={isSettingVisible}
                 handleClose={handleClose}
+                channelUsers={channelUsers}
+                fetchUsers={fetchUsers}
+                setChannelUsers={setChannelUsers}
             />
             <div
                 id="messages"
-                className={`flex-grow flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white shadow-2xl overflow-clip w-104 ${zIndexClass}`}
+                ref={messageContainerRef}
+                className={`flex-grow h-full flex flex-col space-y-4 p-3 overflow-y-auto scrolling-touch bg-white shadow-md overflow-clip w-104 ${zIndexClass}`}
                 style={{ height: '420px', marginLeft: '-69px' }}
             >
                 {groupedMessages.map(

@@ -6,10 +6,12 @@ export default function MessagesHeader({
     channel,
     currentFriend,
     handleClose,
+    handleBlock,
 }: {
     channel: number;
     currentFriend: UserSimplified | null;
     handleClose: () => void;
+    handleBlock: () => void;
 }) {
     if (channel === 0 || !currentFriend) return <div></div>;
 
@@ -72,7 +74,7 @@ export default function MessagesHeader({
                 </Link>
                 <button 
                     type="button"
-                    onClick={handleClose}
+                    onClick={handleBlock}
                     className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
                 >
                     <svg
@@ -80,9 +82,9 @@ export default function MessagesHeader({
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                     >
                         {' '}
                         <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />{' '}

@@ -2,8 +2,10 @@ export type GameExports = {
     gameId: number;
     date: Date;
     duration: number;
+    finished: boolean;
     mode: number;
     won: boolean;
+    aborted: boolean;
     playerA: UserGame | null;
     playerB: UserGame | null;
 };

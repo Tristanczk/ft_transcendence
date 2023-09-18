@@ -88,6 +88,9 @@ function ShowGameElem({ game, userId }: ShowGameProps) {
     )
         classStyle =
             'bg-emerald-100 dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 flex items-center';
+    if (game.finished === false)
+        classStyle =
+            'bg-amber-300 dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 flex items-center';
     return (
         <div className={classStyle}>
             <div className="flex-shrink-0">
@@ -121,15 +124,25 @@ function ShowGameElem({ game, userId }: ShowGameProps) {
             <div className="ml-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                     <span className="text-sm font-medium text-gray-900 truncate dark:text-white hover:font-bold">
-                        <Link to={'/dashboard/' + game.playerA?.id}>
-                            {game.playerA?.nickname} ({game.playerA?.eloStart})
-                        </Link>
+                        {game.playerA?.id !== -1 ? (
+                            <Link to={'/dashboard/' + game.playerA?.id}>
+                                {game.playerA?.nickname} (
+                                {game.playerA?.eloStart})
+                            </Link>
+                        ) : (
+                            game.playerA?.nickname
+                        )}
                     </span>
                     {' vs '}
                     <span className="text-sm font-medium text-gray-900 truncate dark:text-white hover:font-bold">
-                        <Link to={'/dashboard/' + game.playerB?.id}>
-                            {game.playerB?.nickname} ({game.playerB?.eloStart})
-                        </Link>
+                        {game.playerB?.id !== -1 ? (
+                            <Link to={'/dashboard/' + game.playerB?.id}>
+                                {game.playerB?.nickname} (
+                                {game.playerB?.eloStart})
+                            </Link>
+                        ) : (
+                            game.playerB?.nickname
+                        )}
                     </span>
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -141,11 +154,13 @@ function ShowGameElem({ game, userId }: ShowGameProps) {
                               (game.duration % 60) +
                               's'
                             : (game.duration > 0 ? game.duration : 0) + 's'}
+                            {game.aborted && ('(game aborted)')}
                     </span>
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                     <span className="">
-                        Game played on{' '}
+                        {game.finished === true ? ('Game played on') : ('Game in play on')}
+                        {' '}
                         {format(new Date(game.date), 'MMM d, yyyy')}
                     </span>
                 </p>

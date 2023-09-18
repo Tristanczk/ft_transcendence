@@ -17,6 +17,7 @@ export type UserSimplified = {
     elo: number;
     avatarPath: any;
     isConnected: boolean;
+    isPlaying: boolean;
     isYourFriend?: boolean;
 };
 
@@ -43,8 +44,10 @@ export type GameImports = {
     gameId: number;
     date: Date;
     duration: number;
+    finished: boolean;
     mode: number;
     won: boolean;
+    aborted: boolean;
     playerA: UserGame;
     playerB: UserGame;
 };

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
-import { GameInfo } from '../shared/game_info';
+import { GameInfo, UpdateGameEvent } from '../shared/game_info';
 import { ApiResult, KeyEventType, NAVBAR_HEIGHT } from '../shared/misc';
 import MultiClassicMayhem from '../games/multiplayer/MultiClassicMayhem';
 import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
@@ -40,12 +40,19 @@ const GamePage: React.FC = () => {
     const { width, height } = useWindowSize();
     const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
 
+    console.log('socket id', socket.id);
     useEffect(() => {
         const handleUpdateGameInfo = (newGameInfo: GameInfo) => {
             setGameInfo(newGameInfo);
         };
 
+        const handleEventGame = (eventGameInfo: UpdateGameEvent) => {
+            console.log(eventGameInfo);
+        };
+
         socket.on('updateGameInfo', handleUpdateGameInfo);
+
+        socket.on('eventGame', handleEventGame);
 
         return () => {
             socket.off('updateGameInfo', handleUpdateGameInfo);
@@ -73,6 +80,14 @@ const GamePage: React.FC = () => {
 
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
+
+		document.addEventListener('keydown', function(event) {
+			if (event.key === "q" || event.key === "Q") {
+				// La touche "Q" a été appuyée
+				socket.emit('quitGame', gameId );
+			}
+		});
+		
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);

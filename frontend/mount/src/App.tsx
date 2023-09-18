@@ -30,12 +30,7 @@ const App: React.FC = () => {
         console.log('toggleChatVisibility');
         setIsChatVisible((prev) => !prev);
     };
-    const { user } = useUserContext();
     const [gameId, setGameId] = useState<string | undefined>(undefined);
-
-    useEffect(() => {
-        setGameId(undefined);
-    }, [user]);
 
     return (
         <WebsocketProvider value={socket}>
@@ -43,8 +38,18 @@ const App: React.FC = () => {
                 <AuthAxiosProvider>
                     <TrackingOnline />
                     <BrowserRouter>
-                        <NavBar toggleChatVisibility={toggleChatVisibility} gameId={gameId} />
-                        {<ChatPage isChatVisible={isChatVisible}/>}
+                        <NavBar
+                            toggleChatVisibility={toggleChatVisibility}
+                            gameId={gameId}
+                            setGameId={setGameId}
+                        />
+                        {
+                            <ChatPage
+                                isChatVisible={isChatVisible}
+                                toggleChatVisibility={toggleChatVisibility}
+                                setIsChatVisible={setIsChatVisible}
+                            />
+                        }
                         <Routes>
                             <Route
                                 path="/"
@@ -90,10 +95,7 @@ const App: React.FC = () => {
                             />
                             <Route path="/signin" Component={SignInPage} />
                             <Route path="/signup" Component={SignUpPage} />
-                            <Route
-                                path="/signin42"
-                                Component={SignInPage42}
-                            />
+                            <Route path="/signin42" Component={SignInPage42} />
                             <Route path="/signout" Component={SignOutPage} />
                             <Route path="/settings" Component={SettingsPage} />
                             <Route path="*" Component={Page404} />

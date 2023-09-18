@@ -4,26 +4,35 @@ import { useUserContext } from '../../context/UserContext';
 import ChatChannelListElement from './ChatChannelListElement';
 import { ChannelProps } from './Messages';
 import { UserSimplified } from '../../types';
+import { Alert } from './Alert';
 
 export default function ChatChannelList({
     channels,
     setChannel,
     setCurrentFriend,
     channel,
+    notifications,
+    setNotifications,
 }: {
     channels: ChannelProps[] | null;
     setChannel: (channel: number) => void;
     setCurrentFriend: (friend: UserSimplified | null) => void;
     channel: number;
+    notifications: number[];
+    setNotifications: (notifications: number[]) => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     const [showInput, setShowInput] = useState(false);
-    const [passwordPrompt, setPasswordPrompt] = useState(false);
     const blurTimeout = useRef<any>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [barHidden, setBarHidden] = useState(false);
     const [input, setInput] = useState('');
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+    const closeAlert = () => {
+        setAlertMessage(null);
+    };
 
     const handleBlur = () => {
         blurTimeout.current = setTimeout(() => {
@@ -52,7 +61,7 @@ export default function ChatChannelList({
             const response = await authAxios.post(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/createChannel`,
                 {
-                    idUser: user?.id,
+                    idUser: [user?.id],
                     name: input,
                     isPublic: true,
                     password: '',
@@ -63,12 +72,9 @@ export default function ChatChannelList({
             setChannel(response.data.id);
         } catch (error) {
             console.error(error);
+            setAlertMessage('Failed to create the channel. Please try again.');
         }
     };
-
-    useEffect(() => {
-        setPasswordPrompt(false);
-    }, [channel]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
@@ -78,12 +84,14 @@ export default function ChatChannelList({
             setShowInput(false);
             setChannel(0);
             setInput('');
-            setPasswordPrompt(false);
         }
     };
 
     return (
         <>
+            {alertMessage && (
+                <Alert message={alertMessage} onClose={closeAlert} />
+            )}
             <div
                 id="list"
                 className={`flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip shadow-xl transition-all duration-500 ${
@@ -96,15 +104,18 @@ export default function ChatChannelList({
                     }`}
                 >
                     {channels &&
-                        channels.map((channel) => (
-                            <ChatChannelListElement
-                                key={channel.id}
-                                channel={channel}
-                                setChannel={setChannel}
-                                setCurrentFriend={setCurrentFriend}
-                                setPasswordPrompt={setPasswordPrompt}
-                            />
-                        ))}
+                        channels
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .map((channel) => (
+                                <ChatChannelListElement
+                                    key={channel.id}
+                                    channel={channel}
+                                    setChannel={setChannel}
+                                    setCurrentFriend={setCurrentFriend}
+                                    notifications={notifications}
+                                    setNotifications={setNotifications}
+                                />
+                            ))}
                 </div>
             </div>
 
@@ -159,5 +170,3 @@ export default function ChatChannelList({
         </>
     );
 }
-
-//   {passwordPrompt && <h1>Batard</h1>}

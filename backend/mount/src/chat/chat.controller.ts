@@ -19,14 +19,12 @@ import {
 } from './dto/editchannel.dto';
 import {
     CreateMessageDto,
-    DeleteMessageDto,
     MessageDto,
 } from './dto/message.dto';
 import { JoinChannelDto } from './dto/joinchannel.dto';
-import { ChannelDto, ChannelIdDto, isChannelAdminDto } from './dto/channel.dto';
-import { query } from 'express';
+import { ChannelDto, ChannelIdDto, MuteUserDto } from './dto/channel.dto';
 import { GetChannelDto } from './dto/getchannel.dto';
-import { EditUserDto } from 'src/user/dto';
+import { UserSimplifiedDto } from './dto/usersimplifieddto';
 
 @Controller('chat')
 export class ChatController {
@@ -55,8 +53,16 @@ export class ChatController {
     async getChannelByUsers(
         @Query() getChannel: GetChannelDto,
     ): Promise<ChannelDto | null> {
-        console.log('getChannelByUsers controller');
         return this.chatService.getChannelByUsers(getChannel);
+    }
+
+    @Get('getChannelUsers')
+    async getChannelUsers(
+        @Query() getChannel: ChannelIdDto,
+    ): Promise<UserSimplifiedDto[] | null> {
+        console.log('getChannelUsers controller');
+        console.log(getChannel);
+        return this.chatService.getChannelUsers(getChannel.idChannel);
     }
 
     @Get('isChannelOpen')
@@ -65,14 +71,14 @@ export class ChatController {
     }
 
     @Get('isChannelAdmin')
-    async isChannelAdmin(@Query() channel: isChannelAdminDto): Promise<boolean> {
+    async isChannelAdmin(@Query() channel: ChannelIdDto): Promise<boolean> {
         console.log('isChannelAdmin controller');
         console.log(channel);
         return this.chatService.isChannelAdmin(channel);
     }
 
     @Get('isUserInChannel')
-    async isUserInChannel(@Query() channel: isChannelAdminDto): Promise<boolean> {
+    async isUserInChannel(@Query() channel: ChannelIdDto): Promise<boolean> {
         console.log('isUserInChannel controller');
         console.log(channel);
         return this.chatService.isUserInChannel(channel);
@@ -105,13 +111,31 @@ export class ChatController {
     }
 
     @Patch('editName')
-    async editName(@Body() editChannel: EditChannelNameDto): Promise<EditChannelDto> {
+    async editName(
+        @Body() editChannel: EditChannelNameDto,
+    ): Promise<EditChannelDto> {
         return this.chatService.editName(editChannel);
     }
 
     @Patch('addAdmin')
-    async addAdmin(@Body() editChannel: EditChannelUserDto): Promise<EditChannelDto> {
+    async addAdmin(
+        @Body() editChannel: EditChannelUserDto,
+    ): Promise<EditChannelDto> {
         return this.chatService.addAdmin(editChannel);
+    }
+
+    @Patch('muteUser')
+    async muteUser(
+        @Body() editChannel: MuteUserDto,
+    ): Promise<EditChannelDto> {
+        return this.chatService.muteUser(editChannel);
+    }
+
+    @Get('isUserMuted')
+    async isUserMuted(
+        @Query() editChannel: ChannelIdDto,
+    ): Promise<boolean> {
+        return this.chatService.isUserMuted(editChannel);
     }
 
     @Post('sendMessage')
@@ -127,11 +151,6 @@ export class ChatController {
                 message.message,
         );
         return this.chatService.sendMessage(message);
-    }
-
-    @Patch('deleteMessage')
-    async deleteMessage(@Body() idUser: number, message: DeleteMessageDto) {
-        return this.chatService.deleteMessage(idUser, message);
     }
 
     @Get('getMessages/:id')

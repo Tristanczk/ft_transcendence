@@ -24,6 +24,7 @@ model User {
 
     twoFactorAuthentication Boolean @default(false)
     isConnected             Boolean @default(false)
+    isPlaying               Boolean @default(false)
     twoFactorSecret         String?
 
     gamesasPlayerA Games[] @relation("PlayerAGames")
@@ -38,6 +39,7 @@ model Games {
     finishedAt DateTime
     finished   Boolean
     won        Boolean
+    aborted    Boolean
     scoreA     Int
     scoreB     Int
     mode       Int
@@ -46,20 +48,21 @@ model Games {
     initEloA   Int
     initEloB   Int
 
-    playerA Int
-    UserA   User @relation("PlayerAGames", fields: [playerA], references: [id])
-    playerB Int
-    UserB   User @relation("PlayerBGames", fields: [playerB], references: [id])
+    playerA Int?
+    UserA   User? @relation("PlayerAGames", fields: [playerA], references: [id])
+    playerB Int?
+    UserB   User? @relation("PlayerBGames", fields: [playerB], references: [id])
 }
 
 model Channels {
-    id        Int      @id @default(autoincrement())
-    idAdmin   Int[]
-    idUsers   Int[]
-    name      String
-    isPublic  Boolean  @default(true)
-    password  String?
-    createdAt DateTime @default(now())
+    id         Int      @id @default(autoincrement())
+    idAdmin    Int[]
+    idUsers    Int[]
+    name       String
+    mutedUsers Json[]
+    isPublic   Boolean  @default(true)
+    password   String?
+    createdAt  DateTime @default(now())
 }
 
 model Message {

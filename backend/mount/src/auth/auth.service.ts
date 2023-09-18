@@ -13,6 +13,7 @@ import { User } from '@prisma/client';
 import { Response } from 'express';
 import { SigninDto, SignupDto } from './dto';
 import { authenticator } from 'otplib';
+import { GatewayService } from 'src/gateway/gateway.service';
 
 type JWTToken = { JWTToken: string };
 
@@ -22,6 +23,7 @@ export class AuthService {
         private prisma: PrismaService,
         private jwt: JwtService,
         private config: ConfigService,
+        private gateway: GatewayService,
     ) {}
 
     async signToken(
@@ -201,9 +203,16 @@ export class AuthService {
         await this.generateTokens(user, res);
         return user;
     }
-
+    
     async signout(userId: number, res: Response): Promise<void> {
         try {
+            const user = this.gateway.users.getIndivUserById(userId);
+            if (user) {
+                user.sockets.forEach((socket) => {
+                    this.gateway.server.to(socket).emit('signoutchat');
+                });
+            }
+            
             res.clearCookie(this.config.get('JWT_ACCESS_TOKEN_COOKIE'), {
                 httpOnly: true,
                 secure: false,
@@ -218,6 +227,7 @@ export class AuthService {
                 where: { id: userId },
                 data: { currentHashedRefreshToken: null },
             });
+
         } catch (error) {
             throw error;
         }

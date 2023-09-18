@@ -51,14 +51,22 @@ import {
     BattlePlayers,
     BattlePlayer,
     ClassicMayhemPlayer,
+    GameState,
 } from 'src/shared/game_info';
 import { hitMayhemMap } from 'src/shared/mayhem_maps';
 import { GameMode, MAX_PLAYERS, TAU } from 'src/shared/misc';
+import { IndivUser } from './gateway.users';
 
 class Game {
     id: string;
     timeStarted: number;
     info: GameInfo;
+    idGameStat: number;
+    playerA: IndivUser | null;
+    playerB: IndivUser | null;
+    sidePlayerA: number; //to find the user
+    sidePlayerB: number; //to find the user
+    timeUserLeave: number;
     private lastUpdate: number;
 
     constructor(gameId: string, gameMode: GameMode, firstPlayer: string) {
@@ -74,10 +82,16 @@ class Game {
                 ? { mode: gameMode, objects: getDefaultMayhemObjects() }
                 : { mode: gameMode, objects: getDefaultBattleObjects() }),
         };
-        this.addPlayer(firstPlayer);
+        this.sidePlayerA = 0;
+        this.sidePlayerB = 0;
+        this.timeUserLeave = 0;
+        this.addPlayer(firstPlayer, true);
+        this.idGameStat = -1;
+        this.playerA = null;
+        this.playerB = null;
     }
 
-    public update() {
+    public update(): GameState {
         const now = performance.now();
         const deltaTime = now - this.lastUpdate;
         this.lastUpdate = now;
@@ -91,6 +105,7 @@ class Game {
                 deltaTime,
             );
         }
+        return this.info.state;
     }
 
     private getNumPlayers() {
@@ -99,10 +114,11 @@ class Game {
         ).reduce<number>((a, b) => a + (b ? 1 : 0), 0);
     }
 
-    public addPlayer(playerId: string) {
+    public addPlayer(playerId: string, arrivedFirst: boolean) {
         const emptyIdxs = [...this.info.players.keys()].filter(
             (i) => !this.info.players[i],
         );
+        // const player: IndivUser
         const idx = emptyIdxs[randomInt(0, emptyIdxs.length - 1)];
         const numPlayers = this.getNumPlayers() + 1;
         if (this.info.mode === 'battle') {
@@ -110,6 +126,7 @@ class Game {
             this.info.players[idx] = {
                 id: playerId,
                 angle: idx + TAU / 6,
+                side: 0,
                 lives: lives,
                 color: BATTLE_COLORS[idx],
                 activeKeys: new Set(),
@@ -122,10 +139,13 @@ class Game {
         } else {
             this.info.players[idx] = {
                 id: playerId,
+                side: idx,
                 pos: 0.5,
                 score: 0,
                 activeKeys: new Set(),
             };
+            if (arrivedFirst) this.sidePlayerA = idx;
+            else this.sidePlayerB = idx;
         }
         if (numPlayers === 2) {
             this.info.state = 'playing';

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Games" ALTER COLUMN "playerA" DROP DEFAULT,
+ALTER COLUMN "playerB" DROP DEFAULT;

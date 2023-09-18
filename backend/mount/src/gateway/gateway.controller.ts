@@ -1,9 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { GatewayService } from './gateway.service';
 
 @Controller('gate')
 export class GatewayController {
-    @Get()
-    getHello(): string {
-        return 'Hello from HTTP!';
+    constructor(private gatewayService: GatewayService) {}
+    @Get('gameStatus/:id')
+    getGameStatus(@Param('id', ParseIntPipe) userId: number): {
+        status: string;
+        gameId: string;
+    } {
+        return this.gatewayService.getGameStatus(userId);
     }
 }

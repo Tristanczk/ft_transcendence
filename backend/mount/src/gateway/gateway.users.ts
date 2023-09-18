@@ -84,6 +84,11 @@ export class Users {
         return null;
     }
 
+    getIndivUserBySocketId(socketId: string): IndivUser | null {
+        if (this.socketIds[socketId]) return this.socketIds[socketId].indivUser;
+        return null;
+    }
+
     async checkUserAlreadyHere(
         userId: number,
         socketId: string,
@@ -157,6 +162,7 @@ export class IndivUser {
     isSignedIn: boolean;
     isConnected: boolean;
     isPlaying: boolean;
+    idGamePlaying: string;
     sockets: string[];
     lastPingTime: number;
 
@@ -169,8 +175,12 @@ export class IndivUser {
         this.isConnected = false;
         this.isSignedIn = userId === -1 ? false : true;
         this.isPlaying = false;
+        this.idGamePlaying = null;
         this.sockets = [socketId];
         this.lastPingTime = Date.now();
+
+        console.log('new user, sockets for ' + this.userId);
+        console.log(this.sockets);
     }
 
     //return true if need to emit message
@@ -196,6 +206,18 @@ export class IndivUser {
         }
     }
 
+    async updateStatusUserPlayingDB(newStatus: boolean): Promise<boolean> {
+        try {
+            await this.prisma.user.update({
+                where: { id: this.userId },
+                data: { isPlaying: newStatus },
+            });
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
     updateTimeLastSeen(socketId: string): boolean {
         let boolConnection: boolean = false;
         if (this.isConnected === false) {
@@ -208,7 +230,9 @@ export class IndivUser {
     }
 
     addNewSocketId(socketId: string): boolean {
-        this.sockets.push(socketId);
+        if (!this.sockets.includes(socketId)) this.sockets.push(socketId);
+        console.log('sockets for ' + this.userId);
+        console.log(this.sockets);
         if (this.isConnected) return false;
         return true;
     }
@@ -228,5 +252,10 @@ export class IndivUser {
             return true;
         }
         return false;
+    }
+
+    setIsPlaying(gameId: string) {
+        this.isPlaying = true;
+        this.idGamePlaying = gameId;
     }
 }

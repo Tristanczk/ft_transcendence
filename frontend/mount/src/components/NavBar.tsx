@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { useUserContext } from '../context/UserContext';
@@ -6,6 +6,10 @@ import ImageFriend from './dashboard/friends/ImgFriend';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { useWindowSize } from 'usehooks-ts';
 import { NAVBAR_HEIGHT } from '../shared/misc';
+import { WebsocketContext } from '../context/WebsocketContext';
+import axios from 'axios';
+import { set } from 'date-fns';
+import { is } from 'date-fns/locale';
 
 const NavLink: React.FC<{
     title: ReactNode;
@@ -64,17 +68,19 @@ const NavLinks: React.FC<{
                     link="/"
                     icon="/favicon.ico"
                 />
-                <NavLink
-                    current={current}
-                    title="Dashboard"
-                    link="/dashboard"
-                    icon="/navlinks/pie-chart.svg"
-                />
+                {user && (
+                    <NavLink
+                        current={current}
+                        title="Dashboard"
+                        link="/dashboard"
+                        icon="/navlinks/pie-chart.svg"
+                    />
+                )}
                 <NavLink
                     current={current}
                     title="Leaderboard"
                     link="/leaderboard"
-                    icon="/pie-chart.svg"
+                    icon="/navlinks/podium.png"
                 />
                 {user && (
                     <li>
@@ -189,17 +195,40 @@ function UserMenu() {
 
 const NavBar = ({
     gameId,
+    setGameId,
     toggleChatVisibility,
 }: {
     gameId: string | undefined;
+    setGameId: (gameId: string | undefined) => void;
     toggleChatVisibility: () => void;
 }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useUserContext();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(
+        () => () => {
+            const getGameStatus = async () => {
+                console.log('checking game status', user!.id);
+                const response = await axios.get(
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/gate/gameStatus/${user?.id}`,
+                    { withCredentials: true },
+                );
+                if (response.data.status === 'playing') {
+                    setGameId(response.data.gameId);
+                } else if (response.data.status === 'finished') {
+                    setGameId(undefined);
+                }
+                setIsLoading(false);
+            };
+            if (user) getGameStatus();
+            else setIsLoading(false);
+        },
+        [user, setGameId, isLoading],
+    );
 
     const handleRejoin = () => {
-        //TO DO: check if game is still available, if yes redirect, if no error message
         navigate(`/game/${gameId}`);
     };
 
@@ -224,9 +253,11 @@ const NavBar = ({
                     toggleChatVisibility={toggleChatVisibility}
                 />
                 <div className="flex items-center">
-                    {gameId && location.pathname !== `/game/${gameId}` && (
-                        <Button text="Rejoin game" onClick={handleRejoin} />
-                    )}
+                    {gameId &&
+                        !gameId.startsWith('waiting_') &&
+                        location.pathname !== `/game/${gameId}` && (
+                            <Button text="Rejoin game" onClick={handleRejoin} />
+                        )}
                     {user ? (
                         <UserMenu />
                     ) : (
