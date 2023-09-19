@@ -14,11 +14,13 @@ import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
 
 const Game = ({
     gameInfo,
+    gameLeave,
     varElo,
     width,
     height,
 }: {
     gameInfo: GameInfo;
+    gameLeave: UpdateGameEvent | null;
     varElo: eloVariation | null;
     width: number;
     height: number;
@@ -44,6 +46,25 @@ const Game = ({
         />
     ) : (
         <div className="flex flex-col items-center">
+            <div
+                className={`${
+                    gameLeave &&
+                    (gameLeave.message === 'user leave' ||
+                        gameLeave.message === 'user left')
+                        ? 'h-auto' // Set the height to "auto" when the warning message is displayed
+                        : 'h-[0] overflow-hidden' // Set height to "0" and hide overflow when not displayed
+                }`}
+            >
+                {gameLeave &&
+                    (gameLeave.message === 'user leave' ||
+                        gameLeave.message === 'user left') && (
+                        <div className="text-red-500">
+                            warning: your opponent has left the game, game will
+                            terminate in {Math.ceil(gameLeave.timeLeft! / 1000)}{' '}
+                            seconds.
+                        </div>
+                    )}
+            </div>
             <div className="flex justify-between w-full">
                 <div className="text-black">
                     {leftName} (
@@ -65,9 +86,6 @@ const Game = ({
                         </span>
                     )}
                     )
-                </div>
-                <div className="text-blue-500">
-                    Your centered message goes here
                 </div>
                 <div className="text-black">
                     {rightName} (
@@ -202,6 +220,7 @@ const GamePage: React.FC = () => {
             {gameInfo && (
                 <Game
                     gameInfo={gameInfo}
+                    gameLeave={gameLeave}
                     varElo={varElo}
                     width={width}
                     height={height - PLAYERS_TEXT_SIZE}
