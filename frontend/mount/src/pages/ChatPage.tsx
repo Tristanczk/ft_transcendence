@@ -225,6 +225,8 @@ function ChatPage({
         }
     };
 
+    const handleGameInvite = async () => {};
+
     return (
         <>
             {alertMessage && (
@@ -293,6 +295,7 @@ function ChatPage({
                                     currentFriend={currentFriend}
                                     handleClose={handleClose}
                                     handleBlock={handleBlock}
+                                    handleGameInvite={handleGameInvite}
                                 />
                             ) : (
                                 <ChannelHeader
