@@ -11,20 +11,32 @@ import {
 } from '../shared/misc';
 import MultiClassicMayhem from '../games/multiplayer/MultiClassicMayhem';
 import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
+import { Socket } from 'socket.io-client';
+import ResignModal from '../games/multiplayer/ResignModal';
+import { Button, Modal } from 'flowbite-react';
 
 const Game = ({
+    gameId,
     gameInfo,
+    gameLeave,
+    socket,
     varElo,
     width,
     height,
 }: {
+    gameId: string | undefined;
     gameInfo: GameInfo;
+    gameLeave: UpdateGameEvent | null;
+    socket: Socket;
     varElo: eloVariation | null;
     width: number;
     height: number;
 }) => {
+    const [openModal, setOpenModal] = useState<boolean>(false);
     let leftName: string = '',
         rightName: string = '';
+    let isLeftPlayer: boolean = false;
+
     if (gameInfo.mode !== 'battle') {
         leftName =
             gameInfo.players[0]!.name.length > 10
@@ -34,7 +46,9 @@ const Game = ({
             gameInfo.players[1]!.name.length > 10
                 ? gameInfo.players[1]!.name.slice(0, 10) + '...'
                 : gameInfo.players[1]!.name;
+        isLeftPlayer = gameInfo.players[0]!.id === socket.id;
     }
+
     return gameInfo.mode === 'battle' ? (
         <MultiBattleRoyale
             gameObjects={gameInfo.objects}
@@ -44,7 +58,17 @@ const Game = ({
         />
     ) : (
         <div className="flex flex-col items-center">
-            <div className="flex justify-between w-full">
+            {gameLeave &&
+            (gameLeave.message === 'disconnected' ||
+                gameLeave.message === 'left') ? (
+                <div className="text-red-500">
+                    WARNING: your opponent has disconnected, game will terminate
+                    in {Math.round(gameLeave.timeLeft! / 1000)} seconds.
+                </div>
+            ) : (
+                <div className="text-red-500 h-6"></div>
+            )}
+            <div className="flex justify-between w-full mb-1">
                 <div className="text-black">
                     {leftName} (
                     {varElo
@@ -65,8 +89,34 @@ const Game = ({
                         </span>
                     )}
                     )
+                    {isLeftPlayer &&
+                        gameInfo.state !== 'finished' &&
+                        gameLeave?.message !== 'aborted' &&
+                        gameLeave?.message !== 'left' && (
+                            <button
+                                className="px-2 ml-2 text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:outline-none rounded-lg"
+                                onClick={() => {
+                                    setOpenModal(true);
+                                }}
+                            >
+                                Resign
+                            </button>
+                        )}
                 </div>
-                <div className="text-black">
+                <div className="text-black m">
+                    {!isLeftPlayer &&
+                        gameInfo.state !== 'finished' &&
+                        gameLeave?.message !== 'aborted' &&
+                        gameLeave?.message !== 'left' && (
+                            <button
+                                className="px-2 mr-2 text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:outline-none rounded-lg"
+                                onClick={() => {
+                                    setOpenModal(true);
+                                }}
+                            >
+                                Resign
+                            </button>
+                        )}
                     {rightName} (
                     {varElo
                         ? gameInfo.players[1]!.elo + varElo.varEloRight
@@ -87,6 +137,12 @@ const Game = ({
                     )}
                     )
                 </div>
+                <ResignModal
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    socket={socket}
+                    gameId={gameId}
+                />
             </div>
             <MultiClassicMayhem
                 gameObjects={gameInfo.objects}
@@ -94,6 +150,7 @@ const Game = ({
                 players={gameInfo.players}
                 state={gameInfo.state}
                 timeRemaining={gameInfo.timeRemaining}
+                gameLeave={gameLeave}
                 varElo={varElo}
                 windowWidth={width}
                 windowHeight={height}
@@ -108,7 +165,7 @@ const GamePage: React.FC = () => {
     const socket = useContext(WebsocketContext);
     const { width, height } = useWindowSize();
     const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
-    const [message, setMessage] = useState<string>('');
+    const [gameLeave, setGameLeave] = useState<UpdateGameEvent | null>(null);
     const [varElo, setVarElo] = useState<eloVariation | null>(null);
 
     useEffect(() => {
@@ -117,15 +174,23 @@ const GamePage: React.FC = () => {
         };
 
         const handleEventGame = (eventGameInfo: UpdateGameEvent) => {
-            console.log(eventGameInfo);
+            setGameLeave(eventGameInfo);
+        };
+
+        const handleEloVar = (data: eloVariation) => {
+            setVarElo(data);
         };
 
         socket.on('updateGameInfo', handleUpdateGameInfo);
 
         socket.on('eventGame', handleEventGame);
 
+        socket.on('varElo', handleEloVar);
+
         return () => {
             socket.off('updateGameInfo', handleUpdateGameInfo);
+            socket.off('eventGame', handleEventGame);
+            socket.off('varElo', handleEloVar);
         };
     }, [socket]);
 
@@ -151,13 +216,6 @@ const GamePage: React.FC = () => {
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
 
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'q' || event.key === 'Q') {
-                // La touche "Q" a été appuyée
-                socket.emit('quitGame', gameId);
-            }
-        });
-
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             document.removeEventListener('keyup', handleKeyUp);
@@ -175,22 +233,6 @@ const GamePage: React.FC = () => {
         });
     }, [gameId, navigate, socket]);
 
-    useEffect(() => {
-        socket.on('eventGame', (data: UpdateGameEvent) => {
-            setMessage(data.message);
-        });
-
-        return () => {
-            socket.off('eventGame');
-        };
-    });
-
-    useEffect(() => {
-        socket.on('varElo', (data: eloVariation) => {
-            setVarElo(data);
-        });
-    });
-
     return (
         <div
             className="w-full flex items-center justify-center"
@@ -206,8 +248,11 @@ const GamePage: React.FC = () => {
         >
             {gameInfo && (
                 <Game
+                    gameId={gameId}
                     gameInfo={gameInfo}
+                    gameLeave={gameLeave}
                     varElo={varElo}
+                    socket={socket}
                     width={width}
                     height={height - PLAYERS_TEXT_SIZE}
                 />

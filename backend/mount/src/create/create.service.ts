@@ -565,9 +565,18 @@ export class CreateService {
                         this.arrayUsers[userAIndex].elo) /
                         400,
                 ));
+        const probaB =
+            1 /
+            (1 +
+                Math.pow(
+                    10,
+                    (this.arrayUsers[userAIndex].elo -
+                        this.arrayUsers[userBIndex].elo) /
+                        400,
+                ));
 
         const varEloA = Math.round(32 * ((won ? 1 : 0) - probaA));
-        const varEloB = Math.round(32 * ((won ? 0 : 1) - probaA));
+        const varEloB = Math.round(32 * ((won ? 0 : 1) - probaB));
 
         const variation: VariationElo = { varEloA: varEloA, varEloB: varEloB };
 
