@@ -8,15 +8,6 @@ interface PresentationUserProps {
 }
 
 function PresentationUser({ user }: PresentationUserProps) {
-    if (user) {
-        console.log(
-            <ImageFriend
-                userId={user.id}
-                textImg={user.nickname}
-                size={IMAGE_SIZE}
-            />,
-        );
-    }
     return (
         <header className="mb-4 lg:mb-6 not-format p-4">
             <address className="flex flex-wrap items-center justify-between mb-6 not-italic">
