@@ -65,7 +65,6 @@ export default function SettingBar({
         }
     };
 
-
     // PASSWORD
 
     useEffect(() => {
@@ -213,6 +212,8 @@ export default function SettingBar({
                 { withCredentials: true },
             );
             console.log(response.data);
+            if (typeof response.data === 'string')
+                setAlertMessage(response.data);
         } catch (error) {
             console.error(error);
             setAlertMessage('Error banning user');
@@ -230,6 +231,8 @@ export default function SettingBar({
                 },
                 { withCredentials: true },
             );
+            if (typeof response.data === 'string')
+                setAlertMessage(response.data);
         } catch (error) {
             console.error(error);
             setAlertMessage('Error adding admin');
@@ -248,6 +251,8 @@ export default function SettingBar({
                 },
                 { withCredentials: true },
             );
+            if (typeof response.data === 'string')
+                setAlertMessage(response.data);
         } catch (error) {
             console.error(error);
             setAlertMessage('Error muting user');
@@ -276,8 +281,12 @@ export default function SettingBar({
             )}
             <div
                 className={`relative flex-col items-center space-y-4 bg-gray-200 w-1/6 flex z-0 object-bottom object-fill
-    ${isSettingVisible ? 'right-20 opacity-100' : 'right-0 opacity-0'}
-    transition-all duration-500 ease-in-out rounded-3xl py-5`}
+                ${
+                    isSettingVisible
+                        ? 'right-20 opacity-100'
+                        : 'right-0 opacity-0'
+                }
+                transition-all duration-500 ease-in-out rounded-3xl py-5`}
             >
                 <button
                     name="Password"

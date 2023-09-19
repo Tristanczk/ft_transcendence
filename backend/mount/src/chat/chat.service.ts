@@ -279,7 +279,7 @@ export class ChatService {
         }
     }
 
-    async banUser(editChannel: EditChannelUserDto): Promise<EditChannelDto> {
+    async banUser(editChannel: EditChannelUserDto): Promise<EditChannelDto | string> {
         try {
             const channel = await this.prisma.channels.findFirst({
                 where: {
@@ -329,6 +329,7 @@ export class ChatService {
             return updatedChannelDto;
         } catch (error) {
             console.log(error);
+            return error.message;
         }
     }
 
@@ -374,7 +375,7 @@ export class ChatService {
         }
     }
 
-    async addAdmin(editChannel: EditChannelUserDto): Promise<EditChannelDto> {
+    async addAdmin(editChannel: EditChannelUserDto): Promise<EditChannelDto  | string> {
         try {
             const channel = await this.prisma.channels.findFirst({
                 where: {
@@ -386,7 +387,7 @@ export class ChatService {
                 throw new Error('Not authorized');
 
             if (channel.idAdmin.includes(editChannel.idUser))
-                throw new Error('Already admin');
+                throw new Error('Not authorized, User already admin');
 
             const updatedChannel = await this.prisma.channels.update({
                 where: {
@@ -418,10 +419,11 @@ export class ChatService {
             return updatedChannelDto;
         } catch (error) {
             console.log(error);
+            return error.message;
         }
     }
 
-    async muteUser(editChannel: MuteUserDto): Promise<EditChannelDto> {
+    async muteUser(editChannel: MuteUserDto): Promise<EditChannelDto | string> {
         try {
             const channel = await this.prisma.channels.findFirst({
                 where: {
@@ -459,6 +461,7 @@ export class ChatService {
             return updatedChannelDto;
         } catch (error) {
             console.log(error);
+            return error.message;
         }
     }
 

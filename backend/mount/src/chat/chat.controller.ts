@@ -106,7 +106,7 @@ export class ChatController {
     @Patch('banUser')
     async banUser(
         @Body() editChannel: EditChannelUserDto,
-    ): Promise<EditChannelDto> {
+    ): Promise<EditChannelDto | string> {
         return this.chatService.banUser(editChannel);
     }
 
@@ -120,14 +120,14 @@ export class ChatController {
     @Patch('addAdmin')
     async addAdmin(
         @Body() editChannel: EditChannelUserDto,
-    ): Promise<EditChannelDto> {
+    ): Promise<EditChannelDto | string> {
         return this.chatService.addAdmin(editChannel);
     }
 
     @Patch('muteUser')
     async muteUser(
         @Body() editChannel: MuteUserDto,
-    ): Promise<EditChannelDto> {
+    ): Promise<EditChannelDto | string> {
         return this.chatService.muteUser(editChannel);
     }
 
