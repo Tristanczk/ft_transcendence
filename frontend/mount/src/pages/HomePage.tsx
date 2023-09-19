@@ -42,7 +42,19 @@ const joinGame = (
     });
 };
 
-const GameButton = ({
+const GameButton: React.FC<{ text: string; onClick: () => void }> = ({
+    text,
+    onClick,
+}) => (
+    <button
+        className="flex justify-center items-center py-4 px-4 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm"
+        onClick={onClick}
+    >
+        {text}
+    </button>
+);
+
+const MultiButton = ({
     externalMode,
     internalMode,
     socket,
@@ -65,8 +77,8 @@ const GameButton = ({
     setMatchmaking: (matchmaking: boolean) => void;
     setErrorMatchmaking: (error: string) => void;
 }) => (
-    <button
-        className="flex justify-center items-center py-4 px-8 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm"
+    <GameButton
+        text={externalMode}
         onClick={() =>
             joinGame(
                 internalMode,
@@ -80,10 +92,24 @@ const GameButton = ({
                 setErrorMatchmaking,
             )
         }
-    >
-        {externalMode}
-    </button>
+    />
 );
+
+const LocalButton = ({
+    externalMode,
+    internalMode,
+}: {
+    externalMode: string;
+    internalMode: GameMode;
+}) => {
+    const navigate = useNavigate();
+    return (
+        <GameButton
+            text={externalMode}
+            onClick={() => navigate(`/local/${internalMode}`)}
+        />
+    );
+};
 
 const leaveMatchmaking = (
     socket: Socket,
@@ -154,6 +180,16 @@ const CancelButton = ({
     </button>
 );
 
+const GameModePageSection: React.FC<{
+    children: React.ReactNode;
+    title: string;
+}> = ({ children, title }) => (
+    <div className="w-full flex flex-col justify-center items-center space-y-4 lg:w-5/12 lg:max-w-lg">
+        <h2 className="text-black px-4 text-3xl">{title}</h2>
+        {children}
+    </div>
+);
+
 const GameModePage = ({
     error,
     errorCode,
@@ -178,11 +214,7 @@ const GameModePage = ({
     setErrorMatchmaking: React.Dispatch<React.SetStateAction<string>>;
 }) => {
     const { user } = useUserContext();
-    let userId: number = -1;
-    if (user) {
-        userId = user.id;
-    }
-
+    const userId: number = user?.id ?? -1;
     const buttonParams = {
         socket,
         userId,
@@ -195,22 +227,32 @@ const GameModePage = ({
     };
 
     return (
-        <>
-            <GameButton
-                externalMode="CLASSIC"
-                internalMode="classic"
-                {...buttonParams}
-            />
-            <GameButton
-                externalMode="MAYHEM"
-                internalMode="mayhem"
-                {...buttonParams}
-            />
-            <GameButton
-                externalMode="BATTLE ROYALE"
-                internalMode="battle"
-                {...buttonParams}
-            />
+        <div className="w-full flex flex-col justify-center items-center space-y-10 lg:flex-row lg:space-y-0">
+            <GameModePageSection title="ONLINE">
+                <MultiButton
+                    externalMode="CLASSIC"
+                    internalMode="classic"
+                    {...buttonParams}
+                />
+                <MultiButton
+                    externalMode="MAYHEM"
+                    internalMode="mayhem"
+                    {...buttonParams}
+                />
+                <MultiButton
+                    externalMode="BATTLE ROYALE"
+                    internalMode="battle"
+                    {...buttonParams}
+                />
+            </GameModePageSection>
+            <GameModePageSection title="LOCAL">
+                <LocalButton externalMode="CLASSIC" internalMode="classic" />
+                <LocalButton externalMode="MAYHEM" internalMode="mayhem" />
+                <LocalButton
+                    externalMode="BATTLE ROYALE"
+                    internalMode="battle"
+                />
+            </GameModePageSection>
             {error && <div className="text-white">{error}</div>}
             {errorCode === 'alreadyInGame' && (
                 <button
@@ -223,7 +265,7 @@ const GameModePage = ({
                     </span>
                 </button>
             )}
-        </>
+        </div>
     );
 };
 
