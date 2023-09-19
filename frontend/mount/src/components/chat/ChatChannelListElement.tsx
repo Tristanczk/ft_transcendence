@@ -172,15 +172,14 @@ export default function ChatChannelListElement({
                         </div>
                     </div>
                 </div>
+                {notifications.includes(channel.id) && (
+                    <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+                )}
                 <button
                     onClick={() => {
                         isChannelOpen(channel);
                     }}
                 >
-                    {' '}
-                    {notifications.includes(channel.id) && (
-                        <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-                    )}
                     <svg
                         className="text-blue-600 w-6 h-6 hover:scale-110"
                         xmlns="http://www.w3.org/2000/svg"
