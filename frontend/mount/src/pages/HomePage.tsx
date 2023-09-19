@@ -42,18 +42,6 @@ const joinGame = (
     });
 };
 
-const GameButton: React.FC<{ text: string; onClick: () => void }> = ({
-    text,
-    onClick,
-}) => (
-    <button
-        className="flex justify-center items-center py-4 px-4 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm"
-        onClick={onClick}
-    >
-        {text}
-    </button>
-);
-
 const MultiButton = ({
     externalMode,
     internalMode,
@@ -77,8 +65,8 @@ const MultiButton = ({
     setMatchmaking: (matchmaking: boolean) => void;
     setErrorMatchmaking: (error: string) => void;
 }) => (
-    <GameButton
-        text={externalMode}
+    <button
+        className="flex justify-center items-center py-4 px-4 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm"
         onClick={() =>
             joinGame(
                 internalMode,
@@ -92,24 +80,10 @@ const MultiButton = ({
                 setErrorMatchmaking,
             )
         }
-    />
+    >
+        {externalMode}
+    </button>
 );
-
-const LocalButton = ({
-    externalMode,
-    internalMode,
-}: {
-    externalMode: string;
-    internalMode: GameMode;
-}) => {
-    const navigate = useNavigate();
-    return (
-        <GameButton
-            text={externalMode}
-            onClick={() => navigate(`/local/${internalMode}`)}
-        />
-    );
-};
 
 const leaveMatchmaking = (
     socket: Socket,
@@ -159,7 +133,7 @@ const CancelButton = ({
             )
         }
     >
-        <span className="text-sm font-medium inline-flex items-center justify-center text-white hover:text-gray-500 focus:outline-none mt-2">
+        <span className="text-sm font-medium inline-flex items-center justify-center text-white hover:text-black focus:outline-none mt-2">
             <svg
                 className="h-6 w-6"
                 xmlns="http://www.w3.org/2000/svg"
@@ -178,16 +152,6 @@ const CancelButton = ({
             {text}
         </span>
     </button>
-);
-
-const GameModePageSection: React.FC<{
-    children: React.ReactNode;
-    title: string;
-}> = ({ children, title }) => (
-    <div className="w-full flex flex-col justify-center items-center space-y-4 lg:w-5/12 lg:max-w-lg">
-        <h2 className="text-black px-4 text-3xl">{title}</h2>
-        {children}
-    </div>
 );
 
 const GameModePage = ({
@@ -227,32 +191,22 @@ const GameModePage = ({
     };
 
     return (
-        <div className="w-full flex flex-col justify-center items-center space-y-10 lg:flex-row lg:space-y-0">
-            <GameModePageSection title="ONLINE">
-                <MultiButton
-                    externalMode="CLASSIC"
-                    internalMode="classic"
-                    {...buttonParams}
-                />
-                <MultiButton
-                    externalMode="MAYHEM"
-                    internalMode="mayhem"
-                    {...buttonParams}
-                />
-                <MultiButton
-                    externalMode="BATTLE ROYALE"
-                    internalMode="battle"
-                    {...buttonParams}
-                />
-            </GameModePageSection>
-            <GameModePageSection title="LOCAL">
-                <LocalButton externalMode="CLASSIC" internalMode="classic" />
-                <LocalButton externalMode="MAYHEM" internalMode="mayhem" />
-                <LocalButton
-                    externalMode="BATTLE ROYALE"
-                    internalMode="battle"
-                />
-            </GameModePageSection>
+        <>
+            <MultiButton
+                externalMode="CLASSIC"
+                internalMode="classic"
+                {...buttonParams}
+            />
+            <MultiButton
+                externalMode="MAYHEM"
+                internalMode="mayhem"
+                {...buttonParams}
+            />
+            <MultiButton
+                externalMode="BATTLE ROYALE"
+                internalMode="battle"
+                {...buttonParams}
+            />
             {error && <div className="text-white">{error}</div>}
             {errorCode === 'alreadyInGame' && (
                 <button
@@ -265,7 +219,7 @@ const GameModePage = ({
                     </span>
                 </button>
             )}
-        </div>
+        </>
     );
 };
 
