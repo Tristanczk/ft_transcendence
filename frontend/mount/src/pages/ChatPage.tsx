@@ -177,9 +177,10 @@ function ChatPage({
         socket.on('ban', () => setChannel(0));
         socket.on('reloadfriends', () => fetchFriends());
         socket.on('reloadchannels', () => fetchChannels());
-        socket.on('reloadchannel', () => {
-
-            fetchChannel();
+        socket.on('reloadchannel', (channelId) => {
+            console.log(channelId + "  " + channel);
+            if (channelId === channel)
+             fetchChannel();
         });
         socket.on('signoutchat', () => {
             setChannel(0);

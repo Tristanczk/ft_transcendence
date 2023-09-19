@@ -236,7 +236,7 @@ export class ChatService {
                         user.sockets.forEach((socket) => {
                             this.gateway.server
                                 .to(socket)
-                                .emit('reloadchannel');
+                                .emit('reloadchannel', updatedChannel.id);
                         });
                     }
                 }
@@ -398,7 +398,7 @@ export class ChatService {
                 const user = this.gateway.users.getIndivUserById(id);
                 if (user) {
                     user.sockets.forEach((socket) => {
-                        this.gateway.server.to(socket).emit('reloadchannel');
+                        this.gateway.server.to(socket).emit('reloadchannel', editChannel.id);
                     });
                 }
             });
@@ -440,7 +440,7 @@ export class ChatService {
             );
             if (user) {
                 user.sockets.forEach((socket) => {
-                    this.gateway.server.to(socket).emit('reloadchannel');
+                    this.gateway.server.to(socket).emit('reloadchannel', editChannel.id);
                 });
             }
 
