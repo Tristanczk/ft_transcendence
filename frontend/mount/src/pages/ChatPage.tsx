@@ -103,7 +103,7 @@ function ChatPage({
             setChannels(response.data);
         } catch (error) {
             console.error(error);
-            setAlertMessage('Failed to fetch channels. Please try again.');
+            //setAlertMessage('Failed to fetch channels. Please try again.');
         }
     }, [authAxios]);
 
@@ -137,7 +137,7 @@ function ChatPage({
             setCurrentChannel(response.data);
         } catch (error) {
             console.error(error);
-            setAlertMessage('Failed to fetch channel. Please try again.');
+            //setAlertMessage('Failed to fetch channel. Please try again.');
         }
     }, [authAxios, channel, user?.id]);
 
@@ -152,7 +152,7 @@ function ChatPage({
         else setMessages([]);
         fetchChannel();
         setChannelUsers([]);
-    }, [channel, fetchFriends, fetchChannels, fetchMessages, fetchChannel]); //friendsList but it breaks the chat settings
+    }, [channel, fetchFriends, fetchChannels, fetchMessages, fetchChannel]);
 
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
@@ -178,6 +178,7 @@ function ChatPage({
         socket.on('reloadfriends', () => fetchFriends());
         socket.on('reloadchannels', () => fetchChannels());
         socket.on('reloadchannel', () => {
+
             fetchChannel();
         });
         socket.on('signoutchat', () => {

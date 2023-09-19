@@ -73,14 +73,12 @@ export class ChatController {
     @Get('isChannelAdmin')
     async isChannelAdmin(@Query() channel: ChannelIdDto): Promise<boolean> {
         console.log('isChannelAdmin controller');
-        console.log(channel);
         return this.chatService.isChannelAdmin(channel);
     }
 
     @Get('isUserInChannel')
     async isUserInChannel(@Query() channel: ChannelIdDto): Promise<boolean> {
         console.log('isUserInChannel controller');
-        console.log(channel);
         return this.chatService.isUserInChannel(channel);
     }
 
