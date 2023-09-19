@@ -133,7 +133,7 @@ const CancelButton = ({
             )
         }
     >
-        <span className="text-sm font-medium inline-flex items-center justify-center text-white hover:text-gray-500 focus:outline-none mt-2">
+        <span className="text-sm font-medium inline-flex items-center justify-center text-white hover:text-black focus:outline-none mt-2">
             <svg
                 className="h-6 w-6"
                 xmlns="http://www.w3.org/2000/svg"
