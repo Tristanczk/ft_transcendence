@@ -8,11 +8,8 @@ import { useAuthAxios } from '../context/AuthAxiosContext';
 import { useUserContext } from '../context/UserContext';
 import AvatarUploader from '../components/user/AvatarUpload';
 import NotConnected from '../components/NotConnected';
-import {
-    NAVBAR_HEIGHT,
-    USERNAME_MAX_LENGTH,
-    USERNAME_MIN_LENGTH,
-} from '../shared/misc';
+import { USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH } from '../shared/misc';
+import TristanSection from '../components/TristanSection';
 
 interface Inputs {
     username: string;
@@ -149,117 +146,107 @@ const SettingsPage: React.FC = () => {
     };
 
     return user ? (
-        <section className="bg-gray-50 dark:bg-gray-900">
-            <div
-                className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
-                style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
+        <TristanSection>
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                Update settings
+            </h1>
+            {update && (
+                <p className="error mt-2 text-sm font-bold text-green-700 dark:text-green-500">
+                    Your settings have been successfully updated
+                </p>
+            )}
+            {twoFactor && (
+                <p className="error mt-2 text-sm font-bold text-green-700 dark:text-green-500">
+                    Two-factor authentication has been successfully {twoFactor}
+                </p>
+            )}
+            {errorEdit && (
+                <p className="error mt-2 text-sm font-bold text-red-600 dark:text-red-500">
+                    Failed to update information: {errorEdit}
+                </p>
+            )}
+            <AvatarUploader />
+            <form
+                className="space-y-4 md:space-y-6"
+                onSubmit={handleSubmit(onSubmit)}
             >
-                <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 max-w-lg xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                    <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-                        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                            Update settings
-                        </h1>
-                        {update && (
-                            <p className="error mt-2 text-sm font-bold text-green-700 dark:text-green-500">
-                                Your settings have been successfully updated
-                            </p>
-                        )}
-                        {twoFactor && (
-                            <p className="error mt-2 text-sm font-bold text-green-700 dark:text-green-500">
-                                Two-factor authentication has been successfully{' '}
-                                {twoFactor}
-                            </p>
-                        )}
-                        {errorEdit && (
-                            <p className="error mt-2 text-sm font-bold text-red-600 dark:text-red-500">
-                                Failed to update information: {errorEdit}
-                            </p>
-                        )}
-                        <AvatarUploader />
-                        <form
-                            className="space-y-4 md:space-y-6"
-                            onSubmit={handleSubmit(onSubmit)}
-                        >
-                            <ErrorsFormField
-                                control={control}
-                                errors={errors}
-                                hasError={!!errors.username}
-                                controllerName="username"
-                                label="Username"
-                                placeholder={user ? user.nickname : ''}
-                                rules={{
-                                    minLength: {
-                                        value: USERNAME_MIN_LENGTH,
-                                        message: `Username must be at least ${USERNAME_MIN_LENGTH} characters long`,
-                                    },
-                                    maxLength: {
-                                        value: USERNAME_MAX_LENGTH,
-                                        message: `Username must be at most ${USERNAME_MAX_LENGTH} characters long`,
-                                    },
-                                    pattern: {
-                                        value: /^[a-zA-Z0-9_]+$/,
-                                        message:
-                                            'Username can only contain letters, numbers, and underscores',
-                                    },
-                                }}
-                            />
-                            <ErrorsFormField
-                                control={control}
-                                errors={errors}
-                                hasError={!!errors.email}
-                                controllerName="email"
-                                label="Email"
-                                placeholder={user ? user.email : ''}
-                                rules={{
-                                    pattern: {
-                                        value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                                        message: 'Invalid email format',
-                                    },
-                                }}
-                            />
-                            <div className="mb-6">
-                                <label
-                                    htmlFor="two_factor_authentication"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Two-Factor Authentication
-                                </label>
-                                <ToggleButton
-                                    checked={isTwoFactorEnabled}
-                                    onChange={handleTwoFactorToggle}
-                                    id="two_factor_authentication"
-                                ></ToggleButton>
-                            </div>
-                            <Button
-                                disabled={Object.keys(errors).length > 0}
-                                text="Save changes"
-                                type="submit"
-                            />
-                        </form>
-                        {displayModal ? (
-                            <TwoFactorModal
-                                title="Enable two-factor authentication"
-                                qrCodeDataUrl={qrCodeDataUrl}
-                                secret={twoFactorSecret}
-                                modalId={'Enable-2fa-modal'}
-                                closeModal={() => setDisplayModal(false)}
-                                onSubmit={enableTwoFactor}
-                                error={error}
-                            />
-                        ) : null}
-                        {displayDisableModal ? (
-                            <TwoFactorModal
-                                title="Disable two-factor authentication"
-                                modalId={'Disable-2fa-modal'}
-                                closeModal={() => setDisplayDisableModal(false)}
-                                onSubmit={disableTwoFactor}
-                                error={error}
-                            />
-                        ) : null}
-                    </div>
+                <ErrorsFormField
+                    control={control}
+                    errors={errors}
+                    hasError={!!errors.username}
+                    controllerName="username"
+                    label="Username"
+                    placeholder={user ? user.nickname : ''}
+                    rules={{
+                        minLength: {
+                            value: USERNAME_MIN_LENGTH,
+                            message: `Username must be at least ${USERNAME_MIN_LENGTH} characters long`,
+                        },
+                        maxLength: {
+                            value: USERNAME_MAX_LENGTH,
+                            message: `Username must be at most ${USERNAME_MAX_LENGTH} characters long`,
+                        },
+                        pattern: {
+                            value: /^[a-zA-Z0-9_]+$/,
+                            message:
+                                'Username can only contain letters, numbers, and underscores',
+                        },
+                    }}
+                />
+                <ErrorsFormField
+                    control={control}
+                    errors={errors}
+                    hasError={!!errors.email}
+                    controllerName="email"
+                    label="Email"
+                    placeholder={user ? user.email : ''}
+                    rules={{
+                        pattern: {
+                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                            message: 'Invalid email format',
+                        },
+                    }}
+                />
+                <div className="mb-6">
+                    <label
+                        htmlFor="two_factor_authentication"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                        Two-Factor Authentication
+                    </label>
+                    <ToggleButton
+                        checked={isTwoFactorEnabled}
+                        onChange={handleTwoFactorToggle}
+                        id="two_factor_authentication"
+                    ></ToggleButton>
                 </div>
-            </div>
-        </section>
+                <Button
+                    disabled={Object.keys(errors).length > 0}
+                    text="Save changes"
+                    type="submit"
+                />
+            </form>
+            {displayModal ? (
+                <TwoFactorModal
+                    title="Enable two-factor authentication"
+                    qrCodeDataUrl={qrCodeDataUrl}
+                    secret={twoFactorSecret}
+                    modalId={'Enable-2fa-modal'}
+                    closeModal={() => setDisplayModal(false)}
+                    onSubmit={enableTwoFactor}
+                    error={error}
+                />
+            ) : null}
+            {displayDisableModal ? (
+                <TwoFactorModal
+                    title="Disable two-factor authentication"
+                    modalId={'Disable-2fa-modal'}
+                    closeModal={() => setDisplayDisableModal(false)}
+                    onSubmit={disableTwoFactor}
+                    error={error}
+                />
+            ) : null}
+        </TristanSection>
     ) : (
         <NotConnected message="Please signup or log in to access your settings" />
     );
