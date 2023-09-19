@@ -148,14 +148,14 @@ function ShowGameElem({ game, userId }: ShowGameProps) {
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                     <span className="font-semibold">
-                        {game.playerA?.score}/{game.playerB?.score} in{' '}
+                        {game.playerA?.score}-{game.playerB?.score} in{' '}
                         {game.duration > 60
                             ? Math.trunc(game.duration / 60) +
                               'm' +
                               (game.duration % 60) +
                               's'
                             : (game.duration > 0 ? game.duration : 0) + 's'}
-                        {game.aborted && '(game aborted)'}
+                        {game.aborted && ' (game aborted)'}
                     </span>
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
