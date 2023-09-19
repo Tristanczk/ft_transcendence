@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import Page404 from './pages/Page404';
-import DashboardPage from './pages/DashboardPage';
 import SignOutPage from './pages/SignOutPage';
 import ChatPage from './pages/ChatPage';
 import SettingsPage from './pages/SettingsPage';
@@ -13,7 +12,6 @@ import SignUpPage from './pages/SignUpPage';
 import { WebsocketProvider, socket } from './context/WebsocketContext';
 import TrackingOnline from './components/TrackingOnline';
 import { UserProvider } from './context/UserContext';
-import UserPage from './pages/UserPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import { AuthAxiosProvider } from './context/AuthAxiosContext';
 import AchievementPage from './pages/AchievementsPage';
@@ -22,6 +20,7 @@ import GamePage from './pages/GamePage';
 import LocalClassic from './games/local/LocalClassic';
 import LocalMayhem from './games/local/LocalMayhem';
 import LocalBattleRoyale from './games/local/LocalBattleRoyale';
+import DashboardPage from './pages/DashboardPage';
 
 const App: React.FC = () => {
     const [isChatVisible, setIsChatVisible] = useState(false);
@@ -72,7 +71,7 @@ const App: React.FC = () => {
                             />
                             <Route path="/game/:gameId" Component={GamePage} />
                             <Route
-                                path="/dashboard"
+                                path="/dashboard/:idUserToView?"
                                 Component={DashboardPage}
                             />
                             <Route
@@ -82,10 +81,6 @@ const App: React.FC = () => {
                             <Route
                                 path="/games/:idUserToView"
                                 Component={GameHistoryPage}
-                            />
-                            <Route
-                                path="/dashboard/:idUserToView"
-                                Component={UserPage}
                             />
                             <Route
                                 path="/leaderboard"
