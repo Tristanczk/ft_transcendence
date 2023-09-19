@@ -72,8 +72,8 @@ const App: React.FC = () => {
                             />
                             <Route path="/game/:gameId" Component={GamePage} />
                             <Route
-                                path="/dashboard"
-                                Component={DashboardPage}
+                                path="/dashboard/:idUserToView?"
+                                Component={UserPage}
                             />
                             <Route
                                 path="/achievements"
@@ -82,10 +82,6 @@ const App: React.FC = () => {
                             <Route
                                 path="/games/:idUserToView"
                                 Component={GameHistoryPage}
-                            />
-                            <Route
-                                path="/dashboard/:idUserToView"
-                                Component={UserPage}
                             />
                             <Route
                                 path="/leaderboard"
