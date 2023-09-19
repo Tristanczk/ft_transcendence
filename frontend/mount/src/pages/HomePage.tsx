@@ -412,8 +412,8 @@ const HomePage: React.FC<{
 
     return (
         <div
-            className="flex flex-col justify-center items-center bg-rose-600 space-y-4"
-            style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
+            className="flex flex-col justify-center items-center bg-rose-600 space-y-4 py-4"
+            style={{ minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
         >
             {matchmaking ? (
                 <LoadingPage

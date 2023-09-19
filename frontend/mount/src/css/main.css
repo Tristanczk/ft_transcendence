@@ -7,8 +7,13 @@
 
 body {
     font-family: 'Josefin Sans', sans-serif;
-  }
-  
-  h1 {
+}
+
+h1 {
     font-family: 'Press Start 2P', sans-serif;
-  }
+}
+
+html,
+body {
+    height: 100%;
+}

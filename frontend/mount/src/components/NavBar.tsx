@@ -264,7 +264,7 @@ const NavBar = ({
 
     return (
         <nav
-            className="border-gray-200 bg-gray-900"
+            className="sticky top-0 border-gray-200 bg-gray-900 z-50"
             style={{ height: NAVBAR_HEIGHT }}
         >
             <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
