@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { UserSimplified } from '../../../types';
 import { useAuthAxios } from '../../../context/AuthAxiosContext';
 
 interface Props {
