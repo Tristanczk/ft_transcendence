@@ -23,13 +23,13 @@ function PresentationUser({ user }: PresentationUserProps) {
                     )}
                     {user && (
                         <div className=" ml-3 text-5xl font-bold text-gray-900 dark:text-white">
-                            {user?.nickname ?? 'qqq'}
+                            {user.nickname}
                         </div>
                     )}
                 </div>
                 {user && (
                     <div className="text-xl font-light text-gray-500 dark:text-gray-400">
-                        ELO: {user.elo ?? '...'}
+                        ELO: {user.elo}
                     </div>
                 )}
             </address>

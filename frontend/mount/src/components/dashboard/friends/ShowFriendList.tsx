@@ -21,53 +21,53 @@ function ShowFriendList({
     handleDeleteFriendClick,
     currUserId,
 }: Props) {
-    if (!friendsList) return <div className="mb-6">No friends</div>;
-
-    return friendsList.length > 0 ? (
+    return (
         <div className="bg-white">
             <ul className="flex flex-wrap my-6 justify-center divide-y divide-gray-200 dark:divide-gray-700">
-                {friendsList.map((friend, i) => (
-                    <li className={'w-full sm:w-1/2 lg:w-1/3 '} key={friend.id}>
-                        <div className="relative p-4">
-                            <div className="flex-shrink-0">
-                                <ImageFriend
-                                    userId={friend.id}
-                                    textImg={friend.nickname}
-                                    size={8}
+                {friendsList &&
+                    friendsList.map((friend) => (
+                        <li
+                            className="w-full sm:w-1/2 lg:w-1/3"
+                            key={friend.id}
+                        >
+                            <div className="relative p-4">
+                                <div className="flex-shrink-0">
+                                    <ImageFriend
+                                        userId={friend.id}
+                                        textImg={friend.nickname}
+                                        size={8}
+                                    />
+                                </div>
+                                <div className="flex-1 min-w-0 flex flex-col">
+                                    <p className="text-sm font-medium text-gray-900 dark:text-white hover:font-bold flex-shrink-0">
+                                        <Link
+                                            to={'/dashboard/' + friend.id}
+                                            className="truncate"
+                                        >
+                                            {friend.nickname}
+                                        </Link>
+                                        <ShowIsOnline
+                                            userId={friend.id}
+                                            initStatus={friend.isConnected}
+                                            playingStatus={friend.isPlaying}
+                                        />
+                                    </p>
+                                    <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                                        elo: {friend.elo}
+                                    </p>
+                                </div>
+                                <DeleteButton
+                                    friendId={friend.id}
+                                    currUserId={currUserId}
+                                    handleDeleteFriendClick={
+                                        handleDeleteFriendClick
+                                    }
                                 />
                             </div>
-                            <div className="flex-1 min-w-0 flex flex-col">
-                                <p className="text-sm font-medium text-gray-900 dark:text-white hover:font-bold flex-shrink-0">
-                                    <Link
-                                        to={'/dashboard/' + friend.id}
-                                        className="truncate"
-                                    >
-                                        {friend.nickname}
-                                    </Link>
-                                    <ShowIsOnline
-                                        userId={friend.id}
-                                        initStatus={friend.isConnected}
-                                        playingStatus={friend.isPlaying}
-                                    />
-                                </p>
-                                <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                                    elo: {friend.elo}
-                                </p>
-                            </div>
-                            <DeleteButton
-                                friendId={friend.id}
-                                currUserId={currUserId}
-                                handleDeleteFriendClick={
-                                    handleDeleteFriendClick
-                                }
-                            />
-                        </div>
-                    </li>
-                ))}
+                        </li>
+                    ))}
             </ul>
         </div>
-    ) : (
-        <div className="mb-1">No friends</div>
     );
 }
 
