@@ -1,53 +1,71 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { User } from '../types';
+import axios from 'axios';
 import PresentationUser from '../components/dashboard/PresentationUser';
-import StatsUser from '../components/dashboard/StatsUser';
 import Friends from '../components/dashboard/friends/Friends';
+import StatsUser from '../components/dashboard/StatsUser';
 import { useUserContext } from '../context/UserContext';
 import NotConnected from '../components/NotConnected';
-import axios from 'axios';
-import { User } from '../types';
+
+const NoUser: React.FC<{ idUserToView: string }> = ({ idUserToView }) => (
+    <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
+        <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
+            <article className="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                <h2 className="text-3xl font-extrabold dark:text-white">
+                    No user found
+                </h2>
+                <p className="mt-4 mb-4">
+                    '{idUserToView}' cannot be found on our server.
+                </p>
+            </article>
+        </div>
+    </main>
+);
 
 const DashboardPage: React.FC = () => {
+    const { idUserToView } = useParams();
     const { user } = useUserContext();
-
-    const [userData, setUser] = useState<User | null>(null);
-
-    const fetchUser = async () => {
-        try {
-            if (!user) return;
-            const response = await axios.get(
-                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/users/${user.id}`,
-                { withCredentials: true },
-            );
-            setUser(response.data);
-        } catch (error) {
-            setUser(null);
-        }
-    };
+    const [userData, setUserData] = useState<User | null>(null);
+    const userId: number | null = idUserToView
+        ? /\d+/.test(idUserToView)
+            ? parseInt(idUserToView)
+            : null
+        : user?.id ?? null;
+    const [error, setError] = useState(userId === null);
 
     useEffect(() => {
-        fetchUser();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get(
+                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/users/${userId}`,
+                    { withCredentials: true },
+                );
+                setUserData(response.data);
+                setError(false);
+            } catch (error) {
+                setUserData(null);
+            }
+        };
+        if (userId !== null) fetchUser();
+        else setUserData(null);
+    }, [userId]);
 
-    useEffect(() => {
-        fetchUser();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
-
-    return !user ? (
-        <NotConnected message="Please signup or log in to access your dashboard" />
-    ) : userData ? (
+    return userData ? (
         <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
             <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                <article className="mx-auto w-full max-w-5xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                <article className="mx-auto w-full max-w-4xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                     <PresentationUser user={userData} />
-                    <Friends currUser={user} />
-                    <StatsUser user={user} />
+                    <Friends currUser={userData} />
+                    <StatsUser user={userData} />
                 </article>
             </div>
         </main>
-    ) : null;
+    ) : !error ? null : idUserToView ? (
+        <NoUser idUserToView={idUserToView} />
+    ) : (
+        <NotConnected message="Please signup or log in to access your dashboard" />
+    );
 };
 
 export default DashboardPage;
