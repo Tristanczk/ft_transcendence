@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
@@ -12,7 +12,7 @@ import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import { WebsocketProvider, socket } from './context/WebsocketContext';
 import TrackingOnline from './components/TrackingOnline';
-import { UserProvider, useUserContext } from './context/UserContext';
+import { UserProvider } from './context/UserContext';
 import UserPage from './pages/UserPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import { AuthAxiosProvider } from './context/AuthAxiosContext';
@@ -43,13 +43,11 @@ const App: React.FC = () => {
                             gameId={gameId}
                             setGameId={setGameId}
                         />
-                        {
-                            <ChatPage
-                                isChatVisible={isChatVisible}
-                                toggleChatVisibility={toggleChatVisibility}
-                                setIsChatVisible={setIsChatVisible}
-                            />
-                        }
+                        <ChatPage
+                            isChatVisible={isChatVisible}
+                            toggleChatVisibility={toggleChatVisibility}
+                            setIsChatVisible={setIsChatVisible}
+                        />
                         <Routes>
                             <Route
                                 path="/"
