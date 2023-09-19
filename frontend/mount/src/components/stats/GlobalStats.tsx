@@ -47,7 +47,6 @@ function GlobalStats({ user }: PresentationUserProps) {
                 data-tabs-toggle="#fullWidthTabContent"
                 role="tablist"
             >
-
                 <li className="-full py-2 sm:py-0">
                     <button
                         id="stats-tab"
@@ -87,7 +86,7 @@ function GlobalStats({ user }: PresentationUserProps) {
                     role="tabpanel"
                     aria-labelledby="stats-tab"
                 >
-<dl className="grid max-w-screen-xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8 p-4 mx-auto text-gray-900 dark:text-white sm:p-8">
+                    <dl className="grid max-w-screen-xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8 p-4 mx-auto text-gray-900 dark:text-white sm:p-8">
                         <div className="flex flex-col items-center justify-center">
                             <dt className="mb-2 text-3xl font-extrabold">
                                 {stats ? stats?.me.nbGames : 'N/A'}
@@ -108,15 +107,15 @@ function GlobalStats({ user }: PresentationUserProps) {
                             <dt className="mb-2 text-3xl font-extrabold">
                                 {stats?.me.nbGames
                                     ? Math.round(
-                                        (stats?.me.nbWins /
-                                            stats?.me.nbGames) *
-                                        100,
-                                    )
+                                          (stats?.me.nbWins /
+                                              stats?.me.nbGames) *
+                                              100,
+                                      )
                                     : 0}
                                 %
                             </dt>
                             <dd className="text-gray-500 dark:text-gray-400">
-                                Success rate
+                                Win rate
                             </dd>
                         </div>
                         <div className="flex flex-col items-center justify-center">
@@ -132,16 +131,16 @@ function GlobalStats({ user }: PresentationUserProps) {
                                 {stats && stats.me.averageDuration
                                     ? stats?.me.averageDuration > 60
                                         ? Math.trunc(
-                                            stats?.me.averageDuration / 60,
-                                        ) +
-                                        'm' +
-                                        (stats?.me.averageDuration % 60) +
-                                        's'
+                                              stats?.me.averageDuration / 60,
+                                          ) +
+                                          'm' +
+                                          (stats?.me.averageDuration % 60) +
+                                          's'
                                         : stats?.me.averageDuration + 's'
                                     : 'N/A'}
                             </dt>
                             <dd className="text-gray-500 dark:text-gray-400">
-                                Average game lenght
+                                Average game length
                             </dd>
                         </div>
                         <div className="flex flex-col items-center justify-center">
