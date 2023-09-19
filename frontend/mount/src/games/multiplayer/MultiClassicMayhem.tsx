@@ -26,7 +26,6 @@ import { WebsocketContext } from '../../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { clamp } from '../../shared/functions';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
-import { text } from 'stream/consumers';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
