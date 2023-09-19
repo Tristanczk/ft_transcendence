@@ -36,10 +36,10 @@ const TwoFactorModal: React.FC<Props> = ({
         <>
             <div
                 id={modalId}
-                className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+                className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none no-scrollbar"
             >
-                <div className="relative w-full max-w-lg max-h-full">
-                    <div className="relative bg-white rounded-lg shadow dark:bg-gray-700 p-5 space-y-2">
+                <div className="relative w-full max-w-lg max-h-full no-scrollbar">
+                    <div className="relative bg-white rounded-lg shadow dark:bg-gray-700 p-5 space-y-2 no-scrollbar">
                         <div className="flex items-center justify-between border-b rounded-t dark:border-gray-600">
                             <h3 className="text-xl font-medium text-gray-900 dark:text-white">
                                 {title}
