@@ -80,15 +80,12 @@ export class UserService {
             });
             return user;
         } catch (error) {
-            // console.log(error);
             return null;
         }
     }
 
     async getAllUsers() {
-        // console.log('bonjour');
         const users = await this.prisma.user.findMany();
-        // console.log(users);
         return users;
     }
 
