@@ -42,18 +42,6 @@ const joinGame = (
     });
 };
 
-const GameButton: React.FC<{ text: string; onClick: () => void }> = ({
-    text,
-    onClick,
-}) => (
-    <button
-        className="flex justify-center items-center py-4 px-4 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm"
-        onClick={onClick}
-    >
-        {text}
-    </button>
-);
-
 const MultiButton = ({
     externalMode,
     internalMode,
@@ -77,8 +65,8 @@ const MultiButton = ({
     setMatchmaking: (matchmaking: boolean) => void;
     setErrorMatchmaking: (error: string) => void;
 }) => (
-    <GameButton
-        text={externalMode}
+    <button
+        className="flex justify-center items-center py-4 px-4 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm"
         onClick={() =>
             joinGame(
                 internalMode,
@@ -92,7 +80,9 @@ const MultiButton = ({
                 setErrorMatchmaking,
             )
         }
-    />
+    >
+        {externalMode}
+    </button>
 );
 
 const leaveMatchmaking = (
