@@ -12,6 +12,7 @@ import {
 import {
     ClassicMayhemGameObjects,
     ClassicMayhemPlayers,
+    UpdateGameEvent,
     eloVariation,
 } from '../../shared/game_info';
 import {
@@ -25,6 +26,7 @@ import { WebsocketContext } from '../../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { clamp } from '../../shared/functions';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { text } from 'stream/consumers';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
@@ -257,10 +259,72 @@ const drawEndScreen = (
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(
-        socket.id === winner ? 'Congratulations, you won!' : 'Sorry, you lost!',
+        socket.id === winner ? 'Victory' : 'Defeat',
         canvas.width / 2,
         canvas.height * 0.3,
     );
+    if (varElo) {
+        const eloSize = 8 + canvas.width / 40;
+        ctx.font = `${eloSize}px monospace`;
+        ctx.fillText(
+            socket.id === players[0]!.id
+                ? `Elo: ${players[0]!.elo} -> ${
+                      players[0]!.elo + varElo.varEloLeft
+                  } (${
+                      varElo.varEloLeft > 0
+                          ? `+${varElo.varEloLeft}`
+                          : varElo.varEloLeft
+                  })`
+                : `Elo: ${players[1]!.elo} -> ${
+                      players[1]!.elo + varElo.varEloRight
+                  } (${
+                      varElo.varEloRight > 0
+                          ? `+${varElo.varEloRight}`
+                          : varElo.varEloRight
+                  })`,
+            canvas.width / 2,
+            canvas.height * 0.5,
+        );
+    }
+};
+
+const drawLeaveScreen = (
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    players: ClassicMayhemPlayers,
+    socket: Socket,
+    varElo: eloVariation | null,
+    gameLeave: UpdateGameEvent,
+) => {
+    let textSize = 8 + canvas.width / 20;
+    ctx.fillStyle = 'white';
+    ctx.font = `${textSize}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(
+        socket.id === gameLeave.from ? 'Defeat' : 'Victory',
+        canvas.width / 2,
+        canvas.height * 0.3,
+    );
+    textSize = 8 + canvas.width / 40;
+    ctx.font = `${textSize}px monospace`;
+    if (gameLeave.message === 'aborted') {
+        ctx.fillText(
+            socket.id === gameLeave.from
+                ? '(You resigned)'
+                : '(Opponent resigned)',
+            canvas.width / 2,
+            canvas.height * 0.4,
+        );
+    } else if (gameLeave.message === 'left') {
+        ctx.fillText(
+            socket.id === gameLeave.from
+                ? '(You disconnected)'
+                : '(Opponent disconnected)',
+            canvas.width / 2,
+            canvas.height * 0.4,
+        );
+    }
     if (varElo) {
         const eloSize = 8 + canvas.width / 40;
         ctx.font = `${eloSize}px monospace`;
@@ -383,6 +447,7 @@ const MultiClassicMayhem = ({
     state,
     timeRemaining,
     varElo,
+    gameLeave,
 }: {
     gameObjects: ClassicMayhemGameObjects;
     windowWidth: number;
@@ -392,6 +457,7 @@ const MultiClassicMayhem = ({
     state: string;
     timeRemaining: number;
     varElo: eloVariation | null;
+    gameLeave: UpdateGameEvent | null;
 }) => {
     const arenaHeight = Math.min(
         (windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
@@ -418,6 +484,20 @@ const MultiClassicMayhem = ({
             drawScore(canvas, ctx, players, timeRemaining);
             if (state === 'finished') {
                 drawEndScreen(canvas, ctx, players, socket, varElo);
+                drawEndButtons(canvas, ctx, navigate, mode);
+            } else if (
+                gameLeave &&
+                (gameLeave.message === 'aborted' ||
+                    gameLeave.message === 'left')
+            ) {
+                drawLeaveScreen(
+                    canvas,
+                    ctx,
+                    players,
+                    socket,
+                    varElo,
+                    gameLeave,
+                );
                 drawEndButtons(canvas, ctx, navigate, mode);
             } else if (timeRemaining === 0) {
                 drawMayhemMap(

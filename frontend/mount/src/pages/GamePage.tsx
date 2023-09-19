@@ -46,25 +46,16 @@ const Game = ({
         />
     ) : (
         <div className="flex flex-col items-center">
-            <div
-                className={`${
-                    gameLeave &&
-                    (gameLeave.message === 'user leave' ||
-                        gameLeave.message === 'user left')
-                        ? 'h-auto' // Set the height to "auto" when the warning message is displayed
-                        : 'h-[0] overflow-hidden' // Set height to "0" and hide overflow when not displayed
-                }`}
-            >
-                {gameLeave &&
-                    (gameLeave.message === 'user leave' ||
-                        gameLeave.message === 'user left') && (
-                        <div className="text-red-500">
-                            warning: your opponent has left the game, game will
-                            terminate in {Math.ceil(gameLeave.timeLeft! / 1000)}{' '}
-                            seconds.
-                        </div>
-                    )}
-            </div>
+            {gameLeave &&
+            (gameLeave.message === 'disconnected' ||
+                gameLeave.message === 'left') ? (
+                <div className="text-red-500">
+                    WARNING: your opponent has disconnected, game will terminate
+                    in {Math.round(gameLeave.timeLeft! / 1000)} seconds.
+                </div>
+            ) : (
+                <div className="text-red-500 h-6"></div>
+            )}
             <div className="flex justify-between w-full">
                 <div className="text-black">
                     {leftName} (
@@ -115,6 +106,7 @@ const Game = ({
                 players={gameInfo.players}
                 state={gameInfo.state}
                 timeRemaining={gameInfo.timeRemaining}
+                gameLeave={gameLeave}
                 varElo={varElo}
                 windowWidth={width}
                 windowHeight={height}
