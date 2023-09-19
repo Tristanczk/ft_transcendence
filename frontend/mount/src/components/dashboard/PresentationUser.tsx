@@ -1,4 +1,5 @@
 import { User } from '../../types';
+import ButtonDefyPlayer from './friends/ButtonPlayFriend';
 import ImageFriend from './friends/ImgFriend';
 
 interface PresentationUserProps {
@@ -19,6 +20,11 @@ function PresentationUser({ user }: PresentationUserProps) {
                         <div className="text-5xl font-bold text-gray-900 dark:text-white">
                             {user.nickname}
                         </div>
+                        <ButtonDefyPlayer
+                            userId={user.id}
+                            initStatus={user.isConnected}
+                            playingStatus={user.isPlaying}
+                        />
                     </div>
                 </div>
                 <div className="text-xl font-light text-gray-500 dark:text-gray-400">

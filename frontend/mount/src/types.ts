@@ -8,6 +8,8 @@ export type User = {
     twoFactorAuthentication: boolean;
     achievements: string[];
     updateAvatar: undefined | boolean;
+	isConnected: boolean;
+    isPlaying: boolean;
 };
 
 export type UserSimplified = {

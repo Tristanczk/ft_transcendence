@@ -26,6 +26,7 @@ import {
 } from 'src/shared/game_info';
 import { GamesService } from 'src/games/games.service';
 import { emit } from 'process';
+import { DefyUserDto } from './dto/defyUser.dto';
 
 const ID_SIZE = 6;
 const ID_BASE = 36;
@@ -564,4 +565,36 @@ export class GatewayService
         }
         delete this.games[game.id];
     }
+
+	@SubscribeMessage('defyUser')
+	async defyUser(client: Socket, data: DefyUserDto): Promise<ResponseInvitationPlay> {
+		let reponse: ResponseInvitationPlay = {
+			error: false,
+			message: 'valid',
+		}
+
+		const playerA: IndivUser = this.users.getIndivUserBySocketId(client.id);
+		if (!playerA) return {error: true, message: 'user A not found'} 
+		if (!playerA.isConnected) return {error: true, message: 'user A not connected'} 
+		if (playerA.isPlaying) return {error: true, message: 'user A is currently playing'} 
+		
+		const playerB: IndivUser = this.users.getIndivUserById(data.idUserB);
+		if (!playerB) return {error: true, message: 'user B not found'} 
+		if (!playerB.isConnected) return {error: true, message: 'user B not connected'} 
+		if (playerB.isPlaying) return {error: true, message: 'user B is currently playing'} 
+		
+		
+		return {error: false, message: 'invitation sent'}
+	}
 }
+
+export type ResponseInvitationPlay = {
+	error: boolean;
+	message: string;
+}
+
+/*
+defier joueur:
+- joueur en ligne: possible
+- joueur hors ligne: erreur
+*/
