@@ -66,6 +66,9 @@ const Game = ({
                     )}
                     )
                 </div>
+                <div className="text-blue-500">
+                    Your centered message goes here
+                </div>
                 <div className="text-black">
                     {rightName} (
                     {varElo
@@ -108,7 +111,7 @@ const GamePage: React.FC = () => {
     const socket = useContext(WebsocketContext);
     const { width, height } = useWindowSize();
     const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
-    const [message, setMessage] = useState<string>('');
+    const [gameLeave, setGameLeave] = useState<UpdateGameEvent | null>(null);
     const [varElo, setVarElo] = useState<eloVariation | null>(null);
 
     useEffect(() => {
@@ -117,15 +120,23 @@ const GamePage: React.FC = () => {
         };
 
         const handleEventGame = (eventGameInfo: UpdateGameEvent) => {
-            console.log(eventGameInfo);
+            setGameLeave(eventGameInfo);
+        };
+
+        const handleEloVar = (data: eloVariation) => {
+            setVarElo(data);
         };
 
         socket.on('updateGameInfo', handleUpdateGameInfo);
 
         socket.on('eventGame', handleEventGame);
 
+        socket.on('varElo', handleEloVar);
+
         return () => {
             socket.off('updateGameInfo', handleUpdateGameInfo);
+            socket.off('eventGame', handleEventGame);
+            socket.off('varElo', handleEloVar);
         };
     }, [socket]);
 
@@ -174,22 +185,6 @@ const GamePage: React.FC = () => {
             }
         });
     }, [gameId, navigate, socket]);
-
-    useEffect(() => {
-        socket.on('eventGame', (data: UpdateGameEvent) => {
-            setMessage(data.message);
-        });
-
-        return () => {
-            socket.off('eventGame');
-        };
-    });
-
-    useEffect(() => {
-        socket.on('varElo', (data: eloVariation) => {
-            setVarElo(data);
-        });
-    });
 
     return (
         <div
