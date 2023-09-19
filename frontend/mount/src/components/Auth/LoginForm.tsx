@@ -113,7 +113,7 @@ const LoginForm: React.FC<Props> = ({ setUsername, setTwoFactor }) => {
                 Don’t have an account yet?{' '}
                 <a
                     href="/signup"
-                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                    className="font-medium text-blue-600 hover:underline dark:text-primary-500"
                 >
                     Sign up
                 </a>
