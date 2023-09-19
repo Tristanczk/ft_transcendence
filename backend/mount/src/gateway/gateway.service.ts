@@ -319,7 +319,7 @@ export class GatewayService
             console.log('game finished : ' + data);
             const returnData: UpdateGameEvent = {
                 gameId: data,
-                message: 'game aborted by user',
+                message: 'aborted',
                 from: client.id,
             };
             this.emitUpdateToPlayers(game, 'eventGame', returnData);
@@ -350,20 +350,20 @@ export class GatewayService
                         //check si premiere fois
                         if (game.timeUserLeave === 0) {
                             game.timeUserLeave = Date.now();
-                            returnData.message = 'user leave';
+                            returnData.message = 'disconnected';
                             returnData.timeLeft = this.timeDisconnection;
                         } else if (
                             timeNow - game.timeUserLeave <
                             this.timeDisconnection
                         ) {
                             //faire le décompte
-                            returnData.message = 'user leave';
+                            returnData.message = 'disconnected';
                             returnData.timeLeft =
                                 this.timeDisconnection -
                                 (timeNow - game.timeUserLeave);
                         } else {
                             //end game
-                            returnData.message = 'user left';
+                            returnData.message = 'left';
                             returnData.timeLeft = 0;
 
                             if (
@@ -390,7 +390,7 @@ export class GatewayService
                         game.timeUserLeave = 0;
                         const returnData: UpdateGameEvent = {
                             gameId: game.id,
-                            message: 'user back',
+                            message: 'reconnected',
                         };
                         this.emitUpdateToPlayers(game, 'eventGame', returnData);
                     }

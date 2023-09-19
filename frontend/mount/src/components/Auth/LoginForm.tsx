@@ -105,7 +105,7 @@ const LoginForm: React.FC<Props> = ({ setUsername, setTwoFactor }) => {
                 />
                 <Button
                     disabled={Object.keys(errors).length > 0}
-                    text="Signin with username"
+                    text="Sign in with username"
                     type="submit"
                 />
             </form>
@@ -113,12 +113,12 @@ const LoginForm: React.FC<Props> = ({ setUsername, setTwoFactor }) => {
                 Don’t have an account yet?{' '}
                 <a
                     href="/signup"
-                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                    className="font-medium text-blue-600 hover:underline dark:text-primary-500"
                 >
                     Sign up
                 </a>
             </p>
-            <Button text="Signin with 42" onClick={handleRedir42} />
+            <Button text="Sign in with 42" onClick={handleRedir42} />
         </div>
     );
 };
