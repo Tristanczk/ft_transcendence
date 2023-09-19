@@ -9,13 +9,8 @@ import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
 import { WebsocketContext } from '../../context/WebsocketContext';
 import EmojiPicker, {
-    Categories,
     EmojiClickData,
     EmojiStyle,
-    SkinTonePickerLocation,
-    SkinTones,
-    SuggestionMode,
-    Theme,
 } from 'emoji-picker-react';
 import { Alert } from './Alert';
 

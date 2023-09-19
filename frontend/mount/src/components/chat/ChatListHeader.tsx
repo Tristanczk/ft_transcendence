@@ -9,17 +9,17 @@ export default function ChatListHeader({
 }) {
     return (
         <div className="flex items-center justify-between bg-gray-50 px-3 rounded-tl-3xl rounded-tr-3xl shadow-md">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
                 <button
                     onClick={() => selector(1)}
-                    className={`rounded-t-3xl px-4 py-2 text-lg text-gray-600 hover:text-gray-900 transition duration-400 focus:outline-none ${channelListSelected === 1 ? 'bg-zinc-100 shadow-inner' : 'bg-gray-100'}`}
+                    className={`rounded-t-3xl px-4 py-2 mt-1 text-lg text-gray-600 hover:text-gray-900 transition duration-400 focus:outline-none ${channelListSelected === 1 ? 'bg-zinc-100 shadow-inner' : 'bg-gray-100'}`}
                 >
                     Friends 😁
                 </button>
 
                 <button
                     onClick={() => selector(0)}
-                    className={`rounded-t-3xl px-4 py-2 text-lg text-gray-600 hover:text-gray-900 transition duration-400 focus:outline-none ${channelListSelected === 0 ? 'bg-zinc-100 shadow-inner' : 'bg-gray-100'}`}
+                    className={`rounded-t-3xl px-4 py-2 mt-1 text-lg text-gray-600 hover:text-gray-900 transition duration-400 focus:outline-none ${channelListSelected === 0 ? 'bg-zinc-100 shadow-inner' : 'bg-gray-100'}`}
                 >
                     Channels 💬
                 </button>

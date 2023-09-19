@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { UserSimplified } from '../../types';
 import ChatFriendListElement from './ChatFriendListElement';
 
@@ -16,24 +18,69 @@ export default function ChatFriendList({
     notifications: number[];
     setNotifications: (notifications: number[]) => void;
 }) {
+    const [barHidden, setBarHidden] = useState(false);
+
     return (
-        <div
-            id="list"
-            className="flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip rounded-br-3xl rounded-bl-3xl mb-6 shadow-xl"
-        >
-            <div className={`flex flex-col overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip transition-all duration-500 ${channel?"h-36":"h-96"}`}>
-                {friends &&
-                    friends.map((friend, index) => (
-                        <ChatFriendListElement
-                            key={friend.id}
-                            friend={friend}
-                            setChannel={setChannel}
-                            setCurrentFriend={setCurrentFriend}
-                            notifications={notifications}
-                            setNotifications={setNotifications}
-                        />
-                    ))}
+        <>
+            <div
+                id="list"
+                className={`flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip shadow-xl" ${
+                    friends ? 'rounded-none' : 'rounded-none'
+                }`}
+            >
+                <div
+                    className={`flex flex-col overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip transition-all duration-500 ${
+                        channel ? 'h-36' : 'h-96'
+                    }`}
+                >
+                    {friends &&
+                        friends.map((friend, index) => (
+                            <ChatFriendListElement
+                                key={friend.id}
+                                friend={friend}
+                                setChannel={setChannel}
+                                setCurrentFriend={setCurrentFriend}
+                                notifications={notifications}
+                                setNotifications={setNotifications}
+                            />
+                        ))}
+                </div>
             </div>
-        </div>
+
+            <div
+                className={`px-4 py-2 mb-2 sm:mb-0 flex items-center justify-between rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md relative duration-500 ${
+                    !channel && !barHidden
+                        ? 'transform translate-y-0 opacity-100'
+                        : 'transform -translate-y-full opacity-0'
+                }`}
+            >
+                <div
+                    className={`flex items-center space-x-2 w-auto'
+                    }`}
+                >
+                    <Link to={'/dashboard/'}>
+                        <button
+                            type="button"
+                            className="inline-flex items-center justify-center rounded-3xl h-8 w-8 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300 hover:scale-110"
+                        >
+                            <svg
+                                className="w-5 h-5 rotate-[45deg]"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </button>
+                    </Link>
+                </div>
+            </div>
+        </>
     );
 }
