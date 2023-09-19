@@ -27,6 +27,7 @@ import {
 import { GamesService } from 'src/games/games.service';
 import { emit } from 'process';
 import { DefyUserDto } from './dto/defyUser.dto';
+import { User } from '@prisma/client';
 
 const ID_SIZE = 6;
 const ID_BASE = 36;
@@ -65,6 +66,21 @@ export type JoinGameType = {
     userElo: number;
 };
 
+export type ResponseInvitationPlay = {
+    error: boolean;
+    message: string;
+};
+
+export type InvitationsType = {
+    id: number;
+	active: boolean;
+    playerA: IndivUser;
+    playerB: IndivUser;
+    acceptA: boolean;
+    acceptB: boolean;
+    time: number;
+};
+
 @Injectable()
 @WebSocketGateway({
     cors: {
@@ -80,6 +96,9 @@ export class GatewayService
     ) {}
 
     socketArray: SocketProps[] = [];
+
+    invitationArray: InvitationsType[] = [];
+    nbInvitations: number = 0;
 
     users: Users = new Users(this.prisma);
 
@@ -484,6 +503,11 @@ export class GatewayService
         } else {
             for (const player of game.info.players) {
                 if (player) {
+                    this.emitUpdateToPlayer(
+                        game.playerA,
+                        canal,
+                        dataToTransfer,
+                    );
                     this.server.to(player.id).emit('updateGameInfo', game.info);
                 }
             }
@@ -566,31 +590,60 @@ export class GatewayService
         delete this.games[game.id];
     }
 
-	@SubscribeMessage('defyUser')
-	async defyUser(client: Socket, data: DefyUserDto): Promise<ResponseInvitationPlay> {
-		let reponse: ResponseInvitationPlay = {
-			error: false,
-			message: 'valid',
-		}
+    @SubscribeMessage('defyUser')
+    async defyUser(
+        client: Socket,
+        data: DefyUserDto,
+    ): Promise<ResponseInvitationPlay> {
+        let reponse: ResponseInvitationPlay = {
+            error: false,
+            message: 'valid',
+        };
 
-		const playerA: IndivUser = this.users.getIndivUserBySocketId(client.id);
-		if (!playerA) return {error: true, message: 'user A not found'} 
-		if (!playerA.isConnected) return {error: true, message: 'user A not connected'} 
-		if (playerA.isPlaying) return {error: true, message: 'user A is currently playing'} 
-		
-		const playerB: IndivUser = this.users.getIndivUserById(data.idUserB);
-		if (!playerB) return {error: true, message: 'user B not found'} 
-		if (!playerB.isConnected) return {error: true, message: 'user B not connected'} 
-		if (playerB.isPlaying) return {error: true, message: 'user B is currently playing'} 
-		
-		
-		return {error: false, message: 'invitation sent'}
-	}
-}
+        const playerA: IndivUser = this.users.getIndivUserBySocketId(client.id);
+        if (!playerA) return { error: true, message: 'user A not found' };
+        if (!playerA.isConnected)
+            return { error: true, message: 'user A not connected' };
+        if (playerA.isPlaying)
+            return { error: true, message: 'user A is currently playing' };
 
-export type ResponseInvitationPlay = {
-	error: boolean;
-	message: string;
+        const playerB: IndivUser = this.users.getIndivUserById(data.idUserB);
+        if (!playerB) return { error: true, message: 'user B not found' };
+        if (!playerB.isConnected)
+            return { error: true, message: 'user B not connected' };
+        if (playerB.isPlaying)
+            return { error: true, message: 'user B is currently playing' };
+
+        this.nbInvitations++;
+        let newInvitation: InvitationsType = {
+            id: this.nbInvitations,
+			active: true,
+            playerA: playerA,
+            playerB: playerB,
+            acceptA: true,
+            acceptB: false,
+            time: Date.now(),
+        };
+		this.invitationArray.push(newInvitation)
+
+        let userB: User = null;
+        try {
+            userB = await this.prisma.user.findUnique({
+                where: { id: playerB.userId },
+            });
+        } catch (error) {
+            return { error: true, message: 'user B not found' };
+        }
+
+        this.emitUpdateToPlayer(playerB, 'invitationsToPlay', {
+            idPlayer: playerB.userId,
+			idInvitation: newInvitation.id,
+            nickname: userB.nickname,
+            elo: userB.elo,
+        });
+
+        return { error: false, message: 'invitation sent' };
+    }
 }
 
 /*
