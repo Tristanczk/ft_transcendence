@@ -95,22 +95,6 @@ const MultiButton = ({
     />
 );
 
-const LocalButton = ({
-    externalMode,
-    internalMode,
-}: {
-    externalMode: string;
-    internalMode: GameMode;
-}) => {
-    const navigate = useNavigate();
-    return (
-        <GameButton
-            text={externalMode}
-            onClick={() => navigate(`/local/${internalMode}`)}
-        />
-    );
-};
-
 const leaveMatchmaking = (
     socket: Socket,
     setError: (error: string) => void,
@@ -180,16 +164,6 @@ const CancelButton = ({
     </button>
 );
 
-const GameModePageSection: React.FC<{
-    children: React.ReactNode;
-    title: string;
-}> = ({ children, title }) => (
-    <div className="w-full flex flex-col justify-center items-center space-y-4 lg:w-5/12 lg:max-w-lg">
-        <h2 className="text-black px-4 text-3xl">{title}</h2>
-        {children}
-    </div>
-);
-
 const GameModePage = ({
     error,
     errorCode,
@@ -227,32 +201,22 @@ const GameModePage = ({
     };
 
     return (
-        <div className="w-full flex flex-col justify-center items-center space-y-10 lg:flex-row lg:space-y-0">
-            <GameModePageSection title="ONLINE">
-                <MultiButton
-                    externalMode="CLASSIC"
-                    internalMode="classic"
-                    {...buttonParams}
-                />
-                <MultiButton
-                    externalMode="MAYHEM"
-                    internalMode="mayhem"
-                    {...buttonParams}
-                />
-                <MultiButton
-                    externalMode="BATTLE ROYALE"
-                    internalMode="battle"
-                    {...buttonParams}
-                />
-            </GameModePageSection>
-            <GameModePageSection title="LOCAL">
-                <LocalButton externalMode="CLASSIC" internalMode="classic" />
-                <LocalButton externalMode="MAYHEM" internalMode="mayhem" />
-                <LocalButton
-                    externalMode="BATTLE ROYALE"
-                    internalMode="battle"
-                />
-            </GameModePageSection>
+        <>
+            <MultiButton
+                externalMode="CLASSIC"
+                internalMode="classic"
+                {...buttonParams}
+            />
+            <MultiButton
+                externalMode="MAYHEM"
+                internalMode="mayhem"
+                {...buttonParams}
+            />
+            <MultiButton
+                externalMode="BATTLE ROYALE"
+                internalMode="battle"
+                {...buttonParams}
+            />
             {error && <div className="text-white">{error}</div>}
             {errorCode === 'alreadyInGame' && (
                 <button
@@ -265,7 +229,7 @@ const GameModePage = ({
                     </span>
                 </button>
             )}
-        </div>
+        </>
     );
 };
 
