@@ -9,17 +9,16 @@ interface Props {
     customClassName?: string;
 }
 
+export const ImageFriendPlaceholder: React.FC<{ size: number }> = ({
+    size,
+}) => <div className={`bg-white rounded-full w-${size} h-${size}`} />;
+
 function ImageFriend({ userId, textImg, size, customClassName }: Props) {
     const [imgY, setImgY] = useState<any>();
     const inputClassName = customClassName
         ? customClassName
         : `w-${size} h-${size} rounded-full`;
     const { user } = useUserContext();
-
-    useEffect(() => {
-        fetchImg();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     useEffect(() => {
         fetchImg();
@@ -57,7 +56,7 @@ function ImageFriend({ userId, textImg, size, customClassName }: Props) {
             alt={textImg}
         />
     ) : (
-        <>vide</>
+        <ImageFriendPlaceholder size={size ?? 12} />
     );
 }
 
