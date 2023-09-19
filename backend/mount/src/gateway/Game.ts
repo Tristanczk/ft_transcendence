@@ -102,7 +102,7 @@ class Game {
         const now = performance.now();
         const deltaTime = now - this.lastUpdate;
         this.lastUpdate = now;
-        this.info.timeRemaining = Math.max(0, this.timeStarted + 3000 - now);
+        this.info.timeRemaining = Math.max(0, this.timeStarted + 5000 - now);
         if (this.info.mode === 'battle') {
             this.updateBattle(this.info.players, this.info.objects, deltaTime);
         } else {
