@@ -146,7 +146,7 @@ export default function ChatChannelListElement({
             {alertMessage && (
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
-            <div className="flex items-center justify-between p-3 border-b border-gray-300 transition-colors duration-300 hover:bg-gray-100">
+            <div className="flex items-center justify-between px-3 py-3.5 border-b border-gray-300 transition-colors duration-300 hover:bg-gray-100">
                 <div className="flex items-center">
                     <div className="ml-2 flex flex-col">
                         <div className="transition-colors duration-300 hover:text-blue-600 text-gray-600">

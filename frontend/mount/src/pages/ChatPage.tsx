@@ -265,6 +265,7 @@ function ChatPage({
                                 setCurrentFriend={setCurrentFriend}
                                 notifications={notifications}
                                 setNotifications={setNotifications}
+                                setIsChatVisible={setIsChatVisible}
                             />
                         ) : (
                             <ChatChannelList

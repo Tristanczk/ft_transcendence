@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { UserSimplified } from '../../types';
 import ChatFriendListElement from './ChatFriendListElement';
@@ -10,6 +10,7 @@ export default function ChatFriendList({
     setCurrentFriend,
     notifications,
     setNotifications,
+    setIsChatVisible,
 }: {
     friends: UserSimplified[] | null;
     channel: number;
@@ -17,15 +18,17 @@ export default function ChatFriendList({
     setCurrentFriend: (friend: UserSimplified) => void;
     notifications: number[];
     setNotifications: (notifications: number[]) => void;
+    setIsChatVisible: (state: boolean) => void;
 }) {
     const [barHidden, setBarHidden] = useState(false);
+    const navigate = useNavigate()
 
     return (
         <>
             <div
                 id="list"
-                className={`flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip shadow-xl" ${
-                    friends ? 'rounded-none' : 'rounded-none'
+                className={`flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip shadow-xl ${
+                    channel ? 'rounded-b-3xl' : 'rounded-none'
                 }`}
             >
                 <div
@@ -58,10 +61,12 @@ export default function ChatFriendList({
                     className={`flex items-center space-x-2 w-auto'
                     }`}
                 >
-                    <Link to={'/dashboard/'}>
                         <button
                             type="button"
                             className="inline-flex items-center justify-center rounded-3xl h-8 w-8 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300 hover:scale-110"
+                            onClick={()=>{
+                                setIsChatVisible(false);
+                                navigate('/dashboard')}}
                         >
                             <svg
                                 className="w-5 h-5 rotate-[45deg]"
@@ -78,7 +83,7 @@ export default function ChatFriendList({
                                 />
                             </svg>
                         </button>
-                    </Link>
+                        <p>Add new friends</p>
                 </div>
             </div>
         </>

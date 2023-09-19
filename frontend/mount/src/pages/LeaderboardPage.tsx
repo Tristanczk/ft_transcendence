@@ -50,7 +50,7 @@ const DashboardPage: React.FC = () => {
             <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                 <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
                     <article className="mx-auto w-full max-w-4xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                        <h1 className="text-4xl font-extrabold dark:text-white">
+                        <h1 className="text-center text-xl md:text-2xl lg:text-4xl pb-4 font-extrabold dark:text-white">
                             Leaderboard
                         </h1>
                         {leaderboard && leaderboard.length > 0 ? (
