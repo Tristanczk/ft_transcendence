@@ -21,6 +21,7 @@ import {
     ClassicMayhemPlayer,
     ClassicMayhemPlayers,
     GameInfo,
+    Invite,
     UpdateGameEvent,
     eloVariation,
 } from 'src/shared/game_info';
@@ -60,6 +61,13 @@ export type HandlePingProp = {
 export type JoinGameType = {
     mode: string;
     userId: number;
+};
+
+export type JoinFriendGameType = {
+    mode: string;
+    userId: number;
+    gameId: string | null;
+    friendId: number | null;
 };
 
 @Injectable()
@@ -149,6 +157,32 @@ export class GatewayService
         return { status: 'not playing', gameId: null };
     }
 
+    async getGameInvites(userId: number): Promise<{ invites: Invite[] }> {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user) {
+            return { invites: [] };
+        }
+        const invites: Invite[] = [];
+        for (const gameId of user.invites) {
+            const game = this.games[gameId];
+            if (!game) continue;
+            const friendId = game.playerA.userId;
+            const friend = await this.prisma.user.findUnique({
+                where: { id: friendId },
+            });
+            if (game) {
+                invites.push({
+                    userName: friend.nickname,
+                    gameId: game.id,
+                    gameMode: game.info.mode,
+                });
+            }
+        }
+        return { invites };
+    }
+
     @SubscribeMessage('joinGame')
     async handleJoinGame(client: Socket, data: JoinGameType) {
         const gameMode: string = data.mode;
@@ -220,16 +254,14 @@ export class GatewayService
     }
 
     @SubscribeMessage('joinFriendGame')
-    async handleJoinFriendGame(
-        client: Socket,
-        data: JoinGameType,
-        gameId: string | null,
-        friendId: number | null,
-    ) {
+    async handleJoinFriendGame(client: Socket, data: JoinFriendGameType) {
         const gameMode: string = data.mode;
         const playerId: number = data.userId;
         const currentClient: IndivUser | null =
             this.users.getIndivUserBySocketId(client.id);
+        const friend: IndivUser | null = this.users.getIndivUserById(
+            data.friendId,
+        );
         const user = await this.prisma.user.findUnique({
             where: { id: playerId },
         });
@@ -262,41 +294,45 @@ export class GatewayService
                 errorCode: 'invalidGameMode',
             };
         }
-        if (gameId) {
+        if (data.gameId) {
             if (
-                this.games[gameId] &&
-                this.games[gameId].info.state === 'waiting' &&
-                this.games[gameId].opponentId === playerId
+                this.games[data.gameId] &&
+                this.games[data.gameId].info.state === 'waiting' &&
+                this.games[data.gameId].opponentId === playerId
             ) {
-                this.games[gameId].addPlayer(
+                this.games[data.gameId].addPlayer(
                     client.id,
                     false,
                     userName,
                     userElo,
                 );
-                this.liaiseGameToPlayer(client.id, this.games[gameId], 'B');
+                this.liaiseGameToPlayer(
+                    client.id,
+                    this.games[data.gameId],
+                    'B',
+                );
 
-                for (const player of this.games[gameId].info.players) {
+                for (const player of this.games[data.gameId].info.players) {
                     if (player && player.id !== client.id) {
                         this.server
                             .to(player.id)
-                            .emit('startGame', this.games[gameId].id);
-                        this.emitUpdateToPlayers(
-                            this.games[gameId],
-                            'switchGame',
-                            this.games[gameId].id,
-                        );
+                            .emit('startGame', this.games[data.gameId].id);
                     }
                 }
+                this.emitUpdateToPlayers(
+                    this.games[data.gameId],
+                    'switchGame',
+                    this.games[data.gameId].id,
+                );
 
-                await this.startGameStat(this.games[gameId]);
+                await this.startGameStat(this.games[data.gameId]);
                 return {
-                    gameId: this.games[gameId].id,
+                    gameId: this.games[data.gameId].id,
                     status: 'joined',
                 };
             } else {
                 return {
-                    error: `Invitation to game ${gameId} is no longer valid`,
+                    error: `Invitation to game ${data.gameId} is no longer valid`,
                     errorCode: 'invalidInvitation',
                     gameId: currentClient.idGamePlaying,
                 };
@@ -308,11 +344,60 @@ export class GatewayService
             client.id,
             userName,
             userElo,
-            friendId,
+            data.friendId,
+            true,
         );
         this.games[game.id] = game;
+        await this.prisma.user.update({
+            where: { id: friend.userId },
+            data: {
+                invites: {
+                    push: game.id,
+                },
+            },
+        });
+        this.emitUpdateToPlayer(friend, 'inviteGame', {
+            userName,
+            gameId: game.id,
+            gameMode,
+        });
         this.liaiseGameToPlayer(client.id, game, 'A');
         return { gameId: game.id, status: 'waiting' };
+    }
+
+    @SubscribeMessage('refuseGameInvite')
+    async handleRefusal(
+        client: Socket,
+        data: { userId: number; gameId: string },
+    ) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: data.userId },
+        });
+        if (!user) {
+            return { status: 'failure', error: 'invalid user' };
+        }
+        if (user) {
+            await this.prisma.user.update({
+                where: { id: data.userId },
+                data: {
+                    invites: {
+                        set: user.invites.filter((id) => id !== data.gameId),
+                    },
+                },
+            });
+        }
+        const game = this.games[data.gameId];
+        if (!game) {
+            return { status: 'failure', error: 'invalid game' };
+        }
+        for (const player of this.games[data.gameId].info.players) {
+            if (player && player.id !== client.id) {
+                this.server
+                    .to(player.id)
+                    .emit('cancelGame', this.games[data.gameId].id);
+            }
+        }
+        return { status: 'success' };
     }
 
     //on ne prend pas en compte le mode multiplayer (battle)
@@ -382,6 +467,32 @@ export class GatewayService
             };
         }
         const gameToAbort: Game = this.games[gameId];
+        console.log(
+            'aborting game that is friendly: ' + gameToAbort.isFriendly,
+        );
+        if (gameToAbort.isFriendly) {
+            const friend: IndivUser | null = this.users.getIndivUserById(
+                gameToAbort.opponentId,
+            );
+            const indivuser: IndivUser | null =
+                this.users.getIndivUserBySocketId(client.id);
+            const user = await this.prisma.user.findUnique({
+                where: { id: indivuser.userId },
+            });
+            await this.prisma.user.update({
+                where: { id: friend.userId },
+                data: {
+                    invites: {
+                        set: user.invites.filter((id) => id !== gameToAbort.id),
+                    },
+                },
+            });
+            this.emitUpdateToPlayer(friend, 'uninviteGame', {
+                userName: user.nickname,
+                gameId: gameToAbort.id,
+                gameMode: gameToAbort.info.mode,
+            });
+        }
         this.handleEndGame(gameToAbort, false, -1);
         return { status: 'matchmaking cancelled' };
     }

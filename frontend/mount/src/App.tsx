@@ -21,6 +21,7 @@ import LocalClassic from './games/local/LocalClassic';
 import LocalMayhem from './games/local/LocalMayhem';
 import LocalBattleRoyale from './games/local/LocalBattleRoyale';
 import DashboardPage from './pages/DashboardPage';
+import WaitingPage from './pages/WaitingPage';
 
 const App: React.FC = () => {
     const [isChatVisible, setIsChatVisible] = useState(false);
@@ -46,6 +47,7 @@ const App: React.FC = () => {
                             isChatVisible={isChatVisible}
                             toggleChatVisibility={toggleChatVisibility}
                             setIsChatVisible={setIsChatVisible}
+                            setGameId={setGameId}
                         />
                         <Routes>
                             <Route
@@ -88,6 +90,15 @@ const App: React.FC = () => {
                             <Route
                                 path="/leaderboard"
                                 Component={LeaderboardPage}
+                            />
+                            <Route
+                                path="/waiting"
+                                element={
+                                    <WaitingPage
+                                        gameId={gameId}
+                                        setGameId={setGameId}
+                                    />
+                                }
                             />
                             <Route path="/signin" Component={SignInPage} />
                             <Route path="/signup" Component={SignUpPage} />

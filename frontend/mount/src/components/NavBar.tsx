@@ -9,6 +9,8 @@ import { NAVBAR_HEIGHT } from '../shared/misc';
 import axios from 'axios';
 import { WebsocketContext } from '../context/WebsocketContext';
 import InvitesMenu from './user/InvitesMenu';
+import { Invite } from '../shared/game_info';
+import { set } from 'date-fns';
 
 const NAVBAR_BREAKPOINT = 1024;
 
@@ -226,27 +228,42 @@ const NavBar = ({
     const { width } = useWindowSize();
     const [showInvites, setShowInvites] = useState(false);
     const showLipong = !!(!user || (width && width >= NAVBAR_BREAKPOINT));
+    const [invites, setInvites] = useState<Invite[]>([]);
 
-    useEffect(
-        () => () => {
-            const getGameStatus = async () => {
-                console.log('checking game status', user!.id);
-                const response = await axios.get(
-                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/gate/gameStatus/${user?.id}`,
-                    { withCredentials: true },
-                );
-                if (response.data.status === 'playing') {
-                    setGameId(response.data.gameId);
-                } else if (response.data.status === 'finished') {
-                    setGameId(undefined);
-                }
-                setIsLoading(false);
-            };
-            if (user) getGameStatus();
-            else setIsLoading(false);
-        },
-        [user, setGameId, isLoading],
-    );
+    useEffect(() => {
+        const getGameStatus = async () => {
+            const response = await axios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/gate/gameStatus/${user?.id}`,
+                { withCredentials: true },
+            );
+            if (response.data.status === 'playing') {
+                setGameId(response.data.gameId);
+            } else if (response.data.status === 'finished') {
+                setGameId(undefined);
+            }
+            setIsLoading(false);
+        };
+        const getGameInvites = async () => {
+            const response = await axios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/gate/gameInvites/${user?.id}`,
+                { withCredentials: true },
+            );
+            for (const invite of response.data.invites) {
+                if (!invites.includes(invite))
+                    setInvites((oldInvites) => [...oldInvites, invite]);
+            }
+            setIsLoading(false);
+        };
+
+        if (user) {
+            getGameStatus();
+            getGameInvites();
+        } else {
+            setIsLoading(false);
+            setInvites([]);
+            setGameId(undefined);
+        }
+    }, [user, setGameId, isLoading]);
 
     useEffect(() => {
         socket.on('endGame', (data: { message: string }) => {
@@ -254,9 +271,20 @@ const NavBar = ({
                 setGameId(undefined);
             }
         });
+        socket.on('inviteGame', (data: Invite) => {
+            if (!invites.includes(data))
+                setInvites((oldInvites) => [...oldInvites, data]);
+        });
+
+        socket.on('uninviteGame', (data: Invite) => {
+            setInvites((oldInvites) =>
+                oldInvites.filter((invite) => invite !== data),
+            );
+        });
 
         return () => {
             socket.off('endGame');
+            socket.off('inviteGame');
         };
     }, [socket]);
 
@@ -297,11 +325,22 @@ const NavBar = ({
                         location.pathname !== `/game/${gameId}` && (
                             <Button text="Rejoin game" onClick={handleRejoin} />
                         )}
-                    {user ?
-                        <Button text="Invites"
-                        onClick={() => {setShowInvites((prev) => !prev)}}/>
-                            : <></>}
-                    {showInvites && <InvitesMenu setShowInvites={setShowInvites}/>}
+                    {invites.length !== 0 && (
+                        <Button
+                            text="Invites"
+                            onClick={() => {
+                                setShowInvites((prev) => !prev);
+                            }}
+                        />
+                    )}
+                    {showInvites && (
+                        <InvitesMenu
+                            setShowInvites={setShowInvites}
+                            setGameId={setGameId}
+                            invites={invites}
+                            setInvites={setInvites}
+                        />
+                    )}
                     {user ? (
                         <UserMenu showLipong={showLipong} />
                     ) : (

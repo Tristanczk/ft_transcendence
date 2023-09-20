@@ -113,3 +113,9 @@ export type eloVariation = {
     varEloLeft: number;
     varEloRight: number;
 };
+
+export type Invite = {
+    userName: string;
+    gameId: string;
+    gameMode: 'classic' | 'mayhem' | 'battle';
+};

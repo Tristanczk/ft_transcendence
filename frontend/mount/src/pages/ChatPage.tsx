@@ -14,15 +14,26 @@ import ChatChannelList from '../components/chat/ChatChannelList';
 import ChannelHeader from '../components/chat/ChannelHeader';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Alert } from '../components/chat/Alert';
+import { GameMode } from '../shared/misc';
+import { useNavigate } from 'react-router-dom';
+
+export type JoinFriendGameType = {
+    mode: GameMode;
+    userId: number;
+    gameId: string | null;
+    friendId: number | null;
+};
 
 function ChatPage({
     isChatVisible,
     toggleChatVisibility,
     setIsChatVisible,
+    setGameId,
 }: {
     isChatVisible: boolean;
     toggleChatVisibility: () => void;
     setIsChatVisible: (value: boolean) => void;
+    setGameId: (gameId: string | undefined) => void;
 }) {
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
@@ -46,6 +57,8 @@ function ChatPage({
     const [blockedUsers, setBlockedUsers] = useState<number[]>([]);
     const [notifications, setNotifications] = useState<number[]>([]);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+    const navigate = useNavigate();
 
     const closeAlert = () => {
         setAlertMessage(null);
@@ -178,9 +191,8 @@ function ChatPage({
         socket.on('reloadfriends', () => fetchFriends());
         socket.on('reloadchannels', () => fetchChannels());
         socket.on('reloadchannel', (channelId) => {
-            console.log(channelId + "  " + channel);
-            if (channelId === channel)
-             fetchChannel();
+            console.log(channelId + '  ' + channel);
+            if (channelId === channel) fetchChannel();
         });
         socket.on('signoutchat', () => {
             setChannel(0);
@@ -227,7 +239,27 @@ function ChatPage({
         }
     };
 
-    const handleGameInvite = async () => {};
+    const handleGameInvite = async (mode: 'classic' | 'mayhem' | 'battle') => {
+        if (!currentFriend || !user) return; //TO DO display an error message impossible to send game invite
+        const joinFriendGame: JoinFriendGameType = {
+            mode,
+            userId: user.id,
+            gameId: null,
+            friendId: currentFriend.id,
+        };
+        socket.emit('joinFriendGame', joinFriendGame, (response: any) => {
+            if (response.error) {
+                //TO DO : display an error message equal to response.error
+                if (response.errorCode === 'alreadyInGame') {
+                    setGameId(response.gameId);
+                }
+            } else {
+                setGameId('waiting_' + response.gameId);
+                toggleChatVisibility();
+                navigate('/waiting');
+            }
+        });
+    };
 
     return (
         <>
