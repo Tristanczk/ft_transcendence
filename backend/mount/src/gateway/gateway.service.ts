@@ -60,8 +60,6 @@ export type HandlePingProp = {
 export type JoinGameType = {
     mode: string;
     userId: number;
-    userName: string;
-    userElo: number;
 };
 
 @Injectable()
@@ -129,6 +127,7 @@ export class GatewayService
     /*********** Axel WIP ***********/
 
     private games: Record<string, Game> = {};
+    private friendGames: Record<string, Game> = {};
     private clients: Record<string, IndivUser | null> = {}; //<socketId, client>
     private spectators: Record<string, Set<string>> = {};
     private spectating: Record<string, string> = {};
@@ -166,7 +165,6 @@ export class GatewayService
             console.log('error to handle');
             return;
         }
-        console.log('player ' + playerId + ' want to play');
         if (currentClient.isPlaying) {
             if (
                 this.games[currentClient.idGamePlaying].info.state === 'waiting'
@@ -214,6 +212,100 @@ export class GatewayService
             userElo,
         );
         this.games[game.id] = game;
+        this.liaiseGameToPlayer(client.id, game, 'A');
+        return { gameId: game.id, status: 'waiting' };
+    }
+
+    @SubscribeMessage('joinFriendGame')
+    async handleJoinFriendGame(
+        client: Socket,
+        data: JoinGameType,
+        gameId: string | null,
+        friendId: number | null,
+    ) {
+        const gameMode: string = data.mode;
+        const playerId: number = data.userId;
+        const currentClient: IndivUser | null =
+            this.users.getIndivUserBySocketId(client.id);
+        const user = await this.prisma.user.findUnique({
+            where: { id: playerId },
+        });
+        const userElo = user ? user.elo : 1000;
+        const userName = user ? user.nickname : 'Anonymous';
+        if (!currentClient) {
+            console.log('error to handle');
+            return;
+        }
+        if (currentClient.isPlaying) {
+            if (
+                this.games[currentClient.idGamePlaying].info.state === 'waiting'
+            ) {
+                return {
+                    error: `You are already in waiting for game ${currentClient.idGamePlaying} in another tab`,
+                    errorCode: 'alreadyInMatchmaking',
+                    gameId: currentClient.idGamePlaying,
+                };
+            } else {
+                return {
+                    error: `You are already in game ${currentClient.idGamePlaying}`,
+                    errorCode: 'alreadyInGame',
+                    gameId: currentClient.idGamePlaying,
+                };
+            }
+        }
+        if (!isGameMode(gameMode)) {
+            return {
+                error: `Invalid game mode: ${gameMode}`,
+                errorCode: 'invalidGameMode',
+            };
+        }
+        if (gameId) {
+            if (
+                this.friendGames[gameId] &&
+                this.friendGames[gameId].info.state === 'waiting' &&
+                this.friendGames[gameId].opponentId === playerId
+            ) {
+                this.friendGames[gameId].addPlayer(
+                    client.id,
+                    false,
+                    userName,
+                    userElo,
+                );
+                this.liaiseGameToPlayer(
+                    client.id,
+                    this.friendGames[gameId],
+                    'B',
+                );
+
+                for (const player of this.friendGames[gameId].info.players) {
+                    if (player && player.id !== client.id) {
+                        this.server
+                            .to(player.id)
+                            .emit('startGame', this.friendGames[gameId].id);
+                        this.emitUpdateToPlayers(
+                            this.friendGames[gameId],
+                            'switchGame',
+                            this.friendGames[gameId].id,
+                        );
+                    }
+                }
+
+                await this.startGameStat(this.friendGames[gameId]);
+                return {
+                    gameId: this.friendGames[gameId].id,
+                    status: 'joined',
+                };
+            }
+        }
+        const game = new Game(
+            generateId(this.games),
+            gameMode,
+            client.id,
+            userName,
+            userElo,
+            friendId,
+        );
+        this.friendGames[game.id] = game;
         this.liaiseGameToPlayer(client.id, game, 'A');
         return { gameId: game.id, status: 'waiting' };
     }
@@ -273,6 +365,25 @@ export class GatewayService
     @SubscribeMessage('abortMatchmaking')
     async handleAbortMatchmaking(client: Socket, gameId: string) {
         if (!this.games[gameId]) {
+            return {
+                error: `Invalid game: ${gameId}`,
+                errorCode: 'invalidGame',
+            };
+        }
+        if (this.games[gameId].info.state !== 'waiting') {
+            return {
+                error: `Game ${gameId} has already started`,
+                errorCode: 'gameStarted',
+            };
+        }
+        const gameToAbort: Game = this.games[gameId];
+        this.handleEndGame(gameToAbort, false, -1);
+        return { status: 'matchmaking cancelled' };
+    }
+
+    @SubscribeMessage('abortFriendMatchmaking')
+    async handleAbortFriendMatchmaking(client: Socket, gameId: string) {
+        if (!this.friendGames[gameId]) {
             return {
                 error: `Invalid game: ${gameId}`,
                 errorCode: 'invalidGame',

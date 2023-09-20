@@ -68,6 +68,7 @@ class Game {
     sidePlayerA: number; //to find the user
     sidePlayerB: number; //to find the user
     timeUserLeave: number;
+    opponentId: number;
     private lastUpdate: number;
 
     constructor(
@@ -76,6 +77,7 @@ class Game {
         firstPlayer: string,
         userName: string,
         userElo: number,
+        opponent?: number,
     ) {
         this.lastUpdate = performance.now();
         this.id = gameId;
@@ -96,6 +98,7 @@ class Game {
         this.idGameStat = -1;
         this.playerA = null;
         this.playerB = null;
+        this.opponentId = opponent || -1;
     }
 
     public update(): GameState {
