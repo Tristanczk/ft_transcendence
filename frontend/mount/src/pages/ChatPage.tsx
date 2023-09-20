@@ -239,14 +239,14 @@ function ChatPage({
         }
     };
 
-    const handleGameInvite = async () => {
+    const handleGameInvite = async (mode: 'classic' | 'mayhem' | 'battle') => {
         if (!currentFriend || !user) return; //TO DO display an error message impossible to send game invite
         const joinFriendGame: JoinFriendGameType = {
-            mode: 'classic',
+            mode,
             userId: user.id,
             gameId: null,
             friendId: currentFriend.id,
-        }; // TODO: add mode selection
+        };
         socket.emit('joinFriendGame', joinFriendGame, (response: any) => {
             if (response.error) {
                 //TO DO : display an error message equal to response.error

@@ -28,3 +28,49 @@ body {
         scrollbar-width: none;
     }
 }
+
+.dot-flashing {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background-color: black;
+    color: black;
+    animation: dot-flashing 1s infinite linear alternate;
+    animation-delay: 0.5s;
+  }
+  .dot-flashing::before, .dot-flashing::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 0;
+  }
+  .dot-flashing::before {
+    left: -24px;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background-color: black;
+    color: black;
+    animation: dot-flashing 1s infinite alternate;
+    animation-delay: 0s;
+  }
+  .dot-flashing::after {
+    left: 24px;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background-color: black;
+    color: black;
+    animation: dot-flashing 1s infinite alternate;
+    animation-delay: 1s;
+  }
+  
+  @keyframes dot-flashing {
+    0% {
+      background-color: black;
+    }
+    50%, 100% {
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+  }
