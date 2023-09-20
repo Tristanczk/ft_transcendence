@@ -366,7 +366,7 @@ const drawEndButtons = (
         height: canvas.height * 0.1,
         x: (canvas.width * 0.7) / 2,
         y: canvas.height * 0.72,
-        text: 'Go to homepage',
+        text: 'Home',
         onClick: () => {
             navigate('/');
         },
