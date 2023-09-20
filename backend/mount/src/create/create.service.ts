@@ -58,7 +58,7 @@ export class CreateService {
             'user2',
             'test2@mail.com',
             'Password1',
-            'omer.png',
+            'default.png',
             date,
         );
         this.arrayUsers.push(user);
@@ -68,7 +68,7 @@ export class CreateService {
             'user3',
             'test3@mail.com',
             'Password1',
-            'bart.png',
+            'default.png',
             date,
         );
         this.arrayUsers.push(user);
@@ -78,11 +78,11 @@ export class CreateService {
         // this.arrayUsers.push(user);
 
         // date = new Date(2023, 7 - 1, 21, 5, 32, 6)
-        // user = await this.createUser('user5', 'test5@mail.com', 'Password1', 'omer.png', date);
+        // user = await this.createUser('user5', 'test5@mail.com', 'Password1', 'default.png', date);
         // this.arrayUsers.push(user);
 
         // date = new Date(2023, 7 - 1, 28, 5, 32, 6)
-        // user = await this.createUser('user6', 'test6@mail.com', 'Password1', 'bart.png', date);
+        // user = await this.createUser('user6', 'test6@mail.com', 'Password1', 'default.png', date);
         // this.arrayUsers.push(user);
     }
 
