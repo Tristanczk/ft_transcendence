@@ -17,7 +17,7 @@ import { Alert } from '../components/chat/Alert';
 import { GameMode } from '../shared/misc';
 import { useNavigate } from 'react-router-dom';
 
-type JoinFriendGameType = {
+export type JoinFriendGameType = {
     mode: GameMode;
     userId: number;
     gameId: string | null;
@@ -254,7 +254,6 @@ function ChatPage({
                     setGameId(response.gameId);
                 }
             } else {
-                setGameId(response.gameId);
                 setGameId('waiting_' + response.gameId);
                 toggleChatVisibility();
                 navigate('/waiting');

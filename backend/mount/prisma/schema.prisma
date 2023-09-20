@@ -19,6 +19,7 @@ model User {
     friends    String   @default("[]")
     elo        Int
     loginNb    Int
+    invites    String[] @default([])
 
     achievements String[] @default([])
 
