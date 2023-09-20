@@ -7,6 +7,7 @@ import NotConnected from '../components/NotConnected';
 
 interface ResponseLeaderboard {
     avatarPath: string;
+	rank: number;
     createdAt: Date;
     elo: number;
     id: number;
@@ -77,6 +78,7 @@ const DashboardPage: React.FC = () => {
 
 function ShowUserLeaderboard({ userView, rank }: Props) {
     const { user } = useUserContext();
+
     let classStyle: string =
         'bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 flex items-center';
     if (user && user.id === userView.id)
@@ -85,7 +87,7 @@ function ShowUserLeaderboard({ userView, rank }: Props) {
     return (
         <div className={classStyle}>
             <span className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mr-4">
-                #{rank}
+                #{userView.rank}
             </span>
             <div className="flex-shrink-0">
                 <ImageFriend

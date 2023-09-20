@@ -1,13 +1,16 @@
 import { Link } from 'react-router-dom';
 import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
+import ShowIsOnline from '../dashboard/friends/ShowIsOnline';
+import { useState } from 'react';
+import { GameModeAlert } from './GameModeAlert';
 
 export default function MessagesHeader({
     channel,
     currentFriend,
     handleClose,
     handleBlock,
-    handleGameInvite
+    handleGameInvite,
 }: {
     channel: number;
     currentFriend: UserSimplified | null;
@@ -15,14 +18,22 @@ export default function MessagesHeader({
     handleBlock: () => void;
     handleGameInvite: () => void;
 }) {
+    const [alert, setAlert] = useState<boolean>(false);
+
     if (channel === 0 || !currentFriend) return <div></div>;
 
+    const onClose = () => {
+        setAlert(false);
+    };
+
     return (
+        <>
+        {alert && <GameModeAlert onClose={onClose} handleClick={() => {}}/>}
         <div className="flex sm:items-center justify-between py-3 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
             <div className="relative flex items-center space-x-4">
                 <div className="relative">
                     <span className="absolute text-green-500 right-0 bottom-0">
-                        <svg width="20" height="20">
+                        {/* <svg width="20" height="20">
                             <circle
                                 cx="8"
                                 cy="8"
@@ -33,7 +44,13 @@ export default function MessagesHeader({
                                         : '#f43f5e'
                                 }
                             ></circle>
-                        </svg>
+                        </svg> */}
+						<ShowIsOnline
+                                        userId={currentFriend.id}
+                                        initStatus={currentFriend.isConnected}
+                                        playingStatus={currentFriend.isPlaying}
+										text={false}
+                                    />
                     </span>
                     <ImageFriend
                         userId={currentFriend.id}
@@ -43,20 +60,24 @@ export default function MessagesHeader({
                 </div>
                 <div className="flex flex-col leading-tight">
                     <div className="text-2xl mt-1 flex items-center">
-                        <span className="text-gray-700 mr-3">
-                            {currentFriend.nickname}
-                        </span>
+                        <Link to={'/dashboard/' + currentFriend.id}>
+                            <button className="group inline-block hover:text-blue-600 text-gray-600 mr-3 transition-transform duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
+                                {currentFriend.nickname}
+                            </button>
+                        </Link>
                     </div>
-                    <span className="text-lg text-gray-600">
-                        🏆 {currentFriend.elo} ELO
-                    </span>
+                    <Link to={'/leaderboard/'}>
+                        <button className="group inline-block hover:text-blue-600 text-gray-600 mr-3 transition-transform duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
+                            🏆 {currentFriend.elo} ELO
+                        </button>
+                    </Link>
                 </div>
             </div>
             <div className="flex items-center space-x-2">
                 <button
                     type="button"
-                    onClick={handleGameInvite}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-400"
+                    onClick={() => setAlert(true)}
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-400 hover:scale-110"
                 >
                     <svg
                         fill="#000000"
@@ -126,7 +147,7 @@ export default function MessagesHeader({
                 <Link to={'/dashboard/' + currentFriend.id}>
                     <button
                         type="button"
-                        className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500"
+                        className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500 hover:scale-110"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +168,7 @@ export default function MessagesHeader({
                 <button
                     type="button"
                     onClick={handleBlock}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
                 >
                     <svg
                         className="h-6 w-6 text-slate-500 hover:text-white"
@@ -168,7 +189,7 @@ export default function MessagesHeader({
                 <button
                     type="button"
                     onClick={handleClose}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
                 >
                     <svg
                         className="h-6 w-6 text-slate-500 hover:text-white"
@@ -188,5 +209,6 @@ export default function MessagesHeader({
                 </button>
             </div>
         </div>
+        </>
     );
 }

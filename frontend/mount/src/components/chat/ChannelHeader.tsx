@@ -43,7 +43,7 @@ export default function ChannelHeader({
                 </div>
                 <div className="flex flex-col leading-tight">
                     <div className="text-2xl mt-1 flex items-center">
-                        <span className="text-gray-700 mr-3">
+                        <span className="group inline-block hover:scale-110 text-gray-700 mr-3 transition-transform duration-300 ease-in-out">
                             {currentChannel.name}
                         </span>
                     </div>

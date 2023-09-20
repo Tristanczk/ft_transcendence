@@ -72,16 +72,13 @@ export default function ChatFriendListElement({
                         textImg={friend.nickname}
                         size={7}
                     />
-                    <div className="no-underline transition-colors duration-300 hover:text-blue-600 text-gray-600 pl-2 pt-1">
+                    <div className="no-underline group inline-block hover:scale-110 hover:text-blue-600 text-gray-600 mr-3 transition-transform duration-300 ease-in-out pl-2 pt-1">
                         <Link to={'/dashboard/' + friend.id}>
                             {friend.nickname}
                         </Link>
                     </div>
                 </div>
 
-                {notifications && notifications.includes(channelId) && (
-                    <div className="w-2 h-2 bg-rose-500 rounded-full mr-2"></div>
-                )}
                 <button
                     onClick={() => {
                         fetchChannelData(friend.id);
@@ -89,7 +86,11 @@ export default function ChatFriendListElement({
                 >
                     {' '}
                     <svg
-                        className="text-blue-600 w-6 h-6"
+                        className={
+                            notifications && notifications.includes(channelId)
+                                ? 'group inline-block text-rose-500 mr-3 transition-transform duration-300 ease-in-out hover:scale-110 w-6 h-6 hover:scale-110'
+                                : 'group inline-block text-blue-600 mr-3 transition-transform duration-300 ease-in-out hover:scale-110 w-6 h-6 hover:scale-110'
+                        }
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         strokeWidth="2"

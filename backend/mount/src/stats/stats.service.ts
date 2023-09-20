@@ -182,9 +182,15 @@ export class StatsService {
                 },
             });
             let leaderboard: UserLeaderboard[] = [];
+			let lastElo: number = 0;
+			let rank: number = 0;
             leaders.forEach((user) => {
+				if (lastElo === user.elo) {}
+				else rank++;
+
                 const newElem: UserLeaderboard = {
                     id: user.id,
+					rank: rank,
                     avatarPath: user.avatarPath,
                     createdAt: user.createdAt,
                     elo: user.elo,
@@ -194,6 +200,7 @@ export class StatsService {
                         user.gamesasPlayerA.length + user.gamesasPlayerB.length,
                 };
                 leaderboard.push(newElem);
+				lastElo = newElem.elo;
             });
 
             return leaderboard;

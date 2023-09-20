@@ -8,7 +8,7 @@ export default function ChatListHeader({
     channelListSelected: number;
 }) {
     return (
-        <div className="flex items-center justify-between bg-gray-50 px-3 rounded-tl-3xl rounded-tr-3xl shadow-md">
+        <div className=" flex items-center justify-between bg-gray-50 px-3 rounded-tl-3xl rounded-tr-3xl shadow-md">
             <div className="flex items-center space-x-1">
                 <button
                     onClick={() => selector(1)}

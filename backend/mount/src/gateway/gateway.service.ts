@@ -168,7 +168,7 @@ export class GatewayService
         const userElo = user ? user.elo : 1000;
         const userName = user ? user.nickname : 'Anonymous';
         if (!currentClient) {
-            console.log('error to handle');
+            // console.log('error to handle');
             return;
         }
         if (currentClient.isPlaying) {
@@ -401,8 +401,8 @@ export class GatewayService
             client.id,
         );
         if (!userAborting) return { gameId: data, message: 'invalid user' };
-        console.log(game.playerA.sockets);
-        console.log(game.playerB.sockets);
+        // console.log(game.playerA.sockets);
+        // console.log(game.playerB.sockets);
         if (
             !(
                 game.playerA.sockets.includes(client.id) ||
@@ -411,7 +411,7 @@ export class GatewayService
         ) {
             return { gameId: data, message: 'invalid rights for user' };
         }
-        console.log('try mode');
+        // console.log('try mode');
         //si game existe + si user existe + si client a les droits, alors on aborte le jeu
         if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
             if (game.playerA.sockets.includes(client.id)) {
@@ -420,7 +420,7 @@ export class GatewayService
                 this.handleEndGame(game, true, 1);
             }
             game.info.state = 'finished';
-            console.log('game finished : ' + data);
+            // console.log('game finished : ' + data);
             const returnData: UpdateGameEvent = {
                 gameId: data,
                 message: 'aborted',
@@ -486,7 +486,7 @@ export class GatewayService
                                 this.handleEndGame(game, true, 1);
                             }
                             game.info.state = 'finished';
-                            console.log('game finished : ' + game.id);
+                            // console.log('game finished : ' + game.id);
                         }
 
                         this.emitUpdateToPlayers(game, 'eventGame', returnData);

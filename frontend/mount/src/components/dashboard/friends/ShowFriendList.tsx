@@ -48,6 +48,7 @@ function ShowFriendList({
                                         userId={friend.id}
                                         initStatus={friend.isConnected}
                                         playingStatus={friend.isPlaying}
+										text={true}
                                     />
                                 </p>
                                 <p className="text-sm text-gray-500 truncate dark:text-gray-400">
