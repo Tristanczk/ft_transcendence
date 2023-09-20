@@ -39,31 +39,11 @@ function GlobalStats({ user }: PresentationUserProps) {
     }
 
     return (
-        <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <ul
-                className="text-sm font-medium text-center text-gray-500 divide-y sm:divide-x sm:divide-y-0 divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400"
-                id="fullWidthTab"
-                data-tabs-toggle="#fullWidthTabContent"
-                role="tablist"
-            >
-                <li className="-full py-2 sm:py-0">
-                    <button
-                        id="stats-tab"
-                        data-tabs-target="#stats"
-                        type="button"
-                        role="tab"
-                        aria-controls="stats"
-                        aria-selected="true"
-                        className="inline-block w-full p-4 rounded-tl-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600"
-                    >
-                        Your statistics
-                    </button>
-                </li>
-            </ul>
-            <div
-                id="fullWidthTabContent"
-                className="border-t border-gray-200 dark:border-gray-600"
-            >
+        <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-4 sm:p-8">
+            <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
+                Statistics
+            </h5>
+            <div id="fullWidthTabContent">
                 <div
                     className={textShow}
                     id="stats"
