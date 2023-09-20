@@ -8,6 +8,7 @@ import {
     PADDLE_HEIGHT,
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
+    UNBREAKABLE,
 } from '../../shared/classic_mayhem';
 import {
     ClassicMayhemGameObjects,
@@ -123,7 +124,7 @@ const drawMayhemCell = (
             ctx.canvas.height * (posY - BALL_HEIGHT / 2),
         );
         const ratio =
-            mayhemCell.lives === Infinity ||
+            mayhemCell.lives === UNBREAKABLE ||
             mayhemCell.lives === mayhemCell.startingLives
                 ? 1
                 : mayhemCell.lives / mayhemCell.startingLives;
