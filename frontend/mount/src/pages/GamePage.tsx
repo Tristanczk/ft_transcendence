@@ -13,6 +13,8 @@ import MultiClassicMayhem from '../games/multiplayer/MultiClassicMayhem';
 import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
 import { Socket } from 'socket.io-client';
 import ResignModal from '../games/multiplayer/ResignModal';
+import { useUserContext } from '../context/UserContext';
+import { User } from '../types';
 
 const Game = ({
     gameId,
@@ -20,6 +22,7 @@ const Game = ({
     gameLeave,
     socket,
     varElo,
+    user,
     width,
     height,
 }: {
@@ -28,6 +31,7 @@ const Game = ({
     gameLeave: UpdateGameEvent | null;
     socket: Socket;
     varElo: eloVariation | null;
+    user: User | null;
     width: number;
     height: number;
 }) => {
@@ -45,7 +49,13 @@ const Game = ({
             gameInfo.players[1]!.name.length > 10
                 ? gameInfo.players[1]!.name.slice(0, 10) + '...'
                 : gameInfo.players[1]!.name;
-        isLeftPlayer = gameInfo.players[0]!.id === socket.id;
+        if (gameInfo.players[0]!.id === socket.id) {
+            isLeftPlayer = true;
+        } else if (gameInfo.players[1]!.id !== socket.id) {
+            if (user && user.nickname === gameInfo.players[0]!.name) {
+                isLeftPlayer = true;
+            }
+        }
     }
 
     return gameInfo.mode === 'battle' ? (
@@ -147,6 +157,7 @@ const Game = ({
             </div>
             <MultiClassicMayhem
                 gameObjects={gameInfo.objects}
+                isLeftPlayer={isLeftPlayer}
                 mode={gameInfo.mode}
                 players={gameInfo.players}
                 state={gameInfo.state}
@@ -160,7 +171,9 @@ const Game = ({
     );
 };
 
-const GamePage: React.FC = () => {
+const GamePage: React.FC<{
+    setGameId: (gameId: string | undefined) => void;
+}> = ({ setGameId }) => {
     const navigate = useNavigate();
     const { gameId } = useParams();
     const socket = useContext(WebsocketContext);
@@ -168,6 +181,7 @@ const GamePage: React.FC = () => {
     const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
     const [gameLeave, setGameLeave] = useState<UpdateGameEvent | null>(null);
     const [varElo, setVarElo] = useState<eloVariation | null>(null);
+    const { user } = useUserContext();
 
     useEffect(() => {
         const handleUpdateGameInfo = (newGameInfo: GameInfo) => {
@@ -234,6 +248,24 @@ const GamePage: React.FC = () => {
         });
     }, [gameId, navigate, socket]);
 
+    useEffect(() => {
+        if (socket) {
+            const switchGame = (gameId: string) => {
+                console.log('switching game to', gameId);
+                setGameId(gameId);
+                setVarElo(null);
+                setGameLeave(null);
+                navigate(`/game/${gameId}`);
+            };
+
+            socket.on('switchGame', switchGame);
+
+            return () => {
+                socket.off('switchGame', switchGame);
+            };
+        }
+    }, [socket, navigate, setGameId]);
+
     return (
         <div
             className="w-full flex items-center justify-center"
@@ -247,17 +279,20 @@ const GamePage: React.FC = () => {
                 backgroundPosition: 'center',
             }}
         >
-            {gameInfo && (
-                <Game
-                    gameId={gameId}
-                    gameInfo={gameInfo}
-                    gameLeave={gameLeave}
-                    varElo={varElo}
-                    socket={socket}
-                    width={width}
-                    height={height - PLAYERS_TEXT_SIZE}
-                />
-            )}
+            {gameInfo &&
+                (gameInfo.mode === 'battle' ||
+                    (gameInfo.players[0] && gameInfo.players[1])) && (
+                    <Game
+                        gameId={gameId}
+                        gameInfo={gameInfo}
+                        gameLeave={gameLeave}
+                        varElo={varElo}
+                        socket={socket}
+                        user={user}
+                        width={width}
+                        height={height - PLAYERS_TEXT_SIZE}
+                    />
+                )}
         </div>
     );
 };
