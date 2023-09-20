@@ -101,8 +101,7 @@ export default function Messages({
             <div
                 id="messages"
                 ref={messageContainerRef}
-                className={`flex-grow h-full flex flex-col space-y-4 p-3 overflow-y-auto scrolling-touch bg-white shadow-md overflow-clip lg:w-104 md:w-96 sm:w-80 ${zIndexClass}`}
-                style={{ height: '420px', marginLeft: '-69px' }}
+                className={`flex-grow h-full flex flex-col space-y-4 p-3 overflow-y-auto scrolling-touch bg-white shadow-md overflow-clip transition-all duration-500 w-80 ml-[-53px] h-[232px] sm:h-[240px] md:w-96 md:ml-[-64px] md:h-[420px] lg:w-104 lg:ml-[-69px] '${zIndexClass}`}
             >
                 {groupedMessages.map(
                     (group: MessageGroup, groupIndex: number) => {
