@@ -7,7 +7,7 @@ export default function MessagesHeader({
     currentFriend,
     handleClose,
     handleBlock,
-    handleGameInvite
+    handleGameInvite,
 }: {
     channel: number;
     currentFriend: UserSimplified | null;
@@ -43,20 +43,24 @@ export default function MessagesHeader({
                 </div>
                 <div className="flex flex-col leading-tight">
                     <div className="text-2xl mt-1 flex items-center">
-                        <span className="text-gray-700 mr-3">
-                            {currentFriend.nickname}
-                        </span>
+                        <Link to={'/dashboard/' + currentFriend.id}>
+                            <button className="group inline-block hover:text-blue-600 text-gray-600 mr-3 transition-transform duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
+                                {currentFriend.nickname}
+                            </button>
+                        </Link>
                     </div>
-                    <span className="text-lg text-gray-600">
-                        🏆 {currentFriend.elo} ELO
-                    </span>
+                    <Link to={'/leaderboard/'}>
+                        <button className="group inline-block hover:text-blue-600 text-gray-600 mr-3 transition-transform duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
+                            🏆 {currentFriend.elo} ELO
+                        </button>
+                    </Link>
                 </div>
             </div>
             <div className="flex items-center space-x-2">
                 <button
                     type="button"
                     onClick={handleGameInvite}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-400"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-400 hover:scale-110"
                 >
                     <svg
                         fill="#000000"
@@ -126,7 +130,7 @@ export default function MessagesHeader({
                 <Link to={'/dashboard/' + currentFriend.id}>
                     <button
                         type="button"
-                        className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500"
+                        className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500 hover:scale-110"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +151,7 @@ export default function MessagesHeader({
                 <button
                     type="button"
                     onClick={handleBlock}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
                 >
                     <svg
                         className="h-6 w-6 text-slate-500 hover:text-white"
@@ -168,7 +172,7 @@ export default function MessagesHeader({
                 <button
                     type="button"
                     onClick={handleClose}
-                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
                 >
                     <svg
                         className="h-6 w-6 text-slate-500 hover:text-white"

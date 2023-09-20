@@ -149,9 +149,15 @@ export default function ChatChannelListElement({
             <div className="flex items-center justify-between px-3 py-3.5 border-b border-gray-300 transition-colors duration-300 hover:bg-gray-100">
                 <div className="flex items-center">
                     <div className="ml-2 flex flex-col">
-                        <div className="transition-colors duration-300 hover:text-blue-600 text-gray-600">
+                        <div className="group inline-block hover:scale-110 hover:text-blue-600 text-gray-600 mr-3 transition-transform duration-300 ease-in-out">
                             {' '}
-                            <span>{channel.name}</span>
+                            <button
+                                onClick={() => {
+                                    isChannelOpen(channel);
+                                }}
+                            >
+                                {channel.name}
+                            </button>
                             {activeInput && (
                                 <input
                                     type="password"
@@ -172,16 +178,17 @@ export default function ChatChannelListElement({
                         </div>
                     </div>
                 </div>
-                {notifications.includes(channel.id) && (
-                    <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-                )}
                 <button
                     onClick={() => {
                         isChannelOpen(channel);
                     }}
                 >
                     <svg
-                        className="text-blue-600 w-6 h-6 hover:scale-110"
+                        className={
+                            notifications && notifications.includes(channel.id)
+                                ? 'group inline-block text-rose-500 mr-3 transition-transform duration-300 ease-in-out hover:scale-110 w-6 h-6 hover:scale-110'
+                                : 'group inline-block text-blue-600 mr-3 transition-transform duration-300 ease-in-out hover:scale-110 w-6 h-6 hover:scale-110'
+                        }
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         strokeWidth="2"
