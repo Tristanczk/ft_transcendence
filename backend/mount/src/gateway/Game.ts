@@ -69,6 +69,7 @@ class Game {
     sidePlayerB: number; //to find the user
     timeUserLeave: number;
     opponentId: number;
+    isFriendly: boolean;
     private lastUpdate: number;
 
     constructor(
@@ -78,6 +79,7 @@ class Game {
         userName: string,
         userElo: number,
         opponent?: number,
+        friendly?: boolean,
     ) {
         this.lastUpdate = performance.now();
         this.id = gameId;
@@ -99,6 +101,7 @@ class Game {
         this.playerA = null;
         this.playerB = null;
         this.opponentId = opponent || -1;
+        this.isFriendly = friendly || false;
     }
 
     public update(): GameState {

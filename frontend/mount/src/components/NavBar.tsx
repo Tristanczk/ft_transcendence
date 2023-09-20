@@ -8,6 +8,7 @@ import { useWindowSize } from 'usehooks-ts';
 import { NAVBAR_HEIGHT } from '../shared/misc';
 import axios from 'axios';
 import { WebsocketContext } from '../context/WebsocketContext';
+import InvitesMenu from './user/InvitesMenu';
 
 const NAVBAR_BREAKPOINT = 1024;
 
@@ -223,6 +224,7 @@ const NavBar = ({
     const [isLoading, setIsLoading] = useState(true);
     const socket = useContext(WebsocketContext);
     const { width } = useWindowSize();
+    const [showInvites, setShowInvites] = useState(false);
     const showLipong = !!(!user || (width && width >= NAVBAR_BREAKPOINT));
 
     useEffect(
@@ -295,6 +297,11 @@ const NavBar = ({
                         location.pathname !== `/game/${gameId}` && (
                             <Button text="Rejoin game" onClick={handleRejoin} />
                         )}
+                    {user ?
+                        <Button text="Invites"
+                        onClick={() => {setShowInvites((prev) => !prev)}}/>
+                            : <></>}
+                    {showInvites && <InvitesMenu setShowInvites={setShowInvites}/>}
                     {user ? (
                         <UserMenu showLipong={showLipong} />
                     ) : (

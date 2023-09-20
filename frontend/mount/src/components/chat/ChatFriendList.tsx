@@ -20,7 +20,6 @@ export default function ChatFriendList({
     setNotifications: (notifications: number[]) => void;
     setIsChatVisible: (state: boolean) => void;
 }) {
-    const [barHidden, setBarHidden] = useState(false);
     const navigate = useNavigate()
 
     return (
@@ -32,12 +31,12 @@ export default function ChatFriendList({
                 }`}
             >
                 <div
-                    className={`flex flex-col overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip transition-all duration-500 ${
+                    className={` flex flex-col overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip transition-all duration-500 ${
                         channel ? 'h-36' : 'h-96'
                     }`}
                 >
                     {friends &&
-                        friends.map((friend, index) => (
+                        friends.map((friend) => (
                             <ChatFriendListElement
                                 key={friend.id}
                                 friend={friend}
@@ -52,7 +51,7 @@ export default function ChatFriendList({
 
             <div
                 className={`px-4 py-2 mb-2 sm:mb-0 flex items-center justify-between rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md relative duration-500 ${
-                    !channel && !barHidden
+                    !channel
                         ? 'transform translate-y-0 opacity-100'
                         : 'transform -translate-y-full opacity-0'
                 }`}

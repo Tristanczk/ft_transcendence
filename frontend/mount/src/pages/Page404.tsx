@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
+import { NAVBAR_HEIGHT } from '../shared/misc';
 
 const goBack = (navigate: NavigateFunction) => {
     if (window.history.state && window.history.state.idx > 0) {
@@ -18,7 +19,10 @@ const Page404: React.FC = () => {
 
     return (
         <section className="bg-gray-900">
-            <div className="container mx-auto min-h-screen px-6 py-12 max-w-4xl">
+            <div
+                className="container mx-auto min-h-screen px-6 py-12 max-w-4xl"
+                style={{ minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
+            >
                 <div className="w-full text-center">
                     <p className="text-sm font-medium text-blue-400">
                         404 error
