@@ -132,7 +132,7 @@ const MenuLink: React.FC<{
     );
 };
 
-const UserMenu = () => {
+const UserMenu: React.FC<{ showLipong: boolean }> = ({ showLipong }) => {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [showInfo, setShowInfo] = useState<boolean>(true);
     const { user } = useUserContext();
@@ -150,7 +150,8 @@ const UserMenu = () => {
                 }}
             >
                 <div
-                    className="flex items-center relative"
+                    className="flex items-center relative justify-end"
+                    style={showLipong ? { width: 160 } : {}}
                     onClick={() => {
                         setShowInfo(true);
                     }}
@@ -269,7 +270,7 @@ const NavBar = ({
             <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link
                     to="/"
-                    className="items-center"
+                    className="items-center w-40"
                     style={{ display: showLipong ? 'flex' : 'none' }}
                 >
                     <img
@@ -295,7 +296,7 @@ const NavBar = ({
                             <Button text="Rejoin game" onClick={handleRejoin} />
                         )}
                     {user ? (
-                        <UserMenu />
+                        <UserMenu showLipong={showLipong} />
                     ) : (
                         <Button
                             text="Sign in"
