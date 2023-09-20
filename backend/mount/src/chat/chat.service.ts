@@ -1,20 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateChannelDto } from './dto/createchannel.dto';
-import {
-    EditChannelDto,
-    EditChannelLeaveDto,
-    EditChannelNameDto,
-    EditChannelUserDto,
-    EditPasswordDto,
-} from './dto/editchannel.dto';
-import { CreateMessageDto, MessageDto } from './dto/message.dto';
-import { JoinChannelDto } from './dto/joinchannel.dto';
-import { ChannelDto, ChannelIdDto, MuteUserDto } from './dto/channel.dto';
-import { GetChannelDto } from './dto/getchannel.dto';
+import { ChannelDto, ChannelIdDto, CreateChannelDto, CreateMessageDto, EditChannelDto, EditChannelLeaveDto, EditChannelNameDto, EditChannelUserDto, EditPasswordDto, GetChannelDto, JoinChannelDto, MessageDto, MuteUserDto, UserSimplifiedDto } from './dto/channel.dto';
 
 import { GatewayService } from 'src/gateway/gateway.service';
-import { UserSimplifiedDto } from './dto/usersimplifieddto';
 import { Interval } from '@nestjs/schedule';
 
 @Injectable()
