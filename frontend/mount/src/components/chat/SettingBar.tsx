@@ -318,7 +318,7 @@ export default function SettingBar({
                     className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-amber-500"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -361,7 +361,7 @@ export default function SettingBar({
                     className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-rose-500"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -389,7 +389,7 @@ export default function SettingBar({
                     className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-rose-500"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -416,7 +416,7 @@ export default function SettingBar({
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         stroke="currentColor"
@@ -452,7 +452,7 @@ export default function SettingBar({
                     className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-amber-300"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -472,7 +472,7 @@ export default function SettingBar({
                     className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-green-500"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -505,7 +505,7 @@ export default function SettingBar({
                     className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-green-500"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
