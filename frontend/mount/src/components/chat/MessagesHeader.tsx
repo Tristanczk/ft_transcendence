@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
-import { Alert } from './Alert';
+import ShowIsOnline from '../dashboard/friends/ShowIsOnline';
 import { useState } from 'react';
 import { GameModeAlert } from './GameModeAlert';
 
@@ -33,8 +33,7 @@ export default function MessagesHeader({
             <div className="relative flex items-center space-x-4">
                 <div className="relative">
                     <span className="absolute text-green-500 right-0 bottom-0">
-        
-                        <svg width="20" height="20">
+                        {/* <svg width="20" height="20">
                             <circle
                                 cx="8"
                                 cy="8"
@@ -45,7 +44,13 @@ export default function MessagesHeader({
                                         : '#f43f5e'
                                 }
                             ></circle>
-                        </svg>
+                        </svg> */}
+						<ShowIsOnline
+                                        userId={currentFriend.id}
+                                        initStatus={currentFriend.isConnected}
+                                        playingStatus={currentFriend.isPlaying}
+										text={false}
+                                    />
                     </span>
                     <ImageFriend
                         userId={currentFriend.id}

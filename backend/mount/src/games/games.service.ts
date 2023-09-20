@@ -47,7 +47,7 @@ export class GamesService {
             });
             verifiedIdPlayerA = idPlayerA;
         } catch (error) {
-            console.log('A not found');
+            // console.log('A not found');
             verifiedIdPlayerA = -1;
         }
 
@@ -57,7 +57,7 @@ export class GamesService {
             });
             verifiedIdPlayerB = idPlayerB;
         } catch (error) {
-            console.log('B not found');
+            // console.log('B not found');
             verifiedIdPlayerB = -1;
         }
 
