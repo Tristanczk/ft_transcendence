@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
 import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
+import { Alert } from './Alert';
+import { useState } from 'react';
+import { GameModeAlert } from './GameModeAlert';
 
 export default function MessagesHeader({
     channel,
@@ -15,13 +18,22 @@ export default function MessagesHeader({
     handleBlock: () => void;
     handleGameInvite: () => void;
 }) {
+    const [alert, setAlert] = useState<boolean>(false);
+
     if (channel === 0 || !currentFriend) return <div></div>;
 
+    const onClose = () => {
+        setAlert(false);
+    };
+
     return (
+        <>
+        {alert && <GameModeAlert onClose={onClose} handleClick={() => {}}/>}
         <div className="flex sm:items-center justify-between py-3 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
             <div className="relative flex items-center space-x-4">
                 <div className="relative">
                     <span className="absolute text-green-500 right-0 bottom-0">
+        
                         <svg width="20" height="20">
                             <circle
                                 cx="8"
@@ -59,7 +71,7 @@ export default function MessagesHeader({
             <div className="flex items-center space-x-2">
                 <button
                     type="button"
-                    onClick={handleGameInvite}
+                    onClick={() => setAlert(true)}
                     className="inline-flex items-center justify-center rounded-lg h-10 w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-400 hover:scale-110"
                 >
                     <svg
@@ -192,5 +204,6 @@ export default function MessagesHeader({
                 </button>
             </div>
         </div>
+        </>
     );
 }
