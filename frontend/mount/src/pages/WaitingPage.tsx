@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { NavigateFunction, useLocation, useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
-import { GameMode, NAVBAR_HEIGHT } from '../shared/misc';
+import { NAVBAR_HEIGHT } from '../shared/misc';
 import { useUserContext } from '../context/UserContext';
 
 const leaveMatchmaking = (
@@ -45,6 +45,7 @@ const CancelButton = ({
         type="button"
         className=" rounded-md p-2 "
         onClick={() => {
+            leaveMatchmaking(socket, setError, gameId, setGameId, navigate);
             // TODO: cancel invitation
         }}
     >
