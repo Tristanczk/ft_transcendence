@@ -26,6 +26,7 @@ export type StatsDashboard = {
 
 export type UserLeaderboard = {
     avatarPath: string;
+	rank: number;
     createdAt: Date;
     elo: number;
     id: number;

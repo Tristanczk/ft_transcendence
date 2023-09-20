@@ -7,6 +7,7 @@ import NotConnected from '../components/NotConnected';
 
 interface ResponseLeaderboard {
     avatarPath: string;
+	rank: number;
     createdAt: Date;
     elo: number;
     id: number;
@@ -18,9 +19,6 @@ interface ResponseLeaderboard {
 interface Props {
     userView: ResponseLeaderboard;
     rank: number;
-	setRank: any;
-	previousScore: number;
-	setPrevious: any;
 }
 
 const DashboardPage: React.FC = () => {
@@ -28,9 +26,7 @@ const DashboardPage: React.FC = () => {
 	const [leaderboard, setLeaderbord] = useState<ResponseLeaderboard[] | null>(
         null,
     );
-    // let rank: number = 1;
-	const [rank, setRank] = useState<number>(1);
-	const [previousScore, setPrevious] = useState<number>(-1);
+    let rank: number = 1;
 
     useEffect(() => {
         getLeaderboard();
@@ -64,11 +60,8 @@ const DashboardPage: React.FC = () => {
                             leaderboard.map((elem) => (
                                 <ShowUserLeaderboard
                                     userView={elem}
-                                    rank={rank}
+                                    rank={rank++}
                                     key={elem.id}
-									setRank={setRank}
-									previousScore={previousScore}
-									setPrevious={setPrevious}
                                 />
                             ))
                         ) : (
@@ -83,11 +76,9 @@ const DashboardPage: React.FC = () => {
 	);
 };
 
-function ShowUserLeaderboard({ userView, rank, setRank, previousScore, setPrevious }: Props) {
+function ShowUserLeaderboard({ userView, rank }: Props) {
     const { user } = useUserContext();
-	if (previousScore !== -1 && previousScore)
 
-	setPrevious(userView.elo);
     let classStyle: string =
         'bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 flex items-center';
     if (user && user.id === userView.id)
@@ -96,7 +87,7 @@ function ShowUserLeaderboard({ userView, rank, setRank, previousScore, setPrevio
     return (
         <div className={classStyle}>
             <span className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mr-4">
-                #{rank}
+                #{userView.rank}
             </span>
             <div className="flex-shrink-0">
                 <ImageFriend
