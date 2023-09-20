@@ -5,6 +5,7 @@ import {
     LINE_WIDTH,
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
+    UNBREAKABLE,
 } from './classic_mayhem';
 import { randomChoice } from './functions';
 import { MultiBall } from './game_info';
@@ -305,7 +306,10 @@ const mapify = (map: string[], idx: number): MayhemMap => {
             if (cell === ' ') {
                 resultRow.push({ lives: 0, startingLives: 0 });
             } else if (cell === 'X') {
-                resultRow.push({ lives: Infinity, startingLives: Infinity });
+                resultRow.push({
+                    lives: UNBREAKABLE,
+                    startingLives: UNBREAKABLE,
+                });
             } else if (cell >= '0' && cell <= '9') {
                 const lives = parseInt(cell);
                 resultRow.push({ lives, startingLives: lives });
@@ -425,6 +429,10 @@ export const hitMayhemMap = (ball: MultiBall, mayhemMap: MayhemMap) => {
         ball.posY = bestCollision.newPosY;
         ball.velX = bestCollision.newVelX;
         ball.velY = bestCollision.newVelY;
-        --mayhemMap[bestCollision.gridY][bestCollision.gridX].lives;
+        if (
+            mayhemMap[bestCollision.gridY][bestCollision.gridX].lives !==
+            UNBREAKABLE
+        )
+            --mayhemMap[bestCollision.gridY][bestCollision.gridX].lives;
     }
 };

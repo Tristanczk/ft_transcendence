@@ -4,9 +4,12 @@ import { format } from 'date-fns';
 import { Link, useParams } from 'react-router-dom';
 import { GameImports } from '../types';
 import NoUser from '../components/NoUser';
+import NotConnected from '../components/NotConnected';
+import { useUserContext } from '../context/UserContext';
 
 function GameHistoryPage() {
     const [dataGames, setGames] = useState<GameImports[] | null>(null);
+    const { user } = useUserContext();
     const { idUserToView } = useParams();
 
     let userId: number = -1;
@@ -36,7 +39,9 @@ function GameHistoryPage() {
         }
     }
 
-    return dataGames && userId !== -1 ? (
+    return !user ? (
+        <NotConnected message="Please signup or log in to access your dashboard" />
+    ) : dataGames && userId !== -1 ? (
         <>
             <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                 <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
@@ -69,7 +74,7 @@ function GameHistoryPage() {
             </main>
         </>
     ) : (
-        <NoUser idUserToView={idUserToView} />
+        <NoUser />
     );
 }
 

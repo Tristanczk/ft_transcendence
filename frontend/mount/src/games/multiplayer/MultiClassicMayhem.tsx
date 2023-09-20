@@ -8,6 +8,7 @@ import {
     PADDLE_HEIGHT,
     PADDLE_MARGIN_X,
     PADDLE_WIDTH,
+    UNBREAKABLE,
 } from '../../shared/classic_mayhem';
 import {
     ClassicMayhemGameObjects,
@@ -123,7 +124,7 @@ const drawMayhemCell = (
             ctx.canvas.height * (posY - BALL_HEIGHT / 2),
         );
         const ratio =
-            mayhemCell.lives === Infinity ||
+            mayhemCell.lives === UNBREAKABLE ||
             mayhemCell.lives === mayhemCell.startingLives
                 ? 1
                 : mayhemCell.lives / mayhemCell.startingLives;
@@ -366,7 +367,7 @@ const drawEndButtons = (
         height: canvas.height * 0.1,
         x: (canvas.width * 0.7) / 2,
         y: canvas.height * 0.72,
-        text: 'Go to homepage',
+        text: 'Home',
         onClick: () => {
             navigate('/');
         },

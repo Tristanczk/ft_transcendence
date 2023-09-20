@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { NavigateFunction, useLocation, useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
-import { GameMode, NAVBAR_HEIGHT } from '../shared/misc';
+import { NAVBAR_HEIGHT } from '../shared/misc';
 import { useUserContext } from '../context/UserContext';
 
 const leaveMatchmaking = (
@@ -44,9 +44,10 @@ const CancelButton = ({
     <button
         type="button"
         className=" rounded-md p-2 "
-        onClick={() =>
-            leaveMatchmaking(socket, setError, gameId, setGameId, navigate)
-        }
+        onClick={() => {
+            leaveMatchmaking(socket, setError, gameId, setGameId, navigate);
+            // TODO: cancel invitation
+        }}
     >
         <span className="text-sm font-medium inline-flex items-center justify-center text-white hover:text-black focus:outline-none mt-2">
             <svg
@@ -134,7 +135,7 @@ const WaitingPage: React.FC<{
                     Waiting for your friend to accept the invitation...
                 </span>
                 <CancelButton
-                    text="Cancel matchmaking"
+                    text="Cancel invitation"
                     socket={socket}
                     setError={setError}
                     gameId={gameId}
