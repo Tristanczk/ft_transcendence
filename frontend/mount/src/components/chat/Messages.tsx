@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useUserContext } from '../../context/UserContext';
 import { UserSimplified } from '../../types';
 import ImageFriend from '../dashboard/friends/ImgFriend';
 import SettingBar from './SettingBar';
+import { GameModeAlert } from './GameModeAlert';
 
 export interface ChannelProps {
     id: number;
@@ -48,16 +49,23 @@ export default function Messages({
 }) {
     const { user } = useUserContext();
     const messageContainerRef = useRef<HTMLDivElement>(null);
-    
+
     const groupedMessages = groupMessagesBySender(messages);
-    
+    const [alert, setAlert] = useState<boolean>(false);
+    const [friendClicked, setFriendClicked] = useState<number>(0);
+
+    const onClose = () => {
+        setAlert(false);
+    };
+
     useEffect(() => {
         // Scroll to the bottom of the container
         if (messageContainerRef.current) {
-            messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+            messageContainerRef.current.scrollTop =
+                messageContainerRef.current.scrollHeight;
         }
     }, [groupedMessages]);
-    
+
     if (!messages) return <div></div>;
 
     function groupMessagesBySender(messages: MessageProps[]) {
@@ -88,81 +96,96 @@ export default function Messages({
     }
 
     return (
-        <div className="flex">
-            {' '}
-            <SettingBar
-                currentChannel={currentChannel}
-                isSettingVisible={isSettingVisible}
-                handleClose={handleClose}
-                channelUsers={channelUsers}
-                fetchUsers={fetchUsers}
-                setChannelUsers={setChannelUsers}
-            />
-            <div
-                id="messages"
-                ref={messageContainerRef}
-                className={`flex-grow h-full flex flex-col space-y-4 p-3 overflow-y-auto scrolling-touch bg-white shadow-md overflow-clip w-104 ${zIndexClass}`}
-                style={{ height: '420px', marginLeft: '-69px' }}
-            >
-                {groupedMessages.map(
-                    (group: MessageGroup, groupIndex: number) => {
-                        const isCurrentUser = group.idSender === user?.id;
+        <>
+            {alert && (
+                    <GameModeAlert onClose={onClose} handleClick={() => {}} />
+                    /*friendClicked*/
+            )}
+            <div className="flex">
+                {' '}
+                <SettingBar
+                    currentChannel={currentChannel}
+                    isSettingVisible={isSettingVisible}
+                    handleClose={handleClose}
+                    channelUsers={channelUsers}
+                    fetchUsers={fetchUsers}
+                    setChannelUsers={setChannelUsers}
+                />
+                <div
+                    id="messages"
+                    ref={messageContainerRef}
+                    className={`flex-grow h-full flex flex-col space-y-4 p-3 overflow-y-auto scrolling-touch bg-white shadow-md overflow-clip w-104 ${zIndexClass}`}
+                    style={{ height: '420px', marginLeft: '-69px' }}
+                >
+                    {groupedMessages.map(
+                        (group: MessageGroup, groupIndex: number) => {
+                            const isCurrentUser = group.idSender === user?.id;
 
-                        return (
-                            <div className="chat-message" key={groupIndex}>
-                                <div
-                                    className={`flex items-end ${
-                                        isCurrentUser ? 'justify-end' : ''
-                                    }`}
-                                >
+                            return (
+                                <div className="chat-message" key={groupIndex}>
                                     <div
-                                        className={`flex flex-col space-y-2 text-sm max-w-xs mx-2 ${
-                                            isCurrentUser
-                                                ? 'order-1 items-end'
-                                                : 'order-2 items-start'
+                                        className={`flex items-end ${
+                                            isCurrentUser ? 'justify-end' : ''
                                         }`}
                                     >
-                                        {group.messages.map(
-                                            (message: any, index: any) => (
-                                                <div key={index}>
-                                                    <span
-                                                        className={`${
-                                                            isCurrentUser
-                                                                ? 'rounded-br-none bg-blue-600 text-white'
-                                                                : 'rounded-bl-none bg-gray-300 text-gray-600'
-                                                        } px-4 py-2 rounded-lg inline-block`}
-                                                    >
-                                                        {message.message}
-                                                    </span>
-                                                </div>
-                                            ),
+                                        <div
+                                            className={`flex flex-col space-y-2 text-sm max-w-xs mx-2 ${
+                                                isCurrentUser
+                                                    ? 'order-1 items-end'
+                                                    : 'order-2 items-start'
+                                            }`}
+                                        >
+                                            {group.messages.map(
+                                                (message: any, index: any) => (
+                                                    <div key={index}>
+                                                        <span
+                                                            className={`${
+                                                                isCurrentUser
+                                                                    ? 'rounded-br-none bg-blue-600 text-white'
+                                                                    : 'rounded-bl-none bg-gray-300 text-gray-600'
+                                                            } px-4 py-2 rounded-lg inline-block`}
+                                                        >
+                                                            {message.message}
+                                                        </span>
+                                                    </div>
+                                                ),
+                                            )}
+                                        </div>
+                                        {isCurrentUser ? (
+                                            <ImageFriend
+                                                customClassName={`w-8 h-8 rounded-full ${
+                                                    isCurrentUser
+                                                        ? 'order-2'
+                                                        : 'order-1'
+                                                }`}
+                                                userId={group.idSender}
+                                            />
+                                        ) : (
+                                            <button
+                                                onClick={() => {
+                                                    setFriendClicked(
+                                                        group.idSender,
+                                                    );
+                                                    setAlert(true);
+                                                }}
+                                            >
+                                                <ImageFriend
+                                                    customClassName={`w-8 h-8 rounded-full ${
+                                                        isCurrentUser
+                                                            ? 'order-2'
+                                                            : 'order-1'
+                                                    }`}
+                                                    userId={group.idSender}
+                                                />
+                                            </button>
                                         )}
                                     </div>
-                                    {isCurrentUser ? (
-                                        <ImageFriend
-                                            customClassName={`w-8 h-8 rounded-full ${
-                                                isCurrentUser
-                                                    ? 'order-2'
-                                                    : 'order-1'
-                                            }`}
-                                            userId={group.idSender}
-                                        />
-                                    ) : (
-                                        <ImageFriend
-                                            customClassName={`w-8 h-8 rounded-full ${
-                                                isCurrentUser
-                                                    ? 'order-2'
-                                                    : 'order-1'
-                                            }`}
-                                            userId={group.idSender}
-                                        />
-                                    )}
                                 </div>
-                            </div>
-                        );
-                    },
-                )}
+                            );
+                        },
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }

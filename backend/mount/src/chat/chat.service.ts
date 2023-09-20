@@ -29,6 +29,7 @@ export class ChatService {
     ): Promise<CreateChannelDto> {
         await this.prisma.channels.create({
             data: {
+                idOwner: createChannelDto.idUser[0],
                 idAdmin: [...createChannelDto.idUser],
                 idUsers: [...createChannelDto.idUser],
                 isPublic: createChannelDto.isPublic,
@@ -128,6 +129,26 @@ export class ChatService {
         return false;
     }
 
+    async isUserBanned(channelDto: ChannelIdDto): Promise<boolean> {
+        try {
+            const channel = await this.prisma.channels.findUnique({
+                where: {
+                    id: Number(channelDto.idChannel),
+                },
+            });
+
+            if (
+                channel &&
+                channel.idBannedUsers.includes(Number(channelDto.idUser))
+            ) {
+                return true;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        return false;
+    }
+
     async isUserInChannel(channelDto: ChannelIdDto): Promise<boolean> {
         try {
             const channel = await this.prisma.channels.findUnique({
@@ -155,6 +176,9 @@ export class ChatService {
                     id: joinChannel.idChannel,
                 },
             });
+
+            if (channel.idBannedUsers.includes(joinChannel.idUser))
+                throw new Error('You are banne banned');
 
             if (channel.password && channel.password !== joinChannel.password)
                 throw new Error('Wrong password');
@@ -320,7 +344,7 @@ export class ChatService {
             if (editChannel.idUser === editChannel.idRequester)
                 throw new Error('Not authorized, Cannot ban yourself');
 
-            if (channel.idAdmin.includes(editChannel.idUser))
+            if (channel.idAdmin.includes(editChannel.idUser) && editChannel.idRequester !== channel.idOwner)
                 throw new Error('Not authorized, User is admin');
 
             const updatedChannel = await this.prisma.channels.update({
@@ -335,6 +359,19 @@ export class ChatService {
                     },
                 },
             });
+
+            if (editChannel.isBanned) {
+                await this.prisma.channels.update({
+                    where: {
+                        id: editChannel.id,
+                    },
+                    data: {
+                        idBannedUsers: {
+                            push: editChannel.idUser,
+                        },
+                    },
+                });
+            }
 
             const user = this.gateway.users.getIndivUserById(
                 editChannel.idUser,
@@ -462,7 +499,7 @@ export class ChatService {
             if (!channel.idAdmin.includes(editChannel.idRequester))
                 throw new Error('Not authorized');
 
-            if (channel.idAdmin.includes(editChannel.idUser))
+            if (channel.idAdmin.includes(editChannel.idUser)  && editChannel.idRequester !== channel.idOwner)
                 throw new Error('Not authorized, User is admin');
 
             channel.mutedUsers.push([

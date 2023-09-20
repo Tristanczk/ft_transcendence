@@ -20,11 +20,11 @@ export default function MessagesHeader({
 }) {
     const [alert, setAlert] = useState<boolean>(false);
 
-    if (channel === 0 || !currentFriend) return <div></div>;
-
     const onClose = () => {
         setAlert(false);
     };
+    
+    if (channel === 0 || !currentFriend) return <div></div>;
 
     return (
         <>
