@@ -44,9 +44,9 @@ const CancelButton = ({
     <button
         type="button"
         className=" rounded-md p-2 "
-        onClick={() =>
-            leaveMatchmaking(socket, setError, gameId, setGameId, navigate)
-        }
+        onClick={() => {
+            // TODO: cancel invitation
+        }}
     >
         <span className="text-sm font-medium inline-flex items-center justify-center text-white hover:text-black focus:outline-none mt-2">
             <svg
@@ -134,7 +134,7 @@ const WaitingPage: React.FC<{
                     Waiting for your friend to accept the invitation...
                 </span>
                 <CancelButton
-                    text="Cancel matchmaking"
+                    text="Cancel invitation"
                     socket={socket}
                     setError={setError}
                     gameId={gameId}
