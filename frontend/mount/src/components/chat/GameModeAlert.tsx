@@ -1,9 +1,10 @@
 interface GameModeAlertProps {
     onClose: () => void;
-    handleClick: (mode: 'classic' | 'mayhem' | 'battle') => void;
+    handleClick: (mode: 'classic' | 'mayhem' | 'battle', idUser: number) => void;
+    friendClicked: number;
 }
 
-export function GameModeAlert({ onClose, handleClick }: GameModeAlertProps) {
+export function GameModeAlert({ onClose, handleClick, friendClicked }: GameModeAlertProps) {
     return (
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-50 z-50">
             <div className="bg-zinc-200 rounded-lg p-5 max-w-md">
@@ -32,19 +33,28 @@ export function GameModeAlert({ onClose, handleClick }: GameModeAlertProps) {
                 </div>
                 <button
                     className="hover:scale-105 hover:bg-green-500 bg-gray-500 text-white py-2 px-4 rounded-md focus:outline-none mb-2 mx-1"
-                    onClick={() => handleClick('classic')}
+                    onClick={() => {
+                        handleClick('classic', friendClicked);
+                        onClose();
+                    }}
                 >
                     Classic
                 </button>
                 <button
                     className="hover:scale-105 hover:bg-green-500 bg-gray-500 text-white py-2 px-4 rounded-md focus:outline-none mb-2 mx-1"
-                    onClick={() => handleClick('mayhem')}
+                    onClick={() => {
+                        handleClick('mayhem', friendClicked);
+                        onClose();
+                    }}
                 >
                     Mayhem
                 </button>
                 <button
                     className="hover:scale-105 hover:bg-green-500 bg-gray-500 text-white py-2 px-4 rounded-md focus:outline-none mb-2 mx-1"
-                    onClick={() => handleClick('battle')}
+                    onClick={() => {
+                        handleClick('battle', friendClicked);
+                        onClose();
+                    }}
                 >
                     Royal
                 </button>

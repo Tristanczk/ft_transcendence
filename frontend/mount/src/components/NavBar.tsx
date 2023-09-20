@@ -10,7 +10,6 @@ import axios from 'axios';
 import { WebsocketContext } from '../context/WebsocketContext';
 import InvitesMenu from './user/InvitesMenu';
 import { Invite } from '../shared/game_info';
-import { set } from 'date-fns';
 
 const NAVBAR_BREAKPOINT = 1024;
 

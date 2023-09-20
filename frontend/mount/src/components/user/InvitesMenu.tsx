@@ -56,13 +56,13 @@ export default function InvitesMenu({
             (response: any) => {
                 if (response.status === 'failure') {
                     //TO DO : display an error message equal to response.error
-                } else {
-                    setInvites((prev) =>
-                        prev.filter((invite) => invite.gameId !== data.gameId),
-                    );
                 }
+                setInvites((prev) =>
+                    prev.filter((invite) => invite.gameId !== data.gameId),
+                );
             },
         );
+        setShowInvites(false);
     };
 
     return (
@@ -82,7 +82,10 @@ export default function InvitesMenu({
                             </span>
                             <button
                                 type="button"
-                                onClick={() => handleGameInvite(invite)}
+                                onClick={() => {
+                                    setShowInvites(false);
+                                    handleGameInvite(invite);
+                                }}
                                 className="inline-flex items-center justify-center rounded-lg h-8 w-8 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500 hover:scale-110"
                             >
                                 <svg

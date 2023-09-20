@@ -239,13 +239,13 @@ function ChatPage({
         }
     };
 
-    const handleGameInvite = async (mode: 'classic' | 'mayhem' | 'battle') => {
-        if (!currentFriend || !user) return; //TO DO display an error message impossible to send game invite
+    const handleGameInvite = async (mode: 'classic' | 'mayhem' | 'battle', idUser: number) => {
+        if (!user) return; //TO DO display an error message impossible to send game invite
         const joinFriendGame: JoinFriendGameType = {
             mode,
             userId: user.id,
             gameId: null,
-            friendId: currentFriend.id,
+            friendId: idUser,
         };
         socket.emit('joinFriendGame', joinFriendGame, (response: any) => {
             if (response.error) {
@@ -349,6 +349,7 @@ function ChatPage({
                                 fetchUsers={fetchUsers}
                                 blockedUsers={blockedUsers}
                                 setChannelUsers={setChannelUsers}
+                                handleGameInvite={handleGameInvite}
                             />
                             <MessageInput idChannel={channel} />
                         </div>
