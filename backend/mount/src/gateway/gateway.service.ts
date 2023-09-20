@@ -127,7 +127,6 @@ export class GatewayService
     /*********** Axel WIP ***********/
 
     private games: Record<string, Game> = {};
-    private friendGames: Record<string, Game> = {};
     private clients: Record<string, IndivUser | null> = {}; //<socketId, client>
     private spectators: Record<string, Set<string>> = {};
     private spectating: Record<string, string> = {};
@@ -137,8 +136,8 @@ export class GatewayService
         if (!client) {
             return { status: 'not connected', gameId: null };
         }
-        const game = this.games[client.idGamePlaying];
         if (client.isPlaying) {
+            const game = this.games[client.idGamePlaying];
             if (game.info.state === 'waiting') {
                 return { status: 'waiting', gameId: client.idGamePlaying };
             } else if (game.info.state === 'playing') {
@@ -189,7 +188,11 @@ export class GatewayService
             };
         }
         for (const game of Object.values(this.games)) {
-            if (game.info.mode === gameMode && game.info.state === 'waiting') {
+            if (
+                game.info.mode === gameMode &&
+                game.info.state === 'waiting' &&
+                !game.isFriendly
+            ) {
                 game.addPlayer(client.id, false, userName, userElo);
                 this.liaiseGameToPlayer(client.id, game, 'B');
 
@@ -261,39 +264,41 @@ export class GatewayService
         }
         if (gameId) {
             if (
-                this.friendGames[gameId] &&
-                this.friendGames[gameId].info.state === 'waiting' &&
-                this.friendGames[gameId].opponentId === playerId
+                this.games[gameId] &&
+                this.games[gameId].info.state === 'waiting' &&
+                this.games[gameId].opponentId === playerId
             ) {
-                this.friendGames[gameId].addPlayer(
+                this.games[gameId].addPlayer(
                     client.id,
                     false,
                     userName,
                     userElo,
                 );
-                this.liaiseGameToPlayer(
-                    client.id,
-                    this.friendGames[gameId],
-                    'B',
-                );
+                this.liaiseGameToPlayer(client.id, this.games[gameId], 'B');
 
-                for (const player of this.friendGames[gameId].info.players) {
+                for (const player of this.games[gameId].info.players) {
                     if (player && player.id !== client.id) {
                         this.server
                             .to(player.id)
-                            .emit('startGame', this.friendGames[gameId].id);
+                            .emit('startGame', this.games[gameId].id);
                         this.emitUpdateToPlayers(
-                            this.friendGames[gameId],
+                            this.games[gameId],
                             'switchGame',
-                            this.friendGames[gameId].id,
+                            this.games[gameId].id,
                         );
                     }
                 }
 
-                await this.startGameStat(this.friendGames[gameId]);
+                await this.startGameStat(this.games[gameId]);
                 return {
-                    gameId: this.friendGames[gameId].id,
+                    gameId: this.games[gameId].id,
                     status: 'joined',
+                };
+            } else {
+                return {
+                    error: `Invitation to game ${gameId} is no longer valid`,
+                    errorCode: 'invalidInvitation',
+                    gameId: currentClient.idGamePlaying,
                 };
             }
         }
@@ -305,7 +310,7 @@ export class GatewayService
             userElo,
             friendId,
         );
-        this.friendGames[game.id] = game;
+        this.games[game.id] = game;
         this.liaiseGameToPlayer(client.id, game, 'A');
         return { gameId: game.id, status: 'waiting' };
     }
@@ -365,25 +370,6 @@ export class GatewayService
     @SubscribeMessage('abortMatchmaking')
     async handleAbortMatchmaking(client: Socket, gameId: string) {
         if (!this.games[gameId]) {
-            return {
-                error: `Invalid game: ${gameId}`,
-                errorCode: 'invalidGame',
-            };
-        }
-        if (this.games[gameId].info.state !== 'waiting') {
-            return {
-                error: `Game ${gameId} has already started`,
-                errorCode: 'gameStarted',
-            };
-        }
-        const gameToAbort: Game = this.games[gameId];
-        this.handleEndGame(gameToAbort, false, -1);
-        return { status: 'matchmaking cancelled' };
-    }
-
-    @SubscribeMessage('abortFriendMatchmaking')
-    async handleAbortFriendMatchmaking(client: Socket, gameId: string) {
-        if (!this.friendGames[gameId]) {
             return {
                 error: `Invalid game: ${gameId}`,
                 errorCode: 'invalidGame',
