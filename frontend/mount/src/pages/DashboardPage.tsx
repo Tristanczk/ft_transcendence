@@ -49,15 +49,22 @@ const DashboardPage: React.FC = () => {
         };
         if (userId !== null) fetchUser();
         else setUserData(null);
+
+        if (!user) {
+            setError(true);
+            setUserData(null);
+        }
     }, [userId]);
 
-    return userData ? (
+    return user && userData ? (
         <DashboardLayout>
             <PresentationUser user={userData} />
             <Friends currUser={userData} />
             <StatsUser user={userData} />
         </DashboardLayout>
-    ) : !error ? null : idUserToView ? (
+    ) : !error ? (
+        <NotConnected message="Please signup or log in to access your dashboard" />
+    ) : idUserToView ? (
         <NoUser idUserToView={idUserToView} />
     ) : (
         <NotConnected message="Please signup or log in to access your dashboard" />
