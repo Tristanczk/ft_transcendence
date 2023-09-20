@@ -70,7 +70,7 @@ function GlobalStats({ user }: PresentationUserProps) {
                     role="tabpanel"
                     aria-labelledby="stats-tab"
                 >
-                    <dl className="grid max-w-screen-xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8 p-4 mx-auto text-gray-900 dark:text-white sm:p-8">
+                    <dl className="grid max-w-screen-xl grid-cols-1 sm:grid-cols-2 gap-8 p-4 mx-auto text-gray-900 dark:text-white sm:p-8">
                         <div className="flex flex-col items-center justify-center">
                             <dt className="mb-2 text-3xl font-extrabold">
                                 {stats ? stats?.me.nbGames : 'N/A'}
