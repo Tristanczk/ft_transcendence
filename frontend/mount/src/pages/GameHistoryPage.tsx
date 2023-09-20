@@ -3,6 +3,7 @@ import axios from 'axios';
 import { format } from 'date-fns';
 import { Link, useParams } from 'react-router-dom';
 import { GameImports } from '../types';
+import NoUser from '../components/NoUser';
 
 function GameHistoryPage() {
     const [dataGames, setGames] = useState<GameImports[] | null>(null);
@@ -68,7 +69,7 @@ function GameHistoryPage() {
             </main>
         </>
     ) : (
-        <NoUser></NoUser>
+        <NoUser idUserToView={idUserToView} />
     );
 }
 
@@ -147,44 +148,25 @@ function ShowGameElem({ game, userId }: ShowGameProps) {
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                     <span className="font-semibold">
-                        {game.playerA?.score}/{game.playerB?.score} in{' '}
+                        {game.playerA?.score}-{game.playerB?.score} in{' '}
                         {game.duration > 60
                             ? Math.trunc(game.duration / 60) +
                               'm' +
                               (game.duration % 60) +
                               's'
                             : (game.duration > 0 ? game.duration : 0) + 's'}
-                            {game.aborted && ('(game aborted)')}
+                        {game.aborted && ' (game aborted)'}
                     </span>
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                     <span className="">
-                        {game.finished === true ? ('Game played on') : ('Game in play on')}
-                        {' '}
+                        {game.finished === true
+                            ? 'Game played on'
+                            : 'Game in play on'}{' '}
                         {format(new Date(game.date), 'MMM d, yyyy')}
                     </span>
                 </p>
             </div>
         </div>
-    );
-}
-
-function NoUser() {
-    const { idUserToView } = useParams();
-    return (
-        <>
-            <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
-                <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                    <article className="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                        <h2 className="text-3xl font-extrabold dark:text-white">
-                            No user found
-                        </h2>
-                        <p className="mt-4 mb-4">
-                            '{idUserToView}' cannot be found on our server.
-                        </p>
-                    </article>
-                </div>
-            </main>
-        </>
     );
 }

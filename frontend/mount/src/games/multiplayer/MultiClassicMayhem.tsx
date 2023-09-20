@@ -26,6 +26,7 @@ import { WebsocketContext } from '../../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { clamp } from '../../shared/functions';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import getScoreString from '../getScoreString';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
@@ -170,9 +171,7 @@ const drawScore = (
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(
-        `${players[0] ? players[0].score : ' '} - ${
-            players[1] ? players[1].score : ' '
-        }`,
+        getScoreString(players[0]?.score ?? 0, players[1]?.score ?? 0),
         canvas.width / 2,
         textSize * 1.25,
     );
@@ -249,16 +248,21 @@ const drawEndScreen = (
     players: ClassicMayhemPlayers,
     socket: Socket,
     varElo: eloVariation | null,
+    isLeftPlayer: boolean,
 ) => {
     const textSize = 8 + canvas.width / 20;
-    const winner =
-        players[0]!.score > players[1]!.score ? players[0]!.id : players[1]!.id;
+    let isWinner = false;
+    if (
+        (isLeftPlayer && players[0]!.score > players[1]!.score) ||
+        (!isLeftPlayer && players[0]!.score < players[1]!.score)
+    )
+        isWinner = true;
     ctx.fillStyle = 'white';
     ctx.font = `${textSize}px monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(
-        socket.id === winner ? 'Victory' : 'Defeat',
+        isWinner ? 'Victory' : 'Defeat',
         canvas.width / 2,
         canvas.height * 0.3,
     );
@@ -266,7 +270,7 @@ const drawEndScreen = (
         const eloSize = 8 + canvas.width / 40;
         ctx.font = `${eloSize}px monospace`;
         ctx.fillText(
-            socket.id === players[0]!.id
+            isLeftPlayer
                 ? `Elo: ${players[0]!.elo} -> ${
                       players[0]!.elo + varElo.varEloLeft
                   } (${
@@ -294,6 +298,7 @@ const drawLeaveScreen = (
     socket: Socket,
     varElo: eloVariation | null,
     gameLeave: UpdateGameEvent,
+    isLeftPlayer: boolean,
 ) => {
     let textSize = 8 + canvas.width / 20;
     ctx.fillStyle = 'white';
@@ -328,7 +333,7 @@ const drawLeaveScreen = (
         const eloSize = 8 + canvas.width / 40;
         ctx.font = `${eloSize}px monospace`;
         ctx.fillText(
-            socket.id === players[0]!.id
+            isLeftPlayer
                 ? `Elo: ${players[0]!.elo} -> ${
                       players[0]!.elo + varElo.varEloLeft
                   } (${
@@ -443,6 +448,7 @@ const MultiClassicMayhem = ({
     windowHeight,
     mode,
     players,
+    isLeftPlayer,
     state,
     timeRemaining,
     varElo,
@@ -453,6 +459,7 @@ const MultiClassicMayhem = ({
     windowHeight: number;
     mode: string;
     players: ClassicMayhemPlayers;
+    isLeftPlayer: boolean;
     state: string;
     timeRemaining: number;
     varElo: eloVariation | null;
@@ -482,7 +489,14 @@ const MultiClassicMayhem = ({
                 drawPaddle(canvas, ctx, false, players[1].pos, timeRemaining);
             drawScore(canvas, ctx, players, timeRemaining);
             if (state === 'finished') {
-                drawEndScreen(canvas, ctx, players, socket, varElo);
+                drawEndScreen(
+                    canvas,
+                    ctx,
+                    players,
+                    socket,
+                    varElo,
+                    isLeftPlayer,
+                );
                 drawEndButtons(canvas, ctx, navigate, mode);
             } else if (
                 gameLeave &&
@@ -496,6 +510,7 @@ const MultiClassicMayhem = ({
                     socket,
                     varElo,
                     gameLeave,
+                    isLeftPlayer,
                 );
                 drawEndButtons(canvas, ctx, navigate, mode);
             } else if (timeRemaining === 0) {

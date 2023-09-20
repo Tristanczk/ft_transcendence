@@ -9,6 +9,8 @@ import { NAVBAR_HEIGHT } from '../shared/misc';
 import axios from 'axios';
 import { WebsocketContext } from '../context/WebsocketContext';
 
+const NAVBAR_BREAKPOINT = 1024;
+
 const TextNavLink: React.FC<{
     innerDivStyle: string;
     isActive: boolean;
@@ -45,16 +47,15 @@ const NavLink: React.FC<{
     current: string;
     link: string;
     icon: string;
-}> = ({ title, current, link, icon }) => {
+    showLipong: boolean;
+}> = ({ title, current, link, icon, showLipong }) => {
     const innerDivStyle = 'block py-2 pl-3 pr-4 rounded';
     const isActive = current === link;
-    const { width } = useWindowSize();
-    const showText = width && width >= 768;
 
     return (
         <li>
             <Link to={link}>
-                {showText ? (
+                {showLipong ? (
                     <TextNavLink
                         innerDivStyle={innerDivStyle}
                         isActive={isActive}
@@ -76,46 +77,42 @@ const NavLink: React.FC<{
 const NavLinks: React.FC<{
     current: string;
     toggleChatVisibility: () => void;
-}> = ({ current, toggleChatVisibility }) => {
-    const { user } = useUserContext();
-
-    return (
-        <div className="items-center justify-between flex w-auto">
-            <ul className="text-xl md:text-base flex font-medium p-0 rounded-lg flex-row space-x-2 md:space-x-8 mt-0 border-0 bg-gray-900 border-gray-700">
-                <NavLink
-                    current={current}
-                    title="Home"
-                    link="/"
-                    icon="/favicon.ico"
-                />
-                {user && (
-                    <NavLink
-                        current={current}
-                        title="Dashboard"
-                        link="/dashboard"
-                        icon="/navlinks/pie-chart.svg"
-                    />
-                )}
-                <NavLink
-                    current={current}
-                    title="Leaderboard"
-                    link="/leaderboard"
-                    icon="/navlinks/podium.png"
-                />
-                {user && (
-                    <li>
-                        <button
-                            className="block py-2 pl-3 pr-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
-                            onClick={toggleChatVisibility}
-                        >
-                            Chat
-                        </button>
-                    </li>
-                )}
-            </ul>
-        </div>
-    );
-};
+    showLipong: boolean;
+}> = ({ current, toggleChatVisibility, showLipong }) => (
+    <div className="items-center justify-between flex w-auto">
+        <ul className="text-xl lg:text-base flex font-medium p-0 rounded-lg flex-row space-x-2 lg:space-x-8 mt-0 border-0 bg-gray-900 border-gray-700">
+            <NavLink
+                current={current}
+                showLipong={showLipong}
+                title="Home"
+                link="/"
+                icon="/favicon.ico"
+            />
+            <NavLink
+                current={current}
+                showLipong={showLipong}
+                title="Dashboard"
+                link="/dashboard"
+                icon="/navlinks/pie-chart.svg"
+            />
+            <NavLink
+                current={current}
+                showLipong={showLipong}
+                title="Leaderboard"
+                link="/leaderboard"
+                icon="/navlinks/podium.png"
+            />
+            <li>
+                <button
+                    className="block py-2 pl-3 pr-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
+                    onClick={toggleChatVisibility}
+                >
+                    Chat
+                </button>
+            </li>
+        </ul>
+    </div>
+);
 
 const MenuLink: React.FC<{
     text: string;
@@ -135,7 +132,7 @@ const MenuLink: React.FC<{
     );
 };
 
-function UserMenu() {
+const UserMenu: React.FC<{ showLipong: boolean }> = ({ showLipong }) => {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [showInfo, setShowInfo] = useState<boolean>(true);
     const { user } = useUserContext();
@@ -153,14 +150,15 @@ function UserMenu() {
                 }}
             >
                 <div
-                    className="flex items-center relative"
+                    className="flex items-center relative justify-end"
+                    style={showLipong ? { width: 160 } : {}}
                     onClick={() => {
                         setShowInfo(true);
                     }}
                 >
                     <button
                         type="button"
-                        className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 active:ring-4 active:ring-gray-600"
+                        className="flex mr-3 text-sm bg-gray-800 rounded-full lg:mr-0 active:ring-4 active:ring-gray-600"
                         onClick={() => setUserMenuOpen(!userMenuOpen)}
                     >
                         {user && (
@@ -208,7 +206,7 @@ function UserMenu() {
             </OutsideClickHandler>
         </div>
     );
-}
+};
 
 const NavBar = ({
     gameId,
@@ -224,6 +222,8 @@ const NavBar = ({
     const { user } = useUserContext();
     const [isLoading, setIsLoading] = useState(true);
     const socket = useContext(WebsocketContext);
+    const { width } = useWindowSize();
+    const showLipong = !!(!user || (width && width >= NAVBAR_BREAKPOINT));
 
     useEffect(
         () => () => {
@@ -268,7 +268,11 @@ const NavBar = ({
             style={{ height: NAVBAR_HEIGHT }}
         >
             <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
-                <Link to="/" className="hidden md:flex items-center">
+                <Link
+                    to="/"
+                    className="items-center w-40"
+                    style={{ display: showLipong ? 'flex' : 'none' }}
+                >
                     <img
                         src="/logo192.png"
                         className="w-8 h-8 mr-3"
@@ -278,10 +282,13 @@ const NavBar = ({
                         lipong.org
                     </span>
                 </Link>
-                <NavLinks
-                    current={location.pathname}
-                    toggleChatVisibility={toggleChatVisibility}
-                />
+                {user && (
+                    <NavLinks
+                        current={location.pathname}
+                        toggleChatVisibility={toggleChatVisibility}
+                        showLipong={showLipong}
+                    />
+                )}
                 <div className="flex items-center">
                     {gameId &&
                         !gameId.startsWith('waiting_') &&
@@ -289,7 +296,7 @@ const NavBar = ({
                             <Button text="Rejoin game" onClick={handleRejoin} />
                         )}
                     {user ? (
-                        <UserMenu />
+                        <UserMenu showLipong={showLipong} />
                     ) : (
                         <Button
                             text="Sign in"

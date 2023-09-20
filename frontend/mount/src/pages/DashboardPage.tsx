@@ -7,6 +7,7 @@ import Friends from '../components/dashboard/friends/Friends';
 import StatsUser from '../components/dashboard/StatsUser';
 import { useUserContext } from '../context/UserContext';
 import NotConnected from '../components/NotConnected';
+import NoUser from '../components/NoUser';
 
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({
     children,
@@ -18,17 +19,6 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({
             </article>
         </div>
     </main>
-);
-
-const NoUser: React.FC<{ idUserToView: string }> = ({ idUserToView }) => (
-    <DashboardLayout>
-        <h2 className="text-3xl font-extrabold dark:text-white">
-            No user found
-        </h2>
-        <p className="mt-4 mb-4">
-            '{idUserToView}' cannot be found on our server.
-        </p>
-    </DashboardLayout>
 );
 
 const DashboardPage: React.FC = () => {
@@ -59,15 +49,22 @@ const DashboardPage: React.FC = () => {
         };
         if (userId !== null) fetchUser();
         else setUserData(null);
+
+        if (!user) {
+            setError(true);
+            setUserData(null);
+        }
     }, [userId]);
 
-    return userData ? (
+    return user && userData ? (
         <DashboardLayout>
             <PresentationUser user={userData} />
             <Friends currUser={userData} />
             <StatsUser user={userData} />
         </DashboardLayout>
-    ) : !error ? null : idUserToView ? (
+    ) : !error ? (
+        <NotConnected message="Please signup or log in to access your dashboard" />
+    ) : idUserToView ? (
         <NoUser idUserToView={idUserToView} />
     ) : (
         <NotConnected message="Please signup or log in to access your dashboard" />

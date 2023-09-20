@@ -3,6 +3,7 @@ import { useUserContext } from '../context/UserContext';
 import axios from 'axios';
 import ImageFriend from '../components/dashboard/friends/ImgFriend';
 import { Link } from 'react-router-dom';
+import NotConnected from '../components/NotConnected';
 
 interface ResponseLeaderboard {
     avatarPath: string;
@@ -20,7 +21,8 @@ interface Props {
 }
 
 const DashboardPage: React.FC = () => {
-    const [leaderboard, setLeaderbord] = useState<ResponseLeaderboard[] | null>(
+    const { user } = useUserContext();
+	const [leaderboard, setLeaderbord] = useState<ResponseLeaderboard[] | null>(
         null,
     );
     let rank: number = 1;
@@ -45,7 +47,7 @@ const DashboardPage: React.FC = () => {
         }
     }
 
-    return (
+    return user ? (
         <>
             <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                 <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
@@ -68,7 +70,9 @@ const DashboardPage: React.FC = () => {
                 </div>
             </main>
         </>
-    );
+    ) : (
+		<NotConnected message="Please signup or log in to access your dashboard" />
+	);
 };
 
 function ShowUserLeaderboard({ userView, rank }: Props) {

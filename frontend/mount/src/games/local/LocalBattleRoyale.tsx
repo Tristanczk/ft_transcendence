@@ -213,7 +213,14 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     let bgImage: P5.Image;
 
     const windowResized = (p5: P5) => {
-        p5.resizeCanvas(p5.windowWidth, p5.windowHeight - NAVBAR_HEIGHT);
+        const width = Math.max(100, window.innerWidth || p5.windowWidth);
+        const height = Math.max(
+            100,
+            (window.innerHeight || p5.windowHeight) - NAVBAR_HEIGHT,
+        );
+        console.log(width, height);
+        if (p5.width !== width || p5.height !== height)
+            p5.resizeCanvas(width, height);
         arenaSize = Math.min(
             p5.width - CANVAS_MARGIN,
             p5.height - CANVAS_MARGIN,
@@ -236,6 +243,7 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
     };
 
     const draw = (p5: P5) => {
+        windowResized(p5);
         for (const player of players) {
             player.move(p5);
         }
