@@ -34,6 +34,7 @@ import {
     remap,
 } from '../../shared/functions';
 import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
+import getScoreString from '../getScoreString';
 
 class Ball {
     posX!: number;
@@ -198,14 +199,8 @@ const drawScore = (p5: P5, scoreLeft: number, scoreRight: number) => {
     p5.textSize(textSize);
     p5.textFont('monospace');
     p5.textAlign(p5.CENTER, p5.CENTER);
-    const scoreLength = Math.max(
-        scoreLeft.toString().length,
-        scoreRight.toString().length,
-    );
     p5.text(
-        `${scoreLeft.toString().padStart(scoreLength, ' ')} - ${scoreRight
-            .toString()
-            .padEnd(scoreLength, ' ')}`,
+        getScoreString(scoreLeft, scoreRight),
         p5.width / 2,
         textSize * 1.25,
     );
@@ -246,6 +241,7 @@ const ClassicMayhemGame = ({
     };
 
     const draw = (p5: P5) => {
+        windowResized(p5);
         paddleLeft = movePaddle(p5, paddleLeft, 83, 87);
         paddleRight = movePaddle(p5, paddleRight, p5.DOWN_ARROW, p5.UP_ARROW);
 
@@ -269,13 +265,17 @@ const ClassicMayhemGame = ({
     };
 
     const windowResized = (p5: P5) => {
+        const windowWidth = Math.max(100, window.innerWidth || p5.windowWidth);
+        const windowHeight = Math.max(window.innerHeight || p5.windowHeight);
         const height = Math.round(
             Math.min(
-                (p5.windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
-                p5.windowHeight - CANVAS_MARGIN - NAVBAR_HEIGHT,
+                (windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
+                windowHeight - CANVAS_MARGIN - NAVBAR_HEIGHT,
             ),
         );
-        p5.resizeCanvas(Math.round(ASPECT_RATIO * height), height);
+        const width = Math.round(height * ASPECT_RATIO);
+        if (p5.width !== width || p5.height !== height)
+            p5.resizeCanvas(width, height);
     };
 
     // @ts-ignore: wtf
