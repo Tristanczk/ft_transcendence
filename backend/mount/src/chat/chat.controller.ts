@@ -9,22 +9,22 @@ import {
     Query,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { CreateChannelDto } from './dto/createchannel.dto';
 import {
+    ChannelDto,
+    ChannelIdDto,
+    CreateChannelDto,
+    CreateMessageDto,
     EditChannelDto,
     EditChannelLeaveDto,
     EditChannelNameDto,
     EditChannelUserDto,
     EditPasswordDto,
-} from './dto/editchannel.dto';
-import {
-    CreateMessageDto,
+    GetChannelDto,
+    JoinChannelDto,
     MessageDto,
-} from './dto/message.dto';
-import { JoinChannelDto } from './dto/joinchannel.dto';
-import { ChannelDto, ChannelIdDto, MuteUserDto } from './dto/channel.dto';
-import { GetChannelDto } from './dto/getchannel.dto';
-import { UserSimplifiedDto } from './dto/usersimplifieddto';
+    MuteUserDto,
+    UserSimplifiedDto,
+} from './dto/channel.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -72,7 +72,7 @@ export class ChatController {
     async isChannelAdmin(@Query() channel: ChannelIdDto): Promise<boolean> {
         return this.chatService.isChannelAdmin(channel);
     }
-    
+
     @Get('isUserBanned')
     async isUserBanned(@Query() channel: ChannelIdDto): Promise<boolean> {
         return this.chatService.isUserBanned(channel);
@@ -129,9 +129,7 @@ export class ChatController {
     }
 
     @Get('isUserMuted')
-    async isUserMuted(
-        @Query() editChannel: ChannelIdDto,
-    ): Promise<boolean> {
+    async isUserMuted(@Query() editChannel: ChannelIdDto): Promise<boolean> {
         return this.chatService.isUserMuted(editChannel);
     }
 
