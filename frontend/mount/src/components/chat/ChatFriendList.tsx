@@ -32,7 +32,7 @@ export default function ChatFriendList({
             >
                 <div
                     className={` flex flex-col overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip transition-all duration-500 ${
-                        channel ? 'h-36' : 'h-96'
+                        channel ? 'h-24 md:h-36' : 'h-96'
                     }`}
                 >
                     {friends &&
@@ -50,9 +50,9 @@ export default function ChatFriendList({
             </div>
 
             <div
-                className={`px-4 py-2 mb-2 sm:mb-0 flex items-center justify-between rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md relative duration-500 ${
+                className={`px-4 py-2 mb-[-36px] sm:mb-[-24px] md:mb-[-12px] flex items-center justify-between rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md relative duration-500 ${
                     !channel
-                        ? 'transform translate-y-0 opacity-100'
+                        ? 'transform -translate-y-0 opacity-100'
                         : 'transform -translate-y-full opacity-0'
                 }`}
             >
@@ -62,7 +62,7 @@ export default function ChatFriendList({
                 >
                         <button
                             type="button"
-                            className="inline-flex items-center justify-center rounded-3xl h-8 w-8 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300 hover:scale-110"
+                            className="inline-flex items-center justify-center rounded-3xl w-6 h-6 md:h-8 md:w-8 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300 hover:scale-110"
                             onClick={()=>{
                                 setIsChatVisible(false);
                                 navigate('/dashboard')}}

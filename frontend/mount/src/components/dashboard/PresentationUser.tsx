@@ -7,7 +7,7 @@ interface PresentationUserProps {
 
 function PresentationUser({ user }: PresentationUserProps) {
     return (
-        <header className="mb-4 lg:mb-6 not-format p-4">
+        <header className="mb-0 sm:mb-6 not-format p-4">
             <address className="flex flex-wrap items-center justify-between mb-6 not-italic">
                 <div className="flex items-center text-sm text-gray-900 dark:text-white lg:flex-shrink-0 lg:w-1/3">
                     <ImageFriend
@@ -21,7 +21,7 @@ function PresentationUser({ user }: PresentationUserProps) {
                         </div>
                     </div>
                 </div>
-                <div className="text-xl font-light text-black dark:text-white">
+                <div className="text-mb sm:text-xl mt-2 font-light text-black dark:text-white">
                     Elo: {user.elo}
                 </div>
             </address>

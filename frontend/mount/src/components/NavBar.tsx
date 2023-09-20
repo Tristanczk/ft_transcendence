@@ -52,7 +52,7 @@ const NavLink: React.FC<{
     icon: string;
     showLipong: boolean;
 }> = ({ title, current, link, icon, showLipong }) => {
-    const innerDivStyle = 'block py-2 pl-3 pr-4 rounded';
+    const innerDivStyle = 'block py-2 px-2 mb:px-4 rounded';
     const isActive = current === link;
 
     return (
@@ -107,7 +107,7 @@ const NavLinks: React.FC<{
             />
             <li>
                 <button
-                    className="block py-2 pl-3 pr-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
+                    className="block py-2 px-0 mb:px-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
                     onClick={toggleChatVisibility}
                 >
                     Chat

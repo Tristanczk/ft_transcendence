@@ -267,19 +267,18 @@ function ChatPage({
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
             <div
-                className={`fixed z-10 inset-y-0 right-0 w-100 text-white transform top-24 ${
+                className={`fixed z-10 inset-y-0 right-0 w-100 text-white transform top-20 mb:top-24 ${
                     isChatVisible
                         ? 'translate-x-0 transition-transform duration-500 ease-in-out'
                         : 'translate-x-full transition-transform duration-200 ease-in-out'
                 }`}
             >
                 <div
-                    className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex"
-                    style={{ marginRight: '36px' }}
+                    className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex transition-all duration-500 mr-[0px] md:mr-[36px]"
                 >
                     <div
                         className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
-                            channel ? 'w-104' : 'w-80'
+                            channel ? 'w-80 lg:w-104 md:w-96' : 'w-80'
                         }`}
                     >
                         <ChatListHeader
