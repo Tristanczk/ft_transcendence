@@ -16,7 +16,7 @@ export default function MessagesHeader({
     currentFriend: UserSimplified | null;
     handleClose: () => void;
     handleBlock: () => void;
-    handleGameInvite: (mode: 'classic' | 'mayhem' | 'battle') => void;
+    handleGameInvite: (mode: 'classic' | 'mayhem' | 'battle', idUser: number) => void;
 }) {
     const [alert, setAlert] = useState<boolean>(false);
 
@@ -32,6 +32,7 @@ export default function MessagesHeader({
                 <GameModeAlert
                     onClose={onClose}
                     handleClick={handleGameInvite}
+                    friendClicked={currentFriend.id}
                 />
             )}
             <div className="flex sm:items-center justify-between py-3 bg-slate-100 px-3 rounded-none sm:rounded-tl-3xl sm:rounded-tr-3xl shadow-2xl">

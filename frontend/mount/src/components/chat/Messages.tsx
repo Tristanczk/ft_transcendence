@@ -36,6 +36,7 @@ export default function Messages({
     fetchUsers,
     blockedUsers,
     setChannelUsers,
+    handleGameInvite,
 }: {
     messages: MessageProps[];
     isSettingVisible: boolean;
@@ -46,6 +47,7 @@ export default function Messages({
     fetchUsers: () => void;
     blockedUsers: number[];
     setChannelUsers: (users: UserSimplified[]) => void;
+    handleGameInvite: (mode: 'classic' | 'mayhem' | 'battle', idUser: number) => void;
 }) {
     const { user } = useUserContext();
     const messageContainerRef = useRef<HTMLDivElement>(null);
@@ -98,8 +100,8 @@ export default function Messages({
     return (
         <>
             {alert && (
-                <GameModeAlert onClose={onClose} handleClick={() => {}} />
-                /*friendClicked*/
+                <GameModeAlert onClose={onClose} handleClick={handleGameInvite} friendClicked={friendClicked}/>
+                
             )}
             <div className="flex">
                 {' '}
