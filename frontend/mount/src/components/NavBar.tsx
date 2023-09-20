@@ -78,6 +78,7 @@ const NavLinks: React.FC<{
     toggleChatVisibility: () => void;
 }> = ({ current, toggleChatVisibility }) => {
     const { user } = useUserContext();
+    if (!user) return null;
 
     return (
         <div className="items-center justify-between flex w-auto">
@@ -88,32 +89,26 @@ const NavLinks: React.FC<{
                     link="/"
                     icon="/favicon.ico"
                 />
-                {user && (
-                    <NavLink
-                        current={current}
-                        title="Dashboard"
-                        link="/dashboard"
-                        icon="/navlinks/pie-chart.svg"
-                    />
-                )}
-				{user && (
+                <NavLink
+                    current={current}
+                    title="Dashboard"
+                    link="/dashboard"
+                    icon="/navlinks/pie-chart.svg"
+                />
                 <NavLink
                     current={current}
                     title="Leaderboard"
                     link="/leaderboard"
                     icon="/navlinks/podium.png"
                 />
-				)}
-                {user && (
-                    <li>
-                        <button
-                            className="block py-2 pl-3 pr-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
-                            onClick={toggleChatVisibility}
-                        >
-                            Chat
-                        </button>
-                    </li>
-                )}
+                <li>
+                    <button
+                        className="block py-2 pl-3 pr-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
+                        onClick={toggleChatVisibility}
+                    >
+                        Chat
+                    </button>
+                </li>
             </ul>
         </div>
     );
@@ -226,6 +221,8 @@ const NavBar = ({
     const { user } = useUserContext();
     const [isLoading, setIsLoading] = useState(true);
     const socket = useContext(WebsocketContext);
+    const { width } = useWindowSize();
+    const showText = width && width >= 768;
 
     useEffect(
         () => () => {
@@ -270,7 +267,13 @@ const NavBar = ({
             style={{ height: NAVBAR_HEIGHT }}
         >
             <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
-                <Link to="/" className="hidden md:flex items-center">
+                <Link
+                    to="/"
+                    className="items-center"
+                    style={{
+                        display: user === null || showText ? 'flex' : 'none',
+                    }}
+                >
                     <img
                         src="/logo192.png"
                         className="w-8 h-8 mr-3"
