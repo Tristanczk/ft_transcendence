@@ -20,6 +20,7 @@ import {
     PADDLE_MARGIN_X,
     PADDLE_SPEED,
     PADDLE_WIDTH,
+    UNBREAKABLE,
 } from '../../shared/classic_mayhem';
 import {
     MayhemCell,
@@ -165,7 +166,7 @@ const drawMayhemCell = (
         const screenX = Math.round(p5.width * (posX - BALL_WIDTH / 2));
         const screenY = Math.round(p5.height * (posY - BALL_HEIGHT / 2));
         const ratio =
-            mayhemCell.lives === Infinity ||
+            mayhemCell.lives === UNBREAKABLE ||
             mayhemCell.lives === mayhemCell.startingLives
                 ? 1
                 : mayhemCell.lives / mayhemCell.startingLives;
