@@ -34,6 +34,7 @@ import {
     remap,
 } from '../../shared/functions';
 import { CANVAS_MARGIN, NAVBAR_HEIGHT } from '../../shared/misc';
+import getScoreString from '../getScoreString';
 
 class Ball {
     posX!: number;
@@ -198,14 +199,8 @@ const drawScore = (p5: P5, scoreLeft: number, scoreRight: number) => {
     p5.textSize(textSize);
     p5.textFont('monospace');
     p5.textAlign(p5.CENTER, p5.CENTER);
-    const scoreLength = Math.max(
-        scoreLeft.toString().length,
-        scoreRight.toString().length,
-    );
     p5.text(
-        `${scoreLeft.toString().padStart(scoreLength, ' ')} - ${scoreRight
-            .toString()
-            .padEnd(scoreLength, ' ')}`,
+        getScoreString(scoreLeft, scoreRight),
         p5.width / 2,
         textSize * 1.25,
     );

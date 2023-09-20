@@ -26,6 +26,7 @@ import { WebsocketContext } from '../../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { clamp } from '../../shared/functions';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import getScoreString from '../getScoreString';
 
 const drawBackground = (
     canvas: HTMLCanvasElement,
@@ -170,9 +171,7 @@ const drawScore = (
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(
-        `${players[0] ? players[0].score : ' '} - ${
-            players[1] ? players[1].score : ' '
-        }`,
+        getScoreString(players[0]?.score ?? 0, players[1]?.score ?? 0),
         canvas.width / 2,
         textSize * 1.25,
     );
