@@ -56,19 +56,17 @@ const DashboardPage: React.FC = () => {
         }
     }, [userId]);
 
-    return user && userData ? (
+    return !user ? (
+        <NotConnected message="Please signup or log in to access your dashboard" />
+    ) : userData ? (
         <DashboardLayout>
             <PresentationUser user={userData} />
             <Friends currUser={userData} />
             <StatsUser user={userData} />
         </DashboardLayout>
-    ) : !error ? (
-        <NotConnected message="Please signup or log in to access your dashboard" />
-    ) : idUserToView ? (
-        <NoUser idUserToView={idUserToView} />
-    ) : (
-        <NotConnected message="Please signup or log in to access your dashboard" />
-    );
+    ) : error ? (
+        <NoUser />
+    ) : null;
 };
 
 export default DashboardPage;
