@@ -96,12 +96,14 @@ const NavLinks: React.FC<{
                         icon="/navlinks/pie-chart.svg"
                     />
                 )}
+				{user && (
                 <NavLink
                     current={current}
                     title="Leaderboard"
                     link="/leaderboard"
                     icon="/navlinks/podium.png"
                 />
+				)}
                 {user && (
                     <li>
                         <button
