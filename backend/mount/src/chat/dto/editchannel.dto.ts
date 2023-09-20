@@ -17,6 +17,7 @@ export interface EditChannelUserDto {
 	id: number;
 	idRequester: number;
 	idUser: number;
+	isBanned?: boolean;
 }
 
 export interface EditChannelLeaveDto {

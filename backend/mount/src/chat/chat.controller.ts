@@ -72,6 +72,11 @@ export class ChatController {
     async isChannelAdmin(@Query() channel: ChannelIdDto): Promise<boolean> {
         return this.chatService.isChannelAdmin(channel);
     }
+    
+    @Get('isUserBanned')
+    async isUserBanned(@Query() channel: ChannelIdDto): Promise<boolean> {
+        return this.chatService.isUserBanned(channel);
+    }
 
     @Get('isUserInChannel')
     async isUserInChannel(@Query() channel: ChannelIdDto): Promise<boolean> {

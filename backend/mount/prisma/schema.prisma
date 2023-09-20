@@ -55,14 +55,16 @@ model Games {
 }
 
 model Channels {
-    id         Int      @id @default(autoincrement())
-    idAdmin    Int[]
-    idUsers    Int[]
-    name       String
-    mutedUsers Json[]
-    isPublic   Boolean  @default(true)
-    password   String?
-    createdAt  DateTime @default(now())
+    id            Int      @id @default(autoincrement())
+    idOwner       Int
+    idAdmin       Int[]
+    idUsers       Int[]
+    idBannedUsers Int[]
+    name          String
+    mutedUsers    Json[]
+    isPublic      Boolean  @default(true)
+    password      String?
+    createdAt     DateTime @default(now())
 }
 
 model Message {

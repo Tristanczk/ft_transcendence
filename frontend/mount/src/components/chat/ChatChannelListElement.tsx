@@ -51,6 +51,22 @@ export default function ChatChannelListElement({
 
     const isChannelOpen = async (channel: ChannelProps) => {
         try {
+            const isUserBanned = await authAxios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/isUserBanned`,
+                {
+                    params: {
+                        idChannel: channel.id,
+                        idUser: user?.id,
+                    },
+                    withCredentials: true,
+                },
+            );
+
+            if (isUserBanned.data === true) {
+                setAlertMessage('You are banned from this channel');
+                return;
+            }
+
             const isUserInChannel = await authAxios.get(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/isUserInChannel`,
                 {

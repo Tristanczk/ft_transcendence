@@ -24,7 +24,7 @@ export default function SettingBar({
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     const [input, setInput] = useState<string>('');
-    const [formState, setFormState] = useState<'ban' | 'admin' | 'mute' | null>(
+    const [formState, setFormState] = useState<'kick' | 'ban' | 'admin' | 'mute' | null>(
         null,
     );
     const blurTimeout = useRef<any>(null);
@@ -208,6 +208,27 @@ export default function SettingBar({
                     id: currentChannel?.id,
                     idRequester: user?.id,
                     idUser: idUser,
+                    isBanned: true,
+                },
+                { withCredentials: true },
+            );
+            console.log(response.data);
+            if (typeof response.data === 'string')
+                setAlertMessage(response.data);
+        } catch (error) {
+            console.error(error);
+            setAlertMessage('Error banning user');
+        }
+    };
+
+    const handleKickUser = async (idUser: number) => {
+        try {
+            const response = await authAxios.patch(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/banUser`,
+                {
+                    id: currentChannel?.id,
+                    idRequester: user?.id,
+                    idUser: idUser,
                 },
                 { withCredentials: true },
             );
@@ -261,6 +282,8 @@ export default function SettingBar({
 
     const getClickHandler = () => {
         switch (formState) {
+            case 'kick':
+                return handleKickUser;
             case 'ban':
                 return handleBanUser;
             case 'admin':
@@ -476,7 +499,8 @@ export default function SettingBar({
                     name="Praise"
                     type="button"
                     onClick={() => {
-                        removeInput();
+                        setFormState('ban');
+                        handleListClick();
                     }}
                     className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-green-500"
                 >
