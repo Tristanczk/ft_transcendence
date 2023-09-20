@@ -247,7 +247,7 @@ function ChatPage({
                 >
                     <div
                         className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
-                            channel ? 'w-104' : 'w-80'
+                            channel ? 'w-80 lg:w-104 md:w-96' : 'w-80'
                         }`}
                     >
                         <ChatListHeader
