@@ -60,8 +60,6 @@ export type HandlePingProp = {
 export type JoinGameType = {
     mode: string;
     userId: number;
-    userName: string;
-    userElo: number;
 };
 
 @Injectable()
@@ -138,8 +136,8 @@ export class GatewayService
         if (!client) {
             return { status: 'not connected', gameId: null };
         }
-        const game = this.games[client.idGamePlaying];
         if (client.isPlaying) {
+            const game = this.games[client.idGamePlaying];
             if (game.info.state === 'waiting') {
                 return { status: 'waiting', gameId: client.idGamePlaying };
             } else if (game.info.state === 'playing') {
@@ -166,7 +164,6 @@ export class GatewayService
             // console.log('error to handle');
             return;
         }
-        // console.log('player ' + playerId + ' want to play');
         if (currentClient.isPlaying) {
             if (
                 this.games[currentClient.idGamePlaying].info.state === 'waiting'
@@ -191,13 +188,18 @@ export class GatewayService
             };
         }
         for (const game of Object.values(this.games)) {
-            if (game.info.mode === gameMode && game.info.state === 'waiting') {
+            if (
+                game.info.mode === gameMode &&
+                game.info.state === 'waiting' &&
+                !game.isFriendly
+            ) {
                 game.addPlayer(client.id, false, userName, userElo);
                 this.liaiseGameToPlayer(client.id, game, 'B');
 
                 for (const player of game.info.players) {
                     if (player && player.id !== client.id) {
                         this.server.to(player.id).emit('startGame', game.id);
+                        this.emitUpdateToPlayers(game, 'switchGame', game.id);
                     }
                 }
 
@@ -211,6 +213,102 @@ export class GatewayService
             client.id,
             userName,
             userElo,
+        );
+        this.games[game.id] = game;
+        this.liaiseGameToPlayer(client.id, game, 'A');
+        return { gameId: game.id, status: 'waiting' };
+    }
+
+    @SubscribeMessage('joinFriendGame')
+    async handleJoinFriendGame(
+        client: Socket,
+        data: JoinGameType,
+        gameId: string | null,
+        friendId: number | null,
+    ) {
+        const gameMode: string = data.mode;
+        const playerId: number = data.userId;
+        const currentClient: IndivUser | null =
+            this.users.getIndivUserBySocketId(client.id);
+        const user = await this.prisma.user.findUnique({
+            where: { id: playerId },
+        });
+        const userElo = user ? user.elo : 1000;
+        const userName = user ? user.nickname : 'Anonymous';
+        if (!currentClient) {
+            console.log('error to handle');
+            return;
+        }
+        if (currentClient.isPlaying) {
+            if (
+                this.games[currentClient.idGamePlaying].info.state === 'waiting'
+            ) {
+                return {
+                    error: `You are already in waiting for game ${currentClient.idGamePlaying} in another tab`,
+                    errorCode: 'alreadyInMatchmaking',
+                    gameId: currentClient.idGamePlaying,
+                };
+            } else {
+                return {
+                    error: `You are already in game ${currentClient.idGamePlaying}`,
+                    errorCode: 'alreadyInGame',
+                    gameId: currentClient.idGamePlaying,
+                };
+            }
+        }
+        if (!isGameMode(gameMode)) {
+            return {
+                error: `Invalid game mode: ${gameMode}`,
+                errorCode: 'invalidGameMode',
+            };
+        }
+        if (gameId) {
+            if (
+                this.games[gameId] &&
+                this.games[gameId].info.state === 'waiting' &&
+                this.games[gameId].opponentId === playerId
+            ) {
+                this.games[gameId].addPlayer(
+                    client.id,
+                    false,
+                    userName,
+                    userElo,
+                );
+                this.liaiseGameToPlayer(client.id, this.games[gameId], 'B');
+
+                for (const player of this.games[gameId].info.players) {
+                    if (player && player.id !== client.id) {
+                        this.server
+                            .to(player.id)
+                            .emit('startGame', this.games[gameId].id);
+                        this.emitUpdateToPlayers(
+                            this.games[gameId],
+                            'switchGame',
+                            this.games[gameId].id,
+                        );
+                    }
+                }
+
+                await this.startGameStat(this.games[gameId]);
+                return {
+                    gameId: this.games[gameId].id,
+                    status: 'joined',
+                };
+            } else {
+                return {
+                    error: `Invitation to game ${gameId} is no longer valid`,
+                    errorCode: 'invalidInvitation',
+                    gameId: currentClient.idGamePlaying,
+                };
+            }
+        }
+        const game = new Game(
+            generateId(this.games),
+            gameMode,
+            client.id,
+            userName,
+            userElo,
+            friendId,
         );
         this.games[game.id] = game;
         this.liaiseGameToPlayer(client.id, game, 'A');

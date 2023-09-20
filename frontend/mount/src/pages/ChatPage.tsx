@@ -103,7 +103,7 @@ function ChatPage({
             setChannels(response.data);
         } catch (error) {
             console.error(error);
-            setAlertMessage('Failed to fetch channels. Please try again.');
+            //setAlertMessage('Failed to fetch channels. Please try again.');
         }
     }, [authAxios]);
 
@@ -137,7 +137,7 @@ function ChatPage({
             setCurrentChannel(response.data);
         } catch (error) {
             console.error(error);
-            setAlertMessage('Failed to fetch channel. Please try again.');
+            //setAlertMessage('Failed to fetch channel. Please try again.');
         }
     }, [authAxios, channel, user?.id]);
 
@@ -152,7 +152,7 @@ function ChatPage({
         else setMessages([]);
         fetchChannel();
         setChannelUsers([]);
-    }, [channel, fetchFriends, fetchChannels, fetchMessages, fetchChannel]); //friendsList but it breaks the chat settings
+    }, [channel, fetchFriends, fetchChannels, fetchMessages, fetchChannel]);
 
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
@@ -177,10 +177,10 @@ function ChatPage({
         socket.on('ban', () => setChannel(0));
         socket.on('reloadfriends', () => fetchFriends());
         socket.on('reloadchannels', () => fetchChannels());
-        socket.on('reloadchannel', async () => {
-            fetchChannels();
-            setCurrentChannel(null);
-            await fetchChannel();
+        socket.on('reloadchannel', (channelId) => {
+            console.log(channelId + "  " + channel);
+            if (channelId === channel)
+             fetchChannel();
         });
         socket.on('signoutchat', () => {
             setChannel(0);
@@ -227,24 +227,28 @@ function ChatPage({
         }
     };
 
+    const handleGameInvite = async () => {};
+
     return (
         <>
             {alertMessage && (
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
             <div
-                className={`fixed z-10 inset-y-0 right-0 w-100 text-white transform top-24 ${isChatVisible
-                    ? 'translate-x-0 transition-transform duration-500 ease-in-out'
-                    : 'translate-x-full transition-transform duration-200 ease-in-out'
-                    }`}
+                className={`fixed z-10 inset-y-0 right-0 w-100 text-white transform top-24 ${
+                    isChatVisible
+                        ? 'translate-x-0 transition-transform duration-500 ease-in-out'
+                        : 'translate-x-full transition-transform duration-200 ease-in-out'
+                }`}
             >
                 <div
                     className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex"
                     style={{ marginRight: '36px' }}
                 >
                     <div
-                        className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${channel ? 'w-104' : 'w-80'
-                            }`}
+                        className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
+                            channel ? 'w-104' : 'w-80'
+                        }`}
                     >
                         <ChatListHeader
                             selector={setChannelListSelected}
@@ -261,6 +265,7 @@ function ChatPage({
                                 setCurrentFriend={setCurrentFriend}
                                 notifications={notifications}
                                 setNotifications={setNotifications}
+                                setIsChatVisible={setIsChatVisible}
                             />
                         ) : (
                             <ChatChannelList
@@ -274,14 +279,16 @@ function ChatPage({
                         )}
                         <div
                             className={`chat-content
-                                ${channel
-                                    ? 'opacity-100 delay-0'
-                                    : 'opacity-0 delay-500'
+                                ${
+                                    channel
+                                        ? 'opacity-100 delay-0'
+                                        : 'opacity-0 delay-500'
                                 }
-                                    ${channel
-                                    ? 'visible delay-500'
-                                    : 'invisible delay-0'
-                                }
+                                    ${
+                                        channel
+                                            ? 'visible delay-500'
+                                            : 'invisible delay-0'
+                                    }
                                     ${channel ? 'h-auto' : 'h-0'}
                                     transition-opacity transition-visibility transition-height duration-500`}
                         >
@@ -291,6 +298,7 @@ function ChatPage({
                                     currentFriend={currentFriend}
                                     handleClose={handleClose}
                                     handleBlock={handleBlock}
+                                    handleGameInvite={handleGameInvite}
                                 />
                             ) : (
                                 <ChannelHeader

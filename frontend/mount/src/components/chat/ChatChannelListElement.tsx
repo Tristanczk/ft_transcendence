@@ -146,7 +146,7 @@ export default function ChatChannelListElement({
             {alertMessage && (
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
-            <div className="flex items-center justify-between p-3 border-b border-gray-300 transition-colors duration-300 hover:bg-gray-100">
+            <div className="flex items-center justify-between px-3 py-3.5 border-b border-gray-300 transition-colors duration-300 hover:bg-gray-100">
                 <div className="flex items-center">
                     <div className="ml-2 flex flex-col">
                         <div className="transition-colors duration-300 hover:text-blue-600 text-gray-600">
@@ -172,15 +172,14 @@ export default function ChatChannelListElement({
                         </div>
                     </div>
                 </div>
+                {notifications.includes(channel.id) && (
+                    <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+                )}
                 <button
                     onClick={() => {
                         isChannelOpen(channel);
                     }}
                 >
-                    {' '}
-                    {notifications.includes(channel.id) && (
-                        <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-                    )}
                     <svg
                         className="text-blue-600 w-6 h-6 hover:scale-110"
                         xmlns="http://www.w3.org/2000/svg"
