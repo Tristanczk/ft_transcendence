@@ -134,7 +134,7 @@ export default function ChatChannelList({
                     <button
                         onClick={handleButtonClick}
                         type="button"
-                        className="inline-flex items-center justify-center rounded-3xl h-8 w-8 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300"
+                        className="inline-flex items-center justify-center rounded-3xl h-8 w-8 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300 hover:scale-110"
                     >
                         <svg
                             className="w-5 h-5 rotate-[45deg]"
