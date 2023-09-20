@@ -198,6 +198,7 @@ export class GatewayService
                 for (const player of game.info.players) {
                     if (player && player.id !== client.id) {
                         this.server.to(player.id).emit('startGame', game.id);
+                        this.emitUpdateToPlayers(game, 'switchGame', game.id);
                     }
                 }
 

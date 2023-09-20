@@ -69,7 +69,10 @@ const App: React.FC = () => {
                                 path="/local/mayhem"
                                 Component={LocalMayhem}
                             />
-                            <Route path="/game/:gameId" Component={GamePage} />
+                            <Route
+                                path="/game/:gameId"
+                                element={<GamePage setGameId={setGameId} />}
+                            />
                             <Route
                                 path="/dashboard/:idUserToView?"
                                 Component={DashboardPage}
