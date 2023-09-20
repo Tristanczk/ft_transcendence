@@ -24,7 +24,7 @@ export const UserProvider = ({ children }: any) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                console.log('try user context');
+                // console.log('try user context');
                 const response = await authAxios.get('/users/me', {
                     withCredentials: true,
                 });
