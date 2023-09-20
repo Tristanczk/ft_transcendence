@@ -21,8 +21,8 @@ function PresentationUser({ user }: PresentationUserProps) {
                         </div>
                     </div>
                 </div>
-                <div className="text-xl font-light text-gray-500 dark:text-gray-400">
-                    ELO: {user.elo}
+                <div className="text-xl font-light text-black dark:text-white">
+                    Elo: {user.elo}
                 </div>
             </address>
         </header>
