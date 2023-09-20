@@ -132,7 +132,7 @@ const MenuLink: React.FC<{
     );
 };
 
-function UserMenu() {
+const UserMenu = () => {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [showInfo, setShowInfo] = useState<boolean>(true);
     const { user } = useUserContext();
@@ -205,7 +205,7 @@ function UserMenu() {
             </OutsideClickHandler>
         </div>
     );
-}
+};
 
 const NavBar = ({
     gameId,
