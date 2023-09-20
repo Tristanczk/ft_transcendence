@@ -27,7 +27,7 @@ function AvatarUploader() {
                 );
                 setImg(base64Image);
             } catch (error) {
-                console.error(error);
+                // console.error(error);
             }
         };
         fetchImg();
@@ -57,7 +57,7 @@ function AvatarUploader() {
                 );
                 updateUser({ updateAvatar: true });
             } catch (error) {
-                console.error(error);
+                // console.error(error);
             }
         }
     };

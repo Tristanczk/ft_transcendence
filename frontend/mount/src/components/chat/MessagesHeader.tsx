@@ -38,18 +38,6 @@ export default function MessagesHeader({
                 <div className="relative flex items-center space-x-4">
                     <div className="relative">
                         <span className="absolute text-green-500 right-0 bottom-0">
-                            {/* <svg width="20" height="20">
-                            <circle
-                                cx="8"
-                                cy="8"
-                                r="8"
-                                fill={
-                                    currentFriend.isConnected
-                                        ? '#4ade80'
-                                        : '#f43f5e'
-                                }
-                            ></circle>
-                        </svg> */}
                             <ShowIsOnline
                                 userId={currentFriend.id}
                                 initStatus={currentFriend.isConnected}
