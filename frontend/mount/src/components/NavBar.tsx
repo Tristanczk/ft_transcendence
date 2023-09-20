@@ -225,26 +225,23 @@ const NavBar = ({
     const { width } = useWindowSize();
     const showLipong = !!(!user || (width && width >= NAVBAR_BREAKPOINT));
 
-    useEffect(
-        () => () => {
-            const getGameStatus = async () => {
-                console.log('checking game status', user!.id);
-                const response = await axios.get(
-                    `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/gate/gameStatus/${user?.id}`,
-                    { withCredentials: true },
-                );
-                if (response.data.status === 'playing') {
-                    setGameId(response.data.gameId);
-                } else if (response.data.status === 'finished') {
-                    setGameId(undefined);
-                }
-                setIsLoading(false);
-            };
-            if (user) getGameStatus();
-            else setIsLoading(false);
-        },
-        [user, setGameId, isLoading],
-    );
+    useEffect(() => {
+        const getGameStatus = async () => {
+            console.log('checking game status', user!.id);
+            const response = await axios.get(
+                `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/gate/gameStatus/${user?.id}`,
+                { withCredentials: true },
+            );
+            if (response.data.status === 'playing') {
+                setGameId(response.data.gameId);
+            } else if (response.data.status === 'finished') {
+                setGameId(undefined);
+            }
+            setIsLoading(false);
+        };
+        if (user) getGameStatus();
+        else setIsLoading(false);
+    }, [user, setGameId, isLoading]);
 
     useEffect(() => {
         socket.on('endGame', (data: { message: string }) => {

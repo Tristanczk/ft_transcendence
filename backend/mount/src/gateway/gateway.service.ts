@@ -62,6 +62,13 @@ export type JoinGameType = {
     userId: number;
 };
 
+export type JoinFriendGameType = {
+    mode: string;
+    userId: number;
+    gameId: string | null;
+    friendId: number | null;
+};
+
 @Injectable()
 @WebSocketGateway({
     cors: {
@@ -220,12 +227,7 @@ export class GatewayService
     }
 
     @SubscribeMessage('joinFriendGame')
-    async handleJoinFriendGame(
-        client: Socket,
-        data: JoinGameType,
-        gameId: string | null,
-        friendId: number | null,
-    ) {
+    async handleJoinFriendGame(client: Socket, data: JoinFriendGameType) {
         const gameMode: string = data.mode;
         const playerId: number = data.userId;
         const currentClient: IndivUser | null =
@@ -262,41 +264,45 @@ export class GatewayService
                 errorCode: 'invalidGameMode',
             };
         }
-        if (gameId) {
+        if (data.gameId) {
             if (
-                this.games[gameId] &&
-                this.games[gameId].info.state === 'waiting' &&
-                this.games[gameId].opponentId === playerId
+                this.games[data.gameId] &&
+                this.games[data.gameId].info.state === 'waiting' &&
+                this.games[data.gameId].opponentId === playerId
             ) {
-                this.games[gameId].addPlayer(
+                this.games[data.gameId].addPlayer(
                     client.id,
                     false,
                     userName,
                     userElo,
                 );
-                this.liaiseGameToPlayer(client.id, this.games[gameId], 'B');
+                this.liaiseGameToPlayer(
+                    client.id,
+                    this.games[data.gameId],
+                    'B',
+                );
 
-                for (const player of this.games[gameId].info.players) {
+                for (const player of this.games[data.gameId].info.players) {
                     if (player && player.id !== client.id) {
                         this.server
                             .to(player.id)
-                            .emit('startGame', this.games[gameId].id);
+                            .emit('startGame', this.games[data.gameId].id);
                         this.emitUpdateToPlayers(
-                            this.games[gameId],
+                            this.games[data.gameId],
                             'switchGame',
-                            this.games[gameId].id,
+                            this.games[data.gameId].id,
                         );
                     }
                 }
 
-                await this.startGameStat(this.games[gameId]);
+                await this.startGameStat(this.games[data.gameId]);
                 return {
-                    gameId: this.games[gameId].id,
+                    gameId: this.games[data.gameId].id,
                     status: 'joined',
                 };
             } else {
                 return {
-                    error: `Invitation to game ${gameId} is no longer valid`,
+                    error: `Invitation to game ${data.gameId} is no longer valid`,
                     errorCode: 'invalidInvitation',
                     gameId: currentClient.idGamePlaying,
                 };
@@ -308,7 +314,7 @@ export class GatewayService
             client.id,
             userName,
             userElo,
-            friendId,
+            data.friendId,
         );
         this.games[game.id] = game;
         this.liaiseGameToPlayer(client.id, game, 'A');
