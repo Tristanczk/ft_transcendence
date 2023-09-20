@@ -27,7 +27,6 @@ export class ChatService {
     async createChannel(
         createChannelDto: CreateChannelDto,
     ): Promise<CreateChannelDto> {
-        console.log(createChannelDto);
         await this.prisma.channels.create({
             data: {
                 idAdmin: [...createChannelDto.idUser],
@@ -187,8 +186,6 @@ export class ChatService {
                     id: leaveChannel.id,
                 },
             });
-            console.log('channel');
-            console.log(channel);
 
             if (channel.idUsers.length === 1) {
                 const updatedChannel = await this.prisma.channels.delete({
@@ -259,9 +256,6 @@ export class ChatService {
                     },
                 });
             }
-
-            console.log('updatedChannel');
-            console.log(updatedChannel);
 
             const updatedChannelDto: EditChannelDto = {
                 id: updatedChannel.id,
@@ -347,7 +341,6 @@ export class ChatService {
             );
             if (user) {
                 user.sockets.forEach((socket) => {
-                    console.log('socket: ' + socket);
                     this.gateway.server.to(socket).emit('ban');
                 });
             }
@@ -472,7 +465,6 @@ export class ChatService {
             if (channel.idAdmin.includes(editChannel.idUser))
                 throw new Error('Not authorized, User is admin');
 
-            console.log(editChannel.time);
             channel.mutedUsers.push([
                 { idUser: editChannel.idUser, time: editChannel.time },
             ]);
@@ -515,9 +507,6 @@ export class ChatService {
                 for (const user of channel.mutedUsers) {
                     const unmuteTime = new Date(user[0].time).getTime();
                     if (unmuteTime <= currentTime) {
-                        console.log(
-                            `Unmuted user ${user[0].idUser} in channel ${channel.id}`,
-                        );
                     } else {
                         unmutedUsers.push(user);
                     }
@@ -593,7 +582,6 @@ export class ChatService {
                 },
             });
 
-            console.log('channel');
             for (const id of channel.idUsers) {
                 const user = await this.prisma.user.findUnique({
                     where: {
@@ -651,7 +639,6 @@ export class ChatService {
                 where: { id: message.idChannel },
             });
 
-            console.log(message);
             channel.idUsers.forEach((id) => {
                 const user = this.gateway.users.getIndivUserById(id);
                 if (user) {

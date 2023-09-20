@@ -60,8 +60,6 @@ export class ChatController {
     async getChannelUsers(
         @Query() getChannel: ChannelIdDto,
     ): Promise<UserSimplifiedDto[] | null> {
-        console.log('getChannelUsers controller');
-        console.log(getChannel);
         return this.chatService.getChannelUsers(getChannel.idChannel);
     }
 
@@ -72,13 +70,11 @@ export class ChatController {
 
     @Get('isChannelAdmin')
     async isChannelAdmin(@Query() channel: ChannelIdDto): Promise<boolean> {
-        console.log('isChannelAdmin controller');
         return this.chatService.isChannelAdmin(channel);
     }
 
     @Get('isUserInChannel')
     async isUserInChannel(@Query() channel: ChannelIdDto): Promise<boolean> {
-        console.log('isUserInChannel controller');
         return this.chatService.isUserInChannel(channel);
     }
 
@@ -89,8 +85,6 @@ export class ChatController {
 
     @Patch('leaveChannel')
     async leaveChannel(@Body() leaveChannel: EditChannelLeaveDto) {
-        console.log('leaveChannel controller');
-        console.log(leaveChannel);
         return this.chatService.leaveChannel(leaveChannel);
     }
 
@@ -140,14 +134,6 @@ export class ChatController {
     async sendMessage(
         @Body() message: CreateMessageDto,
     ): Promise<CreateMessageDto> {
-        console.log(
-            'sendMessage controller' +
-                message.idChannel +
-                ' ' +
-                message.idSender +
-                ' ' +
-                message.message,
-        );
         return this.chatService.sendMessage(message);
     }
 
