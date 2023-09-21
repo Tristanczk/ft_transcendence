@@ -331,10 +331,11 @@ const NavBar = ({
                             }}
                         />
                     )}
+                    {user && (
                     <Button
                         text="Chat"
                         onClick={() => toggleChatVisibility()}
-                    />
+                    />)}
                     {showInvites && (
                         <InvitesMenu
                             setShowInvites={setShowInvites}
