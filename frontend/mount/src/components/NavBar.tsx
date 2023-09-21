@@ -12,6 +12,7 @@ import InvitesMenu from './user/InvitesMenu';
 import { Invite } from '../shared/game_info';
 
 const NAVBAR_BREAKPOINT = 1024;
+const CORNERS_WIDTH = 256
 
 const TextNavLink: React.FC<{
     innerDivStyle: string;
@@ -145,7 +146,6 @@ const UserMenu: React.FC<{ showLipong: boolean }> = ({ showLipong }) => {
             >
                 <div
                     className="flex items-center relative justify-end"
-                    style={showLipong ? { width: 160 } : {}}
                     onClick={() => {
                         setShowInfo(true);
                     }}
@@ -291,8 +291,12 @@ const NavBar = ({
             <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link
                     to="/"
-                    className="items-center w-40"
-                    style={{ display: showLipong ? 'flex' : 'none' }}
+                    className="items-center"
+                    style={
+                        showLipong
+                            ? { display: 'flex', width: CORNERS_WIDTH }
+                            : { display: 'none' }
+                    }
                 >
                     <img
                         src="/logo192.png"
@@ -310,7 +314,10 @@ const NavBar = ({
                         showLipong={showLipong}
                     />
                 )}
-                <div className="flex items-center">
+                <div
+                    className="flex items-center justify-end space-x-2"
+                    style={showLipong ? { width: CORNERS_WIDTH } : {}}
+                >
                     {gameId &&
                         !gameId.startsWith('waiting_') &&
                         location.pathname !== `/game/${gameId}` && (
