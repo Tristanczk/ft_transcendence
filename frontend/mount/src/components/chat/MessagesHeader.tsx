@@ -36,7 +36,7 @@ export default function MessagesHeader({
                     friendClicked={currentFriend.id}
                 />
             )}
-            <div className="flex sm:items-center justify-between py-2 md:py-6 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
+            <div className="flex sm:items-center justify-between py-2 md:py-6 bg-gray-900 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
                 <div className="relative flex items-center space-x-4">
                     <div className="relative">
                         <span className="absolute text-green-500 right-0 bottom-0">
@@ -56,13 +56,13 @@ export default function MessagesHeader({
                     <div className="flex flex-col leading-tight">
                         <div className="text-2xl mt-1 flex items-center">
                             <Link to={'/dashboard/' + currentFriend.id}>
-                                <button className="group inline-block hover:text-blue-600 text-gray-600 text-base md:text-lg transition-all duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
+                                <button className="group inline-block hover:text-blue-600 text-gray-300 text-base md:text-lg transition-all duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
                                     {currentFriend.nickname}
                                 </button>
                             </Link>
                         </div>
                         <Link to={'/leaderboard/'}>
-                            <button className="group inline-block hover:text-blue-600 text-gray-600 text-xs md:text-sm transition-all duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
+                            <button className="group inline-block hover:text-blue-600 text-gray-300 text-xs md:text-sm transition-all duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
                                 🏆 {currentFriend.elo} ELO
                             </button>
                         </Link>
@@ -72,11 +72,11 @@ export default function MessagesHeader({
                     <button
                         type="button"
                         onClick={() => setAlert(true)}
-                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-400 hover:scale-110"
+                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-700 hover:bg-amber-400 hover:scale-110"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="icon icon-tabler icon-tabler-swords h-4 w-4 sm:w-6 sm:h-6 text-gray-600 hover:text-white"
+                            className="icon icon-tabler icon-tabler-swords h-4 w-4 sm:w-6 sm:h-6 text-gray-300 hover:text-gray-800"
                             width="24"
                             height="24"
                             viewBox="0 0 24 24"
@@ -96,14 +96,14 @@ export default function MessagesHeader({
                     <Link to={'/dashboard/' + currentFriend.id}>
                         <button
                             type="button"
-                            className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500 hover:scale-110"
+                            className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-700 hover:text-white hover:bg-green-500 hover:scale-110"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
-                                className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-slate-500 hover:text-white"
+                                className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6 text-gray-300 hover:text-gray-800"
                             >
                                 <path
                                     strokeLinecap="round"
@@ -117,10 +117,10 @@ export default function MessagesHeader({
                     <button
                         type="button"
                         onClick={handleBlock}
-                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
+                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-700 hover:text-white hover:bg-rose-500 hover:scale-110"
                     >
                         <svg
-                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-slate-500 hover:text-white"
+                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-gray-300 hover:text-gray-800"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -138,10 +138,10 @@ export default function MessagesHeader({
                     <button
                         type="button"
                         onClick={handleClose}
-                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
+                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-700 hover:text-white hover:bg-rose-500 hover:scale-110"
                     >
                         <svg
-                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-slate-500 hover:text-white"
+                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-gray-300 hover:text-gray-800"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"

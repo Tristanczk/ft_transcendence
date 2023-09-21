@@ -14,7 +14,7 @@ import {
     ClassicMayhemGameObjects,
     ClassicMayhemPlayers,
     UpdateGameEvent,
-    eloVariation,
+    EloVariation,
 } from '../../shared/game_info';
 import {
     MayhemCell,
@@ -248,7 +248,7 @@ const drawEndScreen = (
     ctx: CanvasRenderingContext2D,
     players: ClassicMayhemPlayers,
     socket: Socket,
-    varElo: eloVariation | null,
+    varElo: EloVariation | null,
     isLeftPlayer: boolean,
 ) => {
     const textSize = 8 + canvas.width / 20;
@@ -297,7 +297,7 @@ const drawLeaveScreen = (
     ctx: CanvasRenderingContext2D,
     players: ClassicMayhemPlayers,
     socket: Socket,
-    varElo: eloVariation | null,
+    varElo: EloVariation | null,
     gameLeave: UpdateGameEvent,
     isLeftPlayer: boolean,
 ) => {
@@ -454,6 +454,7 @@ const MultiClassicMayhem = ({
     timeRemaining,
     varElo,
     gameLeave,
+    canvasRef,
 }: {
     gameObjects: ClassicMayhemGameObjects;
     windowWidth: number;
@@ -463,8 +464,9 @@ const MultiClassicMayhem = ({
     isLeftPlayer: boolean;
     state: string;
     timeRemaining: number;
-    varElo: eloVariation | null;
+    varElo: EloVariation | null;
     gameLeave: UpdateGameEvent | null;
+    canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
 }) => {
     const arenaHeight = Math.min(
         (windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
@@ -474,10 +476,13 @@ const MultiClassicMayhem = ({
     const socket = useContext(WebsocketContext);
     const navigate = useNavigate();
 
-    const ref = useRef<HTMLCanvasElement | null>(null);
-
     useEffect(() => {
-        const [canvas, ctx] = getCanvasCtx(ref, arenaWidth, arenaHeight, true);
+        const [canvas, ctx] = getCanvasCtx(
+            canvasRef,
+            arenaWidth,
+            arenaHeight,
+            true,
+        );
         drawBackground(canvas, ctx);
         drawBar(canvas, ctx, LINE_MARGIN);
         drawBar(canvas, ctx, 1 - LINE_MARGIN - LINE_WIDTH);
@@ -540,7 +545,10 @@ const MultiClassicMayhem = ({
     });
 
     return (
-        <canvas ref={ref} style={{ width: arenaWidth, height: arenaHeight }} />
+        <canvas
+            ref={canvasRef}
+            style={{ width: arenaWidth, height: arenaHeight }}
+        />
     );
 };
 

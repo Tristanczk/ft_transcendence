@@ -1,4 +1,5 @@
 import { EMPTY_MAP, MayhemMap, randomMap } from './mayhem_maps';
+import { GameMode } from './misc';
 
 export type GameState = 'waiting' | 'playing' | 'finished';
 
@@ -109,7 +110,7 @@ export type UpdateGameEvent = {
     from?: string;
 };
 
-export type eloVariation = {
+export type EloVariation = {
     varEloLeft: number;
     varEloRight: number;
 };
@@ -117,5 +118,5 @@ export type eloVariation = {
 export type Invite = {
     userName: string;
     gameId: string;
-    gameMode: 'classic' | 'mayhem' | 'battle';
+    gameMode: GameMode;
 };

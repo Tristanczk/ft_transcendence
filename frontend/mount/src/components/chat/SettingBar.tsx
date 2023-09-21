@@ -125,7 +125,7 @@ export default function SettingBar({
 
     const adminListClasses =
         showList === true
-            ? 'transition-all ease-in-out duration-500 opacity-100 pointer-events-auto w-44 max-h-64 overflow-y-auto focus:outline-none focus:border-transparent focus:ring focus:ring-amber-500 border-0 absolute top-0 left-24 text-gray-600 bg-slate-100 rounded-3xl z-40'
+            ? 'transition-all ease-in-out duration-500 opacity-100 pointer-events-auto w-44 max-h-64 overflow-y-auto focus:outline-none focus:border-transparent focus:ring focus:ring-amber-500 border-0 absolute top-0 left-24 text-gray-300 bg-gray-700 rounded-3xl z-40'
             : 'transition-all ease-in-out duration-500 opacity-0 pointer-events-none absolute top-0 left-24 w-0 h-0';
 
     const editPassword = async () => {
@@ -301,7 +301,7 @@ export default function SettingBar({
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
             <div
-                className={`relative flex-col items-center transition-all duration-500 space-y-0 lt:space-y-2 md:space-y-4 bg-gray-200 w-1/6 sm:w-1/6 flex z-0 object-bottom object-fill
+                className={`relative flex-col items-center transition-all duration-500 space-y-0 lt:space-y-2 md:space-y-4 bg-gray-800 w-1/6 sm:w-1/6 flex z-0 object-bottom object-fill
                 ${
                     isSettingVisible
                         ? 'right-0 sm:right-16 md:right-20 opacity-100'
@@ -313,10 +313,10 @@ export default function SettingBar({
                     name="Password"
                     onClick={handlePasswordClick}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-amber-500"
+                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-amber-500"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6 hover:text-gray-800"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -356,10 +356,10 @@ export default function SettingBar({
                         handleListClick();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-rose-500"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6 hover:text-gray-800"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -384,10 +384,10 @@ export default function SettingBar({
                         leaveChannel();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-rose-500"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6 hover:text-gray-800" 
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -408,13 +408,13 @@ export default function SettingBar({
                         handleNameClick();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-amber-300"
+                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-amber-300"
                 >
                     <svg
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6 hover:text-gray-800"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         stroke="currentColor"
@@ -447,10 +447,10 @@ export default function SettingBar({
                         handleListClick();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-amber-300"
+                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-amber-300"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6 hover:text-gray-800"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -467,10 +467,10 @@ export default function SettingBar({
                         setFormState('mute');
                         handleListClick();
                     }}
-                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-green-500"
+                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-green-500"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6 hover:text-gray-800"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -500,10 +500,10 @@ export default function SettingBar({
                         setFormState('ban');
                         handleListClick();
                     }}
-                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-slate-200 bg-gray-200 transform hover:scale-110 hover:bg-green-500"
+                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-green-500"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6"
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6 hover:text-gray-800    "
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"

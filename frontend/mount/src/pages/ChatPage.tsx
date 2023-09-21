@@ -97,9 +97,7 @@ function ChatPage({
                 { withCredentials: true },
             );
             setFriendsList(response.data);
-        } catch (error) {
-            console.error(error);
-        }
+        } catch {}
     }, [authAxios]);
 
     const fetchChannels = useCallback(async () => {
@@ -234,10 +232,7 @@ function ChatPage({
         }
     };
 
-    const handleGameInvite = async (
-        mode: 'classic' | 'mayhem' | 'battle',
-        idUser: number,
-    ) => {
+    const handleGameInvite = async (mode: GameMode, idUser: number) => {
         if (!user) return; //TO DO display an error message impossible to send game invite
         const joinFriendGame: JoinFriendGameType = {
             mode,

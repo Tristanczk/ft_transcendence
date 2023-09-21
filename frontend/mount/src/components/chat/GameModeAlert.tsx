@@ -1,15 +1,21 @@
+import { GameMode } from '../../shared/misc';
+
 interface GameModeAlertProps {
     onClose: () => void;
-    handleClick: (mode: 'classic' | 'mayhem' | 'battle', idUser: number) => void;
+    handleClick: (mode: GameMode, idUser: number) => void;
     friendClicked: number;
 }
 
-export function GameModeAlert({ onClose, handleClick, friendClicked }: GameModeAlertProps) {
+export function GameModeAlert({
+    onClose,
+    handleClick,
+    friendClicked,
+}: GameModeAlertProps) {
     return (
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-50 z-50">
-            <div className="bg-zinc-200 rounded-lg p-5 max-w-md">
+            <div className="bg-gray-300 rounded-lg p-5 max-w-md">
                 <div className="flex items-center justify-center mb-4">
-                    <p className="text-center text-gray-500 text-lg font-semibold">
+                    <p className="text-center text-gray-800 text-lg font-semibold">
                         Choose your gamemode
                     </p>
                     <button
@@ -32,7 +38,7 @@ export function GameModeAlert({ onClose, handleClick, friendClicked }: GameModeA
                     </button>
                 </div>
                 <button
-                    className="hover:scale-105 hover:bg-green-500 bg-gray-500 text-white py-2 px-4 rounded-md focus:outline-none mb-2 mx-1"
+                    className="hover:scale-105 hover:bg-green-500 bg-gray-800 text-white py-2 px-4 rounded-md focus:outline-none mb-2 mx-1"
                     onClick={() => {
                         handleClick('classic', friendClicked);
                         onClose();
@@ -41,7 +47,7 @@ export function GameModeAlert({ onClose, handleClick, friendClicked }: GameModeA
                     Classic
                 </button>
                 <button
-                    className="hover:scale-105 hover:bg-green-500 bg-gray-500 text-white py-2 px-4 rounded-md focus:outline-none mb-2 mx-1"
+                    className="hover:scale-105 hover:bg-green-500 bg-gray-800 text-white py-2 px-4 rounded-md focus:outline-none mb-2 mx-1"
                     onClick={() => {
                         handleClick('mayhem', friendClicked);
                         onClose();
@@ -50,7 +56,7 @@ export function GameModeAlert({ onClose, handleClick, friendClicked }: GameModeA
                     Mayhem
                 </button>
                 <button
-                    className="hover:scale-105 hover:bg-green-500 bg-gray-500 text-white py-2 px-4 rounded-md focus:outline-none mb-2 mx-1"
+                    className="hover:scale-105 hover:bg-green-500 bg-gray-800 text-white py-2 px-4 rounded-md focus:outline-none mb-2 mx-1"
                     onClick={() => {
                         handleClick('battle', friendClicked);
                         onClose();
