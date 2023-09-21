@@ -56,7 +56,6 @@ import {
 import { hitMayhemMap } from 'src/shared/mayhem_maps';
 import { GameMode, MAX_PLAYERS, TAU } from 'src/shared/misc';
 import { IndivUser } from './gateway.users';
-import { userInfo } from 'os';
 
 class Game {
     id: string;

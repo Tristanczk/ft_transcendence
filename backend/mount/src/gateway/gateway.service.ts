@@ -663,13 +663,6 @@ export class GatewayService
         };
     }
 
-    @SubscribeMessage('startBattle')
-    async handleStartBattle(client: Socket, data: string) {
-        // TODO refuse if only one player
-        // TODO refuse if already started
-        // TODO refuse if not in game
-    }
-
     @Interval(1000 / 60)
     async notifyUsers() {
         for (const game of Object.values(this.games)) {

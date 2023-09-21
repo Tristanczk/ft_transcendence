@@ -78,7 +78,7 @@ const Game = ({
                 <div className="text-red-500 h-6"></div>
             )}
             <div className="flex justify-between w-full mb-1">
-                <div className="text-black" style={{ height: '26px' }}>
+                <div className="text-black text-sm sm:text-base md:text-lg lg:text-xl">
                     {leftName} (
                     {varElo
                         ? gameInfo.players[0]!.elo + varElo.varEloLeft
@@ -104,7 +104,7 @@ const Game = ({
                         gameLeave?.message !== 'left' &&
                         gameInfo.timeRemaining === 0 && (
                             <button
-                                className="px-2 ml-2 text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:outline-none rounded-lg"
+                                className="px-2 ml-2 text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:outline-none rounded-lg text-sm sm:text-base md:text-lg lg:text-xl"
                                 onClick={() => {
                                     setOpenModal(true);
                                 }}
@@ -113,14 +113,14 @@ const Game = ({
                             </button>
                         )}
                 </div>
-                <div className="text-black" style={{ height: '26px' }}>
+                <div className="text-black text-sm sm:text-base md:text-lg lg:text-xl">
                     {!isLeftPlayer &&
                         gameInfo.state !== 'finished' &&
                         gameLeave?.message !== 'aborted' &&
                         gameLeave?.message !== 'left' &&
                         gameInfo.timeRemaining === 0 && (
                             <button
-                                className="px-2 mr-2 text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:outline-none rounded-lg"
+                                className="px-2 mr-2 text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:outline-none rounded-lg text-sm sm:text-base md:text-lg lg:text-xl"
                                 onClick={() => {
                                     setOpenModal(true);
                                 }}
