@@ -32,8 +32,7 @@ function HistoryFive({ user }: PresentationUserProps) {
             );
             setGames(response.data);
             return response.data;
-        } catch (error) {
-        }
+        } catch (error) {}
     }
 
     return games ? (
@@ -217,9 +216,7 @@ function HistoryFive({ user }: PresentationUserProps) {
                 </ul>
             </div>
         </div>
-    ) : (
-        <></>
-    );
+    ) : null;
 }
 
 export default HistoryFive;
