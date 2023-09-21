@@ -608,15 +608,6 @@ export class GatewayService
         }
     }
 
-    @SubscribeMessage('leavePage')
-    async handleLeavePage(client: Socket, data: string) {
-        // TODO only player
-        // TODO not in game
-        // TODO waiting
-        // TODO playing
-        // TODO finished
-    }
-
     @SubscribeMessage('keyEvent')
     async handleKeyEvent(client: Socket, keyEvent: KeyEvent) {
         if (!this.games[keyEvent.gameId]) {
