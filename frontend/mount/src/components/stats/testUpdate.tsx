@@ -18,7 +18,6 @@ function TestUpdate() {
                         withCredentials: true,
                     },
                 );
-                console.log(response);
                 return response;
             } catch (error) {
                 console.error(error);

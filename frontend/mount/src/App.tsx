@@ -27,7 +27,6 @@ const App: React.FC = () => {
     const [isChatVisible, setIsChatVisible] = useState(false);
 
     const toggleChatVisibility = () => {
-        console.log('toggleChatVisibility');
         setIsChatVisible((prev) => !prev);
     };
     const [gameId, setGameId] = useState<string | undefined>(undefined);

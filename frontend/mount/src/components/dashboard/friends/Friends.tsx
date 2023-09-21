@@ -64,7 +64,6 @@ function Friends({ currUser }: FriendsProps) {
                     { id: idSelected },
                     { withCredentials: true },
                 );
-                // console.log(response.data);
 
                 await authAxios.post(
                     '/chat/createChannel',
@@ -86,7 +85,6 @@ function Friends({ currUser }: FriendsProps) {
     const handleDeleteFriendClick = async (event: any, idToDelete: number) => {
         event.preventDefault();
         if (!idToDelete) return;
-        // console.log('try to delete')
         try {
             await authAxios.delete(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/friends/${idToDelete}`,
@@ -94,7 +92,6 @@ function Friends({ currUser }: FriendsProps) {
                     withCredentials: true,
                 },
             );
-            // console.log(response.data);
         } catch (error) {
             console.error(error);
             setAlertMessage('Error deleting friend');

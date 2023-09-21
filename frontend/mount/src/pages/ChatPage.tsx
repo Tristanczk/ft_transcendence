@@ -115,7 +115,6 @@ function ChatPage({
     }, [authAxios]);
 
     const fetchMessages = useCallback(async () => {
-        console.log('fetching messages for', channel);
         try {
             const response = await authAxios.get(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getMessages/${channel}`,
@@ -162,8 +161,6 @@ function ChatPage({
 
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
-            console.log('received message', message);
-
             if (message.idSender !== user?.id) {
                 if (message.idChannel !== channel) {
                     if (!notifications.includes(message.idChannel)) {
@@ -184,7 +181,6 @@ function ChatPage({
         socket.on('reloadfriends', () => fetchFriends());
         socket.on('reloadchannels', () => fetchChannels());
         socket.on('reloadchannel', (channelId) => {
-            console.log(channelId + '  ' + channel);
             if (channelId === channel) fetchChannel();
         });
         socket.on('signoutchat', () => {
@@ -208,8 +204,6 @@ function ChatPage({
                     withCredentials: true,
                 },
             );
-            console.log('fetchUsers');
-            console.log(response.data);
 
             setChannelUsers(response.data);
         } catch (error) {

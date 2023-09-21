@@ -39,7 +39,6 @@ const TwoFactorForm: React.FC<Props> = ({ username }) => {
             loginUser(response.data.user);
             navigate('/');
         } catch (error: any) {
-            console.log('error', error.response.data);
             setError(error.response.data);
         }
     };

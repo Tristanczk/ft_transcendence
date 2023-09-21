@@ -218,7 +218,6 @@ const BattleGame = ({ numPlayers }: { numPlayers: number }) => {
             100,
             (window.innerHeight || p5.windowHeight) - NAVBAR_HEIGHT,
         );
-        console.log(width, height);
         if (p5.width !== width || p5.height !== height)
             p5.resizeCanvas(width, height);
         arenaSize = Math.min(

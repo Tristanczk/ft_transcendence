@@ -268,7 +268,6 @@ const GamePage: React.FC<{
     useEffect(() => {
         if (socket) {
             const switchGame = (gameId: string) => {
-                console.log('switching game to', gameId);
                 setGameId(gameId);
                 setVarElo(null);
                 setGameLeave(null);
