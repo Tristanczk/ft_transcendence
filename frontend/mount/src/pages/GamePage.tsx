@@ -36,36 +36,36 @@ const Game = ({
     height: number;
 }) => {
     const [openModal, setOpenModal] = useState<boolean>(false);
-    let leftName: string = '',
-        rightName: string = '';
-    let isLeftPlayer: boolean = false;
 
-    if (gameInfo.mode !== 'battle') {
-        leftName =
-            gameInfo.players[0]!.name.length > 10
-                ? gameInfo.players[0]!.name.slice(0, 10) + '...'
-                : gameInfo.players[0]!.name;
-        rightName =
-            gameInfo.players[1]!.name.length > 10
-                ? gameInfo.players[1]!.name.slice(0, 10) + '...'
-                : gameInfo.players[1]!.name;
-        if (gameInfo.players[0]!.id === socket.id) {
+    if (gameInfo.mode === 'battle') {
+        return (
+            <MultiBattleRoyale
+                gameObjects={gameInfo.objects}
+                players={gameInfo.players}
+                windowWidth={width}
+                windowHeight={height}
+            />
+        );
+    }
+
+    const leftName =
+        gameInfo.players[0]!.name.length > 10
+            ? gameInfo.players[0]!.name.slice(0, 10) + '...'
+            : gameInfo.players[0]!.name;
+    const rightName =
+        gameInfo.players[1]!.name.length > 10
+            ? gameInfo.players[1]!.name.slice(0, 10) + '...'
+            : gameInfo.players[1]!.name;
+    let isLeftPlayer: boolean = false;
+    if (gameInfo.players[0]!.id === socket.id) {
+        isLeftPlayer = true;
+    } else if (gameInfo.players[1]!.id !== socket.id) {
+        if (user && user.nickname === gameInfo.players[0]!.name) {
             isLeftPlayer = true;
-        } else if (gameInfo.players[1]!.id !== socket.id) {
-            if (user && user.nickname === gameInfo.players[0]!.name) {
-                isLeftPlayer = true;
-            }
         }
     }
 
-    return gameInfo.mode === 'battle' ? (
-        <MultiBattleRoyale
-            gameObjects={gameInfo.objects}
-            players={gameInfo.players}
-            windowWidth={width}
-            windowHeight={height}
-        />
-    ) : (
+    return (
         <div className="flex flex-col items-center">
             {gameLeave &&
             (gameLeave.message === 'disconnected' ||
