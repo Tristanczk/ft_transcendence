@@ -54,9 +54,7 @@ const Game = ({
 
     return (
         <div className="flex flex-col items-center">
-            {gameLeave &&
-            (gameLeave.message === 'disconnected' ||
-                gameLeave.message === 'left') ? (
+            {gameLeave && gameLeave.message === 'disconnected' ? (
                 <div className="text-red-500">
                     WARNING: your opponent has disconnected, game will terminate
                     in {Math.round(gameLeave.timeLeft! / 1000)} seconds.
