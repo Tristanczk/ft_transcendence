@@ -315,7 +315,7 @@ const NavBar = ({
                     />
                 )}
                 <div
-                    className="flex items-center justify-end space-x-2"
+                    className="flex items-center justify-end space-x-4"
                     style={showLipong && user ? { width: CORNERS_WIDTH } : {}}
                 >
                     {gameId &&
