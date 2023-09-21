@@ -39,7 +39,7 @@ const DashboardPage: React.FC = () => {
                     `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/users/${userId}`,
                     { withCredentials: true },
                 );
-                if (!response.data) throw new Error('No user foudnd');
+                if (!response.data) throw new Error('No user found');
                 setUserData(response.data);
                 setError(false);
             } catch (error) {
@@ -54,7 +54,7 @@ const DashboardPage: React.FC = () => {
             setError(true);
             setUserData(null);
         }
-    }, [userId]);
+    }, [userId, user]);
 
     return !user ? (
         <NotConnected message="Please signup or log in to access your dashboard" />
