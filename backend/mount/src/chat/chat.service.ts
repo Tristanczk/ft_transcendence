@@ -1,6 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ChannelDto, ChannelIdDto, CreateChannelDto, CreateMessageDto, EditChannelDto, EditChannelLeaveDto, EditChannelNameDto, EditChannelUserDto, EditPasswordDto, GetChannelDto, JoinChannelDto, MessageDto, MuteUserDto, UserSimplifiedDto } from './dto/channel.dto';
+import {
+    ChannelDto,
+    ChannelIdDto,
+    CreateChannelDto,
+    CreateMessageDto,
+    EditChannelDto,
+    EditChannelLeaveDto,
+    EditChannelNameDto,
+    EditChannelUserDto,
+    EditPasswordDto,
+    GetChannelDto,
+    JoinChannelDto,
+    MessageDto,
+    MuteUserDto,
+    UserSimplifiedDto,
+} from './dto/channel.dto';
 
 import { GatewayService } from 'src/gateway/gateway.service';
 import { Interval } from '@nestjs/schedule';
@@ -73,6 +88,7 @@ export class ChatService {
                     isPublic: false,
                 },
             });
+            if (!channel) return null;
 
             const channelDto: ChannelDto = {
                 id: channel.id,
@@ -218,7 +234,7 @@ export class ChatService {
 
                 if (idToAdd !== undefined) {
                     const filteredIdAdmin = channel.idAdmin.filter(
-                        (id) => id !== leaveChannel.idRequester
+                        (id) => id !== leaveChannel.idRequester,
                     );
                     filteredIdAdmin.push(idToAdd);
 
@@ -332,7 +348,10 @@ export class ChatService {
             if (editChannel.idUser === editChannel.idRequester)
                 throw new Error('Not authorized, Cannot ban yourself');
 
-            if (channel.idAdmin.includes(editChannel.idUser) && editChannel.idRequester !== channel.idOwner)
+            if (
+                channel.idAdmin.includes(editChannel.idUser) &&
+                editChannel.idRequester !== channel.idOwner
+            )
                 throw new Error('Not authorized, User is admin');
 
             const updatedChannel = await this.prisma.channels.update({
@@ -416,7 +435,9 @@ export class ChatService {
                 const user = this.gateway.users.getIndivUserById(id);
                 if (user) {
                     user.sockets.forEach((socket) => {
-                        this.gateway.server.to(socket).emit('reloadchannel', editChannel.id);
+                        this.gateway.server
+                            .to(socket)
+                            .emit('reloadchannel', editChannel.id);
                     });
                 }
             });
@@ -458,7 +479,9 @@ export class ChatService {
             );
             if (user) {
                 user.sockets.forEach((socket) => {
-                    this.gateway.server.to(socket).emit('reloadchannel', editChannel.id);
+                    this.gateway.server
+                        .to(socket)
+                        .emit('reloadchannel', editChannel.id);
                 });
             }
 
@@ -487,7 +510,10 @@ export class ChatService {
             if (!channel.idAdmin.includes(editChannel.idRequester))
                 throw new Error('Not authorized');
 
-            if (channel.idAdmin.includes(editChannel.idUser)  && editChannel.idRequester !== channel.idOwner)
+            if (
+                channel.idAdmin.includes(editChannel.idUser) &&
+                editChannel.idRequester !== channel.idOwner
+            )
                 throw new Error('Not authorized, User is admin');
 
             channel.mutedUsers.push([
