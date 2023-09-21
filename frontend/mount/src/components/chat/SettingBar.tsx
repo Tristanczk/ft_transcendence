@@ -139,10 +139,7 @@ export default function SettingBar({
                 },
                 { withCredentials: true },
             );
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error editing password');
-        }
+        } catch {}
     };
 
     const editName = async () => {
@@ -156,10 +153,7 @@ export default function SettingBar({
                 },
                 { withCredentials: true },
             );
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error editing name');
-        }
+        } catch {}
     };
 
     const leaveChannel = async () => {
@@ -173,10 +167,7 @@ export default function SettingBar({
                 { withCredentials: true },
             );
             handleClose();
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error leaving channel');
-        }
+        } catch (error) {}
     };
 
     const onKeyPress = ({
@@ -213,10 +204,7 @@ export default function SettingBar({
             );
             if (typeof response.data === 'string')
                 setAlertMessage(response.data);
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error banning user');
-        }
+        } catch {}
     };
 
     const handleKickUser = async (idUser: number) => {
@@ -232,10 +220,7 @@ export default function SettingBar({
             );
             if (typeof response.data === 'string')
                 setAlertMessage(response.data);
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error banning user');
-        }
+        } catch {}
     };
 
     const handleAddAdmin = async (idUser: number) => {
@@ -251,10 +236,7 @@ export default function SettingBar({
             );
             if (typeof response.data === 'string')
                 setAlertMessage(response.data);
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error adding admin');
-        }
+        } catch {}
     };
 
     const handleMuteUser = async (idUser: number) => {
@@ -271,10 +253,7 @@ export default function SettingBar({
             );
             if (typeof response.data === 'string')
                 setAlertMessage(response.data);
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error muting user');
-        }
+        } catch {}
     };
 
     const getClickHandler = () => {

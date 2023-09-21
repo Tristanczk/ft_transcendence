@@ -117,10 +117,7 @@ export default function ChatChannelListElement({
             } else {
                 setActiveInput(true);
             }
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error joining channel');
-        }
+        } catch {}
     };
 
     const onKeyPress = async () => {
@@ -149,10 +146,7 @@ export default function ChatChannelListElement({
             }
             setInput('');
             setActiveInput(false);
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error joining channel');
-        }
+        } catch {}
     };
 
     return (
