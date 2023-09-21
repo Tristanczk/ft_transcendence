@@ -35,7 +35,7 @@ function GlobalStats({ user }: PresentationUserProps) {
     }
 
     return (
-        <div className="w-full bg-white border border-gray-200 rounded-3xl shadow dark:bg-gray-800 dark:border-gray-700 p-4 sm:p-8">
+        <div className="w-full bg-white border border-gray-200 rounded-3xl dark:bg-gray-800 dark:border-gray-700 p-4 sm:p-8">
             <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
                 Statistics
             </h5>
