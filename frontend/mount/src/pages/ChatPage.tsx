@@ -191,9 +191,14 @@ function ChatPage({
         });
 
         return () => {
-            socket.off('message', messageListener);
+            socket.off('message');
+            socket.off('ban');
+            socket.off('reloadfriends');
+            socket.off('reloadchannels');
+            socket.off('reloadchannel');
+            socket.off('signoutchat');
         };
-    }, [socket, fetchFriends, notifications, user?.id, channel]);
+    });
 
     const fetchUsers = async () => {
         try {

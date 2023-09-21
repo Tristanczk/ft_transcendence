@@ -1,13 +1,11 @@
 import React, {
     ChangeEvent,
-    useContext,
     useEffect,
     useRef,
     useState,
 } from 'react';
 import { useUserContext } from '../../context/UserContext';
 import { useAuthAxios } from '../../context/AuthAxiosContext';
-import { WebsocketContext } from '../../context/WebsocketContext';
 import EmojiPicker, {
     EmojiClickData,
     EmojiStyle,
@@ -22,7 +20,6 @@ export interface MessageInputProps {
 
 export default function MessageInput({ idChannel }: { idChannel: number }) {
     const [input, setInput] = useState('');
-    const socket = useContext(WebsocketContext);
     const { user } = useUserContext();
     const authAxios = useAuthAxios();
     const [visiblePicker, setVisiblePicker] = useState(false);
@@ -53,7 +50,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                 return;
             }
 
-            const response = await authAxios.post(
+            await authAxios.post(
                 '/chat/sendMessage',
                 {
                     idSender: user?.id,

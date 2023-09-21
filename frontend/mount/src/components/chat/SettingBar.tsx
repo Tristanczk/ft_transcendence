@@ -130,7 +130,7 @@ export default function SettingBar({
 
     const editPassword = async () => {
         try {
-            const response = await authAxios.patch(
+            await authAxios.patch(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/editPassword`,
                 {
                     id: currentChannel?.id,
@@ -147,7 +147,7 @@ export default function SettingBar({
 
     const editName = async () => {
         try {
-            const response = await authAxios.patch(
+            await authAxios.patch(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/editName`,
                 {
                     id: currentChannel?.id,
@@ -164,7 +164,7 @@ export default function SettingBar({
 
     const leaveChannel = async () => {
         try {
-            const response = await authAxios.patch(
+            await authAxios.patch(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/leaveChannel`,
                 {
                     id: currentChannel?.id,

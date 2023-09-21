@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { WebsocketContext } from '../../context/WebsocketContext';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { useUserContext } from '../../context/UserContext';

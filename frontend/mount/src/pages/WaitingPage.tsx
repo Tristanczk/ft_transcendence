@@ -121,6 +121,7 @@ const WaitingPage: React.FC<{
             leaveMatchmaking(socket, setError, gameId, setGameId, navigate);
         };
     });
+    console.log('gameId', gameId);
 
     return (
         <div

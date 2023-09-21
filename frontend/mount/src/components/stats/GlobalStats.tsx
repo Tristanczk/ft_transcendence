@@ -8,7 +8,6 @@ interface PresentationUserProps {
 
 function GlobalStats({ user }: PresentationUserProps) {
     const textShow = 'p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800';
-    const textHidden = 'hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800';
 
     const [stats, setStats] = useState<StatsDashboard | null>(null);
 
