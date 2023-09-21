@@ -4,6 +4,7 @@ import axios from 'axios';
 import TwoFactorForm from '../components/Auth/TwoFactorForm';
 import { useUserContext } from '../context/UserContext';
 import { NAVBAR_HEIGHT } from '../shared/misc';
+import AlreadyConnected from '../components/AlreadyConnected';
 
 const SignInPage42: React.FC = () => {
     const location = useLocation();
@@ -11,7 +12,7 @@ const SignInPage42: React.FC = () => {
     const [twoFactor, setTwoFactor] = useState<boolean>(false);
     const [username, setUsername] = useState<string>('');
     const navigate = useNavigate();
-    const { loginUser } = useUserContext();
+    const { user, loginUser } = useUserContext();
 
     useEffect(() => {
         const code = new URLSearchParams(location.search).get('code');
@@ -52,7 +53,9 @@ const SignInPage42: React.FC = () => {
         }
     }, [error, navigate]);
 
-    return (
+    return user ? (
+        <AlreadyConnected />
+    ) : (
         <section className="bg-gray-50 dark:bg-gray-900">
             <div
                 className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
