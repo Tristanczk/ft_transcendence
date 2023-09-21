@@ -82,7 +82,7 @@ function DeleteButton({
     return user && currUserId === user.id ? (
         <div className="absolute top-1/2 right-4 transform -translate-y-1/2 inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
             <button
-                className="text-gray-900 mt-3 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-3xl text-sm px-3 py-1 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                className="text-gray-900 mt-3 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-3xl text-xs px-3 py-1 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                 onClick={(event) => handleDeleteFriendClick(event, friendId)}
             >
                 Delete friend

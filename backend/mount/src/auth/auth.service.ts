@@ -57,6 +57,11 @@ export class AuthService {
             },
         });
         if (existingUser) {
+            if (existingUser.hash) {
+                throw new ForbiddenException(
+                    'User with same login as your login already exists',
+                );
+            }
             const updatedUser = await this.prisma.user.update({
                 where: { login },
                 data: { loginNb: existingUser.loginNb + 1 },
@@ -70,6 +75,7 @@ export class AuthService {
                     email: email,
                     avatarPath: 'default.png',
                     elo: 1000,
+                    highElo: 1000,
                     loginNb: 1,
                 },
             });
@@ -139,7 +145,7 @@ export class AuthService {
             await this.generateTokens(user, res);
             return user;
         } catch (error) {
-            throw error;
+            throw new ForbiddenException('Invalid authorization code');
         }
     }
 
@@ -153,6 +159,7 @@ export class AuthService {
                     email: dto.email,
                     avatarPath: 'default.png',
                     elo: 1000,
+                    highElo: 1000,
                     loginNb: 1,
                     hash,
                 },

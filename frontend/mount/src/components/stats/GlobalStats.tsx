@@ -35,7 +35,7 @@ function GlobalStats({ user }: PresentationUserProps) {
     }
 
     return (
-        <div className="w-full bg-white border border-gray-200 rounded-3xl shadow dark:bg-gray-800 dark:border-gray-700 p-4 sm:p-8">
+        <div className="w-full bg-white border border-gray-200 rounded-3xl dark:bg-gray-800 dark:border-gray-700 p-4 sm:p-8">
             <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
                 Statistics
             </h5>
@@ -80,10 +80,26 @@ function GlobalStats({ user }: PresentationUserProps) {
                         </div>
                         <div className="flex flex-col items-center justify-center">
                             <dt className="mb-2 text-3xl font-extrabold">
+                                {stats ? stats?.me.highElo : 'N/A'}
+                            </dt>
+                            <dd className="text-gray-500 dark:text-gray-400">
+                                Highest Elo
+                            </dd>
+                        </div>
+						<div className="flex flex-col items-center justify-center">
+                            <dt className="mb-2 text-3xl font-extrabold">
                                 {stats ? stats?.me.elo : 'N/A'}
                             </dt>
                             <dd className="text-gray-500 dark:text-gray-400">
                                 Elo
+                            </dd>
+                        </div>
+						<div className="flex flex-col items-center justify-center">
+                            <dt className="mb-2 text-3xl font-extrabold">
+                                {stats ? stats?.me.averageEloOpponents : 'N/A'}
+                            </dt>
+                            <dd className="text-gray-500 dark:text-gray-400">
+                                Average Opponent Elo
                             </dd>
                         </div>
                         <div className="flex flex-col items-center justify-center">
