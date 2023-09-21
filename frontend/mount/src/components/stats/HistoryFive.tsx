@@ -31,10 +31,8 @@ function HistoryFive({ user }: PresentationUserProps) {
                 },
             );
             setGames(response.data);
-            // console.log(response.data);
             return response.data;
         } catch (error) {
-            // console.error(error);
         }
     }
 

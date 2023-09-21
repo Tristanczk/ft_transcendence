@@ -132,7 +132,6 @@ export class FriendsService {
     }
 
     async getListFriendChoice(userId: number, nick: string) {
-        // console.log('trying')
         const me = await this.prisma.user.findUnique({ where: { id: userId } });
         if (!me) {
             throw new NotFoundException(`User with ${userId} not found`);

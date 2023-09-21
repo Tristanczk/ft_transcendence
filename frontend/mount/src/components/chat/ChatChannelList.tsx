@@ -56,7 +56,6 @@ export default function ChatChannelList({
     }, [channel]);
 
     const createChannel = async (input: string) => {
-        console.log('creating channel');
         try {
             const response = await authAxios.post(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/createChannel`,
@@ -68,7 +67,6 @@ export default function ChatChannelList({
                 },
                 { withCredentials: true },
             );
-            console.log('Channel created', response);
             setChannel(response.data.id);
         } catch (error) {
             console.error(error);

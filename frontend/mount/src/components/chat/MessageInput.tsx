@@ -49,8 +49,6 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                 withCredentials: true,
             });
 
-            console.log(isMuted);
-
             if (isMuted.data === true) {
                 return;
             }
