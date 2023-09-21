@@ -3,12 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
 import { GameInfo, UpdateGameEvent, EloVariation } from '../shared/game_info';
-import {
-    ApiResult,
-    KeyEventType,
-    NAVBAR_HEIGHT,
-    PLAYERS_TEXT_SIZE,
-} from '../shared/misc';
+import { KeyEventType, NAVBAR_HEIGHT, PLAYERS_TEXT_SIZE } from '../shared/misc';
 import MultiClassicMayhem from '../games/multiplayer/MultiClassicMayhem';
 import { Socket } from 'socket.io-client';
 import ResignModal from '../games/multiplayer/ResignModal';
@@ -245,17 +240,6 @@ const GamePage: React.FC<{
     }, [socket, gameId]);
 
     useEffect(() => {
-        socket.emit('getGameInfo', gameId, (response: ApiResult<GameInfo>) => {
-            if (response.success) {
-                setGameInfo(response.data);
-            } else {
-                console.error(response.error);
-                navigate('/404');
-            }
-        });
-    }, [gameId, navigate, socket]);
-
-    useEffect(() => {
         if (socket) {
             const switchGame = (gameId: string) => {
                 setGameId(gameId);
@@ -271,6 +255,18 @@ const GamePage: React.FC<{
             };
         }
     }, [socket, navigate, setGameId]);
+
+    useEffect(() => {
+        const timerId = setTimeout(() => {
+            if (!gameInfo) {
+                navigate('/404');
+            }
+        }, 1000);
+
+        return () => {
+            clearTimeout(timerId);
+        };
+    }, [gameInfo, navigate]);
 
     return (
         <div
