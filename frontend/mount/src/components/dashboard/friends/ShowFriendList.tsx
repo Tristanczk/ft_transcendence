@@ -25,9 +25,9 @@ function ShowFriendList({
 
     return friendsList.length > 0 ? (
         <div className="bg-white">
-            <ul className="flex flex-wrap my-6 justify-center divide-y divide-gray-200 dark:divide-gray-700">
-                {friendsList.map((friend, i) => (
-                    <li className={'w-full sm:w-1/2 lg:w-1/3 '} key={friend.id}>
+            <ul className="flex flex-wrap my-6 justify-center divide-y divide-gray-200 dark:divide-gray-700 sm:divide-none">
+                {friendsList.map((friend) => (
+                    <li className="w-full sm:w-1/2 lg:w-1/3" key={friend.id}>
                         <div className="relative p-4">
                             <div className="flex-shrink-0">
                                 <ImageFriend
@@ -48,7 +48,7 @@ function ShowFriendList({
                                         userId={friend.id}
                                         initStatus={friend.isConnected}
                                         playingStatus={friend.isPlaying}
-										text={true}
+                                        text={true}
                                     />
                                 </p>
                                 <p className="text-sm text-gray-500 truncate dark:text-gray-400">
