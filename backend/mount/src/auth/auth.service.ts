@@ -57,6 +57,11 @@ export class AuthService {
             },
         });
         if (existingUser) {
+            if (existingUser.hash) {
+                throw new ForbiddenException(
+                    'User with same login as your login already exists',
+                );
+            }
             const updatedUser = await this.prisma.user.update({
                 where: { login },
                 data: { loginNb: existingUser.loginNb + 1 },
