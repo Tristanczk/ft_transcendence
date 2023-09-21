@@ -135,7 +135,7 @@ export default function Messages({
                 <div
                     id="messages"
                     ref={messageContainerRef}
-                    className={`flex-grow h-full flex flex-col space-y-4 p-3 overflow-y-auto scrolling-touch bg-white shadow-md overflow-clip transition-all duration-500 w-80 ml-[-53px] min-h-[232px] max-h-[232px] sm:min-h-[240px] sm:max-h-[240px] md:w-96 md:ml-[-64px] md:min-h-[420px] md:max-h-[420px] lg:w-104 lg:ml-[-69px] ${zIndexClass}`}
+                    className={`flex-grow h-full flex flex-col space-y-4 p-3 overflow-y-auto scrolling-touch bg-gray-800 shadow-md overflow-clip transition-all duration-500 w-80 ml-[-53px] min-h-[232px] max-h-[232px] sm:min-h-[240px] sm:max-h-[240px] md:w-96 md:ml-[-64px] md:min-h-[420px] md:max-h-[420px] lg:w-104 lg:ml-[-69px] ${zIndexClass}`}
                 >
                     {groupedMessages.map(
                         (group: MessageGroup, groupIndex: number) => {

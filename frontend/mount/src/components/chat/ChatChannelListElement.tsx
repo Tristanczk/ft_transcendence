@@ -162,10 +162,10 @@ export default function ChatChannelListElement({
             {alertMessage && (
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
-            <div className="flex items-center justify-between = px-3 py-0.5 md:py-3.5 border-b border-gray-300 transition-all duration-500 hover:bg-gray-100">
+            <div className="flex items-center justify-between = px-3 py-0.5 md:py-3.5 border-b border-gray-900 transition-all duration-500 hover:bg-gray-700">
                 <div className="flex items-center">
                     <div className="ml-2 flex flex-col">
-                        <div className="group inline-block hover:scale-110 hover:text-blue-600 text-gray-600 mr-3 transition-transform duration-300 ease-in-out">
+                        <div className="group inline-block hover:scale-110 hover:text-blue-600 text-gray-300 mr-3 transition-transform duration-300 ease-in-out">
                             {' '}
                             <button
                                 onClick={() => {
@@ -177,7 +177,7 @@ export default function ChatChannelListElement({
                             {activeInput && (
                                 <input
                                     type="password"
-                                    className="relative transform text-slate-500 -translate-y z-50 border border-gray-300 bg-white rounded-md transition-all ease-in-out duration-500 left-0 top-0 right-0"
+                                    className="relative transform text-slate-500 -translate-y z-50 border border-gray-300 bg-gray-800 rounded-md transition-all ease-in-out duration-500 left-0 top-0 right-0"
                                     placeholder="Enter password"
                                     value={input}
                                     ref={passwordInputRef}

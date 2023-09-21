@@ -65,14 +65,14 @@ export default function ChatFriendListElement({
             {alertMessage && (
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
-            <div className="flex items-center justify-between p-3 border-b border-gray-300 transition-colors duration-300 hover:bg-gray-100">
+            <div className="flex items-center justify-between p-3 border-b border-gray-900 transition-colors duration-300 hover:bg-gray-700">
                 <div className="flex items-center">
                     <ImageFriend
                         userId={friend.id}
                         textImg={friend.nickname}
                         size={7}
                     />
-                    <div className="no-underline group inline-block hover:scale-110 hover:text-blue-600 text-gray-600 mr-3 transition-transform duration-300 ease-in-out pl-2 pt-1">
+                    <div className="no-underline group inline-block hover:scale-110 hover:text-blue-600 text-gray-300 mr-3 transition-transform duration-300 ease-in-out pl-2 pt-1">
                         <Link to={'/dashboard/' + friend.id}>
                             {friend.nickname}
                         </Link>

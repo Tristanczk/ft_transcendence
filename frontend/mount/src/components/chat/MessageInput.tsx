@@ -128,7 +128,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
             {alertMessage && (
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
-            <div className="transition-all duration-500 px-4 py-2 sm:py-4 flex items-center rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md">
+            <div className="transition-all duration-500 px-4 py-2 sm:py-4 flex items-center rounded-bl-3xl rounded-br-3xl bg-gray-900 shadow-md">
                 <input
                     ref={inputRef}
                     onChange={onChange}
@@ -136,7 +136,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                     value={input}
                     type="text"
                     placeholder="Write your message!"
-                    className="focus:outline-none focus:placeholder-gray-400 transition-all duration-500 text-gray-600 placeholder-gray-600 pl-6 bg-white rounded-3xl py-1 sm:py-3 pr-0 md:pr-12 flex-grow border-white"
+                    className="focus:outline-none focus:placeholder-gray-400 transition-all duration-500 text-gray-300 placeholder-gray-300 pl-6 bg-gray-800 rounded-3xl py-1 sm:py-3 pr-0 md:pr-12 flex-grow border-gray-700"
                 ></input>
                 <div className="relative hidden md:flex">
                     <button
@@ -196,7 +196,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                 <button
                     onClick={(event) => onClick(event)}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-3xl px-2 md:px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-600 hover:bg-white hover:text-blue-600 focus:outline-none ml-2"
+                    className="inline-flex items-center justify-center rounded-3xl px-2 md:px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-600 hover:bg-gray-800 hover:text-blue-600 focus:outline-none ml-2"
                 >
                     <span className="font-bold"></span>
                     <svg
