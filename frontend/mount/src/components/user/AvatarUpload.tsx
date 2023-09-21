@@ -26,9 +26,7 @@ function AvatarUploader() {
                     ),
                 );
                 setImg(base64Image);
-            } catch (error) {
-                // console.error(error);
-            }
+            } catch {}
         };
         fetchImg();
     }, [user]);
@@ -56,9 +54,7 @@ function AvatarUploader() {
                     { withCredentials: true },
                 );
                 updateUser({ updateAvatar: true });
-            } catch (error) {
-                // console.error(error);
-            }
+            } catch {}
         }
     };
 

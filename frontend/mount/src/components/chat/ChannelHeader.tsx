@@ -18,7 +18,7 @@ export default function ChannelHeader({
 
     const leaveChannel = async () => {
         try {
-            const response = await authAxios.patch(
+            await authAxios.patch(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/leaveChannel`,
                 {
                     id: currentChannel?.id,
@@ -27,9 +27,7 @@ export default function ChannelHeader({
                 { withCredentials: true },
             );
             handleClose();
-        } catch (error) {
-            console.error(error);
-        }
+        } catch {}
     };
 
     if (!currentChannel) return <div></div>;
@@ -84,9 +82,9 @@ export default function ChannelHeader({
                             stroke="currentColor"
                         >
                             <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
                                 d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
                             />
                         </svg>

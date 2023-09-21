@@ -50,15 +50,12 @@ export default function ChatFriendListElement({
                 );
                 setCurrentFriend(friend);
             }
-        } catch (error) {
-            console.error('Error fetching channel data:', error);
-            setAlertMessage('Error fetching channel data');
-        }
+        } catch {}
     };
 
     useEffect(() => {
         fetchChannelData(friend.id, true);
-    }, [notifications, friend.id]);
+    });
 
     return (
         <>

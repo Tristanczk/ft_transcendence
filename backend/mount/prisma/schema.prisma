@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    //   url      = "postgresql://postgres:n2J5dJGelC0W4UEtiHkMZRrdrSHsLKr7@localhost:5432/nest?schema=public"
     url      = env("DATABASE_URL")
 }
 

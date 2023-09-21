@@ -8,7 +8,7 @@ interface Props {
 }
 
 function ImageFriend({ userId, textImg, size }: Props) {
-    const [imgY, setImgY] = useState<any>();
+    const [imgY, setImgY] = useState<string | null>(null);
     const authAxios = useAuthAxios();
     const inputClassName = `w-${size} h-${size} rounded-full`;
 
@@ -30,23 +30,20 @@ function ImageFriend({ userId, textImg, size }: Props) {
                     ),
                 );
                 setImgY(base64Image);
-                return response.data;
-            } catch (error) {
-                console.error(error);
+            } catch {
+                setImgY(null);
             }
         };
         fetchImg();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return imgY ? (
+    return (
         <img
             className={inputClassName}
-            src={`data:image/png;base64,${imgY}`}
+            src={imgY ? `data:image/png;base64,${imgY}` : '/norminet.jpeg'}
             alt={textImg}
         />
-    ) : (
-        <>vide</>
     );
 }
 

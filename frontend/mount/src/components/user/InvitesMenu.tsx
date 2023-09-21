@@ -20,8 +20,7 @@ export default function InvitesMenu({
     const socket = useContext(WebsocketContext);
     const { user } = useUserContext();
     const navigate = useNavigate();
-    for (const invite of invites) {
-    }
+
     const handleGameInvite = async (data: Invite) => {
         if (!user) return; //TO DO display an error message impossible to send game invite
         const joinFriendGame: JoinFriendGameType = {
@@ -70,8 +69,9 @@ export default function InvitesMenu({
                 className="z-50 absolute top-full right-0 mt-4 mr-4 w-48 py-2 rounded-3xl shadow-xl bg-gray-800 space-y-4 overflow-y-auto scrolling-touch overflow-clip shadow-2xl transition-all duration-500 ease-in-out h-48 bg-gray-100"
             >
                 {invites &&
-                    invites.map((invite) => (
+                    invites.map((invite, index) => (
                         <div
+                            key={index}
                             className="flex items-center justify-between p-2 transition-colors duration-300 flex items-center justify-center cursor-pointer rounded-xl p-2 shadow-md transition-transform transform duration-200 ease-in-out"
                             onClick={() => {}}
                         >
@@ -91,13 +91,13 @@ export default function InvitesMenu({
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
                                         viewBox="0 0 24 24"
-                                        stroke-width="2.5"
+                                        strokeWidth="2.5"
                                         stroke="currentColor"
                                         className="h-5 w-5 text-slate-500 hover:text-white"
                                     >
                                         <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
                                             d="M4.5 12.75l6 6 9-13.5"
                                         />
                                     </svg>

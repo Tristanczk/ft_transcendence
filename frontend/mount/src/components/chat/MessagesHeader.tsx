@@ -80,11 +80,11 @@ export default function MessagesHeader({
                             width="24"
                             height="24"
                             viewBox="0 0 24 24"
-                            stroke-width="1.25"
+                            strokeWidth="1.25"
                             stroke="currentColor"
                             fill="none"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         >
                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                             <path d="M21 3v5l-11 9l-4 4l-3 -3l4 -4l9 -11z" />

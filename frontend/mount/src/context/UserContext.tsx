@@ -30,7 +30,6 @@ export const UserProvider = ({ children }: any) => {
                 });
                 setUser(response.data);
             } catch (error: any) {
-                console.error('user context refresh error', error);
                 if (error.response && error.response.status === 401) {
                     try {
                         await axios.get(

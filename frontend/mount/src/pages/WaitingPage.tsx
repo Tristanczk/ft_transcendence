@@ -3,7 +3,6 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { Socket } from 'socket.io-client';
 import { NAVBAR_HEIGHT } from '../shared/misc';
-import { useUserContext } from '../context/UserContext';
 
 const leaveMatchmaking = (
     socket: Socket,
@@ -76,11 +75,6 @@ const WaitingPage: React.FC<{
     const socket = useContext(WebsocketContext);
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
-    const { user } = useUserContext();
-    let userId: number = -1;
-    if (user) {
-        userId = user.id;
-    }
 
     useEffect(() => {
         if (socket) {
@@ -107,7 +101,7 @@ const WaitingPage: React.FC<{
         return () => {
             socket.off('cancelGame', cancelGame);
         };
-    }, [socket]);
+    });
 
     useEffect(() => {
         const handlePageRefresh = (event: BeforeUnloadEvent) => {

@@ -15,9 +15,7 @@ function TestGet() {
                 );
                 setData(response.data);
                 return response.data;
-            } catch (error) {
-                console.error(error);
-            }
+            } catch {}
         }
         doMe();
     }, []);

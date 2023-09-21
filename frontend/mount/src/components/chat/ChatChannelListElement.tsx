@@ -98,7 +98,7 @@ export default function ChatChannelListElement({
             );
 
             if (response.data === true) {
-                const response = await authAxios.post(
+                await authAxios.post(
                     `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/joinChannel`,
                     {
                         idUser: user?.id,
@@ -117,10 +117,7 @@ export default function ChatChannelListElement({
             } else {
                 setActiveInput(true);
             }
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error joining channel');
-        }
+        } catch {}
     };
 
     const onKeyPress = async () => {
@@ -149,10 +146,7 @@ export default function ChatChannelListElement({
             }
             setInput('');
             setActiveInput(false);
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error joining channel');
-        }
+        } catch {}
     };
 
     return (

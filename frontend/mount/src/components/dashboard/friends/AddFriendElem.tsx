@@ -36,9 +36,7 @@ function AddFriendElem({
                     { withCredentials: true },
                 );
                 setPossibleFriends(response.data);
-            } catch (error) {
-                console.error(error);
-            }
+            } catch {}
         } else {
             setPossibleFriends(null);
         }
