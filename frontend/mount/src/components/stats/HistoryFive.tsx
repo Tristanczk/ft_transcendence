@@ -193,15 +193,15 @@ function HistoryFive({ user }: PresentationUserProps) {
             </div>
             <div className="flow-root">
                 <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {games.length > 0 &&
-                        games.map((game) => (
-                            <HistoryRow
-                                key={game.gameId}
-                                game={game}
-                                user={user}
-                            />
-                        ))}
-                    {games.length === 0 && 'No games played yet'}
+                    {games.length === 0
+                        ? 'No games played yet'
+                        : games.map((game) => (
+                              <HistoryRow
+                                  key={game.gameId}
+                                  game={game}
+                                  user={user}
+                              />
+                          ))}
                 </ul>
             </div>
         </div>
