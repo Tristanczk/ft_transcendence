@@ -208,14 +208,6 @@ const GamePage: React.FC<{
     }, [socket]);
 
     useEffect(() => {
-        return () => {
-            console.log('leaving', gameId);
-        };
-    }, [gameId]);
-
-    // TODO handle page left (keyup for all keys) (not a spectator anymore)
-
-    useEffect(() => {
         const emitKeyEvent = (event: KeyboardEvent, type: KeyEventType) => {
             if (gameId && !event.repeat) {
                 socket.emit('keyEvent', { key: event.key, type, gameId });
