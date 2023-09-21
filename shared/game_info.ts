@@ -110,7 +110,7 @@ export type UpdateGameEvent = {
     from?: string;
 };
 
-export type eloVariation = {
+export type EloVariation = {
     varEloLeft: number;
     varEloRight: number;
 };

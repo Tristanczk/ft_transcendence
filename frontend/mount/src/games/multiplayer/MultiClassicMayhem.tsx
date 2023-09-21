@@ -14,7 +14,7 @@ import {
     ClassicMayhemGameObjects,
     ClassicMayhemPlayers,
     UpdateGameEvent,
-    eloVariation,
+    EloVariation,
 } from '../../shared/game_info';
 import {
     MayhemCell,
@@ -248,7 +248,7 @@ const drawEndScreen = (
     ctx: CanvasRenderingContext2D,
     players: ClassicMayhemPlayers,
     socket: Socket,
-    varElo: eloVariation | null,
+    varElo: EloVariation | null,
     isLeftPlayer: boolean,
 ) => {
     const textSize = 8 + canvas.width / 20;
@@ -297,7 +297,7 @@ const drawLeaveScreen = (
     ctx: CanvasRenderingContext2D,
     players: ClassicMayhemPlayers,
     socket: Socket,
-    varElo: eloVariation | null,
+    varElo: EloVariation | null,
     gameLeave: UpdateGameEvent,
     isLeftPlayer: boolean,
 ) => {
@@ -463,7 +463,7 @@ const MultiClassicMayhem = ({
     isLeftPlayer: boolean;
     state: string;
     timeRemaining: number;
-    varElo: eloVariation | null;
+    varElo: EloVariation | null;
     gameLeave: UpdateGameEvent | null;
 }) => {
     const arenaHeight = Math.min(

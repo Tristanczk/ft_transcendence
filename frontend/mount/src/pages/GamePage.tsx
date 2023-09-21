@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
-import { GameInfo, UpdateGameEvent, eloVariation } from '../shared/game_info';
+import { GameInfo, UpdateGameEvent, EloVariation } from '../shared/game_info';
 import {
     ApiResult,
     KeyEventType,
@@ -30,7 +30,7 @@ const Game = ({
     gameInfo: GameInfo;
     gameLeave: UpdateGameEvent | null;
     socket: Socket;
-    varElo: eloVariation | null;
+    varElo: EloVariation | null;
     user: User | null;
     width: number;
     height: number;
@@ -180,7 +180,7 @@ const GamePage: React.FC<{
     const { width, height } = useWindowSize();
     const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
     const [gameLeave, setGameLeave] = useState<UpdateGameEvent | null>(null);
-    const [varElo, setVarElo] = useState<eloVariation | null>(null);
+    const [varElo, setVarElo] = useState<EloVariation | null>(null);
     const { user } = useUserContext();
 
     useEffect(() => {
@@ -192,14 +192,12 @@ const GamePage: React.FC<{
             setGameLeave(eventGameInfo);
         };
 
-        const handleEloVar = (data: eloVariation) => {
+        const handleEloVar = (data: EloVariation) => {
             setVarElo(data);
         };
 
         socket.on('updateGameInfo', handleUpdateGameInfo);
-
         socket.on('eventGame', handleEventGame);
-
         socket.on('varElo', handleEloVar);
 
         return () => {

@@ -22,7 +22,7 @@ import {
     GameInfo,
     Invite,
     UpdateGameEvent,
-    eloVariation,
+    EloVariation,
 } from 'src/shared/game_info';
 import { GamesService } from 'src/games/games.service';
 import { emit } from 'process';
@@ -750,7 +750,7 @@ export class GatewayService
                         aborted: aborted === -1 ? false : true,
                     },
                 );
-                const varElo: eloVariation = {
+                const varElo: EloVariation = {
                     varEloLeft: reversed ? response.varEloB : response.varEloA,
                     varEloRight: reversed ? response.varEloA : response.varEloB,
                 };
