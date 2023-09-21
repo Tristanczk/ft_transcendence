@@ -11,7 +11,7 @@ BACKEND_SHARED := backend/mount/src/shared
 FRONTEND_SHARED := frontend/mount/src/shared
 SHARED := $(BACKEND_SHARED) $(FRONTEND_SHARED)
 
-build: shared
+build:
 	$(COMPOSE) up --build
 
 down:
@@ -19,7 +19,7 @@ down:
 
 clean: down
 	docker system prune -f -a --volumes
-	rm -rf $(COMPILED) $(SHARED)
+	rm -rf $(COMPILED)
 
 re: clean
 	$(MAKE) build
