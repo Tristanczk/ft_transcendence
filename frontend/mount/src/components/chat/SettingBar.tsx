@@ -24,9 +24,9 @@ export default function SettingBar({
     const authAxios = useAuthAxios();
     const { user } = useUserContext();
     const [input, setInput] = useState<string>('');
-    const [formState, setFormState] = useState<'kick' | 'ban' | 'admin' | 'mute' | null>(
-        null,
-    );
+    const [formState, setFormState] = useState<
+        'kick' | 'ban' | 'admin' | 'mute' | null
+    >(null);
     const blurTimeout = useRef<any>(null);
     const [showInput, setShowInput] = useState(false);
     const [showList, setShowList] = useState(false);
@@ -358,7 +358,7 @@ export default function SettingBar({
                         handleListClick();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-rose-600"
                 >
                     <svg
                         className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6 hover:text-gray-800"
@@ -386,10 +386,10 @@ export default function SettingBar({
                         leaveChannel();
                     }}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-rose-500"
+                    className="inline-flex items-center justify-center rounded-lg transition-all duration-500 h-8 w-8 md:h-10 md:w-10 ease-in-out focus:outline-none bg-gray-700 transform hover:scale-110 hover:bg-rose-600"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6 hover:text-gray-800" 
+                        className="transition-all duration-500 w-4 h-4 md:w-6 sm:h-6 hover:text-gray-800"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"

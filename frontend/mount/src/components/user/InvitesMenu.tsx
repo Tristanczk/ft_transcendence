@@ -81,50 +81,51 @@ export default function InvitesMenu({
                                 {invite.userName}
                             </span>
                             <div className="pr-2 space-x-2">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setShowInvites(false);
-                                    handleGameInvite(invite);
-                                }}
-                                className="inline-flex items-center justify-center rounded-lg h-6 w-6 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500 hover:scale-125"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke-width="2.5"
-                                    stroke="currentColor"
-                                    className="h-5 w-5 text-slate-500 hover:text-white"
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowInvites(false);
+                                        handleGameInvite(invite);
+                                    }}
+                                    className="inline-flex items-center justify-center rounded-lg h-6 w-6 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500 hover:scale-125"
                                 >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M4.5 12.75l6 6 9-13.5"
-                                    />
-                                </svg>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleRefusal(invite)}
-                                className="inline-flex items-center justify-center rounded-lg h-6 w-6 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-125"
-                            >
-                                <svg
-                                    className="h-5 w-5 text-slate-500 hover:text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="2.5"
+                                        stroke="currentColor"
+                                        className="h-5 w-5 text-slate-500 hover:text-white"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M4.5 12.75l6 6 9-13.5"
+                                        />
+                                    </svg>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRefusal(invite)}
+                                    className="inline-flex items-center justify-center rounded-lg h-6 w-6 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-600 hover:scale-125"
                                 >
-                                    {' '}
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            </button></div>
+                                    <svg
+                                        className="h-5 w-5 text-slate-500 hover:text-white"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        {' '}
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     ))}
             </ul>

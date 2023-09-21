@@ -117,7 +117,7 @@ export default function MessagesHeader({
                     <button
                         type="button"
                         onClick={handleBlock}
-                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-700 hover:text-white hover:bg-rose-500 hover:scale-110"
+                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-700 hover:text-white hover:bg-rose-600 hover:scale-110"
                     >
                         <svg
                             className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-gray-300 hover:text-gray-800"
@@ -138,7 +138,7 @@ export default function MessagesHeader({
                     <button
                         type="button"
                         onClick={handleClose}
-                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-700 hover:text-white hover:bg-rose-500 hover:scale-110"
+                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-gray-700 hover:text-white hover:bg-rose-600 hover:scale-110"
                     >
                         <svg
                             className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-gray-300 hover:text-gray-800"

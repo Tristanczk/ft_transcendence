@@ -95,7 +95,7 @@ export default function ChannelHeader({
                 <button
                     type="button"
                     onClick={handleClose}
-                    className="inline-flex items-center justify-center rounded-lg h-8 w-8 sm:h-10 sm:w-10 transition-all duration-500 ease-in-out focus:outline-none bg-gray-700 hover:bg-rose-500 transform hover:scale-110"
+                    className="inline-flex items-center justify-center rounded-lg h-8 w-8 sm:h-10 sm:w-10 transition-all duration-500 ease-in-out focus:outline-none bg-gray-700 hover:bg-rose-600 transform hover:scale-110"
                 >
                     <svg
                         className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6 hover:text-gray-800"
