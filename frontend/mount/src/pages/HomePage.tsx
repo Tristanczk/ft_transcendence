@@ -49,7 +49,7 @@ const GameButton: React.FC<{
     small?: boolean;
 }> = ({ text, onClick, small = false }) => (
     <button
-        className={`flex justify-center items-center py-4 px-4 bg-white border-4 border-black text-black font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm ${
+        className={`flex justify-center items-center bg-white border-4 border-black text-black font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm ${
             small ? 'py-2 px-2 text-xl' : 'py-4 px-4 text-2xl'
         }`}
         onClick={onClick}
@@ -249,7 +249,7 @@ const GameModePage = ({
                 }}
             />
             <div
-                className={`w-2/3 max-w-sm flex flex-row space-between ${
+                className={`w-2/3 max-w-sm flex flex-row space-between space-x-2 sm:space-x-5 md:space-x-8 lg:space-x-11 ${
                     !showBattleNumPlayers ? 'hidden-component' : ''
                 }`}
             >
