@@ -1,7 +1,7 @@
 FROM node:18-alpine
 
 # TODO change to production before deployment
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 
 RUN mkdir -p /backend
 WORKDIR /backend
