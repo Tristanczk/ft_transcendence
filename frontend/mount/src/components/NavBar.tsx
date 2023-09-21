@@ -269,7 +269,7 @@ const NavBar = ({
 
         socket.on('uninviteGame', (data: Invite) => {
             setInvites((oldInvites) =>
-                oldInvites.filter((invite) => invite !== data),
+                oldInvites.filter((invite) => invite.gameId !== data.gameId),
             );
         });
 
