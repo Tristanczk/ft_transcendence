@@ -187,19 +187,21 @@ function HistoryFive({ user }: PresentationUserProps) {
                 </div>
             </div>
             <div className="overflow-hidden">
-                <table className="divide-y divide-gray-200 dark:divide-gray-700 min-w-full text-left">
-                    <tbody>
-                        {games.length === 0
-                            ? 'No games played yet'
-                            : games.map((game) => (
-                                  <HistoryRow
-                                      key={game.gameId}
-                                      game={game}
-                                      user={user}
-                                  />
-                              ))}
-                    </tbody>
-                </table>
+                {games.length === 0 ? (
+                    'No games played yet'
+                ) : (
+                    <table className="divide-y divide-gray-200 dark:divide-gray-700 min-w-full text-left">
+                        <tbody>
+                            {games.map((game) => (
+                                <HistoryRow
+                                    key={game.gameId}
+                                    game={game}
+                                    user={user}
+                                />
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
         </div>
     ) : null;
