@@ -295,8 +295,6 @@ export default function SettingBar({
         }
     };
 
-    if (!currentChannel) return null;
-
     return (
         <>
             {alertMessage && (

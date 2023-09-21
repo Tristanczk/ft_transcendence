@@ -123,7 +123,6 @@ export default function Messages({
                 />
             )}
             <div className="flex">
-                {' '}
                 <SettingBar
                     currentChannel={currentChannel}
                     isSettingVisible={isSettingVisible}

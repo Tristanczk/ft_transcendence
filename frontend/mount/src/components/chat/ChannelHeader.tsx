@@ -32,7 +32,7 @@ export default function ChannelHeader({
         }
     };
 
-    if (channel === 0 || !currentChannel) return <div></div>;
+    if (!currentChannel) return <div></div>;
     return (
         <div className="flex sm:items-center justify-between py-2 md:py-6 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
             <div className="relative flex items-center space-x-4">
