@@ -30,7 +30,7 @@ const DashboardPage: React.FC = () => {
             ? parseInt(idUserToView)
             : null
         : user?.id ?? null;
-    const [error, setError] = useState(userId === null);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -49,12 +49,7 @@ const DashboardPage: React.FC = () => {
         };
         if (userId !== null) fetchUser();
         else setUserData(null);
-
-        if (!user) {
-            setError(true);
-            setUserData(null);
-        }
-    }, [userId, user]);
+    }, [userId]);
 
     return !user ? (
         <NotConnected message="Please signup or log in to access your dashboard" />
