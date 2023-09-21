@@ -30,7 +30,7 @@ const DashboardPage: React.FC = () => {
             ? parseInt(idUserToView)
             : null
         : user?.id ?? null;
-    const [error, setError] = useState(userId === null);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -39,7 +39,7 @@ const DashboardPage: React.FC = () => {
                     `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/users/${userId}`,
                     { withCredentials: true },
                 );
-                if (!response.data) throw new Error('No user foudnd');
+                if (!response.data) throw new Error('No user found');
                 setUserData(response.data);
                 setError(false);
             } catch (error) {
@@ -49,11 +49,6 @@ const DashboardPage: React.FC = () => {
         };
         if (userId !== null) fetchUser();
         else setUserData(null);
-
-        if (!user) {
-            setError(true);
-            setUserData(null);
-        }
     }, [userId]);
 
     return !user ? (

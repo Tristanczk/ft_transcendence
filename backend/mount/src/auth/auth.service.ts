@@ -57,6 +57,11 @@ export class AuthService {
             },
         });
         if (existingUser) {
+            if (existingUser.hash) {
+                throw new ForbiddenException(
+                    'User with same login as your login already exists',
+                );
+            }
             const updatedUser = await this.prisma.user.update({
                 where: { login },
                 data: { loginNb: existingUser.loginNb + 1 },
@@ -70,6 +75,7 @@ export class AuthService {
                     email: email,
                     avatarPath: 'default.png',
                     elo: 1000,
+                    highElo: 1000,
                     loginNb: 1,
                 },
             });
@@ -139,7 +145,7 @@ export class AuthService {
             await this.generateTokens(user, res);
             return user;
         } catch (error) {
-            throw error;
+            throw new ForbiddenException('Invalid authorization code');
         }
     }
 
@@ -153,6 +159,7 @@ export class AuthService {
                     email: dto.email,
                     avatarPath: 'default.png',
                     elo: 1000,
+                    highElo: 1000,
                     loginNb: 1,
                     hash,
                 },
@@ -181,7 +188,7 @@ export class AuthService {
                 nickname: dto.nickname,
             },
         });
-        if (!user) {
+        if (!user || !user.hash) {
             throw new ForbiddenException('Wrong credentials provided');
         }
         const pwMatches = await argon.verify(user.hash, dto.password);
@@ -203,7 +210,7 @@ export class AuthService {
         await this.generateTokens(user, res);
         return user;
     }
-    
+
     async signout(userId: number, res: Response): Promise<void> {
         try {
             const user = this.gateway.users.getIndivUserById(userId);
@@ -212,7 +219,7 @@ export class AuthService {
                     this.gateway.server.to(socket).emit('signoutchat');
                 });
             }
-            
+
             res.clearCookie(this.config.get('JWT_ACCESS_TOKEN_COOKIE'), {
                 httpOnly: true,
                 secure: false,
@@ -227,7 +234,6 @@ export class AuthService {
                 where: { id: userId },
                 data: { currentHashedRefreshToken: null },
             });
-
         } catch (error) {
             throw error;
         }
