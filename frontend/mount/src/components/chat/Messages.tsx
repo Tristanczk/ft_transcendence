@@ -166,7 +166,7 @@ export default function Messages({
                                                             <span
                                                                 className={`${
                                                                     isCurrentUser
-                                                                        ? 'rounded-br-none bg-blue-600 text-white'
+                                                                        ? 'rounded-br-none bg-rose-600 text-white'
                                                                         : 'rounded-bl-none bg-gray-300 text-gray-600'
                                                                 } transition-all duration-500 px-4 py-2 rounded-lg inline-block`}
                                                             >
