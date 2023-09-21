@@ -358,7 +358,7 @@ const HomePage: React.FC<{
                 );
             }
         }
-    });
+    }, [location.search, replayProcessed, socket, userId, navigate, setGameId]);
 
     useEffect(() => {
         if (socket) {

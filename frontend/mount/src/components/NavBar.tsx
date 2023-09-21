@@ -254,6 +254,7 @@ const NavBar = ({
             setInvites([]);
             setGameId(undefined);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, setGameId, isLoading]);
 
     useEffect(() => {
@@ -277,7 +278,7 @@ const NavBar = ({
             socket.off('endGame');
             socket.off('inviteGame');
         };
-    }, [socket]);
+    });
 
     const handleRejoin = () => {
         navigate(`/game/${gameId}`);

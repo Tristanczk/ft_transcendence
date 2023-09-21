@@ -20,8 +20,7 @@ export default function InvitesMenu({
     const socket = useContext(WebsocketContext);
     const { user } = useUserContext();
     const navigate = useNavigate();
-    for (const invite of invites) {
-    }
+
     const handleGameInvite = async (data: Invite) => {
         if (!user) return; //TO DO display an error message impossible to send game invite
         const joinFriendGame: JoinFriendGameType = {

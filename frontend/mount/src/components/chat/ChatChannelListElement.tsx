@@ -98,7 +98,7 @@ export default function ChatChannelListElement({
             );
 
             if (response.data === true) {
-                const response = await authAxios.post(
+                await authAxios.post(
                     `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/joinChannel`,
                     {
                         idUser: user?.id,

@@ -18,7 +18,7 @@ export default function ChannelHeader({
 
     const leaveChannel = async () => {
         try {
-            const response = await authAxios.patch(
+            await authAxios.patch(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/leaveChannel`,
                 {
                     id: currentChannel?.id,
