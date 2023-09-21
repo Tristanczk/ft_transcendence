@@ -69,32 +69,33 @@ export default function InvitesMenu({
         <OutsideClickHandler onOutsideClick={() => setShowInvites(false)}>
             <ul
                 id="listinvites"
-                className="z-50 absolute top-full right-0 mt-2 w-48 py-2 rounded-md shadow-xl bg-gray-800 space-y-4 overflow-y-auto scrolling-touch overflow-clip shadow-lg transition-all duration-500 ease-in-out rounded-b-xl h-48 bg-gray-100"
+                className="z-50 absolute top-full right-0 mt-4 mr-4 w-48 py-2 rounded-3xl shadow-xl bg-gray-800 space-y-4 overflow-y-auto scrolling-touch overflow-clip shadow-2xl transition-all duration-500 ease-in-out h-48 bg-gray-100"
             >
                 {invites &&
                     invites.map((invite) => (
                         <div
-                            className="flex items-center justify-between p-4 transition-colors duration-300 flex items-center justify-center cursor-pointer rounded-xl p-2 shadow-md transition-transform transform duration-200 ease-in-out"
+                            className="flex items-center justify-between p-2 transition-colors duration-300 flex items-center justify-center cursor-pointer rounded-xl p-2 shadow-md transition-transform transform duration-200 ease-in-out"
                             onClick={() => {}}
                         >
-                            <span className="px-4 py-2 text-sm text-gray-200 hover:text-white">
+                            <span className="px-4 pt-1 text-xl text-gray-200 hover:text-white">
                                 {invite.userName}
                             </span>
+                            <div className="pr-2 space-x-2">
                             <button
                                 type="button"
                                 onClick={() => {
                                     setShowInvites(false);
                                     handleGameInvite(invite);
                                 }}
-                                className="inline-flex items-center justify-center rounded-lg h-8 w-8 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500 hover:scale-110"
+                                className="inline-flex items-center justify-center rounded-lg h-6 w-6 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-green-500 hover:scale-125"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
-                                    stroke-width="1.5"
+                                    stroke-width="2.5"
                                     stroke="currentColor"
-                                    className="w-6 h-6"
+                                    className="h-5 w-5 text-slate-500 hover:text-white"
                                 >
                                     <path
                                         stroke-linecap="round"
@@ -106,10 +107,10 @@ export default function InvitesMenu({
                             <button
                                 type="button"
                                 onClick={() => handleRefusal(invite)}
-                                className="inline-flex items-center justify-center rounded-lg h-8 w-8 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
+                                className="inline-flex items-center justify-center rounded-lg h-6 w-6 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-125"
                             >
                                 <svg
-                                    className="h-6 w-6 text-slate-500 hover:text-white"
+                                    className="h-5 w-5 text-slate-500 hover:text-white"
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"
                                     height="24"
@@ -123,7 +124,7 @@ export default function InvitesMenu({
                                         clipRule="evenodd"
                                     />
                                 </svg>
-                            </button>
+                            </button></div>
                         </div>
                     ))}
             </ul>
