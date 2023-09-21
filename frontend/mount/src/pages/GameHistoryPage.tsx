@@ -23,9 +23,7 @@ function GameHistoryPage() {
             if (userId === -1) return;
             const response = await axios.get(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/games/all/${userId}`,
-                {
-                    withCredentials: true,
-                },
+                { withCredentials: true },
             );
             if (!response.data) throw new Error('No games received');
             setGames(response.data);
