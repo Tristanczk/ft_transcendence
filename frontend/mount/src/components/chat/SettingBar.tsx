@@ -303,7 +303,7 @@ export default function SettingBar({
                 <Alert message={alertMessage} onClose={closeAlert} />
             )}
             <div
-                className={`relative flex-col items-center transition-all duration-500 space-y-0 lt:space-y-2 md:space-y-4 bg-gray-200 w-1/6 flex z-0 object-bottom object-fill
+                className={`relative flex-col items-center transition-all duration-500 space-y-0 lt:space-y-2 md:space-y-4 bg-gray-200 w-1/6 sm:w-1/6 flex z-0 object-bottom object-fill
                 ${
                     isSettingVisible
                         ? 'right-0 sm:right-16 md:right-20 opacity-100'

@@ -16,7 +16,10 @@ export default function MessagesHeader({
     currentFriend: UserSimplified | null;
     handleClose: () => void;
     handleBlock: () => void;
-    handleGameInvite: (mode: 'classic' | 'mayhem' | 'battle', idUser: number) => void;
+    handleGameInvite: (
+        mode: 'classic' | 'mayhem' | 'battle',
+        idUser: number,
+    ) => void;
 }) {
     const [alert, setAlert] = useState<boolean>(false);
 
@@ -35,7 +38,7 @@ export default function MessagesHeader({
                     friendClicked={currentFriend.id}
                 />
             )}
-            <div className="flex sm:items-center justify-between py-3 bg-slate-100 px-3 rounded-none sm:rounded-tl-3xl sm:rounded-tr-3xl shadow-2xl">
+            <div className="flex sm:items-center justify-between py-2 md:py-6 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
                 <div className="relative flex items-center space-x-4">
                     <div className="relative">
                         <span className="absolute text-green-500 right-0 bottom-0">
@@ -49,19 +52,19 @@ export default function MessagesHeader({
                         <ImageFriend
                             userId={currentFriend.id}
                             textImg={currentFriend.nickname}
-                            customClassName="w-10 sm:w-16 h-10 sm:h-16 rounded-full"
+                            customClassName="transition-all duration-500 w-10 h-10 md:w-16 md:h-16 rounded-full"
                         />
                     </div>
                     <div className="flex flex-col leading-tight">
                         <div className="text-2xl mt-1 flex items-center">
                             <Link to={'/dashboard/' + currentFriend.id}>
-                                <button className="group inline-block hover:text-blue-600 text-gray-600 transition-transform duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
+                                <button className="group inline-block hover:text-blue-600 text-gray-600 text-base md:text-lg transition-all duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
                                     {currentFriend.nickname}
                                 </button>
                             </Link>
                         </div>
                         <Link to={'/leaderboard/'}>
-                            <button className="group inline-block hover:text-blue-600 text-gray-600 text-xs sm:text-md md:text-xl transition-transform duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
+                            <button className="group inline-block hover:text-blue-600 text-gray-600 text-xs md:text-sm transition-all duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
                                 🏆 {currentFriend.elo} ELO
                             </button>
                         </Link>
@@ -77,7 +80,7 @@ export default function MessagesHeader({
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
-                            className="h-4 w-4 sm:w-6 sm:w-6 text-slate-500 hover:text-white"
+                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-slate-500 hover:text-white"
                         >
                             <path d="M17.457 3L21 3.003l.002 3.523-5.467 5.466 2.828 2.829 1.415-1.414 1.414 1.414-2.474 2.475 2.828 2.829-1.414 1.414-2.829-2.829-2.475 2.475-1.414-1.414 1.414-1.415-2.829-2.828-2.828 2.828 1.415 1.415-1.414 1.414-2.475-2.475-2.829 2.829-1.414-1.414 2.829-2.83-2.475-2.474 1.414-1.414 1.414 1.413 2.827-2.828-5.46-5.46L3 3l3.546.003 5.453 5.454L17.457 3zm-7.58 10.406L7.05 16.234l.708.707 2.827-2.828-.707-.707zm9.124-8.405h-.717l-4.87 4.869.706.707 4.881-4.879v-.697zm-14 0v.7l11.241 11.241.707-.707L5.716 5.002l-.715-.001z" />
                         </svg>
@@ -92,7 +95,7 @@ export default function MessagesHeader({
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
-                                className="h-4 w-4 sm:w-6 sm:w-6 text-slate-500 hover:text-white"
+                                className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-slate-500 hover:text-white"
                             >
                                 <path
                                     strokeLinecap="round"
@@ -109,7 +112,7 @@ export default function MessagesHeader({
                         className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
                     >
                         <svg
-                            className="h-4 w-4 sm:w-6 sm:w-6 text-slate-500 hover:text-white"
+                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-slate-500 hover:text-white"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -130,7 +133,7 @@ export default function MessagesHeader({
                         className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
                     >
                         <svg
-                            className="h-4 w-4 sm:w-6 sm:w-6 text-slate-500 hover:text-white"
+                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-slate-500 hover:text-white"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
