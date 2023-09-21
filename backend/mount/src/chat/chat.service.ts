@@ -621,9 +621,6 @@ export class ChatService {
                 };
                 users.push(userDto);
             }
-
-            console.log('users');
-            console.log(users);
         } catch (error) {
             console.log(error);
         }

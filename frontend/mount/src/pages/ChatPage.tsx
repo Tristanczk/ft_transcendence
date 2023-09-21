@@ -69,7 +69,7 @@ function ChatPage({
     }, [isChatVisible, currentFriend, currentChannel]);
 
     const handleClose = () => {
-        setTimeout(() => setChannel(0), 500); // Wait for the animation to complete before setting state
+        setChannel(0)
     };
 
     const closeChat = () => {
@@ -80,14 +80,12 @@ function ChatPage({
 
     useEffect(() => {
         if (visibleSettings) {
-            // If settings are becoming visible, we delay the change of z-index.
             const timer = setTimeout(() => {
                 setZIndexClass('z-auto');
             }, 500);
 
-            return () => clearTimeout(timer); // Cleanup the timer if the component unmounts or if visibleSettings changes again before the timer fires.
+            return () => clearTimeout(timer);
         } else {
-            // If settings are hiding, immediately reset z-index.
             setZIndexClass('z-0');
         }
     }, [visibleSettings]);
@@ -113,12 +111,10 @@ function ChatPage({
             setChannels(response.data);
         } catch (error) {
             console.error(error);
-            //setAlertMessage('Failed to fetch channels. Please try again.');
         }
     }, [authAxios]);
 
     const fetchMessages = useCallback(async () => {
-        console.log('fetching messages for', channel);
         try {
             const response = await authAxios.get(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:3333/chat/getMessages/${channel}`,
@@ -147,7 +143,6 @@ function ChatPage({
             setCurrentChannel(response.data);
         } catch (error) {
             console.error(error);
-            //setAlertMessage('Failed to fetch channel. Please try again.');
         }
     }, [authAxios, channel, user?.id]);
 
@@ -166,8 +161,6 @@ function ChatPage({
 
     useEffect(() => {
         const messageListener = (message: MessageProps) => {
-            console.log('received message', message);
-
             if (message.idSender !== user?.id) {
                 if (message.idChannel !== channel) {
                     if (!notifications.includes(message.idChannel)) {
@@ -188,7 +181,6 @@ function ChatPage({
         socket.on('reloadfriends', () => fetchFriends());
         socket.on('reloadchannels', () => fetchChannels());
         socket.on('reloadchannel', (channelId) => {
-            console.log(channelId + '  ' + channel);
             if (channelId === channel) fetchChannel();
         });
         socket.on('signoutchat', () => {
@@ -212,8 +204,6 @@ function ChatPage({
                     withCredentials: true,
                 },
             );
-            console.log('fetchUsers');
-            console.log(response.data);
 
             setChannelUsers(response.data);
         } catch (error) {
@@ -273,7 +263,7 @@ function ChatPage({
                 <div className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex transition-all duration-500 mr-[0px] md:mr-[36px]">
                     <div
                         className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
-                            channel ? 'w-80 lg:w-104 md:w-96' : 'w-80'
+                            channel ? 'w-80 lg:w-104 md:w-96' : 'w-80 delay-500'
                         }`}
                     >
                         <ChatListHeader
@@ -303,51 +293,43 @@ function ChatPage({
                                 setNotifications={setNotifications}
                             />
                         )}
-                        <div
-                            className={`chat-content
-                                ${
+                                                    <div
+                                className={`chat-content ${
                                     channel
-                                        ? 'opacity-100 delay-0'
-                                        : 'opacity-0 delay-500'
-                                }
-                                    ${
-                                        channel
-                                            ? 'visible delay-500'
-                                            : 'invisible delay-0'
-                                    }
-                                    ${channel ? 'h-auto' : 'h-0'}
-                                    transition-opacity transition-visibility transition-height duration-500`}
-                        >
-                            {currentFriend ? (
-                                <MessagesHeader
-                                    channel={channel}
-                                    currentFriend={currentFriend}
-                                    handleClose={handleClose}
-                                    handleBlock={handleBlock}
-                                    handleGameInvite={handleGameInvite}
-                                />
-                            ) : (
-                                <ChannelHeader
-                                    channel={channel}
+                                        ? 'opacity-100 visible h-auto delay-500'
+                                        : 'opacity-0 invisible'
+                                } transition-all duration-500`}
+                            >
+                                {currentFriend ? (
+                                    <MessagesHeader
+                                        channel={channel}
+                                        currentFriend={currentFriend}
+                                        handleClose={handleClose}
+                                        handleBlock={handleBlock}
+                                        handleGameInvite={handleGameInvite}
+                                    />
+                                ) : (
+                                    <ChannelHeader
+                                        channel={channel}
+                                        currentChannel={currentChannel}
+                                        handleClose={handleClose}
+                                        onClick={settingEnabler}
+                                    />
+                                )}
+                                <Messages
+                                    messages={messages}
+                                    isSettingVisible={visibleSettings}
+                                    zIndexClass={zIndexClass}
                                     currentChannel={currentChannel}
                                     handleClose={handleClose}
-                                    onClick={settingEnabler}
+                                    channelUsers={channelUsers}
+                                    fetchUsers={fetchUsers}
+                                    blockedUsers={blockedUsers}
+                                    setChannelUsers={setChannelUsers}
+                                    handleGameInvite={handleGameInvite}
                                 />
-                            )}
-                            <Messages
-                                messages={messages}
-                                isSettingVisible={visibleSettings}
-                                zIndexClass={zIndexClass}
-                                currentChannel={currentChannel}
-                                handleClose={handleClose}
-                                channelUsers={channelUsers}
-                                fetchUsers={fetchUsers}
-                                blockedUsers={blockedUsers}
-                                setChannelUsers={setChannelUsers}
-                                handleGameInvite={handleGameInvite}
-                            />
-                            <MessageInput idChannel={channel} />
-                        </div>
+                                <MessageInput idChannel={channel} />
+                            </div>
                     </div>
                 </div>
             </div>

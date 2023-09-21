@@ -41,7 +41,6 @@ export class UserService {
     }
 
     async downloadAvatar(userId: number, file: Express.Multer.File) {
-        // console.log(file);
         const response = {
             originalname: file.originalname,
             filename: file.filename,
@@ -101,7 +100,6 @@ export class UserService {
         );
         this.editUser(user.id, { twoFactorSecret: secret });
         const qrCode = await toDataURL(otpauthUrl);
-        // console.log(qrCode);
         return { qrCode, secret };
     }
 

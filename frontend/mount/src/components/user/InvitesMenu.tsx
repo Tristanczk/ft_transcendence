@@ -21,7 +21,6 @@ export default function InvitesMenu({
     const { user } = useUserContext();
     const navigate = useNavigate();
     for (const invite of invites) {
-        console.log('invite', invite);
     }
     const handleGameInvite = async (data: Invite) => {
         if (!user) return; //TO DO display an error message impossible to send game invite
@@ -49,7 +48,6 @@ export default function InvitesMenu({
     };
 
     const handleRefusal = async (data: Invite) => {
-        console.log('refuse');
         socket.emit(
             'refuseGameInvite',
             { userId: user!.id, gameId: data.gameId },

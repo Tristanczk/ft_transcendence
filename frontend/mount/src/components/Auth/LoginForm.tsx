@@ -38,7 +38,6 @@ const LoginForm: React.FC<Props> = ({ setUsername, setTwoFactor }) => {
                 },
                 { withCredentials: true },
             );
-            console.log('response', response.data);
             if (response.data.user.twoFactorAuthentication) {
                 setTwoFactor(true);
                 setUsername(data.username);

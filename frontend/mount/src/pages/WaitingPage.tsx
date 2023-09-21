@@ -15,7 +15,6 @@ const leaveMatchmaking = (
     const gameIdToLeave = gameId?.startsWith('waiting_')
         ? gameId.slice(8)
         : gameId;
-    console.log('gameIdToLeave', gameIdToLeave);
     socket.emit('abortMatchmaking', gameIdToLeave, (response: any) => {
         if (response.error) {
             setError(response.error);
@@ -122,7 +121,6 @@ const WaitingPage: React.FC<{
             leaveMatchmaking(socket, setError, gameId, setGameId, navigate);
         };
     });
-    console.log('gameId', gameId);
 
     return (
         <div

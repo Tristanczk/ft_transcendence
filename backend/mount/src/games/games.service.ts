@@ -47,7 +47,6 @@ export class GamesService {
             });
             verifiedIdPlayerA = idPlayerA;
         } catch (error) {
-            // console.log('A not found');
             verifiedIdPlayerA = -1;
         }
 
@@ -57,18 +56,9 @@ export class GamesService {
             });
             verifiedIdPlayerB = idPlayerB;
         } catch (error) {
-            // console.log('B not found');
             verifiedIdPlayerB = -1;
         }
 
-        //verif playerB exist
-        // const playerB: User = await this.prisma.user.findUnique({
-        //     where: { id: idPlayerB },
-        // });
-
-        // if (!playerB) throw new NotFoundException();
-
-        //creating game
         try {
             let newGame: Games = null;
             if (playerA && playerB) {
@@ -156,7 +146,6 @@ export class GamesService {
     }
 
     async updateGame(idGame: number, body: updateGameDto) {
-        // console.log('updateGame ' + idGame + ' result ' + body);
         const varElo: VariationElo = await this.computeElo(idGame, body.won);
         const retour = await this.prisma.games.update({
             where: { id: idGame },

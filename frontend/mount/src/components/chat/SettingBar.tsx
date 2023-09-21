@@ -139,7 +139,6 @@ export default function SettingBar({
                 },
                 { withCredentials: true },
             );
-            console.log(response.data);
         } catch (error) {
             console.error(error);
             setAlertMessage('Error editing password');
@@ -212,7 +211,6 @@ export default function SettingBar({
                 },
                 { withCredentials: true },
             );
-            console.log(response.data);
             if (typeof response.data === 'string')
                 setAlertMessage(response.data);
         } catch (error) {
@@ -232,7 +230,6 @@ export default function SettingBar({
                 },
                 { withCredentials: true },
             );
-            console.log(response.data);
             if (typeof response.data === 'string')
                 setAlertMessage(response.data);
         } catch (error) {
@@ -294,8 +291,6 @@ export default function SettingBar({
                 return () => {};
         }
     };
-
-    if (!currentChannel) return null;
 
     return (
         <>
