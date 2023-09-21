@@ -9,19 +9,14 @@ import { useUserContext } from '../context/UserContext';
 
 function GameHistoryPage() {
     const [dataGames, setGames] = useState<GameImports[] | null>(null);
+    const [noUser, setNoUser] = useState<boolean>(false);
     const { user } = useUserContext();
     const { idUserToView } = useParams();
-
-    let userId: number = -1;
-    if (idUserToView) {
-        userId = parseInt(idUserToView);
-        if (!userId) userId = -1;
-    }
+    const userId = parseInt(idUserToView ?? 'invalid');
 
     useEffect(() => {
-        if (userId !== -1) getGamesList();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userId]);
+        getGamesList();
+    });
 
     async function getGamesList() {
         try {
@@ -32,50 +27,48 @@ function GameHistoryPage() {
                     withCredentials: true,
                 },
             );
+            if (!response.data) throw new Error('No games received');
             setGames(response.data);
-            return response.data;
+            setNoUser(false);
         } catch (error) {
             setGames(null);
+            setNoUser(true);
         }
     }
 
     return !user ? (
         <NotConnected message="Please signup or log in to access your dashboard" />
     ) : dataGames && userId !== -1 ? (
-        <>
-            <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
-                <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                    <article className="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                        <h1 className="mb-4 text-5xl font-extrabold dark:text-white">
-                            Game history
-                            {dataGames.length > 0
-                                ? ` of ${
-                                      dataGames[0].playerA.id === userId
-                                          ? dataGames[0].playerA.nickname
-                                          : dataGames[0].playerB.nickname
-                                  }`
-                                : ''}
-                        </h1>
-                        {dataGames && dataGames.length > 0 ? (
-                            dataGames.map((elem) => (
-                                <ShowGameElem
-                                    game={elem}
-                                    userId={userId}
-                                    key={elem.gameId}
-                                />
-                            ))
-                        ) : (
-                            <div className="mt-4">
-                                No games available for user
-                            </div>
-                        )}
-                    </article>
-                </div>
-            </main>
-        </>
-    ) : (
+        <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
+            <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
+                <article className="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                    <h1 className="mb-4 text-5xl font-extrabold dark:text-white">
+                        Game history
+                        {dataGames.length > 0
+                            ? ` of ${
+                                  dataGames[0].playerA.id === userId
+                                      ? dataGames[0].playerA.nickname
+                                      : dataGames[0].playerB.nickname
+                              }`
+                            : ''}
+                    </h1>
+                    {dataGames && dataGames.length > 0 ? (
+                        dataGames.map((elem) => (
+                            <ShowGameElem
+                                game={elem}
+                                userId={userId}
+                                key={elem.gameId}
+                            />
+                        ))
+                    ) : (
+                        <div className="mt-4">No games available for user</div>
+                    )}
+                </article>
+            </div>
+        </main>
+    ) : noUser ? (
         <NoUser />
-    );
+    ) : null;
 }
 
 export default GameHistoryPage;
