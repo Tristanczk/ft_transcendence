@@ -10,7 +10,6 @@ import {
     PLAYERS_TEXT_SIZE,
 } from '../shared/misc';
 import MultiClassicMayhem from '../games/multiplayer/MultiClassicMayhem';
-import MultiBattleRoyale from '../games/multiplayer/MultiBattleRoyale';
 import { Socket } from 'socket.io-client';
 import ResignModal from '../games/multiplayer/ResignModal';
 import { useUserContext } from '../context/UserContext';
@@ -39,16 +38,7 @@ const Game = ({
 }) => {
     const [openModal, setOpenModal] = useState<boolean>(false);
 
-    if (gameInfo.mode === 'battle') {
-        return (
-            <MultiBattleRoyale
-                gameObjects={gameInfo.objects}
-                players={gameInfo.players}
-                windowWidth={width}
-                windowHeight={height}
-            />
-        );
-    }
+    if (gameInfo.mode === 'battle') return null;
 
     const leftName =
         gameInfo.players[0]!.name.length > 10

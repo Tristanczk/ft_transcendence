@@ -9,6 +9,7 @@ import { useAuthAxios } from '../../context/AuthAxiosContext';
 import EmojiPicker, {
     EmojiClickData,
     EmojiStyle,
+    Theme,
 } from 'emoji-picker-react';
 import { Alert } from './Alert';
 
@@ -178,6 +179,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                                 onEmojiClick={handleEmojiSelect}
                                 emojiVersion="5.0"
                                 skinTonesDisabled={true}
+                                theme={Theme.DARK}
                                 previewConfig={{
                                     defaultCaption: '',
                                     defaultEmoji: '',

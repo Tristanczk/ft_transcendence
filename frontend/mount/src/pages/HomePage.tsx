@@ -42,6 +42,22 @@ const joinGame = (
     });
 };
 
+const GameButton: React.FC<{
+    text: string;
+    onClick: () => void;
+    extraClassNames?: string;
+    small?: boolean;
+}> = ({ text, onClick, small = false }) => (
+    <button
+        className={`flex justify-center items-center bg-white border-4 border-black text-black font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm ${
+            small ? 'py-2 px-2 text-xl' : 'py-4 px-4 text-2xl'
+        }`}
+        onClick={onClick}
+    >
+        {text}
+    </button>
+);
+
 const MultiButton = ({
     externalMode,
     internalMode,
@@ -65,8 +81,8 @@ const MultiButton = ({
     setMatchmaking: (matchmaking: boolean) => void;
     setErrorMatchmaking: (error: string) => void;
 }) => (
-    <button
-        className="flex justify-center items-center py-4 px-4 bg-white border-4 border-black text-black text-2xl font-mono tracking-widest hover:bg-black hover:text-white transition duration-300 w-2/3 max-w-sm"
+    <GameButton
+        text={externalMode}
         onClick={() =>
             joinGame(
                 internalMode,
@@ -80,10 +96,21 @@ const MultiButton = ({
                 setErrorMatchmaking,
             )
         }
-    >
-        {externalMode}
-    </button>
+    />
 );
+
+const BattleButton: React.FC<{ numPlayers: number }> = ({ numPlayers }) => {
+    const navigate = useNavigate();
+    return (
+        <GameButton
+            text={numPlayers.toString()}
+            onClick={() => {
+                navigate(`/local/battle?numPlayers=${numPlayers}`);
+            }}
+            small={true}
+        />
+    );
+};
 
 const leaveMatchmaking = (
     socket: Socket,
@@ -189,6 +216,7 @@ const GameModePage = ({
         setMatchmaking,
         setErrorMatchmaking,
     };
+    const [showBattleNumPlayers, setShowBattleNumPlayers] = useState(false);
 
     return (
         <>
@@ -200,11 +228,6 @@ const GameModePage = ({
             <MultiButton
                 externalMode="MAYHEM"
                 internalMode="mayhem"
-                {...buttonParams}
-            />
-            <MultiButton
-                externalMode="BATTLE ROYALE"
-                internalMode="battle"
                 {...buttonParams}
             />
             {error && <div className="text-white">{error}</div>}
@@ -219,6 +242,21 @@ const GameModePage = ({
                     </span>
                 </button>
             )}
+            <GameButton
+                text={'BATTLE ROYALE'}
+                onClick={() => {
+                    setShowBattleNumPlayers((b) => !b);
+                }}
+            />
+            <div
+                className={`w-2/3 max-w-sm flex flex-row space-between space-x-2 sm:space-x-5 md:space-x-8 lg:space-x-11 ${
+                    !showBattleNumPlayers ? 'hidden-component' : ''
+                }`}
+            >
+                {[2, 3, 4, 5].map((numPlayers) => (
+                    <BattleButton key={numPlayers} numPlayers={numPlayers} />
+                ))}
+            </div>
         </>
     );
 };

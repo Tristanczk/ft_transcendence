@@ -15,9 +15,6 @@ import { randomInt } from 'src/shared/functions';
 import { ApiResult, KeyEvent, isGameMode } from 'src/shared/misc';
 import { IndivUser, ResponseCheckConnexion, Users } from './gateway.users';
 import {
-    BattlePlayer,
-    BattlePlayers,
-    ClassicMayhemPlayer,
     ClassicMayhemPlayers,
     GameInfo,
     Invite,
@@ -25,7 +22,6 @@ import {
     EloVariation,
 } from 'src/shared/game_info';
 import { GamesService } from 'src/games/games.service';
-import { emit } from 'process';
 
 const ID_SIZE = 6;
 const ID_BASE = 36;
@@ -84,8 +80,9 @@ export class GatewayService
     ) {}
 
     socketArray: SocketProps[] = [];
-
     users: Users = new Users(this.prisma);
+    private games: Record<string, Game> = {};
+    private clients: Record<string, IndivUser | null> = {};
 
     @WebSocketServer()
     server: Server;
@@ -96,7 +93,6 @@ export class GatewayService
 
     @SubscribeMessage('ping')
     async handlePing(@MessageBody() body: PingProps) {
-        // console.log(body);
         const toNotify: ResponseCheckConnexion =
             await this.users.checkUserAlreadyHere(body.id, body.idConnection);
         if (toNotify.inNotify) {
@@ -130,13 +126,6 @@ export class GatewayService
                 });
         }
     }
-
-    /*********** Axel WIP ***********/
-
-    private games: Record<string, Game> = {};
-    private clients: Record<string, IndivUser | null> = {}; //<socketId, client>
-    private spectators: Record<string, Set<string>> = {};
-    private spectating: Record<string, string> = {};
 
     getGameStatus(userId: number): { status: string; gameId: string } {
         const client: IndivUser | null = this.users.getIndivUserById(userId);
@@ -193,10 +182,7 @@ export class GatewayService
         });
         const userElo = user ? user.elo : 1000;
         const userName = user ? user.nickname : 'Anonymous';
-        if (!currentClient) {
-            // console.log('error to handle');
-            return;
-        }
+        if (!currentClient) return;
         if (currentClient.isPlaying) {
             if (
                 this.games[currentClient.idGamePlaying].info.state === 'waiting'
@@ -214,7 +200,7 @@ export class GatewayService
                 };
             }
         }
-        if (!isGameMode(gameMode)) {
+        if (!isGameMode(gameMode) || gameMode === 'battle') {
             return {
                 error: `Invalid game mode: ${gameMode}`,
                 errorCode: 'invalidGameMode',
@@ -399,8 +385,8 @@ export class GatewayService
         return { status: 'success' };
     }
 
-    //on ne prend pas en compte le mode multiplayer (battle)
     async startGameStat(game: Game) {
+        if (game.info.mode === 'battle') return;
         const idPlayerA: number = game.playerA.userId;
         const idPlayerB: number = game.playerB.userId;
         let mode: number = -1;
@@ -618,31 +604,19 @@ export class GatewayService
 
     @SubscribeMessage('keyEvent')
     async handleKeyEvent(client: Socket, keyEvent: KeyEvent) {
-        if (!this.games[keyEvent.gameId]) {
-            return;
-        }
+        if (!this.games[keyEvent.gameId]) return;
         const gameInfo = this.games[keyEvent.gameId].info;
+        if (gameInfo.mode === 'battle') return;
         let user: IndivUser = null;
         for (const player of gameInfo.players) {
-            // oblige de separer en 2... desole !
-            if (gameInfo.mode === 'classic' || gameInfo.mode === 'mayhem') {
-                if (player.side === this.games[keyEvent.gameId].sidePlayerA)
-                    user = this.games[keyEvent.gameId].playerA;
-                else user = this.games[keyEvent.gameId].playerB;
-                if (player && user.sockets.includes(client.id)) {
-                    if (keyEvent.type === 'down') {
-                        player.activeKeys.add(keyEvent.key);
-                    } else {
-                        player.activeKeys.delete(keyEvent.key);
-                    }
-                }
-            } else {
-                if (player && player.id === client.id) {
-                    if (keyEvent.type === 'down') {
-                        player.activeKeys.add(keyEvent.key);
-                    } else {
-                        player.activeKeys.delete(keyEvent.key);
-                    }
+            if (player.side === this.games[keyEvent.gameId].sidePlayerA)
+                user = this.games[keyEvent.gameId].playerA;
+            else user = this.games[keyEvent.gameId].playerB;
+            if (player && user.sockets.includes(client.id)) {
+                if (keyEvent.type === 'down') {
+                    player.activeKeys.add(keyEvent.key);
+                } else {
+                    player.activeKeys.delete(keyEvent.key);
                 }
             }
         }
@@ -653,20 +627,12 @@ export class GatewayService
         client: Socket,
         gameId: string,
     ): Promise<ApiResult<GameInfo>> {
-        if (!this.games[gameId]) {
-            return { success: false, error: `Invalid game: ${gameId}` };
-        }
-        return {
-            success: true,
-            data: this.games[gameId].info,
-        };
-    }
-
-    @SubscribeMessage('startBattle')
-    async handleStartBattle(client: Socket, data: string) {
-        // TODO refuse if only one player
-        // TODO refuse if already started
-        // TODO refuse if not in game
+        return this.games[gameId]
+            ? {
+                  success: true,
+                  data: this.games[gameId].info,
+              }
+            : { success: false, error: `Invalid game: ${gameId}` };
     }
 
     @Interval(1000 / 60)
@@ -681,20 +647,12 @@ export class GatewayService
         }
     }
 
-    // /!\ /!\ /!\ a retravailler pour inclure le mode battle /!\ /!\ /!\
     emitUpdateToPlayers(game: Game, canal: string, dataToTransfer: any) {
-        if (game.info.mode === 'classic' || game.info.mode === 'mayhem') {
-            if (game.playerA)
-                this.emitUpdateToPlayer(game.playerA, canal, dataToTransfer);
-            if (game.playerB)
-                this.emitUpdateToPlayer(game.playerB, canal, dataToTransfer);
-        } else {
-            for (const player of game.info.players) {
-                if (player) {
-                    this.server.to(player.id).emit('updateGameInfo', game.info);
-                }
-            }
-        }
+        if (game.info.mode === 'battle') return;
+        if (game.playerA)
+            this.emitUpdateToPlayer(game.playerA, canal, dataToTransfer);
+        if (game.playerB)
+            this.emitUpdateToPlayer(game.playerB, canal, dataToTransfer);
     }
 
     emitUpdateToPlayer(player: IndivUser, canal: string, dataToTransfer: any) {
@@ -705,6 +663,7 @@ export class GatewayService
 
     //aborted: -1: classic ending, 0: aborted by A, 1: aborted by B
     async handleEndGame(game: Game, update: boolean, aborted: number) {
+        if (game.info.mode === 'battle') return;
         this.emitUpdateToPlayers(game, 'endGame', { message: 'game ended' });
         if (game.playerA && game.playerA.userId !== -1)
             this.server.emit('updateStatus', {
@@ -716,9 +675,6 @@ export class GatewayService
                 idUser: game.playerB.userId,
                 type: 'endPlaying',
             });
-
-        if (!(game.info.mode === 'classic' || game.info.mode === 'mayhem'))
-            return;
 
         if (update) {
             const players: ClassicMayhemPlayers = game.info.players;
