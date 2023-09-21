@@ -68,10 +68,7 @@ export default function ChatChannelList({
                 { withCredentials: true },
             );
             setChannel(response.data.id);
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Failed to create the channel. Please try again.');
-        }
+        } catch {}
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

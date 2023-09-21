@@ -74,9 +74,7 @@ function Friends({ currUser }: FriendsProps) {
                     },
                     { withCredentials: true },
                 );
-            } catch (error) {
-                console.error(error);
-            }
+            } catch {}
             getMyFriends();
             setChange(true);
         } else setAlertMessage("You can't add yourself as a friend!");
@@ -92,10 +90,7 @@ function Friends({ currUser }: FriendsProps) {
                     withCredentials: true,
                 },
             );
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Error deleting friend');
-        }
+        } catch {}
         getMyFriends();
         setChange(true);
     };

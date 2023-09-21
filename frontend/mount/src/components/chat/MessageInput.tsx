@@ -60,10 +60,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                 },
                 { withCredentials: true },
             );
-        } catch (error) {
-            console.error('Error sending message:', error);
-            setAlertMessage('Error sending message');
-        }
+        } catch {}
     };
 
     const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {

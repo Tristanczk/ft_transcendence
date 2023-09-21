@@ -45,9 +45,7 @@ function ImageFriend({ userId, textImg, size, customClassName }: Props) {
             );
             setImgY(base64Image);
             return response.data;
-        } catch (error) {
-            console.error(error);
-        }
+        } catch {}
     };
 
     return imgY ? (

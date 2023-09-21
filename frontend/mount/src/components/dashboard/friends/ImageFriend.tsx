@@ -31,9 +31,7 @@ function ImageFriend({ userId, textImg, size }: Props) {
                 );
                 setImgY(base64Image);
                 return response.data;
-            } catch (error) {
-                console.error(error);
-            }
+            } catch {}
         };
         fetchImg();
         // eslint-disable-next-line react-hooks/exhaustive-deps

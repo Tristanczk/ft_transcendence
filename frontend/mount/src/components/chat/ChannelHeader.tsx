@@ -27,9 +27,7 @@ export default function ChannelHeader({
                 { withCredentials: true },
             );
             handleClose();
-        } catch (error) {
-            console.error(error);
-        }
+        } catch {}
     };
 
     if (!currentChannel) return <div></div>;

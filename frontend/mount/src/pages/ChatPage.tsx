@@ -109,9 +109,7 @@ function ChatPage({
                 },
             );
             setChannels(response.data);
-        } catch (error) {
-            console.error(error);
-        }
+        } catch {}
     }, [authAxios]);
 
     const fetchMessages = useCallback(async () => {
@@ -125,10 +123,7 @@ function ChatPage({
             );
             if (!response.data) setMessages([]);
             setMessages(response.data);
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Failed to fetch messages. Please try again.');
-        }
+        } catch {}
     }, [authAxios, channel, user?.id]);
 
     const fetchChannel = useCallback(async () => {
@@ -141,9 +136,7 @@ function ChatPage({
                 },
             );
             setCurrentChannel(response.data);
-        } catch (error) {
-            console.error(error);
-        }
+        } catch {}
     }, [authAxios, channel, user?.id]);
 
     const settingEnabler = () => {
@@ -211,10 +204,7 @@ function ChatPage({
             );
 
             setChannelUsers(response.data);
-        } catch (error) {
-            console.error(error);
-            setAlertMessage('Failed to fetch users. Please try again.');
-        }
+        } catch {}
     };
 
     const handleBlock = async () => {

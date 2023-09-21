@@ -19,9 +19,7 @@ function TestUpdate() {
                     },
                 );
                 return response;
-            } catch (error) {
-                console.error(error);
-            }
+            } catch {}
         }
         doMe();
     }, []);
