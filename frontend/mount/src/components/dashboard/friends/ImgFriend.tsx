@@ -10,7 +10,7 @@ interface Props {
 }
 
 function ImageFriend({ userId, textImg, size, customClassName }: Props) {
-    const [imgY, setImgY] = useState<any>();
+    const [imgY, setImgY] = useState<string | null>(null);
     const inputClassName = customClassName
         ? customClassName
         : `w-${size} h-${size} rounded-full`;
@@ -44,18 +44,17 @@ function ImageFriend({ userId, textImg, size, customClassName }: Props) {
                 ),
             );
             setImgY(base64Image);
-            return response.data;
-        } catch {}
+        } catch {
+            setImgY(null);
+        }
     };
 
-    return imgY ? (
+    return (
         <img
             className={inputClassName}
-            src={`data:image/png;base64,${imgY}`}
+            src={imgY ? `data:image/png;base64,${imgY}` : '/norminet.jpeg'}
             alt={textImg}
         />
-    ) : (
-        <>vide</>
     );
 }
 
