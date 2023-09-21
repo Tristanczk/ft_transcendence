@@ -63,7 +63,15 @@ export class StatsService {
                     0,
                 ) / gameList.length,
             ),
-            elo: user.highElo,
+			elo: user.elo,
+            highElo: user.highElo,
+			averageEloOpponents: gameList.length !== 0 ? (Math.trunc(
+                gameList.reduce(
+                    (acc, curr) =>
+                        acc + (curr.playerA === idUser ? curr.initEloB : curr.initEloA), 
+                    0,
+                ) / gameList.length,
+            )) : 0,
             daysSinceRegister: this.dateDiff(user.createdAt, new Date()).days,
         };
         return userStats;
