@@ -94,12 +94,12 @@ export default function ChatChannelList({
             )}
             <div
                 id="list"
-                className={`flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip shadow-xl transition-all duration-500 ${
+                className={`flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-gray-800 overflow-clip shadow-xl transition-all duration-500 ${
                     channel ? 'rounded-b-3xl' : 'rounded-none'
                 }`}
             >
                 <div
-                    className={`flex flex-col z-10 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-white overflow-clip transition-all duration-500 ${
+                    className={`flex flex-col z-10 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-gray-800 overflow-clip transition-all duration-500 ${
                         channel ? 'h-20 sm:h-24 md:h-36' : 'h-96'
                     }`}
                 >
@@ -120,7 +120,7 @@ export default function ChatChannelList({
             </div>
 
             <div
-                className={`px-4 py-2 mb-[-36px] sm:mb-[-24px] md:mb-[-12px] sm:mb-0 flex items-center justify-between rounded-bl-3xl rounded-br-3xl bg-slate-200 shadow-md relative duration-500 ${
+                className={`px-4 py-2 mb-[-36px] sm:mb-[-24px] md:mb-[-12px] sm:mb-0 flex items-center justify-between rounded-bl-3xl rounded-br-3xl bg-gray-900 shadow-md relative duration-500 ${
                     !channel && !barHidden
                         ? 'transform translate-y-0 opacity-100'
                         : 'transform -translate-y-full opacity-0'
@@ -134,7 +134,7 @@ export default function ChatChannelList({
                     <button
                         onClick={handleButtonClick}
                         type="button"
-                        className="inline-flex items-center justify-center rounded-3xl h-8 w-8 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-amber-300 hover:scale-110"
+                        className="inline-flex items-center justify-center rounded-3xl h-8 w-8 transition duration-500 ease-in-out focus:outline-none bg-gray-700 hover:text-white hover:bg-amber-300 hover:scale-110"
                     >
                         <svg
                             className="w-4 h-4 sm:w-5 sm:h-5 rotate-[45deg]"
@@ -160,7 +160,7 @@ export default function ChatChannelList({
                     onKeyDown={handleKeyDown}
                     type="text"
                     placeholder="Channel name..?"
-                    className={`focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 bg-white rounded-3xl border-white transition-all transform ease-in-out duration-500 h-8 overflow-hidden ${
+                    className={`focus:outline-none focus:placeholder-gray-300 text-gray-300 placeholder-gray-600 bg-gray-800 rounded-3xl border-white transition-all transform ease-in-out duration-500 h-8 overflow-hidden ${
                         showInput ? 'opacity-100 w-full' : 'opacity-0 w-0'
                     }`}
                     onBlur={handleBlur}

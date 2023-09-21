@@ -34,7 +34,7 @@ export default function ChannelHeader({
 
     if (channel === 0 || !currentChannel) return <div></div>;
     return (
-        <div className="flex sm:items-center justify-between py-2 md:py-6 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
+        <div className="flex sm:items-center justify-between py-2 md:py-6 bg-gray-900 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
             <div className="relative flex items-center space-x-4">
                 <div className="relative">
                     <span className="absolute text-green-500 right-0 bottom-0">
@@ -43,7 +43,7 @@ export default function ChannelHeader({
                 </div>
                 <div className="flex flex-col leading-tight">
                     <div className="text-2xl mt-1 flex items-center">
-                        <span className="group inline-block hover:scale-110 text-gray-700 mr-3 transition-transform duration-300 ease-in-out">
+                        <span className="group inline-block hover:scale-110 text-gray-300 mr-3 transition-transform duration-300 ease-in-out">
                             {currentChannel.name}
                         </span>
                     </div>
@@ -54,10 +54,10 @@ export default function ChannelHeader({
                     <button
                         onClick={onClick}
                         type="button"
-                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 sm:h-10 sm:w-10 transition-all duration-500 ease-in-out focus:outline-none bg-slate-200 hover:bg-amber-400 transform hover:scale-110"
+                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 sm:h-10 sm:w-10 transition-all duration-500 ease-in-out focus:outline-none bg-gray-700 hover:bg-amber-400 transform hover:scale-110"
                     >
                         <svg
-                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6 rotate-[90deg]"
+                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6 rotate-[90deg] hover:text-gray-800 "
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -72,10 +72,10 @@ export default function ChannelHeader({
                     <button
                         onClick={leaveChannel}
                         type="button"
-                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 sm:h-10 sm:w-10 transition-all duration-500 ease-in-out focus:outline-none bg-slate-200 hover:bg-amber-300 transform hover:scale-110"
+                        className="inline-flex items-center justify-center rounded-lg h-8 w-8 sm:h-10 sm:w-10 transition-all duration-500 ease-in-out focus:outline-none bg-gray-700 hover:bg-amber-300 transform hover:scale-110"
                     >
                         <svg
-                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6"
+                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6 hover:text-gray-800"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -95,10 +95,10 @@ export default function ChannelHeader({
                 <button
                     type="button"
                     onClick={handleClose}
-                    className="inline-flex items-center justify-center rounded-lg h-8 w-8 sm:h-10 sm:w-10 transition-all duration-500 ease-in-out focus:outline-none bg-gray-200 hover:bg-rose-500 transform hover:scale-110"
+                    className="inline-flex items-center justify-center rounded-lg h-8 w-8 sm:h-10 sm:w-10 transition-all duration-500 ease-in-out focus:outline-none bg-gray-700 hover:bg-rose-500 transform hover:scale-110"
                 >
                     <svg
-                        className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6 hover:text-white"
+                        className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6 hover:text-gray-800"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
