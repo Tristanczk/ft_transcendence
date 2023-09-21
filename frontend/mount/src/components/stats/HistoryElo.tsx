@@ -39,7 +39,7 @@ function HistoryElo({ user }: PresentationUserProps) {
     }
 
     return data && data.length > 0 ? (
-        <div className="w-full  p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+        <div className="w-full  p-4 bg-white border border-gray-200 rounded-3xl mt-6 shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
                 <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
                     Elo History

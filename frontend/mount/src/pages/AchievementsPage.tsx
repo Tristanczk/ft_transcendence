@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useUserContext } from '../context/UserContext';
 import axios from 'axios';
 import { AchievType } from '../components/stats/ShowAchievements';
+import PageTitle from '../components/PageTitle';
 
 function AchievementPage() {
     const { user } = useUserContext();
@@ -37,9 +38,7 @@ function AchievementPage() {
             <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                 <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
                     <article className="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                        <h1 className="mb-4 text-5xl font-extrabold dark:text-white">
-                            Achievements
-                        </h1>
+                        <PageTitle title="Achievements" />
                         {dataAchiev && dataAchiev.length > 0 ? (
                             dataAchiev.map((elem) => (
                                 <ShowAchievElem

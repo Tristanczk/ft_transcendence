@@ -167,7 +167,7 @@ export default function Messages({
                                                                 className={`${
                                                                     isCurrentUser
                                                                         ? 'rounded-br-none bg-rose-600 text-white'
-                                                                        : 'rounded-bl-none bg-gray-300 text-gray-600'
+                                                                        : 'rounded-bl-none bg-gray-200 text-gray-900'
                                                                 } transition-all duration-500 px-4 py-2 rounded-lg inline-block`}
                                                             >
                                                                 {

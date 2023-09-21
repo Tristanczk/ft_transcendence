@@ -31,7 +31,7 @@ export default function ChannelUserForm({
                             }}
                             key={currentUser.id}
                         >
-                            <span className="no-underline transition-colors duration-300 hover:text-blue-600 text-gray-300 font-medium">{currentUser.nickname}</span>
+                            <span className="no-underline transition-colors duration-300 hover:text-rose-600 text-gray-300 font-medium">{currentUser.nickname}</span>
                         </div>
                     ))}
                 </div>

@@ -22,8 +22,8 @@ const TextNavLink: React.FC<{
     <div
         className={`${innerDivStyle} ${
             isActive
-                ? 'bg-blue-700 bg-transparent p-0 text-blue-500'
-                : 'p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700'
+                ? 'bg-blue-700 bg-transparent p-0 text-rose-600'
+                : 'p-0 text-white hover:text-rose-600 hover:bg-gray-700 hover:bg-transparent border-gray-700'
         }`}
     >
         {title}
@@ -335,7 +335,7 @@ const NavBar = ({
                                 viewBox="0 0 24 24"
                                 stroke-width="1.5"
                                 stroke="white"
-                                className="w-6 h-6 hover:scale-110 hover:stroke-blue-500"
+                                className="w-6 h-6 hover:scale-110 hover:stroke-rose-600"
                             >
                                 <path
                                     stroke-linecap="round"
@@ -353,7 +353,7 @@ const NavBar = ({
                                 viewBox="0 0 24 24"
                                 stroke-width="1.5"
                                 stroke="white"
-                                className="w-6 h-6 hover:scale-110 hover:stroke-blue-500"
+                                className="w-6 h-6 hover:scale-110 hover:stroke-rose-600"
                             >
                                 <path
                                     stroke-linecap="round"

@@ -193,7 +193,7 @@ export default function MessageInput({ idChannel }: { idChannel: number }) {
                 <button
                     onClick={(event) => onClick(event)}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-3xl px-2 md:px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-600 hover:bg-gray-800 hover:text-blue-600 focus:outline-none ml-2"
+                    className="inline-flex items-center justify-center rounded-3xl px-2 md:px-4 py-3 transition duration-500 ease-in-out text-white bg-bg-rose-600 hover:bg-gray-800 hover:text-bg-rose-600 focus:outline-none ml-2"
                 >
                     <span className="font-bold"></span>
                     <svg

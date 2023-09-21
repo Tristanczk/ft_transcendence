@@ -4,10 +4,11 @@ import axios from 'axios';
 import ImageFriend from '../components/dashboard/friends/ImgFriend';
 import { Link } from 'react-router-dom';
 import NotConnected from '../components/NotConnected';
+import PageTitle from '../components/PageTitle';
 
 interface ResponseLeaderboard {
     avatarPath: string;
-	rank: number;
+    rank: number;
     createdAt: Date;
     elo: number;
     id: number;
@@ -23,7 +24,7 @@ interface Props {
 
 const DashboardPage: React.FC = () => {
     const { user } = useUserContext();
-	const [leaderboard, setLeaderbord] = useState<ResponseLeaderboard[] | null>(
+    const [leaderboard, setLeaderbord] = useState<ResponseLeaderboard[] | null>(
         null,
     );
     let rank: number = 1;
@@ -53,9 +54,7 @@ const DashboardPage: React.FC = () => {
             <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                 <div className="flex justify-between px-4 mx-auto max-w-screen-xl ">
                     <article className="mx-auto w-full max-w-4xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                        <h1 className="text-center text-xl md:text-2xl lg:text-4xl pb-4 font-extrabold dark:text-white">
-                            Leaderboard
-                        </h1>
+                        <PageTitle title="Leaderboard" />
                         {leaderboard && leaderboard.length > 0 ? (
                             leaderboard.map((elem) => (
                                 <ShowUserLeaderboard
@@ -72,8 +71,8 @@ const DashboardPage: React.FC = () => {
             </main>
         </>
     ) : (
-		<NotConnected message="Please signup or log in to access your dashboard" />
-	);
+        <NotConnected message="Please signup or log in to access your dashboard" />
+    );
 };
 
 function ShowUserLeaderboard({ userView, rank }: Props) {
