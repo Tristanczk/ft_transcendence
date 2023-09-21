@@ -194,8 +194,8 @@ export default function ChatChannelListElement({
                     <svg
                         className={
                             notifications && notifications.includes(channel.id)
-                                ? 'group inline-block text-rose-600 mr-3 transition-transform duration-300 ease-in-out hover:scale-110 w-6 h-6 hover:scale-110'
-                                : 'group inline-block text-rose-600 mr-3 transition-transform duration-300 ease-in-out hover:scale-110 w-6 h-6 hover:scale-110'
+                                ? 'group inline-block text-rose-600 mr-3 transition-transform duration-300 ease-in-out w-6 h-6 hover:scale-110'
+                                : 'group inline-block text-gray-300 mr-3 transition-transform duration-300 ease-in-out w-6 h-6 hover:scale-110'
                         }
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
