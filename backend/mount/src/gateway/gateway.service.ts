@@ -625,6 +625,7 @@ export class GatewayService
         const gameInfo = this.games[keyEvent.gameId].info;
         let user: IndivUser = null;
         for (const player of gameInfo.players) {
+            if (!player) continue;
             // oblige de separer en 2... desole !
             if (gameInfo.mode === 'classic' || gameInfo.mode === 'mayhem') {
                 if (player.side === this.games[keyEvent.gameId].sidePlayerA)
