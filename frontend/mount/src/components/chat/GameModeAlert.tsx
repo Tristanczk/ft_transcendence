@@ -1,10 +1,16 @@
+import { GameMode } from '../../shared/misc';
+
 interface GameModeAlertProps {
     onClose: () => void;
-    handleClick: (mode: 'classic' | 'mayhem' | 'battle', idUser: number) => void;
+    handleClick: (mode: GameMode, idUser: number) => void;
     friendClicked: number;
 }
 
-export function GameModeAlert({ onClose, handleClick, friendClicked }: GameModeAlertProps) {
+export function GameModeAlert({
+    onClose,
+    handleClick,
+    friendClicked,
+}: GameModeAlertProps) {
     return (
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-50 z-50">
             <div className="bg-zinc-200 rounded-lg p-5 max-w-md">

@@ -99,10 +99,7 @@ function ChatPage({
                 { withCredentials: true },
             );
             setFriendsList(response.data);
-        } catch (error) {
-            console.error(error);
-            //setAlertMessage('Failed to fetch friends. Please try again.');  it activate on first page load??
-        }
+        } catch {}
     }, [authAxios]);
 
     const fetchChannels = useCallback(async () => {
@@ -239,7 +236,7 @@ function ChatPage({
         }
     };
 
-    const handleGameInvite = async (mode: 'classic' | 'mayhem' | 'battle', idUser: number) => {
+    const handleGameInvite = async (mode: GameMode, idUser: number) => {
         if (!user) return; //TO DO display an error message impossible to send game invite
         const joinFriendGame: JoinFriendGameType = {
             mode,
@@ -273,9 +270,7 @@ function ChatPage({
                         : 'translate-x-full transition-transform duration-200 ease-in-out'
                 }`}
             >
-                <div
-                    className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex transition-all duration-500 mr-[0px] md:mr-[36px]"
-                >
+                <div className="Chatwindow bg-opacity-90 rounded-3xl flex-col justify-start items-center gap-9 inline-flex transition-all duration-500 mr-[0px] md:mr-[36px]">
                     <div
                         className={`flex-1 p:2 justify-between flex flex-col h-screen rounded-3xl transition-all duration-500 ${
                             channel ? 'w-80 lg:w-104 md:w-96' : 'w-80'
