@@ -58,7 +58,7 @@ export default function ChatFriendListElement({
 
     useEffect(() => {
         fetchChannelData(friend.id, true);
-    }, [notifications, friend.id]);
+    });
 
     return (
         <>
