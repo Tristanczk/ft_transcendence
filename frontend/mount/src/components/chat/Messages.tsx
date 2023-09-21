@@ -169,7 +169,7 @@ export default function Messages({
                                                                     isCurrentUser
                                                                         ? 'rounded-br-none bg-blue-600 text-white'
                                                                         : 'rounded-bl-none bg-gray-300 text-gray-600'
-                                                                } transition-all duration-500 px-4 py-2 w-64 md:w-full rounded-lg inline-block`}
+                                                                } transition-all duration-500 px-4 py-2 rounded-lg inline-block`}
                                                             >
                                                                 {
                                                                     processedMessage

@@ -36,7 +36,7 @@ export default function MessagesHeader({
                     friendClicked={currentFriend.id}
                 />
             )}
-            <div className="flex sm:items-center justify-between py-3 bg-slate-100 px-3 rounded-none sm:rounded-tl-3xl sm:rounded-tr-3xl shadow-2xl">
+            <div className="flex sm:items-center justify-between py-2 md:py-6 bg-slate-100 px-3 rounded-tl-3xl rounded-tr-3xl shadow-2xl">
                 <div className="relative flex items-center space-x-4">
                     <div className="relative">
                         <span className="absolute text-green-500 right-0 bottom-0">
@@ -50,19 +50,19 @@ export default function MessagesHeader({
                         <ImageFriend
                             userId={currentFriend.id}
                             textImg={currentFriend.nickname}
-                            customClassName="w-10 sm:w-16 h-10 sm:h-16 rounded-full"
+                            customClassName="transition-all duration-500 w-10 h-10 md:w-16 md:h-16 rounded-full"
                         />
                     </div>
                     <div className="flex flex-col leading-tight">
                         <div className="text-2xl mt-1 flex items-center">
                             <Link to={'/dashboard/' + currentFriend.id}>
-                                <button className="group inline-block hover:text-blue-600 text-gray-600 transition-transform duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
+                                <button className="group inline-block hover:text-blue-600 text-gray-600 text-base md:text-lg transition-all duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
                                     {currentFriend.nickname}
                                 </button>
                             </Link>
                         </div>
                         <Link to={'/leaderboard/'}>
-                            <button className="group inline-block hover:text-blue-600 text-gray-600 text-xs sm:text-md md:text-xl transition-transform duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
+                            <button className="group inline-block hover:text-blue-600 text-gray-600 text-xs md:text-sm transition-all duration-300 ease-in-out hover:scale-105 hover:text-blue-600 mr-3">
                                 🏆 {currentFriend.elo} ELO
                             </button>
                         </Link>
@@ -76,11 +76,11 @@ export default function MessagesHeader({
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="icon icon-tabler icon-tabler-swords h-4 w-4 sm:w-6 text-slate-800 hover:text-white"
+                            className="icon icon-tabler icon-tabler-swords h-4 w-4 sm:w-6 sm:h-6 text-gray-600 hover:text-white"
                             width="24"
                             height="24"
                             viewBox="0 0 24 24"
-                            stroke-width="1"
+                            stroke-width="1.25"
                             stroke="currentColor"
                             fill="none"
                             stroke-linecap="round"
@@ -103,7 +103,7 @@ export default function MessagesHeader({
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
-                                className="h-4 w-4 sm:w-6 sm:w-6 text-slate-500 hover:text-white"
+                                className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-slate-500 hover:text-white"
                             >
                                 <path
                                     strokeLinecap="round"
@@ -120,7 +120,7 @@ export default function MessagesHeader({
                         className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
                     >
                         <svg
-                            className="h-4 w-4 sm:w-6 sm:w-6 text-slate-500 hover:text-white"
+                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-slate-500 hover:text-white"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -141,7 +141,7 @@ export default function MessagesHeader({
                         className="inline-flex items-center justify-center rounded-lg h-8 w-8 md:h-10 md:w-10 transition duration-500 ease-in-out focus:outline-none bg-slate-200 hover:text-white hover:bg-rose-500 hover:scale-110"
                     >
                         <svg
-                            className="h-4 w-4 sm:w-6 sm:w-6 text-slate-500 hover:text-white"
+                            className="transition-all duration-500 w-4 h-4 sm:w-6 sm:h-6  text-slate-500 hover:text-white"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"

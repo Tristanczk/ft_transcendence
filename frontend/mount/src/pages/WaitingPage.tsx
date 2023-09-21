@@ -45,8 +45,8 @@ const CancelButton = ({
         type="button"
         className=" rounded-md p-2 "
         onClick={() => {
+            socket.emit('cancelInvitation', gameId);
             leaveMatchmaking(socket, setError, gameId, setGameId, navigate);
-            // TODO: cancel invitation
         }}
     >
         <span className="text-sm font-medium inline-flex items-center justify-center text-white hover:text-black focus:outline-none mt-2">
