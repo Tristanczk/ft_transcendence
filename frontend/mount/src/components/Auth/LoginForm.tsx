@@ -52,7 +52,7 @@ const LoginForm: React.FC<Props> = ({ setUsername, setTwoFactor }) => {
 
     const handleRedir42 = (event: React.FormEvent) => {
         event.preventDefault();
-        window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_API42_UID}&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fsignin42&response_type=code`;
+        window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_API42_UID}&redirect_uri=http%3A%2F%2F${process.env.REACT_APP_SERVER_ADDRESS}%3A3000%2Fsignin42&response_type=code`;
     };
 
     return (
