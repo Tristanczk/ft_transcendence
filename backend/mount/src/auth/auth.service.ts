@@ -75,7 +75,7 @@ export class AuthService {
                     email: email,
                     avatarPath: 'default.png',
                     elo: 1000,
-					highElo: 1000,
+                    highElo: 1000,
                     loginNb: 1,
                 },
             });
@@ -145,7 +145,7 @@ export class AuthService {
             await this.generateTokens(user, res);
             return user;
         } catch (error) {
-            throw error;
+            throw new ForbiddenException('Invalid authorization code');
         }
     }
 
@@ -159,7 +159,7 @@ export class AuthService {
                     email: dto.email,
                     avatarPath: 'default.png',
                     elo: 1000,
-					highElo: 1000,
+                    highElo: 1000,
                     loginNb: 1,
                     hash,
                 },

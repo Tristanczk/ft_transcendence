@@ -7,6 +7,7 @@ import ErrorsFormField from '../components/Auth/ErrorsFormField';
 import { useUserContext } from '../context/UserContext';
 import { USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH } from '../shared/misc';
 import TristanSection from '../components/TristanSection';
+import AlreadyConnected from '../components/AlreadyConnected';
 
 interface Inputs {
     username: string;
@@ -18,7 +19,7 @@ interface Inputs {
 const SignUpPage: React.FC = () => {
     const [error, setError] = useState<string>();
     const navigate = useNavigate();
-    const { loginUser } = useUserContext();
+    const { user, loginUser } = useUserContext();
 
     const {
         handleSubmit,
@@ -47,7 +48,9 @@ const SignUpPage: React.FC = () => {
         }
     };
 
-    return (
+    return user ? (
+        <AlreadyConnected />
+    ) : (
         <TristanSection>
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Create your account
