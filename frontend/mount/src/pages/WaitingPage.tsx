@@ -19,7 +19,7 @@ const leaveMatchmaking = (
             setError(response.error);
         } else {
             setGameId(undefined);
-            navigate(-1);
+            navigate('/');
         }
     });
 };
