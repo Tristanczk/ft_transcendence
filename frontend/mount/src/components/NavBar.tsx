@@ -12,7 +12,7 @@ import InvitesMenu from './user/InvitesMenu';
 import { Invite } from '../shared/game_info';
 
 const NAVBAR_BREAKPOINT = 1024;
-const CORNERS_WIDTH = 256;
+const CORNERS_WIDTH = 240;
 
 const TextNavLink: React.FC<{
     innerDivStyle: string;
@@ -316,7 +316,7 @@ const NavBar = ({
                 )}
                 <div
                     className="flex items-center justify-end space-x-2"
-                    style={user ? { width: CORNERS_WIDTH } : {}}
+                    style={showLipong && user ? { width: CORNERS_WIDTH } : {}}
                 >
                     {gameId &&
                         !gameId.startsWith('waiting_') &&
