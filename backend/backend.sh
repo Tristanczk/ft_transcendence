@@ -23,4 +23,4 @@ done
 
 echo "-----Starting backend-----"
 
-npm run start:dev 
+npm run start
