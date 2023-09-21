@@ -104,14 +104,6 @@ const NavLinks: React.FC<{
                 link="/leaderboard"
                 icon="/navlinks/podium.png"
             />
-            <li>
-                <button
-                    className="block py-2 px-0 mb:px-4 rounded p-0 text-white hover:text-blue-500 hover:bg-gray-700 hover:bg-transparent border-gray-700"
-                    onClick={toggleChatVisibility}
-                >
-                    Chat
-                </button>
-            </li>
         </ul>
     </div>
 );
@@ -332,6 +324,10 @@ const NavBar = ({
                             }}
                         />
                     )}
+                    <Button
+                        text="Chat"
+                        onClick={() => toggleChatVisibility()}
+                    />
                     {showInvites && (
                         <InvitesMenu
                             setShowInvites={setShowInvites}
