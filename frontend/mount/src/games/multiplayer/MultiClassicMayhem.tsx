@@ -454,6 +454,7 @@ const MultiClassicMayhem = ({
     timeRemaining,
     varElo,
     gameLeave,
+    canvasRef,
 }: {
     gameObjects: ClassicMayhemGameObjects;
     windowWidth: number;
@@ -465,6 +466,7 @@ const MultiClassicMayhem = ({
     timeRemaining: number;
     varElo: EloVariation | null;
     gameLeave: UpdateGameEvent | null;
+    canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
 }) => {
     const arenaHeight = Math.min(
         (windowWidth - CANVAS_MARGIN) / ASPECT_RATIO,
@@ -474,10 +476,13 @@ const MultiClassicMayhem = ({
     const socket = useContext(WebsocketContext);
     const navigate = useNavigate();
 
-    const ref = useRef<HTMLCanvasElement | null>(null);
-
     useEffect(() => {
-        const [canvas, ctx] = getCanvasCtx(ref, arenaWidth, arenaHeight, true);
+        const [canvas, ctx] = getCanvasCtx(
+            canvasRef,
+            arenaWidth,
+            arenaHeight,
+            true,
+        );
         drawBackground(canvas, ctx);
         drawBar(canvas, ctx, LINE_MARGIN);
         drawBar(canvas, ctx, 1 - LINE_MARGIN - LINE_WIDTH);
@@ -540,7 +545,10 @@ const MultiClassicMayhem = ({
     });
 
     return (
-        <canvas ref={ref} style={{ width: arenaWidth, height: arenaHeight }} />
+        <canvas
+            ref={canvasRef}
+            style={{ width: arenaWidth, height: arenaHeight }}
+        />
     );
 };
 

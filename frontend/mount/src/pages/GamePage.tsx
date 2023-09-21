@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WebsocketContext } from '../context/WebsocketContext';
 import { useWindowSize } from 'usehooks-ts';
@@ -25,6 +25,7 @@ const Game = ({
     user,
     width,
     height,
+    canvasRef,
 }: {
     gameId: string | undefined;
     gameInfo: GameInfo;
@@ -34,6 +35,7 @@ const Game = ({
     user: User | null;
     width: number;
     height: number;
+    canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
 }) => {
     const [openModal, setOpenModal] = useState<boolean>(false);
 
@@ -166,6 +168,7 @@ const Game = ({
                 varElo={varElo}
                 windowWidth={width}
                 windowHeight={height}
+                canvasRef={canvasRef}
             />
         </div>
     );
@@ -182,6 +185,7 @@ const GamePage: React.FC<{
     const [gameLeave, setGameLeave] = useState<UpdateGameEvent | null>(null);
     const [varElo, setVarElo] = useState<EloVariation | null>(null);
     const { user } = useUserContext();
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     useEffect(() => {
         const handleUpdateGameInfo = (newGameInfo: GameInfo) => {
@@ -218,12 +222,35 @@ const GamePage: React.FC<{
             emitKeyEvent(event, 'down');
         const handleKeyUp = (event: KeyboardEvent) => emitKeyEvent(event, 'up');
 
+        const handleTouchStart = (event: TouchEvent) => {
+            if (!canvasRef.current) return;
+            const rect = canvasRef.current.getBoundingClientRect();
+            const touchY = event.touches[0].clientY - rect.top;
+            emitKeyEvent(
+                {
+                    key: touchY < rect.height / 2 ? 'ArrowUp' : 'ArrowDown',
+                } as KeyboardEvent,
+                'down',
+            );
+        };
+
+        const handleTouchEnd = () => {
+            emitKeyEvent({ key: 'ArrowUp' } as KeyboardEvent, 'up');
+            emitKeyEvent({ key: 'ArrowDown' } as KeyboardEvent, 'up');
+        };
+
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
+        document.addEventListener('touchstart', handleTouchStart);
+        document.addEventListener('touchend', handleTouchEnd);
+        document.addEventListener('touchcancel', handleTouchEnd);
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             document.removeEventListener('keyup', handleKeyUp);
+            document.removeEventListener('touchstart', handleTouchStart);
+            document.removeEventListener('touchend', handleTouchEnd);
+            document.removeEventListener('touchcancel', handleTouchEnd);
         };
     }, [socket, gameId]);
 
@@ -281,6 +308,7 @@ const GamePage: React.FC<{
                         user={user}
                         width={width}
                         height={height - PLAYERS_TEXT_SIZE}
+                        canvasRef={canvasRef}
                     />
                 )}
         </div>
