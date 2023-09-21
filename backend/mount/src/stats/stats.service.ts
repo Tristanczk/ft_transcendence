@@ -63,7 +63,15 @@ export class StatsService {
                     0,
                 ) / gameList.length,
             ),
-            elo: user.elo,
+			elo: user.elo,
+            highElo: user.highElo,
+			averageEloOpponents: gameList.length !== 0 ? (Math.trunc(
+                gameList.reduce(
+                    (acc, curr) =>
+                        acc + (curr.playerA === idUser ? curr.initEloB : curr.initEloA), 
+                    0,
+                ) / gameList.length,
+            )) : 0,
             daysSinceRegister: this.dateDiff(user.createdAt, new Date()).days,
         };
         return userStats;
@@ -184,9 +192,15 @@ export class StatsService {
             let leaderboard: UserLeaderboard[] = [];
 			let lastElo: number = 0;
 			let rank: number = 0;
+			let tmpRank: number = 0;
             leaders.forEach((user) => {
-				if (lastElo === user.elo) {}
-				else rank++;
+				if (lastElo === user.elo) {
+					tmpRank++;
+				}
+				else {
+					rank = rank + 1 + tmpRank;
+					tmpRank = 0;
+				}
 
                 const newElem: UserLeaderboard = {
                     id: user.id,

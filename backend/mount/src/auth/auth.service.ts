@@ -75,6 +75,7 @@ export class AuthService {
                     email: email,
                     avatarPath: 'default.png',
                     elo: 1000,
+					highElo: 1000,
                     loginNb: 1,
                 },
             });
@@ -158,6 +159,7 @@ export class AuthService {
                     email: dto.email,
                     avatarPath: 'default.png',
                     elo: 1000,
+					highElo: 1000,
                     loginNb: 1,
                     hash,
                 },

@@ -17,6 +17,7 @@ model User {
     avatarPath String
     friends    String   @default("[]")
     elo        Int
+	highElo	   Int
     loginNb    Int
     invites    String[] @default([])
 
