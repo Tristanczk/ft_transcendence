@@ -131,13 +131,10 @@ const HistoryRow: React.FC<{ game: GameImports; user: User }> = ({
                 )
             )}
         </td>
-        <td className="min-w-0 items-center text-base font-semibold text-gray-900 dark:text-white">
-            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                {game.playerA?.score}-{game.playerB?.score}{' '}
-                {game.aborted && '(A)'}
-            </p>
+        <td className="min-w-0 text-gray-900 dark:text-white text-sm font-medium truncate">
+            {game.playerA?.score}-{game.playerB?.score} {game.aborted && '(A)'}
         </td>
-        <td className="items-center text-base font-semibold text-gray-900 dark:text-white">
+        <td className="text-base font-semibold text-gray-900 dark:text-white">
             {game.duration > 60
                 ? Math.trunc(game.duration / 60) +
                   'm' +
@@ -145,7 +142,7 @@ const HistoryRow: React.FC<{ game: GameImports; user: User }> = ({
                   's'
                 : (game.duration > 0 ? game.duration : 0) + 's'}
         </td>
-        <td className="items-center text-base font-semibold text-gray-900 dark:text-white">
+        <td className="text-base font-semibold text-gray-900 dark:text-white">
             {format(new Date(game.date), 'MMM d, yyyy')}
         </td>
     </tr>
