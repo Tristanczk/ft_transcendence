@@ -1,0 +1,17 @@
+dist
+build
+node_modules
+
+.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+.env*
+.*env
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

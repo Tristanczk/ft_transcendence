@@ -1,0 +1,77 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id         Int      @id @default(autoincrement())
+    createdAt  DateTime @default(now())
+    login      String   @unique
+    nickname   String   @unique
+    email      String   @unique
+    hash       String?
+    avatarPath String
+    friends    String   @default("[]")
+    elo        Int
+	highElo	   Int
+    loginNb    Int
+    invites    String[] @default([])
+
+    achievements String[] @default([])
+
+    twoFactorAuthentication Boolean @default(false)
+    isConnected             Boolean @default(false)
+    isPlaying               Boolean @default(false)
+    twoFactorSecret         String?
+
+    gamesasPlayerA Games[] @relation("PlayerAGames")
+    gamesasPlayerB Games[] @relation("PlayerBGames")
+
+    currentHashedRefreshToken String?
+}
+
+model Games {
+    id         Int      @id @default(autoincrement())
+    createdAt  DateTime @default(now())
+    finishedAt DateTime
+    finished   Boolean
+    won        Boolean
+    aborted    Boolean
+    scoreA     Int
+    scoreB     Int
+    mode       Int
+    varEloA    Int
+    varEloB    Int
+    initEloA   Int
+    initEloB   Int
+
+    playerA Int?
+    UserA   User? @relation("PlayerAGames", fields: [playerA], references: [id])
+    playerB Int?
+    UserB   User? @relation("PlayerBGames", fields: [playerB], references: [id])
+}
+
+model Channels {
+    id            Int      @id @default(autoincrement())
+    idOwner       Int
+    idAdmin       Int[]
+    idUsers       Int[]
+    idBannedUsers Int[]
+    name          String
+    mutedUsers    Json[]
+    isPublic      Boolean  @default(true)
+    password      String?
+    createdAt     DateTime @default(now())
+}
+
+model Message {
+    id        Int      @id @default(autoincrement())
+    idChannel Int
+    idSender  Int
+    message   String
+    createdAt DateTime @default(now())
+}

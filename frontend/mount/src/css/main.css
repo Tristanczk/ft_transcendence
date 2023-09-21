@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');
+@import 'reset.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+h1 {
+    font-family: 'Press Start 2P', sans-serif;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+
+.dot-flashing {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background-color: black;
+    color: black;
+    animation: dot-flashing 1s infinite linear alternate;
+    animation-delay: 0.5s;
+}
+.dot-flashing::before,
+.dot-flashing::after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 0;
+}
+.dot-flashing::before {
+    left: -24px;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background-color: black;
+    color: black;
+    animation: dot-flashing 1s infinite alternate;
+    animation-delay: 0s;
+}
+.dot-flashing::after {
+    left: 24px;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background-color: black;
+    color: black;
+    animation: dot-flashing 1s infinite alternate;
+    animation-delay: 1s;
+}
+
+@keyframes dot-flashing {
+    0% {
+        background-color: black;
+    }
+    50%,
+    100% {
+        background-color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+.hidden-component {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
