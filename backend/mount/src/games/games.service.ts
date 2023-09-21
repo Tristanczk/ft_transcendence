@@ -205,9 +205,6 @@ export class GamesService {
             });
         }
 
-        console.log(varEloA);
-        console.log(varEloB);
-
         if (this.dataGamesPlaying[gameIndex].idPlayerB !== -1) {
             await this.prisma.user.update({
                 where: { id: this.dataGamesPlaying[gameIndex].idPlayerB },
