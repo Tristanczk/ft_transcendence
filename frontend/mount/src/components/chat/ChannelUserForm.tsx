@@ -19,19 +19,19 @@ export default function ChannelUserForm({
     return (
         <>
             {channelUsers.length > 0 && (
-                <div id="list" className="flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-gray-500 scrollbar-thumb-rounded scrollbar-track-gray-200 scrollbar-w-2 scrolling-touch overflow-clip shadow-lg transition-all duration-500 ease-in-out rounded-b-xl h-48 bg-gray-100">
+                <div id="list" className="flex flex-col space-y-4 overflow-y-auto scrollbar-thumb-gray-500 scrollbar-thumb-rounded scrollbar-track-gray-200 scrollbar-w-2 scrolling-touch overflow-clip shadow-lg transition-all duration-500 ease-in-out rounded-b-xl h-48 bg-gray-700">
                     {channelUsers
                     .filter(currentUser => currentUser.id !== user?.id)
                     .map((currentUser) => (
                         <div
-                            className="flex items-center justify-between p-4 border-b border-gray-300 transition-colors duration-300 hover:bg-gray-100 flex items-center justify-center cursor-pointer bg-gray-100 hover:bg-gray-200 hover:scale-110 rounded-xl p-2 shadow-md transition-transform transform duration-200 ease-in-out"
+                            className="flex items-center justify-between p-4 border-gray-300 transition-colors duration-300 hover:bg-gray-600 flex items-center justify-center cursor-pointer bg-gray-700  hover:scale-110 rounded-xl p-2 shadow-md transition-transform transform duration-200 ease-in-out"
                             onClick={() => {
                                 handleClick(currentUser.id);
                                 setChannelUsers([]);
                             }}
                             key={currentUser.id}
                         >
-                            <span className="no-underline transition-colors duration-300 hover:text-blue-600 text-gray-800 font-medium">{currentUser.nickname}</span>
+                            <span className="no-underline transition-colors duration-300 hover:text-blue-600 text-gray-300 font-medium">{currentUser.nickname}</span>
                         </div>
                     ))}
                 </div>
