@@ -19,8 +19,10 @@ export type CurrentGame = {
     idGame: number;
     idPlayerA: number;
     eloPlayerA: number;
+    highEloA: number;
     idPlayerB: number;
     eloPlayerB: number;
+    highEloB: number;
 };
 
 export type VariationElo = {
@@ -135,8 +137,10 @@ export class GamesService {
                 idGame: newGame.id,
                 idPlayerA: playerA ? playerA.id : -1,
                 eloPlayerA: playerA ? playerA.elo : 1000,
+                highEloA: playerA ? playerA.highElo : 1000,
                 idPlayerB: playerB ? playerB.id : -1,
                 eloPlayerB: playerB ? playerB.elo : 1000,
+                highEloB: playerB ? playerB.highElo : 1000,
             };
             this.dataGamesPlaying.push(thisGame);
             return newGame.id;
@@ -191,15 +195,30 @@ export class GamesService {
                 where: { id: this.dataGamesPlaying[gameIndex].idPlayerA },
                 data: {
                     elo: won ? { increment: varEloA } : { decrement: -varEloA },
+					highElo:
+                        this.dataGamesPlaying[gameIndex].highEloA >=
+                        this.dataGamesPlaying[gameIndex].eloPlayerA + varEloA
+                            ? this.dataGamesPlaying[gameIndex].highEloA
+                            : this.dataGamesPlaying[gameIndex].eloPlayerA +
+                              varEloA,
                 },
             });
         }
+
+        console.log(varEloA);
+        console.log(varEloB);
 
         if (this.dataGamesPlaying[gameIndex].idPlayerB !== -1) {
             await this.prisma.user.update({
                 where: { id: this.dataGamesPlaying[gameIndex].idPlayerB },
                 data: {
                     elo: won ? { decrement: -varEloB } : { increment: varEloB },
+                    highElo:
+                        this.dataGamesPlaying[gameIndex].highEloB >=
+                        this.dataGamesPlaying[gameIndex].eloPlayerB + varEloB
+                            ? this.dataGamesPlaying[gameIndex].highEloB
+                            : this.dataGamesPlaying[gameIndex].eloPlayerB +
+                              varEloB,
                 },
             });
         }

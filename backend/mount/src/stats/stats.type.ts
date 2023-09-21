@@ -9,6 +9,8 @@ export type UserStats = {
     nbWins: number;
     averageDuration: number;
     elo: number;
+	highElo: number;
+	averageEloOpponents: number;
     daysSinceRegister: number;
 };
 

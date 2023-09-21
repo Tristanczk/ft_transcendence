@@ -102,6 +102,7 @@ export class CreateService {
                 email: email,
                 avatarPath: avatarPath,
                 elo: 1000,
+				highElo: 1000,
                 loginNb: 1,
                 hash,
             },
