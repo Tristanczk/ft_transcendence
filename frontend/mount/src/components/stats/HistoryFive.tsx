@@ -90,7 +90,7 @@ const HistoryRow: React.FC<{ game: GameImports; user: User }> = ({
             {game.finished === true &&
             ((game.playerA?.id === user?.id && game.won) ||
                 (game.playerB?.id === user?.id && !game.won)) ? (
-                <button className="text-white bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                <button className="text-white bg-green-700 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-green-600 dark:hover:bg-green-700">
                     <svg
                         className="w-2 h-2"
                         aria-hidden="true"
@@ -110,7 +110,7 @@ const HistoryRow: React.FC<{ game: GameImports; user: User }> = ({
                 </button>
             ) : (
                 game.finished === true && (
-                    <button className="text-white bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                    <button className="text-white bg-red-700 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-red-600 dark:hover:bg-red-700">
                         <svg
                             className="w-2 h-2"
                             aria-hidden="true"
